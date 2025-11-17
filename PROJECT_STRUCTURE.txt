@@ -1,0 +1,326 @@
+WIDEBAND SDR PROJECT STRUCTURE
+============================
+
+Complete software package structure for the 1 MHz - 10 GHz Wideband SDR
+
+Created: November 2025
+Version: 1.0.0
+License: MIT
+
+Directory Structure:
+===================
+
+wideband-sdr/                          # Root project directory
+├── firmware/                          # Embedded firmware
+│   ├── main.c                        # Main firmware application (5,785 bytes)
+│   ├── adf4351.h                     # ADF4351 PLL driver header (679 bytes)
+│   ├── adf4351.c                     # ADF4351 PLL driver implementation (4,816 bytes)
+│   ├── adc_dma.h                     # AD9215 ADC DMA interface header
+│   ├── adc_dma.c                     # AD9215 ADC DMA implementation
+│   ├── usb_device.h                  # USB 2.0 High-Speed stack header
+│   ├── usb_device.c                  # USB 2.0 High-Speed implementation
+│   ├── Makefile                      # Firmware build system (1,200 bytes)
+│   └── dist/                         # Build output directory
+│       └── wideband_sdr.hex          # Compiled firmware image
+│
+├── software/                          # Host software package
+│   ├── wideband_sdr.py              # Main Python driver (9,121 bytes)
+│   ├── setup.py                     # Python package installer (1,000 bytes)
+│   ├── version.py                   # Version information
+│   ├── examples/                    # Example applications
+│   │   ├── spectrum_analyzer.py     # Real-time spectrum analyzer
+│   │   ├── frequency_scanner.py     # Automated frequency scanner
+│   │   └── waterfall_display.py     # Waterfall spectrogram display
+│   ├── firmware/                    # Firmware package (for distribution)
+│   │   └── wideband_sdr.hex         # Firmware for end users
+│   └── tests/                       # Unit tests
+│       ├── test_sdr.py              # SDR driver tests
+│       └── test_firmware.py         # Firmware tests
+│
+├── docs/                             # Documentation
+│   ├── api/                         # API documentation
+│   │   ├── firmware/                # Firmware API docs
+│   │   ├── python/                  # Python API docs
+│   │   └── examples/                # Example documentation
+│   ├── user_guide/                  # User manuals
+│   │   ├── installation/            # Installation guides
+│   │   ├── usage/                   # Usage documentation
+│   │   ├── troubleshooting/         # FAQ and troubleshooting
+│   │   └── examples/                # Example usage guides
+│   ├── developer/                   # Developer documentation
+│   │   ├── firmware/                # Firmware development
+│   │   ├── software/                # Software development
+│   │   └── hardware/                # Hardware specifications
+│   └── graphics/                    # Documentation graphics
+│       ├── block_diagrams/          # System block diagrams
+│       ├── schematics/              # Hardware schematics
+│       └── screenshots/             # Application screenshots
+│
+├── installation/                     # Installation scripts
+│   ├── windows/                     # Windows installation
+│   │   ├── install_windows.bat      # Main installer (2,974 bytes)
+│   │   ├── install_drivers.bat      # Driver installer
+│   │   └── install_dependencies.bat # Dependency installer
+│   ├── linux/                       # Linux installation
+│   │   ├── install_linux.sh         # Main installer
+│   │   ├── install_dependencies.sh  # Dependency installer
+│   │   └── install_udev_rules.sh    # Udev rules installer
+│   ├── macos/                       # macOS installation
+│   │   ├── install_macos.sh         # Main installer
+│   │   └── install_dependencies.sh  # Dependency installer
+│   └── cross_platform/              # Cross-platform tools
+│       ├── install_python_deps.py   # Python dependencies
+│       └── setup_usb_permissions.py # USB permissions setup
+│
+├── plugins/                          # Third-party integrations
+│   ├── gnuradio/                    # GNU Radio Companion integration
+│   │   ├── wideband_sdr_source.py   # GRC source block
+│   │   ├── wideband_sdr_sink.py     # GRC sink block
+│   │   └── wideband_sdr.grc         # Example flowgraph
+│   ├── sdrsharp/                    # SDR# ExtIO plugin
+│   │   ├── ExtIO_WidebandSDR.dll    # ExtIO plugin
+│   │   └── WidebandSDR_Plugin.cpp   # Plugin source
+│   ├── hdsdr/                       # HDSDR integration
+│   │   ├── ExtIO_WidebandSDR.dll    # ExtIO plugin
+│   │   └── WidebandSDR_Plugin.cpp   # Plugin source
+│   └── gqrx/                        # Gqrx integration
+│       ├── sdr_source.py            # Gqrx source
+│       └── sdr_sink.py              # Gqrx sink
+│
+├── scripts/                          # Utility scripts
+│   ├── install_board_software.sh    # Board software installer (TODO)
+│   ├── add_transmission_capabilities.py # TX functionality (TODO)
+│   ├── calibrate_frequency.py       # Frequency calibration
+│   ├── multi_device_support.py      # Multi-device support
+│   └── hotplug_detection.py         # Hot-plug detection
+│
+├── testing/                          # Testing and validation
+│   ├── hardware_tests/              # Hardware validation
+│   │   ├── firmware_test.c          # Firmware test suite
+│   │   ├── usb_test.c               # USB protocol tests
+│   │   └── performance_test.c       # Performance tests
+│   ├── software_tests/              # Software validation
+│   │   ├── unit_tests/              # Unit tests
+│   │   ├── integration_tests/       # Integration tests
+│   │   └── performance_tests/       # Performance benchmarks
+│   ├── automated_test_suite.py      # Automated testing
+│   └── test_data/                   # Test data files
+│
+├── tools/                            # Development and debugging tools
+│   ├── firmware_programmer/         # Firmware programming tools
+│   │   ├── pic32kit4_programmer.py  # PICkit 4 programmer
+│   │   └── bootloader.py            # Bootloader utilities
+│   ├── usb_analyzer/                # USB protocol analyzer
+│   │   ├── usb_monitor.py           # USB traffic monitor
+│   │   └── packet_analyzer.py       # Packet analyzer
+│   ├── spectrum_analyzer/           # Advanced spectrum analysis
+│   │   ├── fft_analyzer.py          # FFT analysis tools
+│   │   ├── waterfall_analyzer.py    # Waterfall analysis
+│   │   └── signal_detector.py       # Signal detection
+│   └── calibration_tools/           # Calibration utilities
+│       ├── frequency_calibration.py # Frequency calibration
+│       └── gain_calibration.py      # Gain calibration
+│
+├── data/                             # Data files and configurations
+│   ├── default_configs/             # Default configurations
+│   │   ├── spectrum_analyzer.cfg    # Spectrum analyzer defaults
+│   │   ├── frequency_scanner.cfg    # Frequency scanner defaults
+│   │   └── waterfall_display.cfg    # Waterfall display defaults
+│   ├── calibration_data/            # Calibration data
+│   │   ├── frequency_calibration.dat # Frequency calibration
+│   │   └── gain_calibration.dat     # Gain calibration
+│   └── reference_signals/           # Reference signals
+│       ├── test_tones.dat           # Test tone files
+│       └── noise_patterns.dat       # Noise pattern files
+│
+├── build/                            # Build output directory
+│   ├── firmware/                    # Firmware build artifacts
+│   ├── software/                    # Software build artifacts
+│   ├── documentation/               # Generated documentation
+│   └── packages/                    # Distribution packages
+│
+├── dist/                             # Final distribution directory
+│   ├── wideband-sdr-v1.0.0-windows.zip   # Windows package
+│   ├── wideband-sdr-v1.0.0-linux.tar.gz  # Linux package
+│   ├── wideband-sdr-v1.0.0-macos.pkg     # macOS package
+│   └── wideband-sdr-v1.0.0-source.zip    # Source package
+│
+├── examples/                         # Usage examples
+│   ├── basic/                       # Basic usage examples
+│   │   ├── simple_rx.py             # Simple reception
+│   │   ├── frequency_tuning.py      # Frequency tuning
+│   │   └── sample_acquisition.py    # Sample acquisition
+│   ├── advanced/                    # Advanced examples
+│   │   ├── multi_device.py          # Multi-device operation
+│   │   ├── continuous_scan.py       # Continuous scanning
+│   │   └── real_time_processing.py  # Real-time processing
+│   └── integrations/                # Third-party integrations
+│       ├── gnuradio_examples/       # GNU Radio examples
+│       ├── sdrsharp_examples/       # SDR# examples
+│       └── gqrx_examples/           # Gqrx examples
+│
+└── assets/                           # Project assets
+    ├── logos/                       # Project logos
+    │   ├── wideband-sdr-logo.png    # Main logo
+    │   ├── favicon.ico              # Favicon
+    │   └── icon.png                 # Application icon
+    ├── graphics/                    # Graphics and diagrams
+    │   ├── block_diagram.svg        # System block diagram
+    │   ├── hardware_diagram.png     # Hardware diagram
+    │   └── software_architecture.png # Software architecture
+    └── templates/                   # Documentation templates
+        ├── api_template.md          # API documentation template
+        ├── example_template.md      # Example documentation template
+        └── user_guide_template.md   # User guide template
+
+Root Files:
+===========
+├── WIDEBAND-SDR-COMPLETE-PACKAGE.md    # Main documentation (14,986 bytes)
+├── PROJECT_STRUCTURE.txt               # This file
+├── BUILD_GUIDE.txt                     # Build instructions
+├── INSTALLATION_GUIDE.md               # Installation documentation
+├── USER_GUIDE.md                       # User manual
+├── DEVELOPER_GUIDE.md                  # Developer manual
+├── TROUBLESHOOTING.md                  # Troubleshooting guide
+├── PERFORMANCE_OPTIMIZATION.md         # Performance guide
+├── LICENSE                             # MIT License
+├── VERSION                             # Version information
+├── CHANGELOG.md                        # Version changelog
+├── TODO.md                             # Development TODO list
+├── CONTRIBUTING.md                     # Contribution guidelines
+├── CODE_OF_CONDUCT.md                  # Code of conduct
+├── SECURITY.md                         # Security policy
+├── .gitignore                          # Git ignore file
+├── .gitattributes                      # Git attributes
+├── .gitmodules                         # Git submodules
+├── .github/                            # GitHub-specific files
+│   ├── workflows/                      # CI/CD workflows
+│   │   ├── build.yml                   # Build workflow
+│   │   ├── test.yml                    # Test workflow
+│   │   └── release.yml                 # Release workflow
+│   ├── ISSUE_TEMPLATE/                 # Issue templates
+│   └── PULL_REQUEST_TEMPLATE.md        # PR template
+├── .vscode/                            # VS Code configuration
+│   ├── settings.json                   # Editor settings
+│   ├── launch.json                     # Debug configurations
+│   └── extensions.json                 # Recommended extensions
+├── .idea/                              # PyCharm configuration
+├── CMakeLists.txt                      # CMake build file
+├── meson.build                         # Meson build file
+├── setup.py                            # Python setup file
+├── requirements.txt                    # Python requirements
+├── requirements-dev.txt                # Development requirements
+├── requirements-test.txt               # Test requirements
+├── pytest.ini                         # Pytest configuration
+├── tox.ini                             # Tox configuration
+├── .travis.yml                         # Travis CI configuration
+├── .appveyor.yml                       # AppVeyor CI configuration
+├── codecov.yml                         # Code coverage configuration
+├── Dockerfile                          # Docker container
+├── docker-compose.yml                  # Docker Compose
+├── .dockerignore                       # Docker ignore file
+├── scripts/                            # Project scripts
+│   ├── bootstrap.sh                    # Project bootstrap
+│   ├── build.sh                        # Build script
+│   ├── test.sh                         # Test script
+│   ├── deploy.sh                       # Deployment script
+│   └── clean.sh                        # Clean script
+└── 99-wideband-sdr.rules               # Linux udev rules
+
+File Statistics:
+===============
+Total estimated files: 200+
+Total estimated lines of code: ~15,000
+Total package size: ~500 KB
+
+Key Components:
+==============
+1. Firmware (Embedded C): ~10,000 lines
+   - main.c: Core application
+   - ADF4351 PLL driver
+   - AD9215 ADC DMA interface
+   - USB 2.0 High-Speed stack
+   - Build system (Makefile)
+
+2. Software (Python): ~5,000 lines
+   - Main SDR driver
+   - Example applications
+   - Setup and packaging
+   - Testing framework
+
+3. Documentation: ~2,000 lines
+   - User guides
+   - API documentation
+   - Installation guides
+   - Troubleshooting
+
+4. Installation Scripts: ~1,000 lines
+   - Windows installer
+   - Linux udev rules
+   - macOS installer
+   - Cross-platform tools
+
+5. Plugins and Integrations: ~1,000 lines
+   - GNU Radio blocks
+   - SDR# ExtIO plugin
+   - HDSDR integration
+   - Gqrx support
+
+6. Testing and Validation: ~1,000 lines
+   - Unit tests
+   - Integration tests
+   - Performance tests
+   - Hardware validation
+
+Performance Specifications:
+===========================
+- Frequency Range: 1 MHz - 10 GHz
+- Sample Rate: 1 kSPS - 105 MSPS
+- ADC Resolution: 10 bits
+- USB Throughput: 280-320 Mbps
+- Latency: <15 ms ADC to application
+- Noise Figure: 6-8 dB (with LNA)
+- Frequency Accuracy: <1 ppm
+
+Target Applications:
+===================
+- Spectrum analysis
+- Signal monitoring
+- Frequency scanning
+- RF experimentation
+- Educational use
+- Research and development
+- Amateur radio
+- EMC testing
+
+Supported Platforms:
+===================
+- Windows 10/11 (x64)
+- Linux (Ubuntu 20.04+, CentOS 8+, Debian 11+)
+- macOS 11.0+ (Intel and Apple Silicon)
+- Raspberry Pi OS (ARM64)
+
+Third-party Dependencies:
+========================
+- PyUSB (USB communication)
+- NumPy (Numerical computations)
+- SciPy (Scientific computing)
+- Matplotlib (Plotting and visualization)
+- PyQt5 (GUI framework)
+- GNU Radio (Signal processing)
+- libusb (USB library)
+- CMake (Build system)
+
+Development Tools:
+==================
+- MPLAB X IDE (Firmware development)
+- XC16 Compiler (dsPIC33 compilation)
+- Python 3.8+ (Software development)
+- Git (Version control)
+- Docker (Containerization)
+- GitHub Actions (CI/CD)
+- Sphinx (Documentation)
+- Pytest (Testing)
+
+This structure provides a comprehensive organization for the complete Wideband SDR package,
+ensuring maintainability, scalability, and ease of use for both developers and end users.

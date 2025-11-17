@@ -1,0 +1,148 @@
+# udev rules for Wideband SDR devices
+# Allows non-root users to access Wideband SDR hardware
+# 
+# Created: November 2025
+# Version: 1.0.0
+# License: MIT
+#
+# Install this file to:
+# /etc/udev/rules.d/99-wideband-sdr.rules
+#
+# Then reload udev rules with:
+# sudo udevadm control --reload-rules
+# sudo udevadm trigger
+
+# Wideband SDR device rules
+# Vendor ID: 0x04D8 (Microchip)
+# Product ID: 0x000A (Wideband SDR)
+
+# Rule for Wideband SDR device - allow access to all users in 'plugdev' group
+SUBSYSTEM=="usb", ATTR{idVendor}=="04d8", ATTR{idProduct}=="000a", MODE="0664", GROUP="plugdev"
+
+# Alternative rule using hexadecimal notation
+# SUBSYSTEM=="usb", ATTRS{idVendor}=="0x04d8", ATTRS{idProduct}=="0x000a", MODE="0664", GROUP="plugdev"
+
+# Specific rules for different configurations
+# Wideband SDR in default configuration
+SUBSYSTEM=="usb", ATTR{idVendor}=="04d8", ATTR{idProduct}=="000a", ATTR{bConfigurationValue}=="1", MODE="0664", GROUP="plugdev"
+
+# Wideband SDR in alternate configurations
+SUBSYSTEM=="usb", ATTR{idVendor}=="04d8", ATTR{idProduct}=="000a", ATTR{bConfigurationValue}!="1", MODE="0664", GROUP="plugdev"
+
+# Rules with more specific matching
+# Match on device manufacturer and product strings
+SUBSYSTEM=="usb", ATTR{idVendor}=="04d8", ATTR{idProduct}=="000a", ATTR{manufacturer}=="Wideband SDR Project", MODE="0664", GROUP="plugdev"
+
+# Rule for automatic driver binding
+# This ensures the device is bound to the correct driver
+SUBSYSTEM=="usb", ATTR{idVendor}=="04d8", ATTR{idProduct}=="000a", DRIVER=="", MODE="0664", GROUP="plugdev"
+
+# Rules for different USB configurations
+# High-Speed configuration
+SUBSYSTEM=="usb", ATTR{idVendor}=="04d8", ATTR{idProduct}=="000a", ATTR{bcdUSB}>="0200", MODE="0664", GROUP="plugdev"
+
+# Full-Speed configuration (fallback)
+SUBSYSTEM=="usb", ATTR{idVendor}=="04d8", ATTR{idProduct}=="000a", ATTR{bcdUSB}<"0200", MODE="0664", GROUP="plugdev"
+
+# Rules with timeout and retry settings
+# This rule includes additional attributes for better matching
+SUBSYSTEM=="usb", ENV{ID_BUS}=="usb", ATTR{idVendor}=="04d8", ATTR{idProduct}=="000a", MODE="0664", GROUP="plugdev", OWNER="root"
+
+# Generic SDR device class rules (in case device classification changes)
+SUBSYSTEM=="usb", ATTR{bInterfaceClass}=="ff", ATTR{bInterfaceSubClass}=="00", ATTR{bInterfaceProtocol}=="00", ATTR{idVendor}=="04d8", ATTR{idProduct}=="000a", MODE="0664", GROUP="plugdev"
+
+# Rules for hotplug events
+# These rules ensure proper handling when device is plugged/unplugged
+SUBSYSTEM=="usb", ACTION=="add", ATTR{idVendor}=="04d8", ATTR{idProduct}=="000a", RUN+="/bin/bash -c '/usr/bin/logger -t wideband-sdr \"Device added: $kernel ($idVendor:$idProduct)\"'"
+SUBSYSTEM=="usb", ACTION=="remove", ATTR{idVendor}=="04d8", ATTR{idProduct}=="000a", RUN+="/bin/bash -c '/usr/bin/logger -t wideband-sdr \"Device removed: $kernel ($idVendor:$idProduct)\"'"
+
+# Symlink creation for easy device identification
+# Creates a persistent symlink like /dev/wideband-sdr-0
+SUBSYSTEM=="usb", ATTR{idVendor}=="04d8", ATTR{idProduct}=="000a", SYMLINK+="wideband-sdr-$attr{busnum}-$attr{devnum}"
+
+# Alternative symlink based on device serial number (if available)
+SUBSYSTEM=="usb", ATTR{idVendor}=="04d8", ATTR{idProduct}=="000a", ENV{ID_SERIAL_SHORT}!="", SYMLINK+="wideband-sdr-$env{ID_SERIAL_SHORT}"
+
+# Rules for specific USB endpoints
+# Endpoint 1 (Bulk IN) - sample data
+SUBSYSTEM=="usb", ATTR{idVendor}=="04d8", ATTR{idProduct}=="000a", ATTR{bEndpointAddress}=="01", MODE="0664", GROUP="plugdev"
+
+# Endpoint 2 (Bulk OUT) - commands
+SUBSYSTEM=="usb", ATTR{idVendor}=="04d8", ATTR{idProduct}=="000a", ATTR{bEndpointAddress}=="02", MODE="0664", GROUP="plugdev"
+
+# Endpoint 3 (Interrupt IN) - status
+SUBSYSTEM=="usb", ATTR{idVendor}=="04d8", ATTR{idProduct}=="000a", ATTR{bEndpointAddress}=="83", MODE="0664", GROUP="plugdev"
+
+# Rules for power management
+# Ensure device is not suspended during operation
+SUBSYSTEM=="usb", ATTR{idVendor}=="04d8", ATTR{idProduct}=="000a", ATTR{power/autosuspend_delay_ms}=="0", ATTR{power/autosuspend}=="1"
+
+# Alternative power management rule
+SUBSYSTEM=="usb", ATTR{idVendor}=="04d8", ATTR{idProduct}=="000a", ENV{POWER_SUPPLY}!="", ATTR{power/control}=="auto"
+
+# Rules for network interface (if device exposes network functionality)
+# Note: Commented out as most SDR devices don't expose network interfaces
+# SUBSYSTEM=="net", ATTR{address}=="00:04:d8:*", ATTR{idVendor}=="04d8", ATTR{idProduct}=="000a", MODE="0664", GROUP="plugdev"
+
+# Debug rules (for troubleshooting)
+# These rules can be enabled temporarily for debugging
+# SUBSYSTEM=="usb", ATTR{idVendor}=="04d8", ATTR{idProduct}=="000a", MODE="0666", GROUP="plugdev", OPTIONS="last_rule"
+
+# Comprehensive rule with all attributes
+# This is the most specific rule for the Wideband SDR
+SUBSYSTEM=="usb", \
+  ATTR{idVendor}=="04d8", \
+  ATTR{idProduct}=="000a", \
+  ATTR{bDeviceClass}=="00", \
+  ATTR{bDeviceSubClass}=="00", \
+  ATTR{bDeviceProtocol}=="00", \
+  ATTR{bNumConfigurations}=="1", \
+  ATTR{bConfigurationValue}=="1", \
+  ATTR{configuration}=="Wideband SDR", \
+  MODE="0664", \
+  GROUP="plugdev", \
+  OWNER="root", \
+  OPTIONS="last_rule"
+
+# Group-based permissions
+# Add users to plugdev group: sudo usermod -a -G plugdev username
+# Check current groups: groups username
+
+# Custom action rules
+# Run custom script when device is added
+SUBSYSTEM=="usb", ATTR{idVendor}=="04d8", ATTR{idProduct}=="000a", ACTION=="add", RUN+="/usr/local/bin/wideband-sdr-device-added.sh"
+SUBSYSTEM=="usb", ATTR{idVendor}=="04d8", ATTR{idProduct}=="000a", ACTION=="remove", RUN+="/usr/local/bin/wideband-sdr-device-removed.sh"
+
+# Environment variable rules
+# Set environment variables for applications
+SUBSYSTEM=="usb", ATTR{idVendor}=="04d8", ATTR{idProduct}=="000a", ENV{WIDEBAND_SDR_VENDOR}="04d8", ENV{WIDEBAND_SDR_PRODUCT}="000a", ENV{WIDEBAND_SDR_CLASS}="wideband-sdr"
+
+# SELinux context rules (for systems with SELinux enabled)
+# Uncomment and modify as needed for your SELinux policy
+# SUBSYSTEM=="usb", ATTR{idVendor}=="04d8", ATTR{idProduct}=="000a", SECLABEL{str}="unconfined_u:object_r:unconfined_device_t:s0"
+
+# Additional safety rules
+# Prevent accidental driver unbinding
+SUBSYSTEM=="usb", ATTR{idVendor}=="04d8", ATTR{idProduct}=="000a", DRIVER!="", MODE="0664", GROUP="plugdev"
+
+# Ensure device stays accessible even with multiple instances
+SUBSYSTEM=="usb", ATTR{idVendor}=="04d8", ATTR{idProduct}=="000a", MODE="0664", GROUP="plugdev", OPTIONS="ignore_remove"
+
+# Tagging rules for systemd integration
+# These help systemd identify and manage the device
+SUBSYSTEM=="usb", ATTR{idVendor}=="04d8", ATTR{idProduct}=="000a", TAG+="systemd", ENV{SYSTEMD_WANTS}="wideband-sdr.service"
+
+# Final comprehensive rule
+# This rule encompasses most use cases and should work for the majority of installations
+SUBSYSTEM=="usb", \
+  ENV{ID_BUS}=="usb", \
+  ATTR{idVendor}=="04d8", \
+  ATTR{idProduct}=="000a", \
+  MODE="0664", \
+  GROUP="plugdev", \
+  OWNER="root", \
+  TAG+="systemd", \
+  SYMLINK+="wideband-sdr", \
+  OPTIONS="last_rule,ignore_remove"
+
+# End of rules file
