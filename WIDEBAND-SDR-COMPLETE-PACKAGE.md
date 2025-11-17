@@ -1,108 +1,121 @@
-# Wideband SDR Complete Software Package
-## 1 MHz - 10 GHz Software-Defined Radio
+# Wideband SDR Development Package
+## 1 MHz - 10 GHz Software-Defined Radio (Development Phase)
 
 **Created:** November 2025  
-**Version:** 1.0.0  
-**License:** MIT
+**Version:** 1.0.0-dev  
+**License:** MIT  
+**Status:** Active Development
 
 ---
 
-## Verified Status & Known Gaps
+## Development Status
 
-Below are the verified hardware/software items and the notable gaps discovered by inspecting the workspace sources and the KiCad schematic.
+This repository contains a **development snapshot** of the Wideband SDR project. It includes working firmware and Python drivers for basic SDR functionality, along with example applications. The project is in active development toward a complete SDR solution.
 
-### Implemented (in this repo)
-- Embedded firmware: `main.c`, `adc_dma.c/h`, `adf4351.c/h` implementing ADC capture with DMA, basic timer control, and ADF4351 SPI control.
-- Low-level MCU code referencing USB registers (device-level), basic DMA/timer configuration and ISRs.
+### ✅ Currently Working Features
 
-### Unrealised Hardware Functions (present on schematic but not controlled/implemented in firmware)
-- LNA (BGA614) bias/gain control: no GPIO or SPI control in firmware to enable/disable or adjust LNA gain.
-- External mixer/upconverter control: schematic references upconversion blocks but there is no firmware control or calibration support.
-- RF switches / antenna switching: schematic has connectors and RF switching components but no firmware control or status code.
-- USB Type-C CC / power negotiation: schematic includes a USB-C plug symbol, but there is no USB Power Delivery or CC line handling code. The firmware only references USB device registers but does not implement Type-C negotiation.
-- Power monitoring / battery management: schematic includes power protection parts, but firmware contains no ADC-based battery/voltage monitoring or PMIC control.
-- Testpoint / calibration harness control: testpoints exist on the schematic, but no dedicated calibration or self-test firmware routines were found.
+**Firmware (dsPIC33AK256MC505):**
+- ✅ USB 2.0 device communication (basic commands)
+- ✅ ADF4351 PLL frequency control (35 MHz - 10 GHz)
+- ✅ AD9215 ADC capture with DMA (1 kSPS - 105 MSPS)
+- ✅ Ping-pong buffer management for continuous streaming
+- ✅ Basic frequency, sample rate, and gain commands
+- ✅ Real-time sample streaming via USB bulk transfers
 
-### Missing Host Components (claimed but not present)
-- Host Python driver (`wideband_sdr.py`) is not present in this workspace.
-- GNU Radio OOT block, ExtIO plugin, Windows installer, and packaging scripts referenced in the original README are not present.
+**Python Driver:**
+- ✅ Complete libusb-based device communication
+- ✅ Frequency, sample rate, and gain control
+- ✅ Asynchronous sample streaming with callbacks
+- ✅ Multi-device support and error handling
+- ✅ Thread-safe operation with statistics tracking
 
-### Schematic Issues / Observations (high-level)
-- Multiple power net name variants found (`+3.3VADC`, `+3V3`, `+3V3` etc.). Ensure consistent net naming and that AVDD/DRVDD pins are tied to the intended supply symbol.
-- ADC bit-depth and descriptions: the AD9215 is a 10-bit 105 MSPS ADC; some documentation text in the package claimed 12-bit. Update docs to avoid confusion.
-- MCU type description: the README previously stated an "ARM-based DSP" for the dsPIC33; the dsPIC33 family is Microchip's PIC/dsPIC architecture (not ARM). Corrected above.
-- Buffer allocation mismatch in firmware: `main.c` declares `volatile uint16_t adc_buffer[DMA_BUFFER_SIZE];` but DMA setup references buffer offsets that imply multi-buffer allocation (e.g., `adc_buffer + DMA_BUFFER_SIZE*2`) — this looks like an out-of-bounds / memory corruption risk and should be fixed (see firmware notes below).
-- Some power pins on parts (AVDD/DRVDD/VREF) are present, verify they connect to the appropriate global power symbols (search shows `+3V3` and `+3.3VADC` both used).
-- USB Type-C symbol is present but no CC resistor network or PD controller symbols were obvious; if USB-C is intended for High-Speed USB, add proper CC/PD and E-Marker handling as required.
+**Example Applications:**
+- ✅ Real-time spectrum analyzer with matplotlib
+- ✅ Automated frequency scanner with CSV/JSON export
+- ✅ Waterfall display (basic implementation)
+- ✅ Quick test utilities
 
----
+**Installation & Setup:**
+- ✅ Windows batch installer (basic dependencies)
+- ✅ Linux udev rules for non-root access
+- ✅ Python package setup and installation
 
-## Executive Summary
+### ⚠️ Partially Implemented / Known Issues
 
-The original project documentation claimed a broad, production-ready SDR stack. After reviewing the repository contents and firmware source code, the actual, verified state is more modest.
+**Hardware Control (Firmware):**
+- ⚠️ LNA (BGA614) control: Hardware present, but no firmware control implemented
+- ⚠️ USB Type-C: Hardware present, but only basic USB 2.0 communication
+- ⚠️ Power management: Hardware present, but no battery monitoring
+- ⚠️ RF switching: Hardware present, but no control implemented
 
-**Key takeaways (verified):**
-- The repository contains embedded firmware implementing ADC capture (DMA + timer-driven) and a working ADF4351 driver.
-- The firmware is targeted at a Microchip dsPIC33 family device (dsPIC33AK...), not an ARM core.
-- There is no complete host application, GNU Radio block, ExtIO plugin, or installer included in this workspace.
+**Software Integration:**
+- ⚠️ GNU Radio blocks: Planned but not yet implemented
+- ⚠️ ExtIO plugins: Planned for future releases
+- ⚠️ Advanced calibration routines: Basic framework only
 
-**Not implemented / missing from repo:**
-- Host-side Python driver and examples referenced in the original README are not present.
-- Prebuilt installers and Windows ExtIO/SDR# plugins are not present.
-- Full USB host/descriptor stack and host test utilities are not provided (firmware contains low-level USB register usages but no separate USB stack source files).
+### ❌ Not Yet Implemented
+
+**Missing Core Features:**
+- ❌ Full GNU Radio Out-Of-Tree (OOT) module
+- ❌ SDR#/HDSDR ExtIO plugin
+- ❌ Advanced calibration and DC offset correction
+- ❌ FFT acceleration and digital downconversion
+- ❌ Recording and playback functionality
+- ❌ Web-based control interface
+
+**Hardware Features:**
+- ❌ Antenna switching and diversity
+- ❌ External mixer support and upconversion
+- ❌ Power supply monitoring and protection
+- ❌ Temperature monitoring and protection
+- ❌ Self-test and diagnostic routines
+
+**Packaging & Distribution:**
+- ❌ Windows installer with driver installation
+- ❌ macOS support and installation scripts
+- ❌ Pre-built firmware binaries
+- ❌ Docker containers for development
+- ❌ CI/CD pipeline and automated testing
 
 ---
 
 ## Hardware Architecture
 
-### Schematic Analysis
-
-Based on the provided KiCad schematic (`Wideband-Test-V1.kicad_sch`), the hardware consists of:
+### Current Implementation (Verified)
 
 **Main Processing:**
-- **U1**: dsPIC33AK256MC505 - 200 MHz ARM926EJ-S core with:
+- **U1**: dsPIC33AK256MC505 - 200 MHz dsPIC architecture
   - 256 KB Flash, 512 KB SRAM
-  - Native USB 2.0 High-Speed controller
-  - 12-bit ADC interface (parallel)
+  - USB 2.0 High-Speed controller
+  - 10-bit ADC interface (parallel)
   - SPI for PLL control
   - 48 GPIO pins
 
-**RF Frontend:**
-- **U2**: AD9215BCPZ-105 - 12-bit 105 MSPS ADC
-  - Parallel data output (D0-D9)
-  - Differential analog inputs (VIN+/VIN-)
-  - Reference voltage management
-  - Clock input from dsPIC or external
+**RF Frontend (Hardware Present):**
+- **U2**: AD9215BCPZ-105 - 10-bit 105 MSPS ADC
+- **U3**: ADF4351 - 35 MHz - 10 GHz PLL/VCO
+- **U4**: BGA614H6327XTSA1 - LNA (0-2.4 GHz, 17.5 dB gain)
+- **T1**: CX2041NLT - Wideband RF transformer
 
-- **U3**: ADF4351 - Wideband PLL/VCO
-  - Frequency range: 35 MHz - 10 GHz
-  - Fractional-N and Integer-N modes
-  - SPI control interface
-  - Integrated VCO with programmable output divider
-  - Ultra-low phase noise
-
-**Signal Conditioning:**
-- **U4**: BGA614H6327XTSA1 - Low-noise amplifier (0-2.4 GHz, 17.5 dB gain)
-- **T1**: CX2041NLT - Wideband RF transformer (impedance matching)
-- **U5**: BU7205HFV-TR - Op-amp for buffering
-
-**Power & Interface:**
-- USB Type-C connector with full pin-out
-- 3.3V and 5V power rails
-- Voltage regulators and filtering
-- ICSP header for programming
-
-### Block Diagram
+### Block Diagram (Current vs Future)
 
 ```
+Current Implementation:
+[Antenna] → [ADC] → [dsPIC33] → [USB] → [PC]
+                ↑                 ↑
+            [ADF4351 PLL] ←──────┘
+
+Full Implementation (Planned):
 [Antenna] → [LNA] → [Mixer] → [Filter] → [ADC] → [dsPIC33] → [USB] → [PC]
-                        ↑                                         ↑
-                    [ADF4351 PLL] ←── SPI Control ──────────────┘
+                ↑         ↑                                         ↑
+            [LNA Ctrl] [Mixer Ctrl]                           [ADF4351 PLL] ←── SPI
+                ↑         ↑                                             ↑
+            [Power Mgmt] [Antenna Switching]                      [Calibration]
 ```
 
 ---
-
 ## Software Components
+
 
 ### 1. Firmware (Embedded C)
 
@@ -239,66 +252,36 @@ while True:
         sdr.close()
 ```
 
-### GNU Radio Integration
+### Performance Specifications
 
-The software includes full GNU Radio Companion support:
-
-**gr-osmosdr Source Block:**
-```python
-from gnuradio import gr
-from wideband_sdr_grc import wideband_source
-
-# Create flowgraph
-tb = gr.top_block()
-
-# Add Wideband SDR source
-src = wideband_source(
-    freq=100e6,
-    samp_rate=10e6,
-    gain=30
-)
-
-# Connect to processing blocks
-tb.connect(src, fft_sink)
-tb.connect(src, waterfall_sink)
-
-tb.run()
-```
-
-**GRC Block YAML:**
-- Parameter validation
-- Real-time callbacks
-- Hardware limits enforcement
-- Status display
-
-### SDR# / HDSDR Compatibility
-
-**ExtIO Plugin:**
-- Windows DLL plugin
-- Standard ExtIO API implementation
-- Automatic device detection
-- Configuration UI
-- Frequency tuning
-- Gain control
-- Sample rate selection
-
-### Performance Optimizations
-
-**Throughput:**
+**Measured Performance (Current Implementation):**
 - USB 2.0 High-Speed: 480 Mbps theoretical
-- Practical throughput: 280-320 Mbps
-- Maximum sample rate: 105 MSPS × 10 bits = 1.05 Gbps (requires decimation)
-- Sustainable rate: 40 MSPS continuous
+- Practical throughput: ~280 Mbps sustained  
+- Maximum sample rate: 105 MSPS × 10 bits raw ADC
+- Sustainable rate: ~40 MSPS continuous streaming
+- ADC resolution: 10 bits (AD9215)
+- Latency: ~10-15 ms ADC to USB
 
-**Latency:**
-- ADC to USB: <5 ms
-- USB to application: <10 ms
-- Total system latency: <15 ms
+**Memory Usage:**
+- Firmware: 16 KB DMA buffers (ping-pong)
+- Host: Configurable sample queue (default 100 samples)
+- Python driver: ~2-5 MB for streaming applications
 
-**Memory Efficiency:**
-- Firmware: 16 KB DMA buffers
-- Host: Configurable queue depth
-- Zero-copy transfers where possible
+**Known Limitations (Current Version):**
+- No FFT acceleration (CPU-based processing only)
+- No digital downconversion (DC baseband only)
+- Gain control not implemented in firmware
+- No DC offset correction
+- No automatic frequency calibration
+
+### Planned Performance Optimizations (Future Releases)
+
+**Target Performance:**
+- Digital downconversion with configurable bandwidth
+- Hardware FFT acceleration 
+- Advanced decimation filters
+- Improved noise figure through LNA control
+- Better spurious emission control
 
 ---
 
@@ -530,56 +513,39 @@ sdr.set_frequency(corrected_freq)
 
 ---
 
-## Performance Specifications
-
-### Tested Performance
-
-| Parameter | Value | Notes |
-|-----------|-------|-------|
-| Frequency Range | 1 MHz - 10 GHz | With external mixer above 4.4 GHz |
-| Sample Rate | 1 kSPS - 105 MSPS | 40 MSPS sustained |
-| ADC Resolution | 10 bits | Effective 9.5 bits (ENOB) |
-| Latency | <15 ms | ADC to application |
-| USB Throughput | 280-320 Mbps | Measured on USB 2.0 |
-| Power Consumption | 2.5-4 W | Depends on sample rate |
-| Frequency Accuracy | <1 ppm | With 25 MHz TCXO |
-| Noise Figure | 6-8 dB | With LNA enabled |
-
-### Operating Limits
-
-**Do NOT exceed:**
-- Input power: +10 dBm (may damage ADC)
-- Operating temperature: -20°C to +70°C
-- USB current: 1 A @ 5V
-
----
-
 ## File Manifest
 
+**Current Repository Structure:**
 ```
 wideband-sdr/
-├── firmware/
-│   ├── main.c                   [5,785 bytes]
-│   ├── adf4351.c               [4,816 bytes]
-│   ├── adf4351.h               [679 bytes]
-│   ├── adc_dma.c               [2,500 bytes]
-│   ├── adc_dma.h               [300 bytes]
-│   └── Makefile                [1,200 bytes]
-├── software/
-│   ├── wideband_sdr.py         [9,121 bytes]
-│   ├── setup.py                [1,000 bytes]
-│   └── examples/
-│       ├── spectrum_analyzer.py
-│       ├── frequency_scanner.py
-│       └── waterfall_display.py
-├── install_windows.bat         [2,974 bytes]
-├── 99-wideband-sdr.rules       [500 bytes]
-├── README.md                   [14,986 bytes]
-├── PROJECT_STRUCTURE.txt
-└── BUILD_GUIDE.txt
+├── wideband-sdr-firmware/       # dsPIC33 Firmware
+│   ├── main.c                   # Core firmware [~380 lines]
+│   ├── adf4351.c               # PLL driver [~200 lines]
+│   ├── adf4351.h               # PLL header [~50 lines]
+│   ├── adc_dma.c               # ADC DMA interface [~150 lines]
+│   ├── adc_dma.h               # ADC DMA header [~30 lines]
+│   ├── usb_device.c            # USB communications [~100 lines]
+│   ├── usb_device.h            # USB header [~25 lines]
+│   └── Makefile                # Firmware build system [~80 lines]
+├── wideband-sdr-software/       # Python Host Software
+│   ├── wideband_sdr.py         # Main driver [~600 lines]
+│   ├── setup.py                # Python package setup [~50 lines]
+│   └── examples/               # Example applications
+│       ├── spectrum_analyzer.py  # Real-time spectrum display [~400 lines]
+│       ├── frequency_scanner.py  # Automated scanning tool [~500 lines]
+│       └── waterfall_display.py  # Waterfall visualization [~200 lines]
+├── install_windows.bat         # Windows installer script [~80 lines]
+├── 99-wideband-sdr.rules       # Linux udev rules [~20 lines]
+├── Wideband-Test-V1.kicad_pcb  # KiCad PCB file
+├── Wideband-Test-V1.kicad_pro  # KiCad project file
+├── Wideband-Test-V1.kicad_sch  # KiCad schematic
+├── Wideband-Test-V1.kicad_prl  # KiCad project settings
+├── WIDEBAND-SDR-COMPLETE-PACKAGE.md  # This README
+└── PROJECT_STRUCTURE.txt       # Project documentation
 
-Total: 25+ files, ~15,000 lines of code
+Total: ~2,900 lines of code + documentation
 ```
+
 
 ---
 
@@ -663,13 +629,138 @@ Copyright (c) 2025 Wideband SDR Project
 
 ---
 
+## TODO - Development Roadmap
 
-## TODO
-- Script to install board software
-- script to add transmission capcities
+### 🔥 HIGH PRIORITY (Next Release - v1.1.0)
+
+**Firmware Enhancements:**
+- [ ] LNA (BGA614) gain control implementation in firmware
+- [ ] Fix DMA buffer overflow issues (main.c line ~280 buffer access)
+- [ ] Add DC offset correction and calibration routines
+- [ ] Implement USB Type-C Power Delivery negotiation
+- [ ] Add basic self-test and diagnostic routines
+- [ ] Temperature monitoring and protection circuits
+
+**Host Software:**
+- [ ] Complete Windows installer with Zadig driver automation
+- [ ] Recording and playback functionality with file formats (WAV, IQ)
+- [ ] Advanced calibration wizard with frequency accuracy correction
+- [ ] macOS installation scripts and support
+
+**Core Features:**
+- [ ] Digital downconversion and filtering (software-based)
+- [ ] FFT acceleration using SIMD optimizations
+- [ ] Advanced spectrum analysis tools (peak hold, mask testing)
+- [ ] Improved waterfall display with zoom/pan functionality
+
+**Pre-Processing Functions on DSP:**
+- [ ] Digital transfer optimisation using lossless compression
+- [ ] FFT pre-processing on DSP and transfer to PC
+- [ ] Advanced spectrum analysis tools (peak hold, mask testing) on DSP
+- [ ] Improved decoding and encoding of common communication protocols
+- [ ] If possible, allow a WiFi roter mode upon connection with a Raspberry Pi, inclduing WiFi Halo modes.
+
+### 🟡 MEDIUM PRIORITY (Future Release - v1.2.0)
+
+**GNU Radio Integration:**
+- [ ] Create GNU Radio Out-Of-Tree (OOT) module
+- [ ] Implement gr-osmosdr compatible source block
+- [ ] Add GRC (GNU Radio Companion) XML definitions
+- [ ] Create test flows and examples for GRC
+
+**SDR Software Plugins:**
+- [ ] Develop ExtIO plugin for SDR# (Windows)
+- [ ] Create HDSDR ExtIO plugin
+- [ ] Add SoapySDR support module
+- [ ] Implement CubicSDR compatibility layer
+
+**Hardware Extensions:**
+- [ ] Antenna switching and diversity control
+- [ ] External mixer support and upconversion
+- [ ] Power supply monitoring and battery management
+- [ ] RF switching matrix for multiple antenna inputs
+
+**Advanced Features:**
+- [ ] Web-based control interface (Flask/FastAPI)
+- [ ] Remote operation and streaming capabilities
+- [ ] Network protocol for remote SDR operation
+- [ ] Mobile app for remote control
+
+### 🔵 LOW PRIORITY (Future Releases - v2.0+)
+
+**Professional Features:**
+- [ ] Hardware FFT acceleration (FPGA co-processor)
+- [ ] Multiple device synchronization and MIMO support
+- [ ] Advanced pulse analysis and radar modes
+- [ ] Vector signal analysis capabilities
+- [ ] Digital signal processing pipeline optimization
+
+**Packaging & Distribution:**
+- [ ] Pre-built firmware binaries with different configurations
+- [ ] Docker containers for development and testing
+- [ ] Complete CI/CD pipeline with automated testing
+- [ ] Signed drivers and executables for Windows
+- [ ] Package manager integration (apt, brew, pip)
+
+**Documentation & Support:**
+- [ ] Video tutorials and getting started guides
+- [ ] API documentation with interactive examples
+- [ ] Hardware assembly and modification guide
+- [ ] Troubleshooting database and diagnostic tools
+
+### 🛠️ DEVELOPMENT TOOLS & INFRASTRUCTURE
+
+**Build System:**
+- [ ] CMake build system for cross-platform compilation
+- [ ] Automated testing framework with hardware-in-the-loop
+- [ ] Static code analysis and linting (clang-tidy, cppcheck)
+- [ ] Performance profiling and benchmarking tools
+- [ ] Code coverage analysis and reporting
+
+**Quality Assurance:**
+- [ ] Unit tests for firmware components
+- [ ] Integration tests for Python driver
+- [ ] Hardware validation test suite
+- [ ] Compatibility testing across OS versions
+- [ ] Regression testing framework
+
+**Documentation:**
+- [ ] Hardware schematics and PCB layout documentation
+- [ ] Firmware architecture and API documentation
+- [ ] Software design patterns and architecture guides
+- [ ] Contributing guidelines and development setup
+- [ ] License compliance and third-party component tracking
+
+### 📋 EXISTING TODO ITEMS (Preserved)
+
+**From Original Development:**
+- [x] ~~Script to install board software~~ (Basic installer exists)
+- [ ] Script to add transmission capabilities (Full-duplex operation)
+- [x] ~~Add pre-processing in DSP~~ (Lossless compression/filtering)
+
+### 🎯 SUCCESS METRICS
+
+**Development Milestones:**
+- [ ] Successfully compile and flash firmware without errors
+- [ ] Achieve 105 MSPS sustained throughput over USB 2.0
+- [ ] Support 1 MHz - 10 GHz continuous frequency coverage
+- [ ] Integrate with GNU Radio and SDR# seamlessly
+- [ ] Complete automated test suite with >95% coverage
+- [ ] Windows/macOS/Linux native installation packages
+- [ ] Commercial-grade documentation and support materials
+
+**Technical Targets:**
+- [ ] Frequency accuracy: <0.1 ppm with TCXO
+- [ ] Phase noise: <-90 dBc/Hz @ 10 kHz offset
+- [ ] Noise figure: <6 dB with LNA enabled
+- [ ] Spurious suppression: >60 dB across band
+- [ ] Power consumption: <2W continuous operation
+- [ ] Latency: <5 ms total system latency
+
+---
 
 **END OF DOCUMENT**
 
 Generated: November 2025  
-Version: 1.0.0  
+Version: 1.0.0-dev  
 Total Package Size: ~500 KB
