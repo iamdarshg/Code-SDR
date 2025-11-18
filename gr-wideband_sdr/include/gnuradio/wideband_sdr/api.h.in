@@ -1,0 +1,21 @@
+/*
+ * Copyright (C) 2025 Wideband SDR Project
+ *
+ * SPDX-License-Identifier: GPL-3.0-or-later
+ *
+ */
+
+#ifndef INCLUDED_WIDEBAND_SDR_API_H
+#define INCLUDED_WIDEBAND_SDR_API_H
+
+#include <gnuradio/attributes.h>
+
+#ifdef gnuradio_wideband_sdr_EXPORTS
+#define WIDEBAND_SDR_API GR_RUNTIME_API_EXPORT
+#else
+#define WIDEBAND_SDR_API GR_RUNTIME_API_IMPORT
+#endif
+
+#define WIDEBAND_SDR_DEPRECATED(func) func GR_RUNTIME_API_DEPRECATED(func)
+
+#endif /* INCLUDED_WIDEBAND_SDR_API_H */

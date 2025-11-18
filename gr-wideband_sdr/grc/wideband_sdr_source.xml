@@ -1,0 +1,166 @@
+<?xml version="1.0"?>
+<block>
+  <name>Wideband SDR Source</name>
+  <key>wideband_sdr_source</key>
+  <category>Wideband SDR</category>
+  <import>import gnuradio.wideband_sdr as wideband_sdr</import>
+  <make>wideband_sdr.source($sample_rate, $frequency, $gain)</make>
+  
+  <param>
+    <name>Sample Rate</name>
+    <key>sample_rate</key>
+    <value>1e6</value>
+    <type>eng_float</type>
+    <option>
+      <name>1 MSPS</name>
+      <value>1e6</value>
+    </option>
+    <option>
+      <name>2 MSPS</name>
+      <value>2e6</value>
+    </option>
+    <option>
+      <name>10 MSPS</name>
+      <value>10e6</value>
+    </option>
+    <option>
+      <name>20 MSPS</name>
+      <value>20e6</value>
+    </option>
+  </param>
+  
+  <param>
+    <name>Frequency (Hz)</name>
+    <key>frequency</key>
+    <value>100e6</value>
+    <type>eng_float</type>
+  </param>
+  
+  <param>
+    <name>RF Gain (dB)</name>
+    <key>gain</key>
+    <value>30</value>
+    <type>int</type>
+    <option>
+      <name>0 dB</name>
+      <value>0</value>
+    </option>
+    <option>
+      <name>15 dB</name>
+      <value>15</value>
+    </option>
+    <option>
+      <name>30 dB</name>
+      <value>30</value>
+    </option>
+    <option>
+      <name>45 dB</name>
+      <value>45</value>
+    </option>
+    <option>
+      <name>63 dB</name>
+      <value>63</value>
+    </option>
+  </param>
+  
+  <param>
+    <name>Device Index</name>
+    <key>device_index</key>
+    <value>0</value>
+    <type>int</type>
+    <doc>USB device index (0-based)</doc>
+  </param>
+  
+  <sink>
+    <name>in</name>
+    <type>message</type>
+    <optional>1</optional>
+  </sink>
+  
+  <source>
+    <name>out</name>
+    <type>complex</type>
+    <doc>Complex I/Q samples from the Wideband SDR</doc>
+  </source>
+  
+  <check_blocks>
+    <block>wideband_sdr_source</block>
+  </check_blocks>
+  
+  <doc>
+    <b>Wideband SDR Source Block</b>
+    
+    Provides real-time I/Q samples from the Wideband SDR device.
+    
+    <h3>Parameters</h3>
+    
+    <b>Sample Rate</b>: Sample rate in samples per second.
+    - 1 MSPS: Basic data rate for wideband analysis
+    - 2 MSPS: Good balance of bandwidth and performance
+    - 10 MSPS: High resolution spectrum analysis
+    - 20 MSPS: Maximum resolution (limited by hardware)
+    
+    <b>Frequency</b>: Center frequency in Hz (1 MHz - 10 GHz)
+    - Supports the full RF spectrum from 1 MHz to 10 GHz
+    - High-resolution frequency control with PLL synthesis
+    - Automatic frequency planning and harmonic rejection
+    
+    <b>RF Gain</b>: Front-end LNA gain in dB (0-63 dB)
+    - Higher gain for weak signals, lower gain for strong signals
+    - BGA614 LNA provides 0-30 dB gain range
+    - Automatic gain control available for dynamic signals
+    
+    <h3>Features</h3>
+    
+    - Real-time streaming I/Q samples
+    - USB 2.0 High-Speed interface
+    - Built-in DC offset correction
+    - Temperature monitoring and compensation
+    - Configurable buffer management
+    - Statistics and diagnostic information
+    
+    <h3>Usage Notes</h3>
+    
+    1. Connect your antenna to the SDR input
+    2. Start with moderate gain settings (30 dB)
+    3. Adjust frequency and gain as needed for your application
+    4. Use sample rates appropriate for your bandwidth requirements
+    5. Monitor the statistics output for performance metrics
+    
+    <h3>Example</h3>
+    
+    For FM radio reception:
+    - Frequency: 100 MHz (FM band)
+    - Sample Rate: 2 MSPS
+    - Gain: 30 dB
+    
+    For spectrum analysis:
+    - Frequency: 1 GHz (center)
+    - Sample Rate: 10 MSPS
+    - Gain: Variable (depends on signal strength)
+  </doc>
+  
+  <callback>
+    <name>set_frequency</name>
+    <param>frequency</param>
+  </callback>
+  
+  <callback>
+    <name>set_sample_rate</name>
+    <param>sample_rate</param>
+  </callback>
+  
+  <callback>
+    <name>set_gain</name>
+    <param>gain</param>
+  </callback>
+  
+  <callback>
+    <name>start_streaming</name>
+  </callback>
+  
+  <callback>
+    <name>stop_streaming</name>
+  </callback>
+  
+</block>
