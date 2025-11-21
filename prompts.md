@@ -1077,193 +1077,8 @@ samples = playback.read_samples(2048)
 
 ---
 
-## Prompt 0f: Web-Based Control Interface - Day 6
 
-**Objective:** Develop a Flask-based web interface for remote SDR control with real-time spectrum display.
-
-**Scope:** Flask backend, REST API endpoints, HTML/JavaScript frontend, real-time updates
-
-**Deliverables by EOD:**
-- [ ] Flask application running on localhost:5000
-- [ ] REST API endpoints functional (frequency, gain, status)
-- [ ] Real-time spectrum display working
-- [ ] HTML interface responsive
-- [ ] Frequency and gain controls working
-- [ ] WebSocket or polling-based updates
-
-**Implementation Requirements:**
-
-### Web Control Interface
-
-**Flask Backend (`wideband_sdr/web_interface.py`):**
-
-```python
-from flask import Flask, render_template, jsonify, request
-from flask_cors import CORS
-import threading
-
-app = Flask(__name__)
-CORS(app)
-
-class WebControlInterface:
-    def __init__(self, sdr):
-        self.sdr = sdr
-        self.app = app
-        self._setup_routes()
-    
-    def _setup_routes(self):
-        """Configure all API endpoints"""
-        
-        @self.app.route('/api/device/info', methods=['GET'])
-        def get_device_info():
-            info = self.sdr.get_device_info()
-            return jsonify(info)
-        
-        @self.app.route('/api/device/status', methods=['GET'])
-        def get_device_status():
-            stats = self.sdr.get_statistics()
-            return jsonify({
-                'frequency': self.sdr.get_frequency(),
-                'sample_rate': self.sdr.get_sample_rate(),
-                'gain': self.sdr.get_gain(),
-                'samples_processed': stats.samples_processed,
-                'packets_dropped': stats.packets_dropped,
-                'streaming': self.sdr.streaming_active
-            })
-        
-        @self.app.route('/api/device/set_frequency', methods=['POST'])
-        def set_frequency():
-            data = request.json
-            freq = data.get('frequency')
-            try:
-                self.sdr.set_frequency(freq)
-                return jsonify({'success': True, 'frequency': freq})
-            except Exception as e:
-                return jsonify({'success': False, 'error': str(e)}), 400
-        
-        @self.app.route('/api/device/set_gain', methods=['POST'])
-        def set_gain():
-            data = request.json
-            gain = data.get('gain')
-            try:
-                self.sdr.set_gain(gain)
-                return jsonify({'success': True, 'gain': gain})
-            except Exception as e:
-                return jsonify({'success': False, 'error': str(e)}), 400
-        
-        @self.app.route('/api/spectrum', methods=['GET'])
-        def get_spectrum():
-            """Get real-time spectrum"""
-            samples = self.sdr.read_samples(1024)
-            if samples is not None:
-                fft = np.fft.fftshift(np.fft.fft(samples))
-                magnitude_db = 20 * np.log10(np.abs(fft) + 1e-10)
-                freqs = np.fft.fftshift(np.fft.fftfreq(len(samples), 
-                                                       1/self.sdr.current_sample_rate))
-                
-                return jsonify({
-                    'freqs': freqs.tolist(),
-                    'magnitude_db': magnitude_db.tolist()
-                })
-            return jsonify({'error': 'No data'}), 400
-    
-    def run(self, host='0.0.0.0', port=5000):
-        """Start Flask server"""
-        self.app.run(host=host, port=port, debug=False, threaded=True)
-```
-
-**HTML Frontend (`web/index.html`):**
-
-```html
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Wideband SDR Control</title>
-    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
-    <style>
-        body { font-family: Arial, sans-serif; margin: 20px; }
-        .container { max-width: 1200px; margin: 0 auto; }
-        .control-panel { background: #f5f5f5; padding: 20px; border-radius: 5px; }
-        .spectrum-display { margin-top: 20px; height: 400px; }
-        input[type="number"], input[type="range"] { margin: 10px; }
-        button { padding: 10px 20px; background: #0066cc; color: white; 
-                border: none; border-radius: 3px; cursor: pointer; }
-    </style>
-</head>
-<body>
-    <div class="container">
-        <h1>Wideband SDR Control</h1>
-        
-        <div class="control-panel">
-            <label>Frequency (MHz):</label>
-            <input type="number" id="frequency" value="100" min="1" max="10000">
-            <button onclick="setFrequency()">Set</button>
-            
-            <label style="margin-left: 30px;">Gain (dB):</label>
-            <input type="range" id="gain" min="0" max="63" value="30">
-            <span id="gainValue">30</span>
-            <button onclick="setGain()">Set</button>
-        </div>
-        
-        <div id="spectrumPlot" class="spectrum-display"></div>
-    </div>
-    
-    <script>
-        async function setFrequency() {
-            const freq = parseFloat(document.getElementById('frequency').value) * 1e6;
-            const response = await fetch('/api/device/set_frequency', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ frequency: freq })
-            });
-            const data = await response.json();
-            if (data.success) alert('Frequency set');
-        }
-        
-        async function setGain() {
-            const gain = parseInt(document.getElementById('gain').value);
-            const response = await fetch('/api/device/set_gain', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ gain: gain })
-            });
-            const data = await response.json();
-            if (data.success) alert('Gain set');
-        }
-        
-        async function updateSpectrum() {
-            const response = await fetch('/api/spectrum');
-            const data = await response.json();
-            
-            const trace = {
-                x: data.freqs, y: data.magnitude_db,
-                type: 'scatter', mode: 'lines'
-            };
-            
-            Plotly.newPlot('spectrumPlot', [trace], {
-                title: 'Real-Time Spectrum',
-                xaxis: { title: 'Frequency (normalized)' },
-                yaxis: { title: 'Magnitude (dB)' }
-            });
-        }
-        
-        setInterval(updateSpectrum, 500);
-    </script>
-</body>
-</html>
-```
-
-**Validation:**
-- Server starts without errors
-- All endpoints respond correctly
-- UI updates in real-time
-- Frequency and gain controls work
-
-**Time Estimate:** 5-6 hours
-
----
-
-## Prompt 0g: LNA and Antenna Control - Day 7
+## Prompt 0f: LNA and Antenna Control - Day 7
 
 **Objective:** Implement low-noise amplifier (LNA) and antenna switching control for RF front-end management.
 
@@ -1400,7 +1215,7 @@ def open(self) -> bool:
 
 ---
 
-## Prompt 0h: Calibration Wizard - Day 8
+## Prompt 0g: Calibration Wizard - Day 8
 
 **Objective:** Develop comprehensive calibration wizard for frequency accuracy, gain, and signal quality.
 
@@ -1528,7 +1343,7 @@ class CalibrationWizard:
 
 ---
 
-## Prompt 0i: Self-Test and Diagnostics - Day 9
+## Prompt 0h: Self-Test and Diagnostics - Day 9
 
 **Objective:** Implement comprehensive self-test and diagnostic framework for hardware validation.
 
