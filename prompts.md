@@ -1228,6 +1228,8 @@ def open(self) -> bool:
 - [ ] Calibration data persistence working
 - [ ] Interactive wizard UI
 - [ ] Validation tests passing
+- [ ] Create an automated calibration script that uses the onboard ADC to verify the integrity of the Frequency generator, which then verifies the mixer performance
+- [ ] Implement tranconductance mixer charecterisation tables and applying the measuered correction factors as a part of the calibration procedure
 
 **Implementation Requirements:**
 
@@ -1347,7 +1349,7 @@ class CalibrationWizard:
 
 **Objective:** Implement comprehensive self-test and diagnostic framework for hardware validation.
 
-**Scope:** USB connectivity testing, frequency range verification, sample rate testing, comprehensive diagnostics
+**Scope:** USB connectivity testing, frequency range verification, sample rate testing, comprehensive diagnostics, ADC testing and parallel data stream coherence verification, USB data rate measurement,
 
 **Deliverables by EOD:**
 - [ ] DiagnosticsEngine class complete
@@ -1356,6 +1358,9 @@ class CalibrationWizard:
 - [ ] Sample rate range tests passing
 - [ ] Full diagnostic suite functional
 - [ ] Test report generation
+- [ ] ADC coherence testing with real data
+- [ ] Add smokescreen tests FOR EVERY MODULE IN THE DATABSE, SOFTWARE AND FIRMWARE that dont require hardware
+- [ ] Sort tests into those that need hardware and ones that dont and rpelicate as many hardware tests as smokerscreens or with some kind of virtualisation.
 
 **Implementation Requirements:**
 
@@ -1503,8 +1508,9 @@ with WidebandSDR() as sdr:
 - Results accurately reflect device status
 - Report generation working
 - Pass criteria met for all tests
+- All modules have respective tests and integration tests as well.
 
-**Time Estimate:** 5-6 hours
+**Time Estimate:** 8-12 hours
 
 ---
 

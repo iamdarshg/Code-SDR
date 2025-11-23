@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Wideband SDR Python Driver
+Wideband SDR Python Driver - Enhanced with LNA and Antenna Control
 Complete Python driver for the 1 MHz - 10 GHz Wideband SDR
 
 Created: November 2025
@@ -14,14 +14,25 @@ Features:
 - Callback or queue-based sample delivery
 - Thread-safe operation
 - Multi-device support
+- BGA614 LNA control
+- Multi-antenna switching and diversity
 
 Example usage:
     from wideband_sdr import WidebandSDR
 
     sdr = WidebandSDR()
     sdr.set_frequency(100_000_000)  # 100 MHz
-    sdr.set_sample_rate(10_000)     # 10 MSPS
+    sdr.set_sample_rate(10_000_000)     # 10 MSPS
     sdr.set_gain(30)                 # 30 dB
+    
+    # LNA Control
+    sdr.lna.set_gain(20)  # Set LNA to 20 dB
+    sdr.lna.enable()
+    
+    # Antenna Control
+    sdr.antenna.select_primary()
+    sdr.antenna.enable_diversity()
+    
     sdr.start_stream()
     # ... process samples ...
     sdr.stop_stream()
@@ -33,7 +44,7 @@ import time
 import threading
 import queue
 import logging
-from typing import Optional, Callable, List, Tuple, Any
+from typing import Optional, Callable, List, Tuple, Any, Union
 from dataclasses import dataclass
 from enum import Enum
 import struct
@@ -45,6 +56,10 @@ try:
 except ImportError:
     print("PyUSB not found. Install with: pip install pyusb")
     sys.exit(1)
+
+# Import LNA and Antenna controllers
+from .lna_controller import LNAController
+from .antenna_controller import AntennaController, AntennaMode
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
@@ -101,6 +116,8 @@ class SDRStats:
     current_frequency: int = 0
     current_sample_rate: int = 0
     current_gain: int = 0
+    lna_operations: int = 0
+    antenna_operations: int = 0
 
 
 class WidebandSDR:
@@ -108,6 +125,7 @@ class WidebandSDR:
     Wideband SDR Python Driver
     
     Provides high-level interface to the dsPIC33AK256MC505 based SDR
+    with integrated LNA and antenna control
     """
     
     # USB Configuration
@@ -130,6 +148,8 @@ class WidebandSDR:
     CMD_GET_STATUS = 0x06
     CMD_CALIBRATE = 0x07
     CMD_SET_POWER = 0x08
+    CMD_LNA_CONTROL = 0x0F      # LNA control commands
+    CMD_ANTENNA_CONTROL = 0x10  # Antenna control commands
     
     # Supported Parameters
     MIN_FREQUENCY = 1_000_000    # 1 MHz
@@ -164,6 +184,10 @@ class WidebandSDR:
         # Buffer configuration
         self.buffer_size = 16384  # 16K samples
         self.sample_format = np.int16  # 16-bit samples from 10-bit ADC
+        
+        # Initialize LNA and Antenna controllers (will be set during open)
+        self.lna: Optional[LNAController] = None
+        self.antenna: Optional[AntennaController] = None
         
     def open(self) -> bool:
         """
@@ -215,6 +239,9 @@ class WidebandSDR:
             # Initialize device with default settings
             self._initialize_device()
             
+            # Initialize LNA and Antenna controllers
+            self._initialize_controllers()
+            
             return True
             
         except usb.core.USBError as e:
@@ -231,6 +258,8 @@ class WidebandSDR:
                 usb.util.release_interface(self.device, self.USB_INTERFACE)
                 self.device = None
                 self.is_open = False
+                self.lna = None
+                self.antenna = None
                 logger.info("Wideband SDR device closed")
             except usb.core.USBError as e:
                 logger.error(f"Error closing device: {e}")
@@ -260,6 +289,7 @@ class WidebandSDR:
             self.device.write(self.EP_BULK_OUT, cmd, timeout=1000)
             
             self.current_frequency = frequency
+            self.stats.current_frequency = frequency
             logger.info(f"Frequency set to {frequency/1e6:.2f} MHz")
             return True
             
@@ -300,6 +330,7 @@ class WidebandSDR:
             self.device.write(self.EP_BULK_OUT, cmd, timeout=1000)
             
             self.current_sample_rate = sample_rate
+            self.stats.current_sample_rate = sample_rate
             logger.info(f"Sample rate set to {sample_rate/1e6:.2f} MSPS")
             return True
             
@@ -340,6 +371,7 @@ class WidebandSDR:
             self.device.write(self.EP_BULK_OUT, cmd, timeout=1000)
             
             self.current_gain = gain
+            self.stats.current_gain = gain
             logger.info(f"Gain set to {gain} dB")
             return True
             
@@ -534,6 +566,8 @@ class WidebandSDR:
             'serial_number': usb.util.get_string(self.device, 256, 3),
             'configuration': self.USB_CONFIGURATION,
             'interface': self.USB_INTERFACE,
+            'lna_available': self.lna is not None,
+            'antenna_available': self.antenna is not None,
         }
         
         return info
@@ -559,6 +593,17 @@ class WidebandSDR:
         self.set_gain(self.current_gain)
         
         logger.info("Device initialized with default settings")
+    
+    def _initialize_controllers(self):
+        """Initialize LNA and Antenna controllers"""
+        try:
+            self.lna = LNAController(self)
+            self.antenna = AntennaController(self)
+            logger.info("LNA and Antenna controllers initialized")
+        except Exception as e:
+            logger.error(f"Failed to initialize controllers: {e}")
+            self.lna = None
+            self.antenna = None
     
     def _streaming_thread(self):
         """Background thread for streaming samples"""
@@ -692,6 +737,22 @@ def quick_test():
             print(f"  Frequency: {sdr.get_frequency()/1e6:.2f} MHz")
             print(f"  Sample Rate: {sdr.get_sample_rate()/1e6:.2f} MSPS")
             print(f"  Gain: {sdr.get_gain()} dB")
+            
+            # Test LNA if available
+            if sdr.lna:
+                print(f"  LNA Controller: Available")
+                print(f"    LNA Gain: {sdr.lna.status.current_gain_db} dB")
+                print(f"    LNA Enabled: {sdr.lna.status.enabled}")
+            else:
+                print(f"  LNA Controller: Not available")
+            
+            # Test antenna if available
+            if sdr.antenna:
+                print(f"  Antenna Controller: Available")
+                print(f"    Antenna Mode: {sdr.antenna.status.current_mode.name}")
+                print(f"    Antenna Enabled: {sdr.antenna.status.enabled}")
+            else:
+                print(f"  Antenna Controller: Not available")
             
             # Change frequency
             sdr.set_frequency(95_500_000)  # 95.5 MHz
