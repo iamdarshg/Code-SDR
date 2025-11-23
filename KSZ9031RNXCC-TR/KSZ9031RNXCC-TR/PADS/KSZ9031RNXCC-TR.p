@@ -1,0 +1,68 @@
+*PADS-LIBRARY-PART-TYPES-V9*
+
+KSZ9031RNXCC-TR QFN50P700X700X100-49N-D I ANA 9 1 0 0 0
+TIMESTAMP 2025.11.23.11.44.00
+"Manufacturer_Name" Microchip
+"Manufacturer_Part_Number" KSZ9031RNXCC-TR
+"Mouser Part Number" 998-KSZ9031RNXCCTR
+"Mouser Price/Stock" https://www.mouser.co.uk/ProductDetail/Microchip-Technology/KSZ9031RNXCC-TR?qs=U6T8BxXiZAVxmAZckgCcTw%3D%3D
+"Arrow Part Number" KSZ9031RNXCC-TR
+"Arrow Price/Stock" https://www.arrow.com/en/products/ksz9031rnxcc-tr/microchip-technology?region=nac
+"Description" MICROCHIP - KSZ9031RNXCC-TR - Ethernet Controller, 1 Gbps, IEEE 802.3, 1.14 V, 3.465 V, QFN, 48 Pins
+"Datasheet Link" http://www.microchip.com/mymicrochip/filehandler.aspx?ddocname=en585516
+"Geometry.Height" 1mm
+GATE 1 49 0
+KSZ9031RNXCC-TR
+1 0 U AVDDH_1
+2 0 U TXRXP_A
+3 0 U TXRXM_A
+4 0 U AVDDL_1
+5 0 U TXRXP_B
+6 0 U TXRXM_B
+7 0 U TXRXP_C
+8 0 U TXRXM_C
+9 0 U AVDDL_2
+10 0 U TXRXP_D
+11 0 U TXRXM_D
+12 0 U AVDDH_2
+13 0 U NC_1
+14 0 U DVDDL_1
+15 0 U LED2/_PHYAD1
+16 0 U DVDDH_1
+17 0 U LED1_/_PME_N1_/_PHYAD0
+18 0 U DVDDL_2
+19 0 U TXD0
+20 0 U TXD1
+21 0 U TXD2
+22 0 U TXD3
+23 0 U DVDDL_3
+24 0 U GTX_CLK
+36 0 U MDC
+35 0 U RX_CLK/_PHYAD2
+34 0 U DVDDH_2
+33 0 U RX_DV/_CLK125_EN
+32 0 U RXD0/_MODE0
+31 0 U RXD1/_MODE1
+30 0 U DVDDL_5
+29 0 U VSS
+28 0 U RXD2/_MODE2
+27 0 U RXD3/_MODE3
+26 0 U DVDDL_4
+25 0 U TX_EN
+49 0 U EP
+48 0 U ISET
+47 0 U NC_2
+46 0 U XI
+45 0 U XO
+44 0 U AVDDL_PLL
+43 0 U LDO_O
+42 0 U RESET_N
+41 0 U CLK125_NDO/_LED_MODE
+40 0 U DVDDH_3
+39 0 U DVDDL_6
+38 0 U INT_N/_PME_N2
+37 0 U MDIO
+
+*END*
+*REMARK* SamacSys ECAD Model
+821520/1773125/2.50/49/0/Integrated Circuit

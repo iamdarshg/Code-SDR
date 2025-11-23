@@ -1,0 +1,11 @@
+FILE_TYPE = MULTI_PHYS_TABLE;
+
+PART 'LIF_MD6000_6UMG64I'
+CLASS = IC
+{========================================================================================}
+:"MANUFACTURER_NAME", "MANUFACTURER_PART_NUMBER"= "PART_NUMBER", "JEDEC_TYPE", "PACK_TYPE", "MOUSER_PART_NUMBER", "MOUSER_PRICE/STOCK", "ARROW_PART_NUMBER", "ARROW_PRICE/STOCK", "DESCRIPTION", "DATASHEET", "HEIGHT";
+{========================================================================================}
+ "Lattice Semiconductor", "LIF-MD6000-6UMG64I" (!) = "", "BGA64C40P8X8_350X350X100", "BGA", "842-LIFMD60006UMG64I", "https://www.mouser.co.uk/ProductDetail/Lattice/LIF-MD6000-6UMG64I?qs=Rp3RbKSfAt276FxAu9y2mw%3D%3D", "LIF-MD6000-6UMG64I", "https://www.arrow.com/en/products/lif-md6000-6umg64i/lattice-semiconductor?region=nac", "FPGA - Field Programmable Gate Array Crosslink Interface MIPI D-Phy Bridge", "http://www.latticesemi.com/view_document?document_id=51662", "1 mm"
+END_PART
+
+END.

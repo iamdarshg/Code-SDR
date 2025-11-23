@@ -1,0 +1,9 @@
+EESchema-DOCLIB  Version 2.0
+#
+$CMP LIF-MD6000-6UMG64I
+D FPGA - Field Programmable Gate Array Crosslink Interface MIPI D-Phy Bridge
+K
+F http://www.latticesemi.com/view_document?document_id=51662
+$ENDCMP
+#
+#End Doc Library

@@ -1,0 +1,9 @@
+Manufacturer=Lattice Semiconductor
+PartNumber=LIF-MD6000-6UMG64I
+PartCategory=Integrated Circuit
+PackageCategory=BGA
+PinCount=64
+Version=2.1
+Released=2021-02-04 11:07:25
+Downloaded=2025-11-23 11:50:51
+3D=Y

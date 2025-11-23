@@ -1,0 +1,9 @@
+Manufacturer=Microchip
+PartNumber=KSZ9031RNXCC-TR
+PartCategory=Integrated Circuit
+PackageCategory=Quad Flat No-Lead
+PinCount=49
+Version=1.1
+Released=2022-06-23 08:59:11
+Downloaded=2025-11-23 11:44:00
+3D=Y

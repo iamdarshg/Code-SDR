@@ -1,0 +1,418 @@
+PCBNEW-LibModule-V1  2025-11-23 11:50:51
+# encoding utf-8
+Units mm
+$INDEX
+BGA64C40P8X8_350X350X100
+$EndINDEX
+$MODULE BGA64C40P8X8_350X350X100
+Po 0 0 0 15 6922f51b 00000000 ~~
+Li BGA64C40P8X8_350X350X100
+Cd 64-Ball ucfBGA Package-1
+Kw Integrated Circuit
+Sc 0
+At SMD
+AR 
+Op 0 0 0
+T0 0 0 1.27 1.27 0 0.254 N V 21 N "IC**"
+T1 0 0 1.27 1.27 0 0.254 N I 21 N "BGA64C40P8X8_350X350X100"
+DS -2.75 -2.75 2.75 -2.75 0.05 24
+DS 2.75 -2.75 2.75 2.75 0.05 24
+DS 2.75 2.75 -2.75 2.75 0.05 24
+DS -2.75 2.75 -2.75 -2.75 0.05 24
+DS -1.75 -1.75 1.75 -1.75 0.1 24
+DS 1.75 -1.75 1.75 1.75 0.1 24
+DS 1.75 1.75 -1.75 1.75 0.1 24
+DS -1.75 1.75 -1.75 -1.75 0.1 24
+DS -1.75 -0.875 -0.875 -1.75 0.1 24
+DS -1.4 -1.85 1.85 -1.85 0.2 21
+DS 1.85 -1.85 1.85 1.85 0.2 21
+DS 1.85 1.85 -1.85 1.85 0.2 21
+DS -1.85 1.85 -1.85 -1.4 0.2 21
+DS -1.85 -1.4 -1.4 -1.85 0.2 21
+DC -1.85 -1.85 -1.75 -1.85 0.254 21
+$PAD
+Po -1.4 -1.4
+Sh "A1" C 0.2 0.2 0 0 900
+At SMD N 00888000
+Ne 0 ""
+$EndPAD
+$PAD
+Po -1 -1.4
+Sh "A2" C 0.2 0.2 0 0 900
+At SMD N 00888000
+Ne 0 ""
+$EndPAD
+$PAD
+Po -0.6 -1.4
+Sh "A3" C 0.2 0.2 0 0 900
+At SMD N 00888000
+Ne 0 ""
+$EndPAD
+$PAD
+Po -0.2 -1.4
+Sh "A4" C 0.2 0.2 0 0 900
+At SMD N 00888000
+Ne 0 ""
+$EndPAD
+$PAD
+Po 0.2 -1.4
+Sh "A5" C 0.2 0.2 0 0 900
+At SMD N 00888000
+Ne 0 ""
+$EndPAD
+$PAD
+Po 0.6 -1.4
+Sh "A6" C 0.2 0.2 0 0 900
+At SMD N 00888000
+Ne 0 ""
+$EndPAD
+$PAD
+Po 1 -1.4
+Sh "A7" C 0.2 0.2 0 0 900
+At SMD N 00888000
+Ne 0 ""
+$EndPAD
+$PAD
+Po 1.4 -1.4
+Sh "A8" C 0.2 0.2 0 0 900
+At SMD N 00888000
+Ne 0 ""
+$EndPAD
+$PAD
+Po -1.4 -1
+Sh "B1" C 0.2 0.2 0 0 900
+At SMD N 00888000
+Ne 0 ""
+$EndPAD
+$PAD
+Po -1 -1
+Sh "B2" C 0.2 0.2 0 0 900
+At SMD N 00888000
+Ne 0 ""
+$EndPAD
+$PAD
+Po -0.6 -1
+Sh "B3" C 0.2 0.2 0 0 900
+At SMD N 00888000
+Ne 0 ""
+$EndPAD
+$PAD
+Po -0.2 -1
+Sh "B4" C 0.2 0.2 0 0 900
+At SMD N 00888000
+Ne 0 ""
+$EndPAD
+$PAD
+Po 0.2 -1
+Sh "B5" C 0.2 0.2 0 0 900
+At SMD N 00888000
+Ne 0 ""
+$EndPAD
+$PAD
+Po 0.6 -1
+Sh "B6" C 0.2 0.2 0 0 900
+At SMD N 00888000
+Ne 0 ""
+$EndPAD
+$PAD
+Po 1 -1
+Sh "B7" C 0.2 0.2 0 0 900
+At SMD N 00888000
+Ne 0 ""
+$EndPAD
+$PAD
+Po 1.4 -1
+Sh "B8" C 0.2 0.2 0 0 900
+At SMD N 00888000
+Ne 0 ""
+$EndPAD
+$PAD
+Po -1.4 -0.6
+Sh "C1" C 0.2 0.2 0 0 900
+At SMD N 00888000
+Ne 0 ""
+$EndPAD
+$PAD
+Po -1 -0.6
+Sh "C2" C 0.2 0.2 0 0 900
+At SMD N 00888000
+Ne 0 ""
+$EndPAD
+$PAD
+Po -0.6 -0.6
+Sh "C3" C 0.2 0.2 0 0 900
+At SMD N 00888000
+Ne 0 ""
+$EndPAD
+$PAD
+Po -0.2 -0.6
+Sh "C4" C 0.2 0.2 0 0 900
+At SMD N 00888000
+Ne 0 ""
+$EndPAD
+$PAD
+Po 0.2 -0.6
+Sh "C5" C 0.2 0.2 0 0 900
+At SMD N 00888000
+Ne 0 ""
+$EndPAD
+$PAD
+Po 0.6 -0.6
+Sh "C6" C 0.2 0.2 0 0 900
+At SMD N 00888000
+Ne 0 ""
+$EndPAD
+$PAD
+Po 1 -0.6
+Sh "C7" C 0.2 0.2 0 0 900
+At SMD N 00888000
+Ne 0 ""
+$EndPAD
+$PAD
+Po 1.4 -0.6
+Sh "C8" C 0.2 0.2 0 0 900
+At SMD N 00888000
+Ne 0 ""
+$EndPAD
+$PAD
+Po -1.4 -0.2
+Sh "D1" C 0.2 0.2 0 0 900
+At SMD N 00888000
+Ne 0 ""
+$EndPAD
+$PAD
+Po -1 -0.2
+Sh "D2" C 0.2 0.2 0 0 900
+At SMD N 00888000
+Ne 0 ""
+$EndPAD
+$PAD
+Po -0.6 -0.2
+Sh "D3" C 0.2 0.2 0 0 900
+At SMD N 00888000
+Ne 0 ""
+$EndPAD
+$PAD
+Po -0.2 -0.2
+Sh "D4" C 0.2 0.2 0 0 900
+At SMD N 00888000
+Ne 0 ""
+$EndPAD
+$PAD
+Po 0.2 -0.2
+Sh "D5" C 0.2 0.2 0 0 900
+At SMD N 00888000
+Ne 0 ""
+$EndPAD
+$PAD
+Po 0.6 -0.2
+Sh "D6" C 0.2 0.2 0 0 900
+At SMD N 00888000
+Ne 0 ""
+$EndPAD
+$PAD
+Po 1 -0.2
+Sh "D7" C 0.2 0.2 0 0 900
+At SMD N 00888000
+Ne 0 ""
+$EndPAD
+$PAD
+Po 1.4 -0.2
+Sh "D8" C 0.2 0.2 0 0 900
+At SMD N 00888000
+Ne 0 ""
+$EndPAD
+$PAD
+Po -1.4 0.2
+Sh "E1" C 0.2 0.2 0 0 900
+At SMD N 00888000
+Ne 0 ""
+$EndPAD
+$PAD
+Po -1 0.2
+Sh "E2" C 0.2 0.2 0 0 900
+At SMD N 00888000
+Ne 0 ""
+$EndPAD
+$PAD
+Po -0.6 0.2
+Sh "E3" C 0.2 0.2 0 0 900
+At SMD N 00888000
+Ne 0 ""
+$EndPAD
+$PAD
+Po -0.2 0.2
+Sh "E4" C 0.2 0.2 0 0 900
+At SMD N 00888000
+Ne 0 ""
+$EndPAD
+$PAD
+Po 0.2 0.2
+Sh "E5" C 0.2 0.2 0 0 900
+At SMD N 00888000
+Ne 0 ""
+$EndPAD
+$PAD
+Po 0.6 0.2
+Sh "E6" C 0.2 0.2 0 0 900
+At SMD N 00888000
+Ne 0 ""
+$EndPAD
+$PAD
+Po 1 0.2
+Sh "E7" C 0.2 0.2 0 0 900
+At SMD N 00888000
+Ne 0 ""
+$EndPAD
+$PAD
+Po 1.4 0.2
+Sh "E8" C 0.2 0.2 0 0 900
+At SMD N 00888000
+Ne 0 ""
+$EndPAD
+$PAD
+Po -1.4 0.6
+Sh "F1" C 0.2 0.2 0 0 900
+At SMD N 00888000
+Ne 0 ""
+$EndPAD
+$PAD
+Po -1 0.6
+Sh "F2" C 0.2 0.2 0 0 900
+At SMD N 00888000
+Ne 0 ""
+$EndPAD
+$PAD
+Po -0.6 0.6
+Sh "F3" C 0.2 0.2 0 0 900
+At SMD N 00888000
+Ne 0 ""
+$EndPAD
+$PAD
+Po -0.2 0.6
+Sh "F4" C 0.2 0.2 0 0 900
+At SMD N 00888000
+Ne 0 ""
+$EndPAD
+$PAD
+Po 0.2 0.6
+Sh "F5" C 0.2 0.2 0 0 900
+At SMD N 00888000
+Ne 0 ""
+$EndPAD
+$PAD
+Po 0.6 0.6
+Sh "F6" C 0.2 0.2 0 0 900
+At SMD N 00888000
+Ne 0 ""
+$EndPAD
+$PAD
+Po 1 0.6
+Sh "F7" C 0.2 0.2 0 0 900
+At SMD N 00888000
+Ne 0 ""
+$EndPAD
+$PAD
+Po 1.4 0.6
+Sh "F8" C 0.2 0.2 0 0 900
+At SMD N 00888000
+Ne 0 ""
+$EndPAD
+$PAD
+Po -1.4 1
+Sh "G1" C 0.2 0.2 0 0 900
+At SMD N 00888000
+Ne 0 ""
+$EndPAD
+$PAD
+Po -1 1
+Sh "G2" C 0.2 0.2 0 0 900
+At SMD N 00888000
+Ne 0 ""
+$EndPAD
+$PAD
+Po -0.6 1
+Sh "G3" C 0.2 0.2 0 0 900
+At SMD N 00888000
+Ne 0 ""
+$EndPAD
+$PAD
+Po -0.2 1
+Sh "G4" C 0.2 0.2 0 0 900
+At SMD N 00888000
+Ne 0 ""
+$EndPAD
+$PAD
+Po 0.2 1
+Sh "G5" C 0.2 0.2 0 0 900
+At SMD N 00888000
+Ne 0 ""
+$EndPAD
+$PAD
+Po 0.6 1
+Sh "G6" C 0.2 0.2 0 0 900
+At SMD N 00888000
+Ne 0 ""
+$EndPAD
+$PAD
+Po 1 1
+Sh "G7" C 0.2 0.2 0 0 900
+At SMD N 00888000
+Ne 0 ""
+$EndPAD
+$PAD
+Po 1.4 1
+Sh "G8" C 0.2 0.2 0 0 900
+At SMD N 00888000
+Ne 0 ""
+$EndPAD
+$PAD
+Po -1.4 1.4
+Sh "H1" C 0.2 0.2 0 0 900
+At SMD N 00888000
+Ne 0 ""
+$EndPAD
+$PAD
+Po -1 1.4
+Sh "H2" C 0.2 0.2 0 0 900
+At SMD N 00888000
+Ne 0 ""
+$EndPAD
+$PAD
+Po -0.6 1.4
+Sh "H3" C 0.2 0.2 0 0 900
+At SMD N 00888000
+Ne 0 ""
+$EndPAD
+$PAD
+Po -0.2 1.4
+Sh "H4" C 0.2 0.2 0 0 900
+At SMD N 00888000
+Ne 0 ""
+$EndPAD
+$PAD
+Po 0.2 1.4
+Sh "H5" C 0.2 0.2 0 0 900
+At SMD N 00888000
+Ne 0 ""
+$EndPAD
+$PAD
+Po 0.6 1.4
+Sh "H6" C 0.2 0.2 0 0 900
+At SMD N 00888000
+Ne 0 ""
+$EndPAD
+$PAD
+Po 1 1.4
+Sh "H7" C 0.2 0.2 0 0 900
+At SMD N 00888000
+Ne 0 ""
+$EndPAD
+$PAD
+Po 1.4 1.4
+Sh "H8" C 0.2 0.2 0 0 900
+At SMD N 00888000
+Ne 0 ""
+$EndPAD
+$EndMODULE BGA64C40P8X8_350X350X100
+$EndLIBRARY

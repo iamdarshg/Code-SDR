@@ -1,0 +1,19 @@
+.KSZ9031RNXCC-TR :1 ;MICROCHIP - KSZ9031RNXCC-TR - Ethernet Controller, 1 Gbps, IEEE 802.3, 1.14 V, 3.465 V, QFN, 48 Pins
+QFN50P700X700X100-49N-D
+*STM IC
+*NGS
+*PLB 1="AVDDH_1" 2="TXRXP_A" 3="TXRXM_A" 4="AVDDL_1" 5="TXRXP_B" 6="TXRXM_B" 7="TXRXP_C" 8="TXRXM_C" 9="AVDDL_2" 10="TXRXP_D" 11="TXRXM_D" 12="AVDDH_2" 13="NC_1" 14="DVDDL_1" 15="LED2/ PHYAD1" 16="DVDDH_1" 17="LED1 / PME_N1 / PHYAD0" 18="DVDDL_2" 19="TXD0" 20="TXD1" 21="TXD2" 22="TXD3" 23="DVDDL_3" 24="GTX_CLK" 25="TX_EN" 26="DVDDL_4" 27="RXD3/ MODE3" 28="RXD2/ MODE2" 29="VSS" 30="DVDDL_5" 31="RXD1/ MODE1" 32="RXD0/ MODE0" 33="RX_DV/ CLK125_EN" 34="DVDDH_2" &
+35="RX_CLK/ PHYAD2" 36="MDC" 37="MDIO" 38="INT_N/ PME_N2" 39="DVDDL_6" 40="DVDDH_3" 41="CLK125_NDO/ LED_MODE" 42="RESET_N" 43="LDO_O" 44="AVDDL_PLL" 45="XO" 46="XI" 47="NC_2" 48="ISET" 49="EP"
+*MXP 49
+*DFN KSZ9031RNXCC-TR
+~!Manufacturer_Name (Microchip)
+~!Manufacturer_Part_Number (KSZ9031RNXCC-TR)
+~!Mouser Part Number (998-KSZ9031RNXCCTR)
+~!Link Mouser Price/Stock (https://www.mouser.co.uk/ProductDetail/Microchip-Technology/KSZ9031RNXCC-TR?qs=U6T8BxXiZAVxmAZckgCcTw%3D%3D)
+~!Arrow Part Number (KSZ9031RNXCC-TR)
+~!Link Arrow Price/Stock (https://www.arrow.com/en/products/ksz9031rnxcc-tr/microchip-technology?region=nac)
+~!Link Datasheet (http://www.microchip.com/mymicrochip/filehandler.aspx?ddocname=en585516)
+~!Height (1mm)
+~!3D_Model (KSZ9031RNXCC-TR)
+KSZ9031RNXCC-TR
+1.1!U 2.1!U 3.1!U 4.1!U 5.1!U 6.1!U 7.1!U 8.1!U 9.1!U 10.1!U 11.1!U 12.1!U 13.1!U 14.1!U 15.1!U 16.1!U 17.1!U 18.1!U 19.1!U 20.1!U 21.1!U 22.1!U 23.1!U 24.1!U 36.1!U 35.1!U 34.1!U 33.1!U 32.1!U 31.1!U 30.1!U 29.1!U 28.1!U 27.1!U 26.1!U 25.1!U 49.1!U 48.1!U 47.1!U 46.1!U 45.1!U 44.1!U 43.1!U 42.1!U 41.1!U 40.1!U 39.1!U 38.1!U 37.1!U 

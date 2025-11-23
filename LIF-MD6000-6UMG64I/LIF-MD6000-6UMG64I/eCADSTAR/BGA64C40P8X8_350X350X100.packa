@@ -1,0 +1,13 @@
+(unit MM)
+
+(package "LIF-MD6000-6UMG64I"
+    (type UNDEF)
+    (uver 2)
+    (cuser "SamacSys")
+    (uuser "SamacSys")
+    (utime 2021-02-04-11:07:25)
+    (mountForm default
+        (footprintRef "BGA64C40P8X8_350X350X100")
+        (spec "System")
+    )
+)

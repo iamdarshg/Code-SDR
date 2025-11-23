@@ -1,0 +1,5 @@
+(fp_lib_table
+  (version 7)
+  (lib (name "TR/KSZ9031RNXCC-")(type "KiCad")(uri "${KIPRJMOD}/KSZ9031RNXCC-TR/KSZ9031RNXCC-TR/KiCad")(options "")(descr ""))
+  (lib (name "LIF-MD6000-6UMG64I")(type "KiCad")(uri "${KIPRJMOD}/LIF-MD6000-6UMG64I/LIF-MD6000-6UMG64I/KiCad")(options "")(descr ""))
+)
