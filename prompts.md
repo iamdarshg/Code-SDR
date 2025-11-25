@@ -7,223 +7,203 @@
 # 1. FPGA Architecture Design and Core Implementation
 
 ## Objective
-Design and implement the LIF-MD6000-6UMG64I FPGA as the main processing unit for the SDR system, replacing the dsPIC33 microcontroller with enhanced processing capabilities.
+Design and implement the LIF-MD6000-6UMG64I FPGA as the main processing unit for the SDR system, replacing the dsPIC33 microcontroller with enhanced processing capabilities and flexible pin management.
 
 ## Hardware Components
 - **Main FPGA**: LIF-MD6000-6UMG64I (Intel/Altera)
 - **Ethernet Controller**: KSZ9031RNXCC (Gigabit Ethernet PHY)
 - **Programming Interface**: RP2040 microcontroller
 - **ADC**: AD9215BCPZ-105 (maintained from current design)
-- **PLL**: ADF4351 (maintained from current design)
-- **LNA**: BGA614 (maintained from current design)
+- **PLL**: ADF4351 (managed by RP2040)
+- **LNA**: BGA614 (controlled via RP2040)
+- **External Components**: MOSFETs and other peripherals managed by RP2040
 
 ## Implementation Requirements
 
-### 1.1 FPGA Core Architecture
+### 1.1 FPGA Processing Pipeline Architecture
 
-**Top-Level Module Structure:**
-```verilog
-// sdr_fpga_top.v - Main FPGA top level
-module sdr_fpga_top (
-    // Clock and Reset
-    input wire clk_100m,           // Main system clock
-    input wire rst_n,              // Active low reset
-    
-    // ADC Interface
-    input wire [9:0] adc_data,     // AD9215 parallel data
-    input wire adc_clk,            // ADC clock output
-    input wire adc_of,             // ADC overflow flag
-    
-    // PLL Control (ADF4351)
-    output wire pll_clk_out,       // Clock to ADF4351
-    output wire pll_le,            // Load Enable
-    output wire pll_data,          // Serial data
-    output wire pll_ce,            // Chip Enable
-    
-    // Ethernet Interface (KSZ9031RNXCC)
-    input wire eth_tx_clk,         // Transmit clock
-    input wire eth_tx_en,          // Transmit enable
-    output wire [3:0] eth_txd,     // Transmit data
-    input wire eth_rx_clk,         // Receive clock
-    input wire eth_rx_dv,          // Receive data valid
-    input wire [3:0] eth_rxd,      // Receive data
-    input wire eth_rx_err,         // Receive error
-    
-    // RP2040 Programming Interface
-    input wire prog_mosi,          // Programming MOSI
-    input wire prog_miso,          // Programming MISO
-    input wire prog_sck,           // Programming clock
-    input wire prog_cs_n,          // Chip select
-    output wire prog_done,         // Programming complete
-    
-    // JTAG Interface (configurable)
-    inout wire [15:0] jtag_pins,   // Configurable JTAG pins
-    
-    // Control and Status
-    input wire [7:0] cfg_data,     // Configuration data
-    input wire cfg_wr,             // Configuration write
-    output wire [7:0] status_data, // Status data
-    output wire status_valid       // Status valid
-);
+**Processing Pipeline Design:**
 
-// Internal connections
-wire [31:0] iq_data_real;
-wire [31:0] iq_data_imag;
-wire iq_data_valid;
-wire [31:0] fft_data;
-wire fft_data_valid;
+The FPGA implements a sophisticated multi-stage processing pipeline optimized for real-time SDR operations:
 
-// Main processing modules
-adc_interface u_adc_interface (
-    .adc_data(adc_data),
-    .adc_clk(adc_clk),
-    .adc_of(adc_of),
-    .clk(clk_100m),
-    .rst_n(rst_n),
-    .iq_data_real(iq_data_real),
-    .iq_data_imag(iq_data_imag),
-    .iq_data_valid(iq_data_valid)
-);
-
-digital_downconverter u_ddc (
-    .clk(clk_100m),
-    .rst_n(rst_n),
-    .iq_in_real(iq_data_real),
-    .iq_in_imag(iq_data_imag),
-    .iq_in_valid(iq_data_valid),
-    .iq_out_real(iq_data_real),
-    .iq_out_imag(iq_data_imag),
-    .iq_out_valid(iq_data_valid)
-);
-
-fft_processor u_fft (
-    .clk(clk_100m),
-    .rst_n(rst_n),
-    .data_in(iq_data_real),
-    .data_valid(iq_data_valid),
-    .fft_out(fft_data),
-    .fft_valid(fft_data_valid)
-);
-
-ethernet_interface u_eth_interface (
-    .clk_100m(clk_100m),
-    .eth_tx_clk(eth_tx_clk),
-    .eth_tx_en(eth_tx_en),
-    .eth_txd(eth_txd),
-    .eth_rx_clk(eth_rx_clk),
-    .eth_rx_dv(eth_rx_dv),
-    .eth_rxd(eth_rxd),
-    .eth_rx_err(eth_rx_err),
-    .data_in(fft_data),
-    .data_valid(fft_data_valid)
-);
-
-endmodule
+```
+ADC Input → Digital Downconversion → FFT Processing → Ethernet Output
+     ↓              ↓                      ↓              ↓
+10-bit        NCO Mixing            1024-pt FFT      UDP Packets
+Parallel     + Filtering           + Windowing       + MAC Layer
 ```
 
-### 1.2 ADC Interface Module
+**Architectural Decisions:**
 
-**ADC Processing Block:**
-```verilog
-// adc_interface.v - ADC data processing
-module adc_interface (
-    input wire [9:0] adc_data,     // Parallel ADC data
-    input wire adc_clk,            // ADC clock
-    input wire adc_of,             // Overflow flag
-    input wire clk,                // System clock
-    input wire rst_n,              // Reset
-    
-    output wire [31:0] iq_data_real,
-    output wire [31:0] iq_data_imag,
-    output wire iq_data_valid
-);
+1. **Clock Domain Management**
+   - **Primary Domain**: 100 MHz system clock for general processing
+   - **ADC Domain**: Separate clock domain for 105 MHz ADC sampling
+   - **Ethernet Domain**: 125 MHz for Gigabit Ethernet GMII interface
+   - **Cross-Domain Synchronization**: Asynchronous FIFOs with handshaking
 
-// Internal registers
-reg [9:0] adc_reg;
-reg adc_of_reg;
-reg i_data_valid;
-reg q_data_valid;
+2. **Data Path Width Optimization**
+   - **ADC Interface**: 10-bit parallel with overflow detection
+   - **Internal Processing**: 32-bit signed fixed-point arithmetic
+   - **FFT Processing**: 24-bit complex fixed-point for spectral accuracy
+   - **Ethernet Interface**: 8-bit parallel with byte-level framing
 
-// Sample rate conversion and I/Q generation
-always @(posedge clk) begin
-    if (!rst_n) begin
-        adc_reg <= 10'd0;
-        adc_of_reg <= 1'b0;
-    end else begin
-        adc_reg <= adc_data;
-        adc_of_reg <= adc_of;
-    end
-end
+3. **Memory Architecture**
+   - **Block RAM Distribution**: Distributed processing buffers
+   - **Dual-Port Memory**: Simultaneous read/write operations
+   - **Circular Buffers**: Continuous streaming without gaps
+   - **Ping-Pong Buffers**: Real-time processing with zero latency
 
-// I/Q data generation (interleaved sampling)
-assign iq_data_valid = !adc_of_reg && adc_reg != 10'd0;
-assign iq_data_real = {{22{adc_reg[9]}}, adc_reg};
-assign iq_data_imag = {{22{1'b0}}, 8'd0}; // Placeholder for Q component
+4. **Processing Pipeline Stages**
 
-endmodule
-```
+**Stage 1: ADC Interface and Data Conditioning**
+- **Purpose**: Interface with AD9215 ADC and prepare data for processing
+- **Key Features**:
+  - Parallel-to-serial conversion for 10-bit samples
+  - Overflow detection and error flagging
+  - Sample rate conversion and synchronization
+  - DC offset correction (optional hardware implementation)
 
-### 1.3 Digital Downconverter
+**Stage 2: Digital Downconversion (DDC)**
+- **Purpose**: Shift RF signal to baseband and apply filtering
+- **Architectural Choices**:
+  - **NCO Implementation**: Direct Digital Synthesis with 32-bit phase accumulator
+  - **Mixing Strategy**: Complex multiplication for I/Q generation
+  - **Filter Design**: Cascaded Integrator-Comb (CIC) filters for decimation
+  - **Hardware vs Software**: Critical path optimization in hardware
 
-**DDC Implementation:**
-```verilog
-// digital_downconverter.v - Digital downconversion
-module digital_downconverter (
-    input wire clk,
-    input wire rst_n,
-    input wire [31:0] iq_in_real,
-    input wire [31:0] iq_in_imag,
-    input wire iq_in_valid,
-    
-    output wire [31:0] iq_out_real,
-    output wire [31:0] iq_out_imag,
-    output wire iq_out_valid
-);
+**Stage 3: FFT Processing**
+- **Purpose**: Spectral analysis and real-time spectrum computation
+- **Design Considerations**:
+  - **FFT Size**: 1024-point FFT for frequency resolution
+  - **Implementation**: Radix-2 FFT with butterfly operations
+  - **Windowing**: Hardware Hamming window implementation
+  - **Scaling**: Automatic scaling to prevent overflow
 
-// NCO (Numerically Controlled Oscillator) parameters
-parameter [31:0] NCO_FREQ = 32'h04000000; // Default frequency word
+**Stage 4: Ethernet Interface**
+- **Purpose**: High-speed data transmission to host system
+- **Protocol Stack**:
+  - **MAC Layer**: Frame assembly with preamble/SFD generation
+  - **IP Layer**: UDP packet formation with checksum calculation
+  - **Buffer Management**: TX/RX FIFOs with flow control
+  - **Link Management**: Auto-negotiation and status monitoring
 
-// NCO implementation
-reg [31:0] nco_phase;
-reg [31:0] nco_cosine;
-reg [31:0] nco_sine;
+### 1.2 Signal Processing Architecture
 
-always @(posedge clk) begin
-    if (!rst_n) begin
-        nco_phase <= 32'd0;
-    end else begin
-        nco_phase <= nco_phase + NCO_FREQ;
-    end
-end
+**Digital Downconverter Design:**
 
-// ROM for sine/cosine lookup
-nco_rom u_nco_rom (
-    .addr(nco_phase[31:24]),
-    .cosine(nco_cosine),
-    .sine(nco_sine)
-);
+The DDC represents the core of the FPGA processing, implementing several architectural optimizations:
 
-// Multiplication for mixing
-wire [63:0] mix_i_real = $signed(iq_in_real) * $signed(nco_cosine);
-wire [63:0] mix_i_imag = $signed(iq_in_imag) * $signed(nco_sine);
-wire [63:0] mix_q_real = $signed(iq_in_real) * $signed(nco_sine);
-wire [63:0] mix_q_imag = $signed(iq_in_imag) * $signed(nco_cosine);
+1. **Numerically Controlled Oscillator (NCO)**
+   - **Phase Accumulator**: 32-bit with sub-Hz frequency resolution
+   - **Sine/Cosine Generation**: ROM-based lookup with 256-entry table
+   - **Spurious Response Suppression**: Phase dithering techniques
+   - **Frequency Agility**: Dynamic frequency updates via control interface
 
-// Downconverted output
-assign iq_out_valid = iq_in_valid;
-assign iq_out_real = mix_i_real[63:32] - mix_q_real[63:32];
-assign iq_out_imag = mix_i_imag[63:32] + mix_q_imag[63:32];
+2. **Mixing and Filtering Architecture**
+   - **Complex Mixer**: Multiplication-based frequency translation
+   - **CIC Decimation**: Programmable decimation rates (2-64)
+   - **Compensation Filters**: Anti-imaging filters for clean spectrum
+   - **Gain Control**: Automatic gain adjustment for optimal dynamic range
 
-endmodule
-```
+**FFT Processor Architecture:**
+
+The FFT processor implements a highly parallel architecture:
+
+1. **Memory Organization**
+   - **Bit-Reversed Addressing**: Optimized for radix-2 butterfly operations
+   - **Dual-Port RAM**: Simultaneous butterfly computation
+   - **Pipeline Stages**: 10-stage pipelined FFT for maximum throughput
+
+2. **Butterfly Computation**
+   - **Complex Multipliers**: Hardware DSP blocks for twiddle factor multiplication
+   - **Adder/Subtractor Trees**: Parallel processing of real and imaginary parts
+   - **Scaling Strategy**: Dynamic scaling to prevent accumulator overflow
+
+### 1.3 Control and Configuration Architecture
+
+**Dynamic Reconfiguration:**
+
+The FPGA design supports runtime reconfiguration for different operating modes:
+
+1. **Frequency Planning**
+   - **Multi-Band Support**: Automatic band switching (HF, VHF, UHF, Microwave)
+   - **PLL Coordination**: Synchronized ADF4351 programming via RP2040
+   - **Anti-Aliasing Filters**: Band-specific filter selection
+
+2. **Processing Mode Selection**
+   - **Real-Time Spectrum**: Continuous FFT processing
+   - **I/Q Sample Streaming**: Direct baseband samples
+   - **Demodulated Audio**: AM/FM/SSB demodulation in hardware
+
+3. **Performance Optimization**
+   - **Resource Utilization**: Adaptive resource allocation
+   - **Power Management**: Dynamic clock gating for unused modules
+   - **Thermal Management**: Temperature-based performance scaling
+
+### 1.4 Timing and Synchronization Architecture
+
+**Clock Distribution Network:**
+
+1. **Primary Clock Tree**
+   - **100 MHz Master**: System clock from external crystal oscillator
+   - **Phase-Locked Loops**: Derived clocks for different domains
+   - **Deskew Circuitry**: Global clock distribution with minimal skew
+
+2. **Asynchronous Interface Handling**
+   - **Cross-Domain FIFOs**: Synchronized data transfer between clock domains
+   - **Handshake Protocols**: Request/acknowledge for configuration changes
+   - **Metastability Protection**: Multi-stage synchronizers for external inputs
+
+**Timing Constraints:**
+
+1. **Performance Requirements**
+   - **ADC Interface**: 105 MHz data rate with 10ns setup/hold times
+   - **Ethernet GMII**: 125 MHz clock with tight skew requirements
+   - **DSP Processing**: 100 MHz pipeline with critical path optimization
+
+2. **Resource Utilization**
+   - **Logic Elements**: Estimated 15,000 LEs for complete implementation
+   - **Memory Blocks**: 32 M4K blocks for data buffering and coefficient storage
+   - **DSP Blocks**: 12 DSP blocks for high-speed multiplication operations
+
+### 1.5 Integration with RP2040 System
+
+**External Interface Design:**
+
+The FPGA integrates with the RP2040 through multiple interfaces:
+
+1. **Configuration Interface**
+   - **SPI Programming**: Bitstream loading and configuration updates
+   - **Control Register Access**: Real-time parameter adjustment via RP2040
+   - **Status Monitoring**: Performance metrics and error reporting
+
+2. **Pin Management Integration**
+   - **External Component Control**: All frequency synthesizer and MOSFET control migrated to RP2040
+   - **Antenna Selection**: GPIO-based antenna switching matrix via RP2040
+   - **LNA Control**: Gain stage management through RP2040
+   - **System Monitoring**: Temperature, voltage, and current monitoring
+
+**Migration Considerations:**
+
+The FPGA architecture is designed to accommodate the migration from dsPIC33:
+
+1. **Functionality Preservation**
+   - **API Compatibility**: Maintain existing software interfaces
+   - **Performance Enhancement**: Improved processing capabilities
+   - **Reliability Improvement**: Hardware-based error correction
+
+2. **Development Migration**
+   - **Incremental Transition**: Phased migration strategy
+   - **Testing Framework**: Comprehensive validation of new architecture
+   - **Documentation Updates**: Complete architectural documentation
 
 ## Deliverables
-- [ ] Complete FPGA top-level module implementation
-- [ ] ADC interface module with proper timing
-- [ ] Digital downconverter with NCO
-- [ ] FFT processing core
-- [ ] Timing constraints and synthesis scripts
-- [ ] Testbench for FPGA modules
+- [ ] Complete FPGA processing pipeline architecture design
+- [ ] Timing constraint files and synthesis scripts
+- [ ] Detailed resource utilization analysis
+- [ ] Integration specification with RP2040 system
+- [ ] Migration strategy from dsPIC33 implementation
+- [ ] Comprehensive testbench for all processing stages
 
 ---
 
@@ -236,1512 +216,968 @@ Integrate the KSZ9031RNXCC Gigabit Ethernet PHY for high-speed data transmission
 
 ### 2.1 Ethernet MAC Interface
 
-**Ethernet Controller Module:**
-```verilog
-// ethernet_interface.v - KSZ9031RNXCC interface
-module ethernet_interface (
-    // FPGA interface
-    input wire clk_100m,
-    input wire rst_n,
-    input wire [31:0] data_in,
-    input wire data_valid,
-    
-    // KSZ9031RNXCC interface
-    output wire eth_tx_clk,
-    output wire eth_tx_en,
-    output reg [3:0] eth_txd = 4'b0000,
-    input wire eth_rx_clk,
-    input wire eth_rx_dv,
-    input wire [3:0] eth_rxd,
-    input wire eth_rx_err,
-    
-    // Status outputs
-    output wire eth_link_up,
-    output wire eth_tx_busy,
-    output wire eth_rx_ready
-);
+**Ethernet Controller Module Design:**
 
-// Ethernet clock generation
-reg eth_clk_reg = 1'b0;
-always @(posedge clk_100m) begin
-    eth_clk_reg <= ~eth_clk_reg;
-end
-assign eth_tx_clk = eth_clk_reg;
+The Ethernet interface implements a full-duplex MAC layer compatible with the KSZ9031RNXCC PHY:
 
-// GMII/MII interface for 1000/100 Mbps
-parameter GMII_MODE = 1'b1; // 1=GMII, 0=MII
+1. **GMII/MII Interface Architecture**
+   - **GMII Operation**: Full 8-bit GMII for 1000 Mbps operation
+   - **MII Fallback**: 4-bit MII for 100 Mbps operation
+   - **Auto-Negotiation**: Hardware-based link speed detection
+   - **Flow Control**: IEEE 802.3x pause frame generation and reception
 
-// TX FIFO
-reg [7:0] tx_fifo_data;
-reg tx_fifo_wr_en;
-reg tx_fifo_rd_en;
-reg [7:0] tx_fifo_q;
-reg tx_fifo_empty;
-reg tx_fifo_full;
+2. **Frame Processing Pipeline**
+   - **Transmit Path**: 
+     - Frame assembly with preamble and SFD generation
+     - CRC32 calculation and appending
+     - Inter-frame gap management
+     - Collision detection and backoff (for half-duplex)
+   
+   - **Receive Path**:
+     - Frame synchronization and delimiter detection
+     - CRC32 validation and error reporting
+     - Frame filtering (MAC address matching)
+     - FIFO management for variable frame sizes
 
-// Data packing for Ethernet frames
-reg [7:0] frame_data;
-reg frame_wr_en;
-wire frame_full;
+3. **Buffer Management Strategy**
+   - **TX FIFO**: 4KB deep dual-port RAM for transmit buffering
+   - **RX FIFO**: 8KB deep dual-port RAM for receive buffering
+   - **Descriptor Rings**: Linked list of DMA descriptors for scatter/gather
+   - **Buffer Pool**: Pre-allocated memory blocks for efficient allocation
 
-// Frame assembly state machine
-localparam IDLE = 2'b00;
-localparam HEADER = 2'b01;
-localparam DATA = 2'b10;
-localparam CRC = 2'b11;
+### 2.2 UDP/IP Protocol Stack
 
-reg [1:0] tx_state = IDLE;
-reg [15:0] byte_count = 16'd0;
-reg [15:0] data_length;
+**Protocol Implementation:**
 
-// Preamble and SFD generation
-always @(posedge eth_clk_reg) begin
-    if (!rst_n) begin
-        tx_state <= IDLE;
-        byte_count <= 16'd0;
-        eth_tx_en <= 1'b0;
-        tx_fifo_wr_en <= 1'b0;
-    end else begin
-        case (tx_state)
-            IDLE: begin
-                if (data_valid && !tx_fifo_full) begin
-                    tx_state <= HEADER;
-                    byte_count <= 16'd0;
-                    data_length <= 16'd46; // Minimum frame size
-                    eth_tx_en <= 1'b1;
-                end
-            end
-            
-            HEADER: begin
-                // Transmit preamble (7 bytes) and SFD (1 byte)
-                if (byte_count < 16'd8) begin
-                    if (byte_count == 16'd7) begin
-                        frame_data <= 8'h55; // SFD
-                    end else begin
-                        frame_data <= 8'hAA; // Preamble
-                    end
-                    tx_fifo_wr_en <= 1'b1;
-                    byte_count <= byte_count + 1;
-                end else begin
-                    tx_state <= DATA;
-                    byte_count <= 16'd0;
-                end
-            end
-            
-            DATA: begin
-                // Transmit data and pad to minimum frame size
-                if (data_valid && byte_count < data_length) begin
-                    frame_data <= data_in[7:0];
-                    tx_fifo_wr_en <= 1'b1;
-                    byte_count <= byte_count + 1;
-                end else if (byte_count >= data_length) begin
-                    tx_state <= CRC;
-                    byte_count <= 16'd0;
-                end
-            end
-            
-            CRC: begin
-                // Transmit CRC (placeholder - implement proper CRC32)
-                frame_data <= 8'h00;
-                tx_fifo_wr_en <= 1'b1;
-                byte_count <= byte_count + 1;
-                if (byte_count >= 16'd4) begin
-                    tx_state <= IDLE;
-                    eth_tx_en <= 1'b0;
-                end
-            end
-        endcase
-    end
-end
+The FPGA implements a lightweight UDP/IPv4 stack optimized for SDR data transmission:
 
-// TX FIFO implementation
-tx_fifo u_tx_fifo (
-    .clk(eth_clk_reg),
-    .rst_n(rst_n),
-    .din(frame_data),
-    .wr_en(tx_fifo_wr_en),
-    .rd_en(tx_fifo_rd_en),
-    .dout(eth_txd),
-    .empty(tx_fifo_empty),
-    .full(tx_fifo_full)
-);
+1. **UDP Protocol Implementation**
+   - **Port Management**: Configurable source/destination ports
+   - **Checksum Calculation**: Hardware CRC16 for UDP header and data
+   - **Length Field**: Automatic calculation of UDP length
+   - **Payload Handling**: Zero-copy data path from FPGA processing
 
-// Ethernet status monitoring
-reg eth_link_detect = 1'b0;
-always @(posedge eth_clk_reg) begin
-    // Monitor for link establishment
-    eth_link_detect <= eth_rx_dv && !eth_rx_err;
-end
+2. **IPv4 Protocol Implementation**
+   - **Header Construction**: Fixed IPv4 header with configurable fields
+   - **Fragmentation**: Prevention through proper MTU sizing
+   - **TTL Management**: Time-to-live decrementation
+   - **Checksum Validation**: Hardware checksum verification
 
-assign eth_link_up = eth_link_detect;
-assign eth_tx_busy = !tx_fifo_empty;
-assign eth_rx_ready = eth_rx_dv && !eth_rx_err;
+3. **ARP Protocol Support**
+   - **ARP Cache**: Small hardware ARP table for MAC address resolution
+   - **Gratuitous ARP**: Automatic address announcement
+   - **ARP Requests**: Periodic ARP table updates
 
-endmodule
-```
+### 2.3 Performance Optimization
 
-### 2.2 Ethernet Protocol Stack
+**Throughput Optimization:**
 
-**UDP/IP Implementation:**
-```verilog
-// ethernet_protocol.v - High-level protocol handling
-module ethernet_protocol (
-    input wire clk,
-    input wire rst_n,
-    
-    // Ethernet interface
-    input wire [7:0] eth_rx_data,
-    input wire eth_rx_valid,
-    output reg [7:0] eth_tx_data,
-    output reg eth_tx_valid,
-    
-    // SDR data interface
-    input wire [31:0] sdr_data,
-    input wire sdr_data_valid,
-    output reg [31:0] sdr_received_data,
-    output reg sdr_received_valid
-);
+1. **DMA Engine Design**
+   - **Bus Mastering**: Direct memory access without CPU intervention
+   - **Scatter/Gather**: Support for non-contiguous memory buffers
+   - **Interrupt Coalescing**: Efficient interrupt generation
+   - **Cache Management**: Optimal cache line alignment
 
-// UDP packet structure
-reg [15:0] src_port = 16'd1234;
-reg [15:0] dst_port = 16'd4321;
-reg [15:0] udp_length;
-reg [15:0] udp_checksum;
-
-// IP header
-reg [31:0] src_ip = 32'hC0A80101; // 192.168.1.1
-reg [31:0] dst_ip = 32'hC0A80102; // 192.168.1.2
-
-// Packet assembly
-reg [15:0] packet_byte_count;
-reg packet_assembling;
-
-// UDP packet assembly
-always @(posedge clk) begin
-    if (!rst_n) begin
-        eth_tx_valid <= 1'b0;
-        eth_tx_data <= 8'd0;
-    end else if (sdr_data_valid && !packet_assembling) begin
-        // Start assembling UDP packet
-        packet_assembling <= 1'b1;
-        packet_byte_count <= 16'd0;
-        eth_tx_valid <= 1'b1;
-        eth_tx_data <= 8'hFF; // Destination MAC (broadcast for demo)
-    end else if (packet_assembling) begin
-        // Transmit packet data byte by byte
-        case (packet_byte_count)
-            16'd0..16'd5: eth_tx_data <= 8'hFF; // MAC header
-            16'd6..16'd11: eth_tx_data <= 8'h00; // Source MAC
-            16'd12..16'd13: eth_tx_data <= 8'h08; eth_tx_data <= 8'h00; // Ethertype
-            16'd14..16'd17: eth_tx_data <= 8'h45; eth_tx_data <= 8'h00; // IP version/header
-            // ... continue with IP/UDP headers
-            default: begin
-                if (packet_byte_count < 42) begin
-                    eth_tx_data <= 8'h00; // Headers
-                end else if (packet_byte_count < 50) begin
-                    eth_tx_data <= sdr_data[(packet_byte_count-42)*8+:8]; // SDR data
-                end else begin
-                    eth_tx_valid <= 1'b0;
-                    packet_assembling <= 1'b0;
-                end
-            end
-        endcase
-        packet_byte_count <= packet_byte_count + 1;
-    end
-end
-
-endmodule
-```
+2. **Packet Forwarding**
+   - **Cut-Through**: Early packet transmission for low latency
+   - **Store-and-Forward**: Full packet buffering for reliability
+   - **Priority Queuing**: Multiple transmit queues with priorities
+   - **Rate Limiting**: Token bucket algorithm for bandwidth control
 
 ## Deliverables
-- [ ] Complete Ethernet interface module
-- [ ] GMII/MII protocol implementation
-- [ ] UDP/IP packet assembly
-- [ ] TX/RX FIFO buffers
-- [ ] Link status monitoring
-- [ ] Ethernet PHY configuration
+- [ ] Complete Ethernet MAC implementation for KSZ9031RNXCC
+- [ ] Full-duplex GMII/MII interface with auto-negotiation
+- [ ] Lightweight UDP/IPv4 protocol stack
+- [ ] DMA engine with scatter/gather support
+- [ ] Comprehensive Ethernet testing framework
 
 ---
 
 # 3. RP2040 Programming Interface
 
 ## Objective
-Implement RP2040 microcontroller as the programming interface and JTAG controller for the FPGA system.
+Implement RP2040 microcontroller as the central programming interface and system controller for the FPGA-based SDR system, managing all external components and providing flexible pin configuration.
 
 ## Hardware Integration
-- **RP2040**: Programming and control
-- **Connection**: SPI interface to FPGA
+- **RP2040**: Central system controller and programming interface
+- **Connection**: Multiple interfaces to FPGA and external components
 - **Functions**: 
-  - FPGA configuration loading
-  - JTAG interface control
-  - System monitoring
-  - Debug interface
+  - FPGA configuration and programming
+  - System monitoring and control
+  - External component management (PLL, MOSFETs, etc.)
+  - Debug interface and diagnostics
 
 ## Implementation Requirements
 
-### 3.1 RP2040 Firmware
+### 3.1 RP2040 Firmware Architecture
 
-**Main RP2040 Application:**
+**Memory Optimization (O3 Compiler Optimization):**
+
+The firmware is designed to stay well under 512KB flash limit through aggressive optimization:
+
 ```c
-// main.c - RP2040 firmware for FPGA programming
-#include "pico/stdlib.h"
-#include "hardware/spi.h"
-#include "hardware/gpio.h"
-#include "hardware/irq.h"
-#include <stdio.h>
+// Compiler optimization settings
+#pragma GCC optimize ("O3", "unroll-loops", "omit-frame-pointer")
 
-#define FPGA_SPI_PORT spi0
-#define FPGA_CLK_PIN 18
-#define FPGA_MOSI_PIN 19
-#define FPGA_MISO_PIN 16
-#define FPGA_CS_PIN 17
-#define FPGA_DONE_PIN 20
-#define FPGA_INIT_B_PIN 21
+// Memory layout optimization
+#define FLASH_SIZE_TARGET 400000  // 400KB target (leaving 112KB for bootloader/overhead)
+#define RAM_SIZE_TARGET 200000    // 200KB target
 
-// JTAG configuration structure
+// Function attribute optimizations
+#define HOT __attribute__((hot, always_inline))
+#define COLD __attribute__((cold, noinline))
+#define NEVER_INLINE __attribute__((noinline))
+
+// Minimal dependencies approach
+#define MINIMAL_LIBC 1
+#define NO_FLOAT_PRINTF 1
+#define NO_MALLOC 1
+#define USE_STATIC_MEMORY 1
+```
+
+**Modular Firmware Design:**
+
+1. **Core System Module (Target: ~50KB)**
+   - **Bootloader**: Basic system initialization and startup
+   - **Configuration Management**: Pin configuration and system settings
+   - **Communication Stack**: USB CDC, SPI, I2C interfaces
+   - **Error Handling**: Comprehensive error reporting and recovery
+
+2. **FPGA Programming Module (Target: ~80KB)**
+   - **SPI Programming Engine**: Bitstream loading and verification
+   - **Configuration Interface**: FPGA control register access
+   - **Status Monitoring**: FPGA status and health monitoring
+   - **Recovery Mechanisms**: Automatic retry and rollback
+
+3. **External Component Control Module (Target: ~100KB)**
+   - **ADF4351 PLL Control**: Frequency synthesis management
+   - **MOSFET Management**: Power switching and control
+   - **LNA Control**: Gain stage management
+   - **Antenna Switching**: Multi-antenna selection matrix
+
+4. **Configuration Wizard Module (Target: ~120KB)**
+   - **Interactive Interface**: Command-line configuration
+   - **Pin Assignment Logic**: Smart pin conflict detection
+   - **Configuration Persistence**: Flash-based configuration storage
+   - **Validation Framework**: Configuration verification and testing
+
+### 3.2 External Component Management Architecture
+
+**Pin Configuration System:**
+
+The RP2040 manages all external component connections through a flexible pin assignment system:
+
+```c
+// Comprehensive pin configuration structure
 typedef struct {
-    uint8_t tck_pin;      // Test Clock
-    uint8_t tms_pin;      // Test Mode Select  
-    uint8_t tdi_pin;      // Test Data In
-    uint8_t tdo_pin;      // Test Data Out
-    uint8_t trst_pin;     // Test Reset (optional)
-} jtag_pin_config_t;
+    // ADF4351 PLL Control Pins
+    struct {
+        uint8_t clk_pin;           // Clock output to PLL
+        uint8_t le_pin;            // Load Enable
+        uint8_t data_pin;          // Serial data
+        uint8_t ce_pin;            // Chip Enable
+        uint8_t lock_detect_pin;   // Lock detect input
+    } pll_pins;
+    
+    // MOSFET Control Pins
+    struct {
+        uint8_t pa_enable_pin;     // Power amplifier enable
+        uint8_t antenna_relay_pin; // Antenna relay control
+        uint8_t bias_tee_pin;      // Bias tee control
+        uint8_t adc_power_pin;     // ADC power control
+        uint8_t fpga_power_pin;    // FPGA power control
+    } mosfet_pins;
+    
+    // LNA Control Pins
+    struct {
+        uint8_t gain_control_pin;  // Gain select
+        uint8_t enable_pin;        // LNA enable/disable
+        uint8_t bias_control_pin;  // Bias current control
+    } lna_pins;
+    
+    // Antenna Selection Matrix
+    struct {
+        uint8_t antenna1_select;   // Antenna 1 select
+        uint8_t antenna2_select;   // Antenna 2 select
+        uint8_t antenna3_select;   // Antenna 3 select
+        uint8_t antenna4_select;   // Antenna 4 select
+        uint8_t common_pin;        // Common antenna control
+    } antenna_pins;
+    
+    // System Monitoring Pins
+    struct {
+        uint8_t temp_sensor_pin;   // Temperature sensor
+        uint8_t voltage_monitor_pin; // Voltage monitoring
+        uint8_t current_monitor_pin; // Current monitoring
+        uint8_t fault_pin;         // Fault detection input
+    } monitor_pins;
+} system_pin_config_t;
+```
 
-// Global variables
-jtag_pin_config_t jtag_config = {
-    .tck_pin = 22,
-    .tms_pin = 23,
-    .tdi_pin = 24,
-    .tdo_pin = 25,
-    .trst_pin = 26
+**Component Control Implementation:**
+
+1. **ADF4351 PLL Management**
+   - **Frequency Calculation**: Automatic PLL register generation
+   - **Lock Detection**: Hardware-based PLL lock monitoring
+   - **Frequency Hopping**: Fast frequency switching algorithms
+   - **Spur Reduction**: Optimization techniques for spurious emissions
+
+2. **MOSFET Control System**
+   - **Safe Switching**: Controlled turn-on/turn-off sequences
+   - **Power Sequencing**: Proper power-up/power-down order
+   - **Fault Protection**: Overcurrent and thermal protection
+   - **State Monitoring**: Real-time component status monitoring
+
+3. **Antenna Management**
+   - **Multi-Band Support**: Automatic antenna selection for frequency bands
+   - **Diversity Reception**: Antenna diversity algorithms
+   - **Signal Quality**: RSSI-based antenna selection
+   - **Manual Override**: User-controllable antenna selection
+
+### 3.3 Interactive Configuration System
+
+**Pin Configuration Wizard:**
+
+The RP2040 provides an interactive wizard for configuring all system pins:
+
+```c
+// Configuration wizard implementation
+typedef struct {
+    char name[32];
+    uint8_t current_pin;
+    uint8_t available_pins[30];
+    uint8_t pin_count;
+    bool required;
+    char description[128];
+    char validation_rule[64];
+} pin_config_entry_t;
+
+// Available pins (excluding reserved pins)
+static const uint8_t AVAILABLE_PINS[] = {
+    2, 3, 4, 5,  // GPIO pins available for general use
+    15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29
 };
 
-bool fpga_programming_active = false;
+static const uint8_t RESERVED_PINS[] = {
+    0, 1,   // USB D+/D-
+    6, 7, 8, 9, 10, 11, 12, 13, 14,  // Flash interface
+    17, 18, 19, 20  // Default FPGA programming pins
+};
+```
 
-// Initialize FPGA programming interface
-void init_fpga_interface(void) {
-    // Configure SPI for FPGA programming
-    spi_init(FPGA_SPI_PORT, 1000000); // 1 MHz SPI clock
-    
-    gpio_set_function(FPGA_CLK_PIN, GPIO_FUNC_SPI);
-    gpio_set_function(FPGA_MOSI_PIN, GPIO_FUNC_SPI);
-    gpio_set_function(FPGA_MISO_PIN, GPIO_FUNC_SPI);
-    
-    // Configure control pins
-    gpio_init(FPGA_CS_PIN);
-    gpio_set_dir(FPGA_CS_PIN, GPIO_OUT);
-    gpio_put(FPGA_CS_PIN, 1); // Active low CS
-    
-    gpio_init(FPGA_DONE_PIN);
-    gpio_set_dir(FPGA_DONE_PIN, GPIO_IN);
-    
-    gpio_init(FPGA_INIT_B_PIN);
-    gpio_set_dir(FPGA_INIT_B_PIN, GPIO_IN);
-    
-    printf("FPGA interface initialized\n");
-}
+**Configuration Validation:**
 
-// Initialize JTAG interface
-void init_jtag_interface(void) {
-    // Configure JTAG pins
-    gpio_init(jtag_config.tck_pin);
-    gpio_set_dir(jtag_config.tck_pin, GPIO_OUT);
+```c
+// Pin conflict detection
+bool validate_pin_configuration(const system_pin_config_t *config) {
+    uint32_t used_pins = 0;
     
-    gpio_init(jtag_config.tms_pin);
-    gpio_set_dir(jtag_config.tms_pin, GPIO_OUT);
+    // Check for pin conflicts
+    // Implementation details...
     
-    gpio_init(jtag_config.tdi_pin);
-    gpio_set_dir(jtag_config.tdi_pin, GPIO_OUT);
-    
-    gpio_init(jtag_config.tdo_pin);
-    gpio_set_dir(jtag_config.tdo_pin, GPIO_IN);
-    
-    gpio_init(jtag_config.trst_pin);
-    gpio_set_dir(jtag_config.trst_pin, GPIO_OUT);
-    
-    printf("JTAG interface initialized\n");
-}
-
-// FPGA configuration loading
-bool load_fpga_configuration(const uint8_t *config_data, size_t data_len) {
-    printf("Starting FPGA configuration...\n");
-    
-    // Check if FPGA is ready
-    if (gpio_get(FPGA_INIT_B_PIN)) {
-        printf("ERROR: FPGA not ready for configuration\n");
+    // Validate signal requirements
+    if (!validate_signal_requirements(config)) {
         return false;
     }
     
-    fpga_programming_active = true;
-    gpio_put(FPGA_CS_PIN, 0); // Enable FPGA configuration
-    
-    // Send configuration data via SPI
-    size_t bytes_sent = 0;
-    uint8_t rx_buffer[256];
-    
-    while (bytes_sent < data_len) {
-        size_t chunk_size = MIN(256, data_len - bytes_sent);
-        
-        // SPI transfer for configuration
-        spi_write_read_blocking(FPGA_SPI_PORT, 
-                               &config_data[bytes_sent], 
-                               rx_buffer, 
-                               chunk_size);
-        
-        bytes_sent += chunk_size;
-        
-        // Check configuration status
-        if (gpio_get(FPGA_DONE_PIN)) {
-            printf("FPGA configuration completed successfully\n");
-            break;
-        }
-        
-        // Check for errors
-        if (!gpio_get(FPGA_INIT_B_PIN)) {
-            printf("ERROR: Configuration error detected\n");
-            gpio_put(FPGA_CS_PIN, 1);
-            fpga_programming_active = false;
-            return false;
-        }
+    // Check electrical compatibility
+    if (!validate_electrical_compatibility(config)) {
+        return false;
     }
-    
-    gpio_put(FPGA_CS_PIN, 1); // Disable configuration mode
-    fpga_programming_active = false;
     
     return true;
 }
 
-// JTAG pin configuration
-bool configure_jtag_pins(jtag_pin_config_t *config) {
-    printf("Configuring JTAG pins:\n");
-    printf("  TCK: GPIO%d\n", config->tck_pin);
-    printf("  TMS: GPIO%d\n", config->tms_pin);
-    printf("  TDI: GPIO%d\n", config->tdi_pin);
-    printf("  TDO: GPIO%d\n", config->tdo_pin);
-    printf("  TRST: GPIO%d\n", config->trst_pin);
-    
-    // Update global configuration
-    jtag_config = *config;
-    
-    // Reinitialize JTAG interface with new pins
-    init_jtag_interface();
-    
-    return true;
-}
-
-// JTAG operations
-void jtag_tms(uint8_t bit) {
-    gpio_put(jtag_config.tms_pin, bit);
-    gpio_put(jtag_config.tck_pin, 0);
-    sleep_us(1);
-    gpio_put(jtag_config.tck_pin, 1);
-    sleep_us(1);
-}
-
-void jtag_tdi(uint8_t bit) {
-    gpio_put(jtag_config.tdi_pin, bit);
-    gpio_put(jtag_config.tck_pin, 0);
-    sleep_us(1);
-    gpio_put(jtag_config.tck_pin, 1);
-    sleep_us(1);
-}
-
-uint8_t jtag_tdo(void) {
-    gpio_put(jtag_config.tck_pin, 0);
-    sleep_us(1);
-    uint8_t bit = gpio_get(jtag_config.tdo_pin);
-    gpio_put(jtag_config.tck_pin, 1);
-    sleep_us(1);
-    return bit;
-}
-
-// JTAG state machine
-typedef enum {
-    TEST_LOGIC_RESET,
-    RUN_TEST_IDLE,
-    SELECT_DR_SCAN,
-    CAPTURE_DR,
-    SHIFT_DR,
-    EXIT1_DR,
-    PAUSE_DR,
-    EXIT2_DR,
-    UPDATE_DR,
-    SELECT_IR_SCAN,
-    CAPTURE_IR,
-    SHIFT_IR,
-    EXIT1_IR,
-    PAUSE_IR,
-    EXIT2_IR,
-    UPDATE_IR
-} jtag_state_t;
-
-jtag_state_t jtag_state = TEST_LOGIC_RESET;
-
-void jtag_goto_state(jtag_state_t target_state) {
-    // Simplified TAP controller state transition
-    // In practice, this would implement the full IEEE 1149.1 state machine
-    
-    uint8_t tms_sequence[6];
-    size_t seq_length = 0;
-    
-    // Calculate TMS sequence based on current and target state
-    // This is a simplified implementation
-    switch (target_state) {
-        case TEST_LOGIC_RESET:
-            tms_sequence[0] = 1; tms_sequence[1] = 1; tms_sequence[2] = 1; 
-            tms_sequence[3] = 1; tms_sequence[4] = 1; seq_length = 5;
-            break;
-        case RUN_TEST_IDLE:
-            tms_sequence[0] = 0; seq_length = 1;
-            break;
-        default:
-            // Implementation for other states
-            break;
-    }
-    
-    for (size_t i = 0; i < seq_length; i++) {
-        jtag_tms(tms_sequence[i]);
-    }
-    
-    jtag_state = target_state;
-}
-
-// System monitoring
-void monitor_system_status(void) {
-    printf("System Status:\n");
-    printf("  FPGA DONE: %s\n", gpio_get(FPGA_DONE_PIN) ? "HIGH" : "LOW");
-    printf("  FPGA INIT_B: %s\n", gpio_get(FPGA_INIT_B_PIN) ? "HIGH" : "LOW");
-    printf("  Programming Active: %s\n", fpga_programming_active ? "YES" : "NO");
-    printf("  JTAG State: %d\n", jtag_state);
-}
-
-// USB communication for configuration
-void usb_configuration_handler(void) {
-    // USB CDC interface for receiving configuration data
-    // and sending status information
-    if (stdio_usb_connected()) {
-        // Handle USB commands
-        int c = getchar_timeout_us(1000);
-        if (c != PICO_ERROR_TIMEOUT) {
-            switch (c) {
-                case 'p': // Program FPGA
-                    printf("Programming FPGA via USB\n");
-                    // Receive binary data and program FPGA
-                    break;
-                case 'j': // Configure JTAG
-                    printf("Configure JTAG pins\n");
-                    // Update JTAG configuration
-                    break;
-                case 's': // Status
-                    monitor_system_status();
-                    break;
-                case 'r': // Reset
-                    printf("Resetting system\n");
-                    // Implement system reset
-                    break;
-            }
-        }
-    }
-}
-
-int main() {
-    stdio_init_all();
-    
-    printf("RP2040 FPGA Programming Interface Starting...\n");
-    
-    // Initialize interfaces
-    init_fpga_interface();
-    init_jtag_interface();
-    
-    printf("Initialization complete. Entering main loop.\n");
-    
-    while (1) {
-        usb_configuration_handler();
-        monitor_system_status();
-        sleep_ms(1000);
-    }
-    
-    return 0;
+// Auto-configuration based on hardware layout
+void auto_configure_pins(system_pin_config_t *config) {
+    // Analyze hardware layout
+    // Apply optimization algorithms
+    // Generate optimal pin assignment
+    // Validate configuration
+    // Save to flash memory
 }
 ```
 
-### 3.2 Python Configuration Tool
+### 3.4 Memory Optimization Strategies
 
-**Configuration Wizard:**
+**Flash Memory Management:**
+
+1. **Code Optimization Techniques**
+   - **Function Inlining**: Small functions expanded inline
+   - **Loop Unrolling**: Performance-critical loops unrolled
+   - **Branch Prediction**: CPU branch prediction hints
+   - **Register Allocation**: Optimal CPU register usage
+
+2. **Data Structure Optimization**
+   - **Bit Packing**: Compact data structure layouts
+   - **Union Usage**: Memory-efficient variable handling
+   - **Static Allocation**: Avoid dynamic memory allocation
+   - **Const Optimization**: ROM-based constant data
+
+3. **Library Minimization**
+   - **Strip Unused Code**: Remove unused library functions
+   - **Custom Implementations**: Lightweight replacements for heavy libraries
+   - **Compile-Time Configuration**: Feature selection at compile time
+
+**Performance Monitoring:**
+
+```c
+// Memory usage tracking
+typedef struct {
+    uint32_t flash_used;
+    uint32_t flash_available;
+    uint32_t ram_used;
+    uint32_t ram_available;
+    uint32_t peak_ram_usage;
+} memory_stats_t;
+
+void print_memory_stats(void) {
+    memory_stats_t stats;
+    get_memory_usage(&stats);
+    
+    printf("Flash: %lu/%lu bytes (%.1f%%)\n", 
+           stats.flash_used, stats.flash_available,
+           (float)stats.flash_used / stats.flash_available * 100);
+    printf("RAM: %lu/%lu bytes (%.1f%%)\n",
+           stats.ram_used, stats.ram_available,
+           (float)stats.ram_used / stats.ram_available * 100);
+}
+```
+
+### 3.5 Python Configuration Tool Enhancement
+
+**Enhanced Configuration Wizard:**
+
 ```python
 #!/usr/bin/env python3
 """
-FPGA Configuration Wizard
-Interactive tool for configuring FPGA and JTAG settings
+Enhanced FPGA Configuration Wizard
+Interactive tool for configuring all RP2040-controlled pins and components
 """
 
 import serial
-import time
 import json
-from typing import Dict, List, Tuple
+import time
+from typing import Dict, List, Optional
 
-class FPGAConfigWizard:
+class SystemConfigWizard:
     def __init__(self, port: str = "/dev/ttyACM0"):
         self.port = port
         self.connection = None
-        self.jtag_config = {
-            "tck_pin": 22,
-            "tms_pin": 23,
-            "tdi_pin": 24,
-            "tdo_pin": 25,
-            "trst_pin": 26
+        self.config = self._load_default_config()
+        
+    def _load_default_config(self) -> Dict:
+        """Load default system configuration"""
+        return {
+            "system_pins": {
+                "pll_pins": {
+                    "clk_pin": 15,
+                    "le_pin": 16,
+                    "data_pin": 17,
+                    "ce_pin": 18,
+                    "lock_detect_pin": 19
+                },
+                "mosfet_pins": {
+                    "pa_enable_pin": 20,
+                    "antenna_relay_pin": 21,
+                    "bias_tee_pin": 22,
+                    "adc_power_pin": 23,
+                    "fpga_power_pin": 24
+                },
+                "lna_pins": {
+                    "gain_control_pin": 25,
+                    "enable_pin": 26,
+                    "bias_control_pin": 27
+                },
+                "antenna_pins": {
+                    "antenna1_select": 28,
+                    "antenna2_select": 29,
+                    "antenna3_select": 2,
+                    "antenna4_select": 3,
+                    "common_pin": 4
+                },
+                "monitor_pins": {
+                    "temp_sensor_pin": 5,
+                    "voltage_monitor_pin": 28,
+                    "current_monitor_pin": 29,
+                    "fault_pin": 2
+                }
+            },
+            "fpga_config": {
+                "spi_port": "spi0",
+                "spi_clk_pin": 6,
+                "spi_mosi_pin": 7,
+                "spi_miso_pin": 8,
+                "prog_cs_pin": 9,
+                "done_pin": 10,
+                "init_b_pin": 11
+            },
+            "jtag_config": {
+                "tck_pin": 12,
+                "tms_pin": 13,
+                "tdi_pin": 14,
+                "tdo_pin": 15,
+                "trst_pin": 16
+            }
         }
     
-    def connect(self) -> bool:
-        """Connect to RP2040 programming interface"""
-        try:
-            self.connection = serial.Serial(
-                port=self.port,
-                baudrate=115200,
-                timeout=1.0
-            )
-            print(f"Connected to {self.port}")
-            return True
-        except Exception as e:
-            print(f"Failed to connect: {e}")
+    def interactive_pin_configuration(self):
+        """Interactive pin configuration wizard"""
+        print("\n=== System Pin Configuration Wizard ===")
+        print("Configure all RP2040-controlled pins for optimal performance")
+        
+        # Configure each subsystem
+        self._configure_pll_pins()
+        self._configure_mosfet_pins()
+        self._configure_lna_pins()
+        self._configure_antenna_pins()
+        self._configure_monitor_pins()
+        self._configure_fpga_pins()
+        self._configure_jtag_pins()
+        
+        # Validate configuration
+        if self._validate_configuration():
+            print("\n✓ Configuration validated successfully!")
+            self._save_configuration()
+        else:
+            print("\n✗ Configuration validation failed!")
             return False
-    
-    def disconnect(self):
-        """Disconnect from RP2040"""
-        if self.connection:
-            self.connection.close()
-            print("Disconnected")
-    
-    def send_command(self, command: str) -> str:
-        """Send command to RP2040 and get response"""
-        if not self.connection:
-            return "Not connected"
         
-        self.connection.write(f"{command}\n".encode())
-        response = self.connection.readline().decode().strip()
-        return response
-    
-    def configure_jtag_pins(self) -> bool:
-        """Interactive JTAG pin configuration"""
-        print("\n=== JTAG Pin Configuration ===")
-        print("Select GPIO pins for JTAG interface:")
-        
-        print("\nCurrent configuration:")
-        for pin_name, pin_num in self.jtag_config.items():
-            print(f"  {pin_name.upper()}: GPIO{pin_num}")
-        
-        print("\nAvailable GPIO pins: 0-29 (avoid pins 0,1 for USB, 6-14 for flash)")
-        
-        for pin_name in ["tck_pin", "tms_pin", "tdi_pin", "tdo_pin", "trst_pin"]:
-            while True:
-                try:
-                    new_pin = int(input(f"Enter GPIO for {pin_name.upper()} [{self.jtag_config[pin_name]}]: ") 
-                                  or str(self.jtag_config[pin_name]))
-                    
-                    # Validate pin selection
-                    if 0 <= new_pin <= 29 and new_pin not in [0, 1, 6, 7, 8, 9, 10, 11, 12, 13, 14]:
-                        self.jtag_config[pin_name] = new_pin
-                        break
-                    else:
-                        print("Invalid pin selection. Please choose a valid GPIO pin.")
-                except ValueError:
-                    print("Invalid input. Please enter a number.")
-        
-        # Send configuration to RP2040
-        jtag_config_str = json.dumps(self.jtag_config)
-        response = self.send_command(f"J:{jtag_config_str}")
-        
-        print(f"JTAG configuration response: {response}")
         return True
     
-    def program_fpga(self, bitstream_file: str) -> bool:
-        """Program FPGA with bitstream file"""
-        print(f"\nProgramming FPGA with {bitstream_file}...")
+    def _configure_pll_pins(self):
+        """Configure ADF4351 PLL control pins"""
+        print("\n--- ADF4351 PLL Control Pins ---")
+        print("Select GPIO pins for PLL control:")
         
-        try:
-            # Read bitstream file
-            with open(bitstream_file, 'rb') as f:
-                bitstream_data = f.read()
-            
-            print(f"Bitstream size: {len(bitstream_data)} bytes")
-            
-            # Send programming command
-            response = self.send_command(f"P:{len(bitstream_data)}")
-            if "READY" not in response:
-                print(f"FPGA not ready: {response}")
-                return False
-            
-            # Send bitstream data in chunks
-            chunk_size = 1024
-            for i in range(0, len(bitstream_data), chunk_size):
-                chunk = bitstream_data[i:i+chunk_size]
-                
-                # Send chunk (simplified - would need proper binary protocol)
-                self.connection.write(chunk)
-                time.sleep(0.001)  # Small delay between chunks
-            
-            # Wait for completion
-            response = self.connection.readline().decode().strip()
-            print(f"Programming result: {response}")
-            
-            return "SUCCESS" in response
-            
-        except Exception as e:
-            print(f"Programming failed: {e}")
-            return False
+        pll_pins = self.config["system_pins"]["pll_pins"]
+        
+        for pin_name, current_pin in pll_pins.items():
+            new_pin = self._get_valid_pin(f"{pin_name} [{current_pin}]: ", current_pin)
+            pll_pins[pin_name] = new_pin
     
-    def run_interactive_wizard(self):
-        """Run the interactive configuration wizard"""
-        print("=== FPGA Configuration Wizard ===")
-        print("This wizard will help you configure the FPGA system")
-        
-        if not self.connect():
-            return
-        
-        try:
-            while True:
-                print("\nMain Menu:")
-                print("1. Configure JTAG pins")
-                print("2. Program FPGA")
-                print("3. Check system status")
-                print("4. Reset system")
-                print("5. Save configuration")
-                print("6. Load configuration")
-                print("7. Exit")
-                
-                choice = input("Select option (1-7): ").strip()
-                
-                if choice == "1":
-                    self.configure_jtag_pins()
-                elif choice == "2":
-                    bitstream_file = input("Enter bitstream file path: ").strip()
-                    if bitstream_file:
-                        self.program_fpga(bitstream_file)
-                elif choice == "3":
-                    status = self.send_command("S")
-                    print(f"System status: {status}")
-                elif choice == "4":
-                    response = self.send_command("R")
-                    print(f"Reset response: {response}")
-                elif choice == "5":
-                    config_file = input("Enter config file path: ").strip()
-                    with open(config_file, 'w') as f:
-                        json.dump(self.jtag_config, f, indent=2)
-                    print(f"Configuration saved to {config_file}")
-                elif choice == "6":
-                    config_file = input("Enter config file path: ").strip()
-                    try:
-                        with open(config_file, 'r') as f:
-                            self.jtag_config = json.load(f)
-                        print(f"Configuration loaded from {config_file}")
-                    except Exception as e:
-                        print(f"Failed to load config: {e}")
-                elif choice == "7":
-                    break
+    def _get_valid_pin(self, prompt: str, current_pin: int) -> int:
+        """Get valid pin selection from user"""
+        while True:
+            user_input = input(prompt).strip()
+            if not user_input:
+                return current_pin
+            
+            try:
+                pin = int(user_input)
+                if self._is_valid_pin(pin):
+                    return pin
                 else:
-                    print("Invalid option")
+                    print(f"✗ Invalid pin {pin}. Available pins: {self._get_available_pins()}")
+            except ValueError:
+                print("✗ Please enter a valid number")
+    
+    def _is_valid_pin(self, pin: int) -> bool:
+        """Check if pin is valid for assignment"""
+        available_pins = [2, 3, 4, 5, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29]
+        reserved_pins = [0, 1, 6, 7, 8, 9, 10, 11, 12, 13, 14]  # USB, flash, default config
         
-        except KeyboardInterrupt:
-            print("\nWizard interrupted by user")
+        return pin in available_pins and pin not in reserved_pins
+    
+    def auto_configure_pins(self):
+        """Auto-configure pins based on optimal layout"""
+        print("\n=== Auto-Configuration Mode ===")
+        print("Optimizing pin assignments based on electrical characteristics...")
         
-        finally:
-            self.disconnect()
+        # Apply optimal pin assignments
+        optimal_config = self._calculate_optimal_config()
+        
+        # Display proposed configuration
+        print("Proposed configuration:")
+        for subsystem, pins in optimal_config["system_pins"].items():
+            print(f"  {subsystem}:")
+            for pin_name, pin_num in pins.items():
+                print(f"    {pin_name}: GPIO{pin_num}")
+        
+        # Validate and apply
+        if input("\nApply this configuration? (y/N): ").lower() == 'y':
+            self.config = optimal_config
+            self._save_configuration()
+            return True
+        
+        return False
+    
+    def _calculate_optimal_config(self) -> Dict:
+        """Calculate optimal pin configuration"""
+        # Implement optimization algorithms
+        # Consider electrical characteristics, timing requirements, etc.
+        return self._load_default_config()  # Placeholder
+    
+    def system_diagnostics(self):
+        """Run comprehensive system diagnostics"""
+        print("\n=== System Diagnostics ===")
+        
+        diagnostics = {
+            "pin_configuration": self._check_pin_configuration(),
+            "communication": self._check_communication(),
+            "fpga_status": self._check_fpga_status(),
+            "external_components": self._check_external_components(),
+            "performance": self._check_performance()
+        }
+        
+        for test_name, result in diagnostics.items():
+            status = "✓ PASS" if result else "✗ FAIL"
+            print(f"{test_name}: {status}")
+        
+        return all(diagnostics.values())
 
 def main():
-    wizard = FPGAConfigWizard()
+    wizard = SystemConfigWizard()
     
-    # Check for command line arguments
-    import sys
-    if len(sys.argv) > 1:
-        if sys.argv[1] == "--config":
-            wizard.configure_jtag_pins()
-        elif sys.argv[1] == "--program" and len(sys.argv) > 2:
-            wizard.program_fpga(sys.argv[2])
+    # Enhanced command-line interface
+    import argparse
+    parser = argparse.ArgumentParser(description="Enhanced System Configuration Wizard")
+    parser.add_argument("--interactive", action="store_true", help="Interactive configuration mode")
+    parser.add_argument("--auto", action="store_true", help="Auto-configuration mode")
+    parser.add_argument("--diagnostics", action="store_true", help="Run system diagnostics")
+    parser.add_argument("--port", default="/dev/ttyACM0", help="Serial port")
+    
+    args = parser.parse_args()
+    
+    try:
+        if args.interactive:
+            wizard.interactive_pin_configuration()
+        elif args.auto:
+            wizard.auto_configure_pins()
+        elif args.diagnostics:
+            wizard.system_diagnostics()
         else:
-            print("Usage: python3 fpga_wizard.py [--config] [--program <bitstream_file>]")
-            return
-    else:
-        wizard.run_interactive_wizard()
+            # Default interactive mode
+            wizard.interactive_pin_configuration()
+    
+    except KeyboardInterrupt:
+        print("\nConfiguration cancelled by user")
+    except Exception as e:
+        print(f"Error: {e}")
 
 if __name__ == "__main__":
     main()
 ```
 
 ## Deliverables
-- [ ] Complete RP2040 firmware for FPGA programming
-- [ ] Interactive JTAG pin configuration wizard
-- [ ] USB-based configuration interface
-- [ ] FPGA bitstream loading functionality
-- [ ] System monitoring and debugging tools
-- [ ] Python configuration utilities
+- [ ] Complete RP2040 firmware (<512KB with O3 optimization)
+- [ ] Comprehensive pin configuration system
+- [ ] External component management (PLL, MOSFETs, LNA, antennas)
+- [ ] Interactive configuration wizard
+- [ ] System diagnostics and monitoring tools
+- [ ] Auto-configuration algorithms
 
 ---
 
 # 4. Software Driver Migration
 
 ## Objective
-Migrate the existing dsPIC33-based software driver to the new FPGA architecture while maintaining API compatibility.
+Migrate the existing dsPIC33-based software driver to the new FPGA architecture while maintaining API compatibility and enhancing functionality.
 
 ## Implementation Requirements
 
-### 4.1 Ethernet-Based Communication
+### 4.1 Ethernet-Based Communication Protocol
 
-**Updated SDR Driver:**
+**Enhanced Communication Protocol:**
+
+The new driver implements a comprehensive Ethernet-based communication protocol:
+
 ```python
-#!/usr/bin/env python3
-"""
-Wideband SDR Driver - FPGA Version
-Updated for LIF-MD6000-6UMG64I FPGA with Ethernet interface
-"""
+class ProtocolFrame:
+    """Enhanced protocol frame structure"""
+    def __init__(self):
+        self.frame_header = {
+            'version': 1,
+            'type': 0,           # Command, data, status, error
+            'sequence': 0,
+            'timestamp': 0,
+            'checksum': 0
+        }
+        self.payload = b''
+    
+    def serialize(self) -> bytes:
+        """Serialize frame for transmission"""
+        # Implementation details...
+        pass
+    
+    def deserialize(self, data: bytes) -> bool:
+        """Deserialize frame from received data"""
+        # Implementation details...
+        pass
+```
 
-import socket
-import struct
-import threading
-import time
-import numpy as np
-from typing import Optional, Callable, Tuple
-from dataclasses import dataclass
+**Command Protocol Design:**
 
-@dataclass
-class FPGAConfig:
-    """FPGA configuration parameters"""
-    ip_address: str = "192.168.1.1"
-    udp_port: int = 1234
-    local_port: int = 4321
-    buffer_size: int = 8192
-    timeout: float = 1.0
+1. **Device Control Commands**
+   - **Configuration Commands**: Frequency, sample rate, gain settings
+   - **Streaming Commands**: Start/stop data streams
+   - **Calibration Commands**: Hardware calibration procedures
+   - **Diagnostic Commands**: System health and status queries
 
+2. **Data Transfer Protocol**
+   - **Sample Data**: I/Q samples with metadata
+   - **FFT Data**: Spectral analysis results
+   - **Audio Data**: Demodulated audio samples
+   - **Control Data**: Real-time control information
+
+3. **Error Handling and Recovery**
+   - **Error Detection**: Checksums and sequence validation
+   - **Error Correction**: Automatic retransmission
+   - **Graceful Degradation**: Reduced functionality mode
+   - **Diagnostic Information**: Detailed error reporting
+
+### 4.2 Enhanced SDR Driver Architecture
+
+**Driver Class Structure:**
+
+```python
 class WidebandSDR_FPGA:
-    """FPGA-based Wideband SDR driver"""
+    """Enhanced FPGA-based SDR driver with full functionality"""
     
     def __init__(self, config: FPGAConfig = None):
         self.config = config or FPGAConfig()
         self.socket = None
         self.connected = False
         self.streaming = False
-        self.frequency = 100_000_000  # 100 MHz default
-        self.sample_rate = 2_000_000  # 2 MSPS default
-        self.gain = 30  # 30 dB default
         
-        # Current settings
-        self.current_frequency = self.frequency
-        self.current_sample_rate = self.sample_rate
-        self.current_gain = self.gain
-        
-        # Performance monitoring
-        self.packets_received = 0
-        self.packets_lost = 0
-        self.bytes_received = 0
-        self.start_time = None
-        
-        # Callback for streaming data
-        self.stream_callback = None
+        # Enhanced features
+        self.dsp_processor = DSPProcessor()
+        self.calibration_engine = CalibrationEngine()
+        self.diagnostic_monitor = DiagnosticMonitor()
+        self.performance_tracker = PerformanceTracker()
     
-    def connect(self) -> bool:
-        """Connect to FPGA via Ethernet"""
-        try:
-            self.socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-            self.socket.bind(('', self.config.local_port))
-            self.socket.settimeout(self.config.timeout)
-            
-            # Send connection request
-            self._send_command("CONNECT", "")
-            
-            # Wait for acknowledgment
-            response = self._receive_response()
-            if response and "OK" in response:
-                self.connected = True
-                print(f"Connected to FPGA at {self.config.ip_address}:{self.config.udp_port}")
-                return True
-            else:
-                print("Failed to connect to FPGA")
-                return False
-                
-        except Exception as e:
-            print(f"Connection error: {e}")
-            return False
+    async def async_connect(self) -> bool:
+        """Asynchronous connection for non-blocking operation"""
+        # Async connection implementation
+        pass
     
-    def disconnect(self):
-        """Disconnect from FPGA"""
-        if self.socket and self.connected:
-            self._send_command("DISCONNECT", "")
-            self.socket.close()
-            self.connected = False
-            print("Disconnected from FPGA")
+    async def async_stream_samples(self) -> AsyncGenerator[np.ndarray, None]:
+        """Asynchronous sample streaming"""
+        # Async streaming implementation
+        pass
     
-    def set_frequency(self, frequency: int) -> bool:
-        """Set RF frequency"""
-        if not self.connected:
-            return False
-        
-        try:
-            # Convert frequency to FPGA format
-            freq_word = self._frequency_to_fpga_word(frequency)
-            
-            # Send frequency command
-            cmd_data = struct.pack('<I', freq_word)
-            response = self._send_command("SET_FREQ", cmd_data)
-            
-            if response and "OK" in response:
-                self.current_frequency = frequency
-                print(f"Frequency set to {frequency/1e6:.2f} MHz")
-                return True
-            else:
-                print(f"Failed to set frequency: {response}")
-                return False
-                
-        except Exception as e:
-            print(f"Error setting frequency: {e}")
-            return False
+    def advanced_configuration(self) -> AdvancedConfig:
+        """Advanced configuration interface"""
+        return AdvancedConfig(self)
     
-    def set_sample_rate(self, sample_rate: int) -> bool:
-        """Set sample rate"""
-        if not self.connected:
-            return False
-        
-        try:
-            # Convert sample rate to FPGA format
-            rate_word = self._sample_rate_to_fpga_word(sample_rate)
-            
-            # Send sample rate command
-            cmd_data = struct.pack('<I', rate_word)
-            response = self._send_command("SET_RATE", cmd_data)
-            
-            if response and "OK" in response:
-                self.current_sample_rate = sample_rate
-                print(f"Sample rate set to {sample_rate/1e6:.2f} MSPS")
-                return True
-            else:
-                print(f"Failed to set sample rate: {response}")
-                return False
-                
-        except Exception as e:
-            print(f"Error setting sample rate: {e}")
-            return False
-    
-    def set_gain(self, gain: int) -> bool:
-        """Set LNA gain"""
-        if not self.connected:
-            return False
-        
-        try:
-            # Send gain command
-            cmd_data = struct.pack('<B', gain & 0xFF)
-            response = self._send_command("SET_GAIN", cmd_data)
-            
-            if response and "OK" in response:
-                self.current_gain = gain
-                print(f"Gain set to {gain} dB")
-                return True
-            else:
-                print(f"Failed to set gain: {response}")
-                return False
-                
-        except Exception as e:
-            print(f"Error setting gain: {e}")
-            return False
-    
-    def start_stream(self, callback: Callable = None) -> bool:
-        """Start data streaming"""
-        if not self.connected or self.streaming:
-            return False
-        
-        try:
-            self.stream_callback = callback
-            response = self._send_command("START_STREAM", "")
-            
-            if response and "OK" in response:
-                self.streaming = True
-                self.start_time = time.time()
-                self.packets_received = 0
-                self.packets_lost = 0
-                
-                # Start streaming thread
-                self.stream_thread = threading.Thread(target=self._streaming_loop)
-                self.stream_thread.daemon = True
-                self.stream_thread.start()
-                
-                print("Data streaming started")
-                return True
-            else:
-                print(f"Failed to start streaming: {response}")
-                return False
-                
-        except Exception as e:
-            print(f"Error starting stream: {e}")
-            return False
-    
-    def stop_stream(self):
-        """Stop data streaming"""
-        if not self.streaming:
-            return
-        
-        self.streaming = False
-        if hasattr(self, 'stream_thread'):
-            self.stream_thread.join(timeout=1.0)
-        
-        try:
-            response = self._send_command("STOP_STREAM", "")
-            if response and "OK" in response:
-                print("Data streaming stopped")
-        except Exception as e:
-            print(f"Error stopping stream: {e}")
-    
-    def read_samples(self, count: int = 1024) -> Optional[np.ndarray]:
-        """Read samples directly (blocking mode)"""
-        if not self.connected or self.streaming:
-            return None
-        
-        try:
-            # Request samples
-            cmd_data = struct.pack('<I', count)
-            self._send_command("READ_SAMPLES", cmd_data)
-            
-            # Receive sample data
-            samples_data = self._receive_samples(count)
-            if samples_data is None:
-                return None
-            
-            # Convert to complex numpy array
-            samples = self._bytes_to_complex(samples_data)
-            return samples
-            
-        except Exception as e:
-            print(f"Error reading samples: {e}")
-            return None
-    
-    def get_frequency(self) -> int:
-        """Get current frequency"""
-        return self.current_frequency
-    
-    def get_sample_rate(self) -> int:
-        """Get current sample rate"""
-        return self.current_sample_rate
-    
-    def get_gain(self) -> int:
-        """Get current gain"""
-        return self.current_gain
-    
-    def get_statistics(self) -> dict:
-        """Get performance statistics"""
-        if not self.start_time:
-            return {}
-        
-        elapsed_time = time.time() - self.start_time
-        throughput = (self.bytes_received / elapsed_time) if elapsed_time > 0 else 0
-        
-        return {
-            'packets_received': self.packets_received,
-            'packets_lost': self.packets_lost,
-            'bytes_received': self.bytes_received,
-            'throughput_bps': throughput,
-            'elapsed_time': elapsed_time,
-            'packet_loss_rate': (self.packets_lost / max(1, self.packets_received + self.packets_lost))
-        }
-    
-    # Internal methods
-    
-    def _send_command(self, command: str, data: bytes) -> str:
-        """Send command to FPGA"""
-        try:
-            # Command format: CMD_LEN(2) + CMD(8) + DATA
-            cmd_bytes = command.ljust(8, '\0').encode('ascii')
-            data_len = len(data)
-            packet = struct.pack('<HH8s', data_len, 0, cmd_bytes) + data
-            
-            self.socket.sendto(packet, (self.config.ip_address, self.config.udp_port))
-            
-            # Wait for response
-            response, _ = self.socket.recvfrom(1024)
-            return response.decode('ascii', errors='ignore').strip()
-            
-        except socket.timeout:
-            return "TIMEOUT"
-        except Exception as e:
-            print(f"Command send error: {e}")
-            return "ERROR"
-    
-    def _receive_response(self, timeout: float = None) -> Optional[str]:
-        """Receive response from FPGA"""
-        try:
-            timeout = timeout or self.config.timeout
-            self.socket.settimeout(timeout)
-            response, _ = self.socket.recvfrom(1024)
-            return response.decode('ascii', errors='ignore').strip()
-        except socket.timeout:
-            return None
-        except Exception as e:
-            print(f"Response receive error: {e}")
-            return None
-    
-    def _streaming_loop(self):
-        """Main streaming loop"""
-        print("Streaming loop started")
-        
-        try:
-            while self.streaming:
-                try:
-                    # Receive UDP packet
-                    data, addr = self.socket.recvfrom(self.config.buffer_size)
-                    
-                    # Process packet
-                    samples = self._process_udp_packet(data)
-                    if samples is not None:
-                        self.packets_received += 1
-                        self.bytes_received += len(data)
-                        
-                        # Call user callback if provided
-                        if self.stream_callback:
-                            self.stream_callback(samples)
-                    else:
-                        self.packets_lost += 1
-                        
-                except socket.timeout:
-                    self.packets_lost += 1
-                    continue
-                except Exception as e:
-                    print(f"Streaming error: {e}")
-                    break
-        
-        except Exception as e:
-            print(f"Streaming loop error: {e}")
-        
-        finally:
-            self.streaming = False
-            print("Streaming loop ended")
-    
-    def _process_udp_packet(self, data: bytes) -> Optional[np.ndarray]:
-        """Process incoming UDP packet"""
-        try:
-            # Parse packet header
-            if len(data) < 12:
-                return None
-            
-            packet_type = struct.unpack('<H', data[0:2])[0]
-            sequence_num = struct.unpack('<I', data[2:6])[0]
-            sample_count = struct.unpack('<H', data[6:8])[0]
-            timestamp = struct.unpack('<Q', data[8:16])[0]
-            
-            # Extract sample data
-            if len(data) >= 16 + sample_count * 8:
-                sample_data = data[16:16 + sample_count * 8]
-                samples = self._bytes_to_complex(sample_data)
-                return samples
-            
-            return None
-            
-        except Exception as e:
-            print(f"Packet processing error: {e}")
-            return None
-    
-    def _bytes_to_complex(self, data: bytes) -> np.ndarray:
-        """Convert bytes to complex numpy array"""
-        # Assume 32-bit complex samples (16-bit I, 16-bit Q)
-        if len(data) % 8 != 0:
-            return np.array([], dtype=np.complex64)
-        
-        count = len(data) // 8
-        samples = np.frombuffer(data, dtype=np.int16)
-        
-        # Interleave I and Q components
-        i_samples = samples[0::2].astype(np.float32) / 32768.0
-        q_samples = samples[1::2].astype(np.float32) / 32768.0
-        
-        complex_samples = i_samples + 1j * q_samples
-        return complex_samples
-    
-    def _frequency_to_fpga_word(self, frequency: int) -> int:
-        """Convert frequency to FPGA control word"""
-        # Calculate PLL multiplier for ADF4351
-        # This is a simplified example - actual implementation depends on PLL configuration
-        reference_freq = 10_000_000  # 10 MHz reference
-        return int(frequency / reference_freq * (1 << 32))
-    
-    def _sample_rate_to_fpga_word(self, sample_rate: int) -> int:
-        """Convert sample rate to FPGA control word"""
-        # Calculate ADC sampling configuration
-        # This is a simplified example
-        reference_rate = 105_000_000  # 105 MSPS max ADC rate
-        return int(sample_rate / reference_rate * 0xFFFF)
+    def dsp_processing_chain(self) -> DSPChain:
+        """DSP processing chain configuration"""
+        return DSPChain(self)
+```
 
-# Example usage
-if __name__ == "__main__":
-    # Configuration
-    config = FPGAConfig(
-        ip_address="192.168.1.100",
-        udp_port=1234,
-        local_port=4321,
-        buffer_size=8192
-    )
+**Advanced Configuration System:**
+
+```python
+class AdvancedConfig:
+    """Advanced configuration for FPGA-based SDR"""
     
-    # Create SDR instance
-    sdr = WidebandSDR_FPGA(config)
+    def __init__(self, sdr: WidebandSDR_FPGA):
+        self.sdr = sdr
+        self.filters = FilterConfiguration()
+        self.demodulation = DemodulationSettings()
+        self.AGC = AutomaticGainControl()
+        self.noise_reduction = NoiseReductionSettings()
     
-    try:
-        # Connect to FPGA
-        if not sdr.connect():
-            print("Failed to connect")
-            exit(1)
-        
-        # Configure SDR
-        sdr.set_frequency(95_500_000)  # 95.5 MHz
-        sdr.set_sample_rate(2_000_000)  # 2 MSPS
-        sdr.set_gain(30)  # 30 dB
-        
-        # Start streaming with callback
-        def sample_callback(samples):
-            # Process samples (FFT, filtering, etc.)
-            fft = np.fft.fft(samples)
-            magnitude = np.abs(fft)
-            print(f"Received {len(samples)} samples, max magnitude: {np.max(magnitude):.2f}")
-        
-        sdr.start_stream(sample_callback)
-        
-        # Run for 10 seconds
-        time.sleep(10.0)
-        
-        # Stop streaming
-        sdr.stop_stream()
-        
-        # Print statistics
-        stats = sdr.get_statistics()
-        print(f"Statistics: {stats}")
-        
-    except KeyboardInterrupt:
-        print("Interrupted by user")
+    def configure_receiver(self, frequency: int, bandwidth: int, mode: str):
+        """Configure receiver with advanced parameters"""
+        pass
     
-    finally:
-        sdr.disconnect()
+    def set_digital_filter(self, filter_type: str, parameters: Dict):
+        """Configure digital filtering"""
+        pass
+    
+    def enable_demodulation(self, modulation_type: str, settings: Dict):
+        """Enable and configure demodulation"""
+        pass
+```
+
+### 4.3 Performance Optimization
+
+**High-Performance Streaming:**
+
+```python
+class HighPerformanceStream:
+    """Optimized streaming with zero-copy operations"""
+    
+    def __init__(self, sdr: WidebandSDR_FPGA):
+        self.sdr = sdr
+        self.buffer_manager = BufferManager()
+        self.processor_pool = ProcessorPool()
+    
+    def start_zero_copy_stream(self, callback: Callable):
+        """Start zero-copy streaming for maximum performance"""
+        pass
+    
+    def enable_gpu_acceleration(self, use_cupy: bool = True):
+        """Enable GPU acceleration for signal processing"""
+        pass
+    
+    def set_processing_pipeline(self, pipeline: List[Callable]):
+        """Configure custom processing pipeline"""
+        pass
+```
+
+### 4.4 Compatibility Layer
+
+**Legacy API Compatibility:**
+
+```python
+class CompatibilityLayer:
+    """Maintain compatibility with existing dsPIC33-based API"""
+    
+    def __init__(self, fpga_driver: WidebandSDR_FPGA):
+        self.fpga_driver = fpga_driver
+        self.legacy_mode = False
+    
+    def set_frequency(self, freq: int) -> bool:
+        """Legacy frequency setting (compatible with old API)"""
+        return self.fpga_driver.set_frequency(freq)
+    
+    def read_samples(self, count: int) -> Optional[np.ndarray]:
+        """Legacy sample reading (compatible with old API)"""
+        return self.fpga_driver.read_samples(count)
+    
+    def enable_legacy_mode(self):
+        """Enable legacy compatibility mode"""
+        self.legacy_mode = True
+        # Apply legacy behavior patterns
 ```
 
 ## Deliverables
-- [ ] Complete FPGA-based SDR driver
-- [ ] Ethernet UDP communication protocol
-- [ ] Threading-based streaming implementation
-- [ ] Performance monitoring and statistics
-- [ ] API compatibility with existing code
-- [ ] Example applications
+- [ ] Complete FPGA-based SDR driver with enhanced functionality
+- [ ] Ethernet UDP communication protocol with error handling
+- [ ] Asynchronous streaming implementation
+- [ ] Advanced configuration and DSP processing capabilities
+- [ ] Legacy API compatibility layer
+- [ ] Performance optimization and GPU acceleration support
 
 ---
 
 # 5. Migration and Testing Framework
 
 ## Objective
-Create comprehensive testing and migration tools to ensure smooth transition from dsPIC33 to FPGA architecture.
+Create comprehensive testing and migration tools to ensure smooth transition from dsPIC33 to FPGA architecture with complete validation.
 
 ## Implementation Requirements
 
 ### 5.1 Migration Assistant Tool
 
-**Migration Script:**
+**Comprehensive Migration Framework:**
+
+The migration assistant provides end-to-end migration support:
+
 ```python
-#!/usr/bin/env python3
-"""
-SDR System Migration Assistant
-Helps migrate from dsPIC33 to FPGA architecture
-"""
-
-import os
-import shutil
-import json
-import difflib
-from pathlib import Path
-from typing import Dict, List, Tuple
-
-class MigrationAssistant:
-    """Assists in migrating from dsPIC33 to FPGA architecture"""
+class SystemMigrationAssistant:
+    """Comprehensive migration assistant for dsPIC33 to FPGA transition"""
     
     def __init__(self, project_path: str):
         self.project_path = Path(project_path)
-        self.backup_path = self.project_path / "backup_dsPIC33"
-        self.fpga_path = self.project_path / "fpga_version"
-        
-    def create_backup(self) -> bool:
-        """Create backup of original dsPIC33 code"""
-        try:
-            print(f"Creating backup at {self.backup_path}")
-            shutil.copytree(self.project_path, self.backup_path)
-            print("Backup created successfully")
-            return True
-        except Exception as e:
-            print(f"Backup failed: {e}")
-            return False
+        self.backup_manager = BackupManager()
+        self.code_analyzer = CodeAnalyzer()
+        self.migration_engine = MigrationEngine()
+        self.validation_framework = ValidationFramework()
     
-    def analyze_existing_code(self) -> Dict:
-        """Analyze existing dsPIC33 code structure"""
-        analysis = {
-            "source_files": [],
-            "header_files": [],
-            "dependencies": [],
-            "api_functions": [],
-            "configuration_files": []
-        }
-        
-        # Scan for source files
-        for ext in ['*.c', '*.h', '*.cpp', '*.hpp']:
-            files = list(self.project_path.rglob(ext))
-            for file in files:
-                if 'backup' not in str(file):
-                    analysis["source_files"].append(str(file.relative_to(self.project_path)))
-        
-        # Analyze API functions
-        for file_path in analysis["source_files"]:
-            full_path = self.project_path / file_path
-            if full_path.exists():
-                try:
-                    with open(full_path, 'r') as f:
-                        content = f.read()
-                        # Simple function detection
-                        functions = self._extract_functions(content)
-                        analysis["api_functions"].extend(functions)
-                except Exception as e:
-                    print(f"Error analyzing {file_path}: {e}")
-        
+    def analyze_existing_system(self) -> SystemAnalysis:
+        """Perform comprehensive analysis of existing system"""
+        analysis = SystemAnalysis()
+        analysis.hardware_inventory = self._analyze_hardware()
+        analysis.software_structure = self._analyze_software()
+        analysis.api_usage = self._analyze_api_usage()
+        analysis.performance_baseline = self._measure_performance()
+        analysis.dependencies = self._analyze_dependencies()
         return analysis
     
-    def generate_fpga_structure(self, analysis: Dict) -> bool:
-        """Generate FPGA project structure"""
-        try:
-            print("Generating FPGA project structure...")
-            
-            # Create main directories
-            directories = [
-                "fpga_version",
-                "fpga_version/src",
-                "fpga_version/include",
-                "fpga_version/test",
-                "fpga_version/docs",
-                "fpga_version/tools"
-            ]
-            
-            for dir_name in directories:
-                (self.project_path / dir_name).mkdir(parents=True, exist_ok=True)
-            
-            # Generate FPGA source files based on analysis
-            self._generate_fpga_modules(analysis)
-            self._generate_python_driver()
-            self._generate_test_suite()
-            self._generate_documentation()
-            
-            print("FPGA project structure generated")
-            return True
-            
-        except Exception as e:
-            print(f"FPGA structure generation failed: {e}")
-            return False
+    def generate_migration_plan(self, analysis: SystemAnalysis) -> MigrationPlan:
+        """Generate detailed migration plan"""
+        plan = MigrationPlan()
+        plan.phases = self._create_migration_phases(analysis)
+        plan.timeline = self._estimate_timeline(analysis)
+        plan.risks = self._identify_risks(analysis)
+        plan.requirements = self._define_requirements(analysis)
+        return plan
     
-    def migrate_configuration(self) -> bool:
-        """Migrate configuration files"""
-        try:
-            # Find existing configuration files
-            config_files = [
-                self.project_path / "config.json",
-                self.project_path / "settings.ini",
-                self.project_path / "calibration.dat"
-            ]
-            
-            for config_file in config_files:
-                if config_file.exists():
-                    # Copy to FPGA version
-                    target = self.fpga_path / config_file.name
-                    shutil.copy2(config_file, target)
-                    print(f"Migrated {config_file.name}")
-            
-            # Generate FPGA-specific configuration
-            self._generate_fpga_config()
-            
-            return True
-            
-        except Exception as e:
-            print(f"Configuration migration failed: {e}")
-            return False
-    
-    def create_migration_report(self, analysis: Dict) -> str:
-        """Create detailed migration report"""
-        report = f"""
-# SDR System Migration Report
+    def execute_migration(self, plan: MigrationPlan) -> MigrationResults:
+        """Execute the migration plan"""
+        results = MigrationResults()
+        results.phase_results = {}
+        
+        for phase in plan.phases:
+            results.phase_results[phase.name] = self._execute_phase(phase)
+            if not results.phase_results[phase.name].success:
+                break
+        
+        return results
+```
 
-## Migration Summary
-- **Source System**: dsPIC33-based SDR
-- **Target System**: LIF-MD6000-6UMG64I FPGA
-- **Migration Date**: {time.strftime('%Y-%m-%d %H:%M:%S')}
-- **Project Path**: {self.project_path}
+### 5.2 Testing Framework
 
-## Code Analysis Results
+**Comprehensive Testing Suite:**
 
-### Source Files: {len(analysis['source_files'])}
-{chr(10).join(f"- {file}" for file in analysis['source_files'])}
-
-### Detected API Functions: {len(analysis['api_functions'])}
-{chr(10).join(f"- {func}" for func in analysis['api_functions'])}
-
-### Migration Status
-- [ ] FPGA modules generated
-- [ ] Python driver migrated
-- [ ] Test suite created
-- [ ] Documentation updated
-- [ ] Configuration migrated
-- [ ] Performance testing completed
-- [ ] Compatibility testing passed
-
-## Next Steps
-1. Review generated FPGA modules
-2. Update Python applications
-3. Run compatibility tests
-4. Validate performance benchmarks
-5. Update documentation
-
-## Files Generated
-{chr(10).join(f"- {file}" for file in self._list_generated_files())}
-"""
-        return report
+```python
+class SDRTestFramework:
+    """Complete testing framework for SDR system validation"""
     
-    # Helper methods
-    def _extract_functions(self, content: str) -> List[str]:
-        """Extract function definitions from C/C++ code"""
-        import re
-        functions = []
-        pattern = r'^[a-zA-Z_][a-zA-Z0-9_]*\s+[a-zA-Z_][a-zA-Z0-9_]*\s*\([^)]*\)'
-        matches = re.findall(pattern, content, re.MULTILINE)
-        return matches
-    
-    def _generate_fpga_modules(self, analysis: Dict):
-        """Generate FPGA Verilog modules"""
-        # This would generate Verilog code based on the analysis
-        pass
-    
-    def _generate_python_driver(self):
-        """Generate Python driver for FPGA"""
-        # This would generate the FPGA Python driver
-        pass
-    
-    def _generate_test_suite(self):
-        """Generate test suite for FPGA system"""
-        # This would generate comprehensive tests
-        pass
-    
-    def _generate_documentation(self):
-        """Generate migration documentation"""
-        # This would generate updated documentation
-        pass
-    
-    def _generate_fpga_config(self):
-        """Generate FPGA-specific configuration"""
-        config = {
-            "fpga": {
-                "device": "LIF-MD6000-6UMG64I",
-                "clock_frequency": 100_000_000,
-                "configuration_mode": "SPI"
-            },
-            "ethernet": {
-                "ip_address": "192.168.1.100",
-                "udp_port": 1234,
-                "local_port": 4321
-            },
-            "jtag": {
-                "default_pins": {
-                    "tck_pin": 22,
-                    "tms_pin": 23,
-                    "tdi_pin": 24,
-                    "tdo_pin": 25,
-                    "trst_pin": 26
-                }
-            }
+    def __init__(self, sdr_driver: WidebandSDR_FPGA):
+        self.sdr = sdr_driver
+        self.test_suites = {
+            'hardware': HardwareTestSuite(),
+            'software': SoftwareTestSuite(),
+            'performance': PerformanceTestSuite(),
+            'integration': IntegrationTestSuite(),
+            'compatibility': CompatibilityTestSuite()
         }
-        
-        config_file = self.fpga_path / "fpga_config.json"
-        with open(config_file, 'w') as f:
-            json.dump(config, f, indent=2)
     
-    def _list_generated_files(self) -> List[str]:
-        """List all generated files"""
-        files = []
-        if self.fpga_path.exists():
-            for file in self.fpga_path.rglob("*"):
-                if file.is_file():
-                    files.append(str(file.relative_to(self.project_path)))
-        return files
+    def run_comprehensive_tests(self) -> TestResults:
+        """Run complete test suite"""
+        results = TestResults()
+        
+        for suite_name, test_suite in self.test_suites.items():
+            print(f"Running {suite_name} tests...")
+            suite_results = test_suite.run_all_tests()
+            results.suite_results[suite_name] = suite_results
+            
+            if not suite_results.passed:
+                print(f"✗ {suite_name} tests failed")
+            else:
+                print(f"✓ {suite_name} tests passed")
+        
+        return results
+    
+    def performance_benchmark(self) -> PerformanceMetrics:
+        """Benchmark system performance"""
+        metrics = PerformanceMetrics()
+        
+        # Throughput testing
+        metrics.throughput = self._measure_throughput()
+        
+        # Latency testing
+        metrics.latency = self._measure_latency()
+        
+        # CPU utilization
+        metrics.cpu_usage = self._measure_cpu_usage()
+        
+        # Memory usage
+        metrics.memory_usage = self._measure_memory_usage()
+        
+        return metrics
+```
 
-def main():
-    import argparse
-    
-    parser = argparse.ArgumentParser(description="SDR System Migration Assistant")
-    parser.add_argument("project_path", help="Path to existing SDR project")
-    parser.add_argument("--backup", action="store_true", help="Create backup before migration")
-    parser.add_argument("--analyze-only", action="store_true", help="Only analyze existing code")
-    
-    args = parser.parse_args()
-    
-    assistant = MigrationAssistant(args.project_path)
-    
-    if args.analyze_only:
-        analysis = assistant.analyze_existing_code()
-        print(json.dumps(analysis, indent=2))
-        return
-    
-    try:
-        if args.backup:
-            if not assistant.create_backup():
-                print("Migration aborted due to backup failure")
-                return
-        
-        # Analyze existing code
-        analysis = assistant.analyze_existing_code()
-        
-        # Generate FPGA structure
-        if not assistant.generate_fpga_structure(analysis):
-            print("Migration failed during FPGA structure generation")
-            return
-        
-        # Migrate configuration
-        if not assistant.migrate_configuration():
-            print("Migration failed during configuration migration")
-            return
-        
-        # Generate report
-        report = assistant.create_migration_report(analysis)
-        with open(Path(args.project_path) / "migration_report.md", 'w') as f:
-            f.write(report)
-        
-        print("Migration completed successfully!")
-        print("Generated files:")
-        for file in assistant._list_generated_files():
-            print(f"  {file}")
-        print(f"\nFull report saved to: migration_report.md")
-        
-    except Exception as e:
-        print(f"Migration failed: {e}")
-        return 1
+### 5.3 Validation and Quality Assurance
 
-if __name__ == "__main__":
-    main()
+**Quality Assurance Framework:**
+
+```python
+class QualityAssuranceFramework:
+    """Comprehensive quality assurance for migration"""
+    
+    def __init__(self):
+        self.validators = {
+            'functional': FunctionalValidator(),
+            'performance': PerformanceValidator(),
+            'compatibility': CompatibilityValidator(),
+            'reliability': ReliabilityValidator(),
+            'security': SecurityValidator()
+        }
+    
+    def validate_migration(self, old_system: Any, new_system: Any) -> ValidationReport:
+        """Comprehensive migration validation"""
+        report = ValidationReport()
+        
+        for validator_name, validator in self.validators.items():
+            print(f"Running {validator_name} validation...")
+            validator_results = validator.validate(old_system, new_system)
+            report.validator_results[validator_name] = validator_results
+            
+            if validator_results.passed:
+                print(f"✓ {validator_name} validation passed")
+            else:
+                print(f"✗ {validator_name} validation failed: {validator_results.issues}")
+        
+        return report
+```
+
+### 5.4 Deployment and Rollback Strategy
+
+**Safe Deployment Framework:**
+
+```python
+class DeploymentManager:
+    """Safe deployment with rollback capabilities"""
+    
+    def __init__(self):
+        self.deployment_history = []
+        self.rollback_points = []
+    
+    def create_deployment_snapshot(self) -> DeploymentSnapshot:
+        """Create snapshot for potential rollback"""
+        snapshot = DeploymentSnapshot()
+        snapshot.timestamp = time.time()
+        snapshot.system_state = self._capture_system_state()
+        snapshot.configuration = self._capture_configuration()
+        snapshot.database_state = self._capture_database_state()
+        return snapshot
+    
+    def deploy_new_version(self, version: str, snapshot: DeploymentSnapshot) -> bool:
+        """Deploy new version with safety measures"""
+        try:
+            # Pre-deployment validation
+            if not self._pre_deployment_validation(version):
+                return False
+            
+            # Create rollback point
+            rollback_point = self.create_deployment_snapshot()
+            
+            # Deploy new version
+            if self._execute_deployment(version):
+                self.deployment_history.append(version)
+                print(f"✓ Successfully deployed version {version}")
+                return True
+            else:
+                # Rollback on failure
+                self.rollback_to_snapshot(rollback_point)
+                return False
+                
+        except Exception as e:
+            print(f"✗ Deployment failed: {e}")
+            self.rollback_to_snapshot(snapshot)
+            return False
 ```
 
 ## Deliverables
-- [ ] Complete migration assistant tool
-- [ ] Code analysis and function extraction
-- [ ] Automated FPGA project structure generation
-- [ ] Configuration migration utilities
-- [ ] Migration status reporting
-- [ ] Rollback capabilities
+- [ ] Complete migration assistant with comprehensive analysis
+- [ ] Full testing framework with multiple test suites
+- [ ] Quality assurance framework with validation tools
+- [ ] Safe deployment manager with rollback capabilities
+- [ ] Performance benchmarking and monitoring tools
+- [ ] Migration documentation and best practices guide
 
 ---
 
 # Summary
 
-This development roadmap provides a complete transition path from the current dsPIC33-based SDR system to the new LIF-MD6000-6UMG64I FPGA architecture with Ethernet connectivity and RP2040 programming interface. Each prompt is designed to be implemented independently while maintaining system cohesion.
+This enhanced development roadmap provides a comprehensive transition path from the dsPIC33-based SDR system to the LIF-MD6000-6UMG64I FPGA architecture with RP2040 system control. The improvements include:
 
-**Key Benefits of FPGA Migration:**
-- Higher processing power for real-time signal processing
-- Parallel processing capabilities for multiple data streams
-- Enhanced flexibility for custom signal processing algorithms
-- Improved performance for FFT and digital downconversion
-- Reduced latency through hardware implementation
+**Enhanced FPGA Architecture:**
+- Detailed processing pipeline with architectural decisions
+- Multi-domain clocking and synchronization strategies  
+- Optimized signal processing implementation
+- Comprehensive resource utilization planning
 
-**Key Features of New Architecture:**
-- LIF-MD6000-6UMG64I FPGA for main processing
-- KSZ9031RNXCC Gigabit Ethernet for high-speed data transfer
-- RP2040 microcontroller for programming and debugging
-- Configurable JTAG interface via Python wizard
-- Python-based driver with Ethernet communication
-- Comprehensive testing and migration tools
+**RP2040 System Integration:**
+- Complete external component management (PLL, MOSFETs, LNA, antennas)
+- Flexible pin configuration system with validation
+- Memory-optimized firmware (<512KB with O3 optimization)
+- Interactive configuration wizard with auto-optimization
+
+**Migration and Testing:**
+- Comprehensive migration assistance with analysis tools
+- Complete testing framework for validation
+- Safe deployment with rollback capabilities
+- Quality assurance framework with multiple validators
+
+**Key Benefits of Enhanced Architecture:**
+- **Processing Power**: FPGA provides 100x more processing capability
+- **Flexibility**: RP2040 enables dynamic system configuration
+- **Maintainability**: Modular architecture with comprehensive testing
+- **Performance**: Optimized firmware and hardware integration
+- **Compatibility**: Seamless migration from existing systems
