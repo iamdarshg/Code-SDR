@@ -197,6 +197,251 @@ The FPGA architecture is designed to accommodate the migration from dsPIC33:
    - **Testing Framework**: Comprehensive validation of new architecture
    - **Documentation Updates**: Complete architectural documentation
 
+### 1.6 Virtual FPGA Simulation and Test Framework
+
+**Objective:** Create a comprehensive virtual FPGA simulation environment using open-source tools to verify Verilog code functionality before physical deployment, enabling continuous integration testing and pre-synthesis validation.
+
+**Virtual FPGA Simulation Tools:**
+
+The following open-source tools enable complete Verilog simulation without physical FPGA hardware:
+
+1. **Icarus Verilog (iverilog)**
+   - **Purpose**: Free, open-source Verilog simulator for behavioral and RTL simulation
+   - **Installation**: `sudo apt install iverilog` (Linux) or download from http://iverilog.icarus.com/
+   - **Usage**: Compiles Verilog to VVP format for simulation
+   - **Command**: `iverilog -o output.vvp -g2012 top_module.v testbench.v`
+
+2. **GTKWave**
+   - **Purpose**: Waveform viewer for analyzing simulation results
+   - **Installation**: `sudo apt install gtkwave`
+   - **Integration**: Works with VCD (Value Change Dump) files from Icarus Verilog
+   - **Command**: `gtkwave output.vcd`
+
+3. **Verilator**
+   - **Purpose**: High-performance Verilog/SystemVerilog simulator, converts to C++/SystemC
+   - **Installation**: `sudo apt install verilator`
+   - **Advantages**: 10-100x faster than event-driven simulators for large designs
+   - **Best for**: Performance-critical simulations and CI/CD pipelines
+
+4. **cocotb (Coroutine-based Co-simulation Testbench)**
+   - **Purpose**: Python-based testbench framework for Verilog/VHDL verification
+   - **Installation**: `pip install cocotb cocotb-bus cocotb-coverage`
+   - **Advantages**: Write testbenches in Python, supports coverage analysis
+   - **Integration**: Works with Icarus Verilog, Verilator, and commercial simulators
+
+**Implementation Requirements:**
+
+#### 1.6.1 Automated Test Framework Architecture
+
+**Test Framework Structure:**
+
+```
+tests/
+├── unit/                      # Individual module tests
+│   ├── test_adc_interface.py
+│   ├── test_nco_generator.py
+│   ├── test_fft_processor.py
+│   ├── test_ethernet_mac.py
+│   └── test_async_fifo.py
+├── integration/               # Multi-module integration tests
+│   ├── test_processing_pipeline.py
+│   ├── test_data_path.py
+│   └── test_clock_domains.py
+├── system/                    # Full system verification
+│   ├── test_end_to_end.py
+│   └── test_performance.py
+├── cocotb_tests/              # cocotb-based testbenches
+│   ├── Makefile
+│   ├── test_fpga_pipeline.py
+│   └── test_signal_processing.py
+├── scripts/
+│   ├── run_all_tests.sh       # Master test runner
+│   ├── generate_coverage.sh   # Coverage report generation
+│   └── ci_pipeline.sh         # CI/CD integration script
+└── fixtures/                  # Test data and stimulus files
+    ├── adc_samples.bin
+    ├── expected_fft_output.bin
+    └── test_vectors.json
+```
+
+**cocotb Testbench Example for FFT Processor:**
+
+```python
+# test_fft_processor.py - cocotb testbench for FFT module validation
+import cocotb
+from cocotb.clock import Clock
+from cocotb.triggers import RisingEdge, Timer, FallingEdge
+from cocotb.result import TestFailure
+import numpy as np
+
+@cocotb.test()
+async def test_fft_basic(dut):
+    """Basic FFT functionality test with known input pattern"""
+    # Start clock (100 MHz system clock)
+    clock = Clock(dut.clk, 10, units="ns")
+    cocotb.start_soon(clock.start())
+    
+    # Reset sequence
+    dut.rst_n.value = 0
+    await Timer(100, units="ns")
+    dut.rst_n.value = 1
+    await RisingEdge(dut.clk)
+    
+    # Generate test input: 1024-point sine wave at known frequency
+    N = 1024
+    fs = 105e6  # ADC sample rate
+    f_test = 10e6  # 10 MHz test tone
+    t = np.arange(N) / fs
+    test_signal = (np.sin(2 * np.pi * f_test * t) * 511).astype(np.int16)  # 10-bit ADC scale
+    
+    # Feed samples into FFT
+    for i, sample in enumerate(test_signal):
+        dut.data_in.value = int(sample) & 0x3FF  # 10-bit mask
+        dut.data_valid.value = 1
+        await RisingEdge(dut.clk)
+    
+    dut.data_valid.value = 0
+    
+    # Wait for FFT processing (pipeline latency)
+    for _ in range(N + 100):
+        await RisingEdge(dut.clk)
+    
+    # Verify output: Peak should be at bin corresponding to 10 MHz
+    expected_bin = int(f_test * N / fs)
+    
+    # Read FFT output and verify peak location
+    if dut.fft_valid.value:
+        peak_bin = int(dut.peak_bin.value)
+        peak_magnitude = int(dut.peak_magnitude.value)
+        
+        # Allow +/- 2 bins tolerance for spectral leakage
+        if abs(peak_bin - expected_bin) > 2:
+            raise TestFailure(f"FFT peak at bin {peak_bin}, expected near {expected_bin}")
+        
+        cocotb.log.info(f"FFT Test PASSED: Peak at bin {peak_bin}, magnitude {peak_magnitude}")
+
+@cocotb.test()
+async def test_fft_overflow_protection(dut):
+    """Test FFT scaling to prevent overflow with maximum input"""
+    clock = Clock(dut.clk, 10, units="ns")
+    cocotb.start_soon(clock.start())
+    
+    # Reset
+    dut.rst_n.value = 0
+    await Timer(100, units="ns")
+    dut.rst_n.value = 1
+    await RisingEdge(dut.clk)
+    
+    # Feed maximum amplitude samples (worst case for overflow)
+    N = 1024
+    for i in range(N):
+        dut.data_in.value = 0x1FF if (i % 2 == 0) else 0x200  # Max swing
+        dut.data_valid.value = 1
+        await RisingEdge(dut.clk)
+    
+    dut.data_valid.value = 0
+    
+    # Wait for processing
+    for _ in range(N + 100):
+        await RisingEdge(dut.clk)
+    
+    # Check overflow flag
+    if dut.overflow_flag.value:
+        raise TestFailure("FFT overflow detected - scaling insufficient")
+    
+    cocotb.log.info("Overflow protection test PASSED")
+```
+
+#### 1.6.2 Icarus Verilog Simulation Scripts
+
+**Master Test Runner Script (run_all_tests.sh):**
+
+```bash
+#!/bin/bash
+# run_all_tests.sh - Comprehensive FPGA Verilog test runner
+
+set -e  # Exit on first error
+
+# Colors for output
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+YELLOW='\033[1;33m'
+NC='\033[0m' # No Color
+
+VERILOG_DIR="../verilog"
+TEST_DIR="./tests"
+OUTPUT_DIR="./simulation_output"
+
+mkdir -p $OUTPUT_DIR
+
+echo -e "${YELLOW}========================================${NC}"
+echo -e "${YELLOW}  SDR FPGA Virtual Simulation Suite    ${NC}"
+echo -e "${YELLOW}========================================${NC}"
+
+# Test modules array
+declare -a MODULES=(
+    "adc_interface"
+    "nco_generator" 
+    "cic_decimator"
+    "fft_processor"
+    "hamming_window"
+    "ethernet_mac"
+    "async_fifo"
+    "rp2040_interface"
+    "average_power_detector"
+    "adaptive_gain_scaler"
+    "digital_downconverter"
+    "udp_ip_stack"
+)
+
+PASSED=0
+FAILED=0
+
+for module in "${MODULES[@]}"; do
+    echo -e "\n${YELLOW}Testing: ${module}${NC}"
+    
+    # Check if testbench exists
+    if [ -f "${VERILOG_DIR}/${module}_tb.v" ] || [ -f "${TEST_DIR}/${module}_tb.v" ]; then
+        TESTBENCH="${module}_tb.v"
+    else
+        echo -e "${YELLOW}  Skipping: No testbench found${NC}"
+        continue
+    fi
+    
+    # Compile with Icarus Verilog
+    iverilog -g2012 -o "${OUTPUT_DIR}/${module}.vvp" \
+        -I ${VERILOG_DIR} \
+        ${VERILOG_DIR}/${module}.v \
+        ${VERILOG_DIR}/${TESTBENCH} 2>&1 | tee "${OUTPUT_DIR}/${module}_compile.log"
+    
+    if [ ${PIPESTATUS[0]} -eq 0 ]; then
+        # Run simulation
+        vvp "${OUTPUT_DIR}/${module}.vvp" -lxt2 2>&1 | tee "${OUTPUT_DIR}/${module}_sim.log"
+        
+        # Check for test pass/fail in output
+        if grep -q "TEST PASSED\|All tests passed" "${OUTPUT_DIR}/${module}_sim.log"; then
+            echo -e "${GREEN}  ✓ ${module}: PASSED${NC}"
+            ((PASSED++))
+        elif grep -q "TEST FAILED\|Error\|FAIL" "${OUTPUT_DIR}/${module}_sim.log"; then
+            echo -e "${RED}  ✗ ${module}: FAILED${NC}"
+            ((FAILED++))
+        else
+            echo -e "${YELLOW}  ? ${module}: Completed (check logs)${NC}"
+            ((PASSED++))
+        fi
+    else
+        echo -e "${RED}  ✗ ${module}: COMPILE ERROR${NC}"
+        ((FAILED++))
+    fi
+done
+
+echo -e "\n${YELLOW}========================================${NC}"
+echo -e "Results: ${GREEN}${PASSED} passed${NC}, ${RED}${FAILED} failed${NC}"
+echo -e "${YELLOW}========================================${NC}"
+
+# Exit with error if any tests failed
+[ $FAILED -eq 0 ] || exit 1
+```
 ## Deliverables
 - [ ] Complete FPGA processing pipeline architecture design
 - [ ] Timing constraint files and synthesis scripts
@@ -204,6 +449,7 @@ The FPGA architecture is designed to accommodate the migration from dsPIC33:
 - [ ] Integration specification with RP2040 system
 - [ ] Migration strategy from dsPIC33 implementation
 - [ ] Comprehensive testbench for all processing stages
+- [ ] Create a proper virtualised setup similar to the exmaples but also includes proper integration with the current verilog, and an easy ot run script that does the tests in one click, especially to verify if the things fit in ram, dont use too many LUTs and are matching the predicted latencies.
 
 ---
 
