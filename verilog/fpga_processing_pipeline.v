@@ -25,6 +25,15 @@ module fpga_processing_pipeline (
     input  wire        spi_cs_n,        // SPI chip select (active low)
     output wire        spi_miso,        // SPI master in, slave out
     input  wire [7:0]  gain_control,    // Gain control from RP2040 (added for DDC)
+
+    // Dynamic Reconfiguration - Prompt 1.3
+    input  wire [2:0]  processing_mode,   // Processing mode selection
+    input  wire [7:0]  modulation_type,   // Modulation/demodulation type (OOK/FSK/FM/AM/QAM/etc.)
+    input  wire [7:0]  filter_bandwidth,  // Filter bandwidth setting
+    input  wire        clock_gating_en,   // Clock gating enable
+    input  wire [7:0]  thermal_scaling,   // Thermal scaling control
+    input  wire        resource_opt_en,   // Resource optimization enable
+    input  wire [7:0]  power_profile,     // Power consumption profile
     
     // Ethernet GMII interface (KSZ9031RNXCC)
     output wire [7:0]  gmii_tx_d,       // GMII transmit data
@@ -202,14 +211,99 @@ module fpga_processing_pipeline (
     );
     
     // ========================================================================
-    // UDP/IP Protocol Stack
+    // Dynamic Reconfiguration Logic - Prompt 1.3 Implementation
+    // ========================================================================
+
+    // Processing mode control signals
+    wire mode_spectrum_en = (processing_mode == 3'd0);  // Real-time spectrum (FFT)
+    wire mode_iq_stream_en = (processing_mode == 3'd1); // I/Q sample streaming
+    wire mode_audio_demod_en = (processing_mode == 3'd2); // Demodulated audio
+    wire mode_invalid = (processing_mode > 3'd2);         // Invalid mode detection
+
+    // Performance optimization - Clock gating based on mode
+    wire fft_enable = mode_spectrum_en && enable_control && !clock_gating_en;
+    wire ddc_enable = (mode_spectrum_en || mode_iq_stream_en || mode_audio_demod_en) && enable_control;
+    wire demod_enable = mode_audio_demod_en && enable_control;
+
+    // Resource optimization - disable unused modules based on power profile
+    wire resource_optimized_mode = resource_opt_en || (power_profile > 8'h80); // High power profile enables resource optimization
+
+    // Thermal management - performance scaling based on thermal_scaling register
+    wire [7:0] scaled_performance = (thermal_scaling == 8'd0) ? 8'hFF : thermal_scaling; // Auto thermal scaling or user-defined
+
+    // ========================================================================
+    // Data Path Selector Based on Processing Mode
+    // ========================================================================
+
+    wire [31:0] fft_data_mux = (mode_spectrum_en) ? {fft_real_data, fft_imag_data} : 32'h0;
+    wire        fft_valid_mux = (mode_spectrum_en) ? fft_valid : 1'b0;
+
+    wire [31:0] iq_data_mux = (mode_iq_stream_en) ? {ddc_i_data[15:0], ddc_q_data[15:0]} : 32'h0;
+    wire        iq_valid_mux = (mode_iq_stream_en) ? ddc_valid : 1'b0;
+
+    // Audio demodulation with modulation type support
+    wire [31:0] audio_data_mux = (mode_audio_demod_en) ? {demodulated_audio, 16'h0} : 32'h0;
+    wire        audio_valid_mux = (mode_audio_demod_en) ? audio_valid : 1'b0;
+
+    // Combined data selection
+    wire [31:0] selected_data = fft_data_mux | iq_data_mux | audio_data_mux;
+    wire        selected_valid = fft_valid_mux | iq_valid_mux | audio_valid_mux;
+    wire [3:0]  selected_len = (mode_spectrum_en) ? 4'd6 :  // 24-bit complex (FFT)
+                               (mode_iq_stream_en) ? 4'd4 :  // 32-bit complex (IQ)
+                               (mode_audio_demod_en) ? 4'd2 : 4'd6; // Audio data length
+
+    // ========================================================================
+    // Audio Demodulation Module - AM/FM/FSK Support (Prompt 1.3 Enhancement)
+    // ========================================================================
+
+    wire [15:0] demodulated_audio;
+    wire        audio_valid;
+
+    // AM Demodulation (Envelope Detection)
+    wire [31:0] am_envelope = $signed(ddc_i_data) * $signed(ddc_i_data) + $signed(ddc_q_data) * $signed(ddc_q_data);
+    wire [15:0] am_audio = am_envelope[30:15];  // Simple square-law envelope detection
+
+    // FM Demodulation (Phase differentiation)
+    reg [31:0] ddc_i_prev, ddc_q_prev;
+    wire [31:0] fm_phase_diff = $signed(ddc_i_data) * $signed(ddc_q_prev) - $signed(ddc_q_data) * $signed(ddc_i_prev);
+    wire [15:0] fm_audio = fm_phase_diff[25:10]; // Simplified FM demodulation
+
+    // FSK Demodulation (Frequency shift keying)
+    reg [15:0] fsk_threshold;
+    wire [15:0] fsk_audio = (am_envelope[30:15] > fsk_threshold) ? 16'h7FFF : 16'h0000;
+
+    // Modulation type selection
+    wire [15:0] selected_audio = (modulation_type == 8'h01) ? am_audio :   // AM
+                                 (modulation_type == 8'h02) ? fm_audio :   // FM
+                                 (modulation_type == 8'h03) ? fsk_audio :  // FSK
+                                 16'h0000;                                 // Default (no audio)
+
+    assign demodulated_audio = selected_audio;
+    assign audio_valid = mode_audio_demod_en && ddc_valid;
+
+    // Update previous samples for FM demod
+    always @(posedge clk_processing or negedge reset_n) begin
+        if (!reset_n) begin
+            ddc_i_prev <= 32'd0;
+            ddc_q_prev <= 32'd0;
+            fsk_threshold <= 16'h4000;
+        end else if (ddc_valid) begin
+            ddc_i_prev <= ddc_i_data;
+            ddc_q_prev <= ddc_q_data;
+            // Adaptive FSK threshold based on signal power
+            fsk_threshold <= (fsk_threshold * 7 + am_envelope[30:15]) / 8;
+        end
+    end
+
+    // ========================================================================
+    // UDP/IP Protocol Stack (Mode-Aware)
     // ========================================================================
     udp_ip_stack u_udp_ip_stack (
         .clk              (clk_eth_tx),
-        .rst_n            (reset_n),
-        .app_data         ({fft_real_data, fft_imag_data}),
-        .app_len          (6),          // 24-bit complex data = 6 bytes
-        .app_valid        (fft_valid),
+        .rst_n            (reset_n && !mode_invalid),  // Disable stack for invalid modes
+        .app_data         (selected_data),
+        .app_len          (selected_len),
+        .app_valid        (selected_valid),
         .app_ready        (app_ready),
         .src_ip           (32'hC0A80002),  // 192.168.0.2
         .dst_ip           (32'hC0A80001),  // 192.168.0.1
@@ -241,7 +335,7 @@ module fpga_processing_pipeline (
     );
     
     // ========================================================================
-    // RP2040 Interface
+    // RP2040 Interface (Prompt 1.3: Dynamic Reconfiguration)
     // ========================================================================
     rp2040_interface u_rp2040_interface (
         .spi_clk          (spi_clk),
@@ -252,26 +346,34 @@ module fpga_processing_pipeline (
         .gain_control     (gain_control),
         .filter_select    (filter_select),
         .enable_control   (enable_control),
+        .processing_mode  (processing_mode),
+        .modulation_type  (modulation_type),
+        .filter_bandwidth (filter_bandwidth),
+        .clock_gating_en  (clock_gating_en),
+        .thermal_scaling  (thermal_scaling),
+        .resource_opt_en  (resource_opt_en),
+        .power_profile    (power_profile),
         .status_reg       (system_status),
         .pll_locked       (pll_locked),
         .eth_link_status  (eth_link_status)
     );
     
     // ========================================================================
-    // System Status Register
+    // System Status Register (Enhanced for Prompt 1.3)
     // ========================================================================
     assign system_status = {
-        fft_processing_active,   // Bit 15: FFT processing active
-        fft_overflow_flag,       // Bit 14: FFT overflow flag
-        2'b0,                    // Reserved (Bits 13-12)
+        mode_invalid,            // Bit 15: Invalid processing mode detected
+        clock_gating_en,         // Bit 14: Clock gating enabled
+        processing_mode[2:1],    // Bits 13-12: Processing mode (MSB bits)
         eth_link_status,         // Bit 11: Ethernet link
         pll_locked,              // Bit 10: PLL lock
         overflow_detect,         // Bit 9: ADC overflow
-        fft_valid,               // Bit 8: FFT valid
+        selected_valid,          // Bit 8: Data transmission active
         ddc_valid,               // Bit 7: DDC valid
         adc_fifo_full,           // Bit 6: ADC FIFO full
         adc_fifo_empty,          // Bit 5: ADC FIFO empty
-        enable_control           // Bit 4: System enabled
+        processing_mode[0],      // Bit 4: Processing mode (LSB bit)
+        enable_control           // Bit 3: System enabled
     };
     
     // ========================================================================
