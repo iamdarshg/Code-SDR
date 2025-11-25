@@ -113,7 +113,7 @@ module digital_downconverter #(
         .INPUT_WIDTH      (32),
         .OUTPUT_WIDTH     (32),
         .STAGES           (3),
-        .DECIMATION       (8)
+        .DECIMATION       (12)
     ) u_cic_decimator_i (
         .clk              (clk),
         .rst_n            (rst_n),
@@ -127,7 +127,7 @@ module digital_downconverter #(
         .INPUT_WIDTH      (32),
         .OUTPUT_WIDTH     (32),
         .STAGES           (3),
-        .DECIMATION       (8)
+        .DECIMATION       (12)
     ) u_cic_decimator_q (
         .clk              (clk),
         .rst_n            (rst_n),
@@ -149,7 +149,7 @@ module digital_downconverter #(
         .WIDTH            (32),
         .COEFF_WIDTH      (16),
         .TAPS             (8),
-        .DECIMATION       (8)
+        .DECIMATION       (12)
     ) u_compensation_filter_i (
         .clk              (clk),
         .rst_n            (rst_n),
@@ -163,7 +163,7 @@ module digital_downconverter #(
         .WIDTH            (32),
         .COEFF_WIDTH      (16),
         .TAPS             (8),
-        .DECIMATION       (8)
+        .DECIMATION       (12)
     ) u_compensation_filter_q (
         .clk              (clk),
         .rst_n            (rst_n),

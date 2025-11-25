@@ -990,6 +990,60 @@ The following schematic snippet illustrates the analog front-end and ADC interfa
 -   [ ] Documentation detailing the `gain_control` register encoding scheme and the adaptive control algorithm.
 -   [ ] Seamless integtration with the rest of the libraries, including the config wizard and the other modules.
 
+### 4.6 Low-Frequency Signal Detection via FFT Post-Processing
+
+**Objective:**
+Implement computer-side post-processing of FFT data to reveal low-frequency signal components under 4kHz through absolute average power analysis and data smoothing/packaging for visualization.
+
+**Implementation Requirements:**
+
+Process the existing FFT spectral data by:
+1. Taking the absolute value of the FFT magnitudes to get power data
+2. Applying averaging/smoothing algorithms to reduce noise and highlight low-frequency trends
+3. Packaging the processed data to make low-frequency components (below ~4kHz) clearly visible
+4. Integrating into the DSP processing chain for real-time analysis
+
+**Computer Interface Implementation:**
+
+Extends the existing DSP processor chain in `computer_side_interface.py` with a low-frequency detection module:
+
+```python
+class LowFrequencyDetector:
+    """Processes FFT data to reveal <4kHz signal components"""
+
+    def __init__(self, averaging_window=100, smoothing_factor=0.8):
+        self.averaging_window = averaging_window
+        self.smoothing_factor = smoothing_factor
+        self.power_history = []
+
+    def process_fft_power(self, fft_magnitudes: np.ndarray) -> np.ndarray:
+        """Convert FFT data to smoothed power representation"""
+        # Extract power (absolute magnitudes)
+        power_data = np.abs(fft_magnitudes)
+
+        # Apply exponential moving average for smoothing
+        if len(self.power_history) > 0:
+            smoothed_power = (self.smoothing_factor * self.power_history[-1] +
+                            (1 - self.smoothing_factor) * power_data)
+        else:
+            smoothed_power = power_data
+
+        self.power_history.append(smoothed_power)
+
+        # Maintain window size
+        if len(self.power_history) > self.averaging_window:
+            self.power_history.pop(0)
+
+        return smoothed_power
+```
+
+**Deliverables:**
+- [ ] Low-frequency detection module in computer-side interface
+- [ ] Integration with DSP processing chain
+- [ ] Configuration options for averaging and smoothing parameters
+- [ ] Visualization support in spectrum analyzer displays
+- [ ] Documentation of low-frequency detection algorithm
+
 
 ## Deliverables
 - [ ] Complete FPGA-based SDR driver with enhanced functionality

@@ -62,6 +62,8 @@ module fpga_processing_pipeline (
     wire [23:0] fft_imag_data;          // FFT imaginary component
     wire        fft_valid;              // FFT output valid
     wire [11:0] fft_index;              // FFT bin index
+    wire        fft_overflow_flag;      // FFT overflow detection
+    wire        fft_processing_active;  // FFT processing activity
     
     // Control signals
     wire [31:0] frequency_word;         // NCO frequency word from RP2040
@@ -194,7 +196,9 @@ module fpga_processing_pipeline (
         .real_out         (fft_real_data),
         .imag_out         (fft_imag_data),
         .fft_valid        (fft_valid),
-        .fft_index        (fft_index)
+        .fft_index        (fft_index),
+        .overflow_flag    (fft_overflow_flag),
+        .processing_active (fft_processing_active)
     );
     
     // ========================================================================
@@ -257,7 +261,9 @@ module fpga_processing_pipeline (
     // System Status Register
     // ========================================================================
     assign system_status = {
-        4'b0,                    // Reserved
+        fft_processing_active,   // Bit 15: FFT processing active
+        fft_overflow_flag,       // Bit 14: FFT overflow flag
+        2'b0,                    // Reserved (Bits 13-12)
         eth_link_status,         // Bit 11: Ethernet link
         pll_locked,              // Bit 10: PLL lock
         overflow_detect,         // Bit 9: ADC overflow
