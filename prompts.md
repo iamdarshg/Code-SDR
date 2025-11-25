@@ -29,7 +29,7 @@ The FPGA implements a sophisticated multi-stage processing pipeline optimized fo
 ```
 ADC Input → Digital Downconversion → FFT Processing → Ethernet Output
      ↓              ↓                      ↓              ↓
-10-bit        NCO Mixing            1024-pt FFT      UDP Packets
+10-bit        NCO Mixing            4096-pt FFT      UDP Packets
 Parallel     + Filtering           + Windowing       + MAC Layer
 ```
 
@@ -43,8 +43,8 @@ Parallel     + Filtering           + Windowing       + MAC Layer
 
 2. **Data Path Width Optimization**
    - **ADC Interface**: 10-bit parallel with overflow detection
-   - **Internal Processing**: 32-bit signed fixed-point arithmetic
-   - **FFT Processing**: 24-bit complex fixed-point for spectral accuracy
+   - **Internal Processing**: 16-bit signed fixed-point arithmetic
+   - **FFT Processing**: 32-bit complex fixed-point for spectral accuracy
    - **Ethernet Interface**: 8-bit parallel with byte-level framing
 
 3. **Memory Architecture**
@@ -61,7 +61,7 @@ Parallel     + Filtering           + Windowing       + MAC Layer
   - Parallel-to-serial conversion for 10-bit samples
   - Overflow detection and error flagging
   - Sample rate conversion and synchronization
-  - DC offset correction (optional hardware implementation)
+  - DC offset correction using rp2040
 
 **Stage 2: Digital Downconversion (DDC)**
 - **Purpose**: Shift RF signal to baseband and apply filtering
@@ -74,7 +74,7 @@ Parallel     + Filtering           + Windowing       + MAC Layer
 **Stage 3: FFT Processing**
 - **Purpose**: Spectral analysis and real-time spectrum computation
 - **Design Considerations**:
-  - **FFT Size**: 1024-point FFT for frequency resolution
+  - **FFT Size**: 4096-point FFT for frequency resolution
   - **Implementation**: Radix-2 FFT with butterfly operations
   - **Windowing**: Hardware Hamming window implementation
   - **Scaling**: Automatic scaling to prevent overflow
