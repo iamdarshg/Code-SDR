@@ -442,6 +442,7 @@ echo -e "${YELLOW}========================================${NC}"
 # Exit with error if any tests failed
 [ $FAILED -eq 0 ] || exit 1
 ```
+
 ## Deliverables
 - [ ] Complete FPGA processing pipeline architecture design
 - [ ] Timing constraint files and synthesis scripts

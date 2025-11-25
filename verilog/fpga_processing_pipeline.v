@@ -9,9 +9,7 @@
 
 module fpga_processing_pipeline (
     // System clocks and reset
-    input  wire        clk_100m,        // Primary 100 MHz system clock
-    input  wire        clk_105m_adc,    // 105 MHz ADC sampling clock
-    input  wire        clk_125m_eth,    // 125 MHz Ethernet GMII clock
+    input  wire        clk_100m_in,     // Primary 100 MHz input clock
     input  wire        rst_n,           // System reset (active low)
     
     // ADC interface
@@ -89,23 +87,27 @@ module fpga_processing_pipeline (
     // ========================================================================
     // Clock manager instance
     // ========================================================================
+    wire [31:0] frequency_word;
+    wire [7:0]  gain_control;
+    wire [3:0]  filter_select;
+    wire        enable_control;
+
     clock_manager u_clock_manager (
-        .clk_100m         (clk_100m),
-        .clk_105m_adc     (clk_105m_adc),
-        .clk_125m_eth     (clk_125m_eth),
+        .clk_100m_in      (clk_100m_in),
         .rst_n            (rst_n),
-        .clk_processing   (clk_processing),
-        .clk_eth_tx       (clk_eth_tx),
-        .clk_eth_rx       (clk_eth_rx),
-        .clk_adc          (clk_adc),
-        .reset_n          (reset_n)
+        .clk_600m         (clk_600m),
+        .clk_1200m_fft    (clk_1200m_fft),
+        .clk_250m_eth     (clk_250m_eth),
+        .clk_105m_adc     (adc_clock),
+        .reset_n          (reset_n),
+        .locked           (pll_locked)
     );
     
     // ========================================================================
     // ADC Interface and Data Conditioning
     // ========================================================================
     adc_interface u_adc_interface (
-        .clk_adc          (clk_adc),
+        .clk_adc          (adc_clock),
         .rst_n            (reset_n),
         .adc_data         (adc_data),
         .adc_valid        (adc_valid),
@@ -114,16 +116,16 @@ module fpga_processing_pipeline (
         .sample_valid     (adc_valid_proc),
         .overflow_detect  (overflow_detect)
     );
-    
+
     // ========================================================================
-    // Asynchronous FIFO for ADC to Processing domain crossing
+    // Asynchronous FIFO for ADC to 600MHz domain crossing
     // ========================================================================
     async_fifo #(
         .WIDTH            (32),
         .DEPTH            (256)
     ) u_adc_async_fifo (
-        .wr_clk           (clk_adc),
-        .rd_clk           (clk_processing),
+        .wr_clk           (adc_clock),
+        .rd_clk           (clk_600m),
         .wr_rst_n         (reset_n),
         .rd_rst_n         (reset_n),
         .din              (adc_data_proc),
@@ -135,10 +137,10 @@ module fpga_processing_pipeline (
     );
     
     // ========================================================================
-    // Digital Downconversion (DDC)
+    // Digital Downconversion (DDC) - 600MHz domain
     // ========================================================================
     digital_downconverter u_ddc (
-        .clk              (clk_processing),
+        .clk              (clk_600m),
         .rst_n            (reset_n),
         .adc_data         (adc_data_cross),
         .data_valid       (!adc_fifo_empty),
@@ -149,12 +151,12 @@ module fpga_processing_pipeline (
         .q_component      (ddc_q_data),
         .ddc_valid        (ddc_valid)
     );
-    
+
     // ========================================================================
-    // NCO Generator
+    // NCO Generator - 600MHz domain
     // ========================================================================
     nco_generator u_nco_generator (
-        .clk              (clk_processing),
+        .clk              (clk_600m),
         .rst_n            (reset_n),
         .frequency_word   (frequency_word),
         .enable           (enable_control),
@@ -162,15 +164,15 @@ module fpga_processing_pipeline (
         .cosine_out       (nco_cosine),
         .valid_out        (nco_valid)
     );
-    
+
     // ========================================================================
-    // Hamming Window
+    // Hamming Window - 600MHz domain
     // ========================================================================
     hamming_window #(
         .WIDTH            (32),
         .FFT_SIZE         (4096)
     ) u_hamming_window_i (
-        .clk              (clk_processing),
+        .clk              (clk_600m),
         .rst_n            (reset_n),
         .data_in          (ddc_i_data),
         .data_valid       (ddc_valid),
@@ -182,22 +184,22 @@ module fpga_processing_pipeline (
         .WIDTH            (32),
         .FFT_SIZE         (4096)
     ) u_hamming_window_q (
-        .clk              (clk_processing),
+        .clk              (clk_600m),
         .rst_n            (reset_n),
         .data_in          (ddc_q_data),
         .data_valid       (ddc_valid),
         .data_out         (windowed_q_data),
         .output_valid     (window_valid_q)
     );
-    
+
     // ========================================================================
-    // FFT Processor
+    // FFT Processor - Dedicated 1.2GHz FFT domain for maximum performance
     // ========================================================================
     fft_processor #(
         .FFT_SIZE         (4096),
         .DATA_WIDTH       (24)
     ) u_fft_processor (
-        .clk              (clk_processing),
+        .clk              (clk_1200m_fft),
         .rst_n            (reset_n),
         .real_in          (windowed_i_data[23:0]),
         .imag_in          (windowed_q_data[23:0]),
@@ -281,8 +283,8 @@ module fpga_processing_pipeline (
     assign demodulated_audio = selected_audio;
     assign audio_valid = mode_audio_demod_en && ddc_valid;
 
-    // Update previous samples for FM demod
-    always @(posedge clk_processing or negedge reset_n) begin
+    // Update previous samples for FM demod (600MHz domain)
+    always @(posedge clk_600m or negedge reset_n) begin
         if (!reset_n) begin
             ddc_i_prev <= 32'd0;
             ddc_q_prev <= 32'd0;
@@ -296,10 +298,10 @@ module fpga_processing_pipeline (
     end
 
     // ========================================================================
-    // UDP/IP Protocol Stack (Mode-Aware)
+    // UDP/IP Protocol Stack (Mode-Aware) - 250MHz Ethernet domain
     // ========================================================================
     udp_ip_stack u_udp_ip_stack (
-        .clk              (clk_eth_tx),
+        .clk              (clk_250m_eth),
         .rst_n            (reset_n && !mode_invalid),  // Disable stack for invalid modes
         .app_data         (selected_data),
         .app_len          (selected_len),
@@ -313,12 +315,12 @@ module fpga_processing_pipeline (
         .mac_len          (eth_packet_len),
         .mac_valid        (eth_packet_valid)
     );
-    
+
     // ========================================================================
-    // Ethernet MAC Layer
+    // Ethernet MAC Layer - 250MHz Ethernet domain
     // ========================================================================
     ethernet_mac u_ethernet_mac (
-        .clk              (clk_eth_tx),
+        .clk              (clk_250m_eth),
         .rst_n            (reset_n),
         .gmii_tx_d        (gmii_tx_d),
         .gmii_tx_en       (gmii_tx_en),
@@ -377,11 +379,11 @@ module fpga_processing_pipeline (
     };
     
     // ========================================================================
-    // GMII output assignments
+    // GMII output assignments (250MHz Ethernet domain for optimized UDP overhead)
     // ========================================================================
     assign gmii_crs = 1'b0;          // No carrier sense (full-duplex)
     assign gmii_col = 1'b0;          // No collision (full-duplex)
-    assign gmii_tx_clk = clk_125m_eth;  // Transmit clock
-    assign gmii_rx_clk = clk_125m_eth;  // Receive clock
+    assign gmii_tx_clk = clk_250m_eth;  // Transmit clock - 250MHz for reduced overhead
+    assign gmii_rx_clk = clk_250m_eth;  // Receive clock - 250MHz for reduced overhead
 
 endmodule
