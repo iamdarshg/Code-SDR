@@ -43,7 +43,7 @@ Parallel     + Filtering           + Windowing       + MAC Layer
 
 2. **Data Path Width Optimization**
    - **ADC Interface**: 10-bit parallel with overflow detection
-   - **Internal Processing**: 16-bit signed fixed-point arithmetic
+   - **Internal Processing**: 18-bit signed fixed-point arithmetic
    - **FFT Processing**: 32-bit complex fixed-point for spectral accuracy
    - **Ethernet Interface**: 8-bit parallel with byte-level framing
 
@@ -82,7 +82,7 @@ Parallel     + Filtering           + Windowing       + MAC Layer
 **Stage 4: Ethernet Interface**
 - **Purpose**: High-speed data transmission to host system
 - **Protocol Stack**:
-  - **MAC Layer**: Frame assembly with preamble/SFD generation
+  - **MAC Layer**: Frame assembly with preamble and SFD generation
   - **IP Layer**: UDP packet formation with checksum calculation
   - **Buffer Management**: TX/RX FIFOs with flow control
   - **Link Management**: Auto-negotiation and status monitoring
@@ -411,6 +411,12 @@ typedef struct {
         uint8_t current_monitor_pin; // Current monitoring
         uint8_t fault_pin;         // Fault detection input
     } monitor_pins;
+
+    // Ethernet PHY Management Pins (KSZ9031RNXCC)
+    struct {
+        uint8_t mdio_pin;           // MDIO - Management Data I/O (GPIO23)
+        uint8_t mdc_pin;            // MDC - Management Data Clock (GPIO22)
+    } ethernet_pins;
 } system_pin_config_t;
 ```
 
@@ -433,6 +439,14 @@ typedef struct {
    - **Diversity Reception**: Antenna diversity algorithms
    - **Signal Quality**: RSSI-based antenna selection
    - **Manual Override**: User-controllable antenna selection
+
+4. **Ethernet PHY Management (KSZ9031RNXCC via MDIO)**
+   - **MDIO/MDC Interface**: Management Data Input/Output and Management Data Clock
+   - **PHY Register Access**: Read/write all KSZ9031RNXCC registers
+   - **Link Status Monitoring**: Real-time link status, DUPLEX, speed detection
+   - **Auto-Negotiation Control**: Enable/configure Gigabit/100Mbps/10Mbps negotiation
+   - **PHY Initialization**: Software-controlled reset and power-up sequencing
+   - **Error Reporting**: Link failures, excessive collisions, and PHY diagnostics
 
 ### 3.3 Interactive Configuration System
 
@@ -721,7 +735,7 @@ class SystemConfigWizard:
         }
         
         for test_name, result in diagnostics.items():
-            status = "✓ PASS" if result else "✗ FAIL"
+            status = "✓ PASS" if result ? "✗ FAIL"
             print(f"{test_name}: {status}")
         
         return all(diagnostics.values())
@@ -762,7 +776,7 @@ if __name__ == "__main__":
 ## Deliverables
 - [ ] Complete RP2040 firmware (<512KB with O3 optimization)
 - [ ] Comprehensive pin configuration system
-- [ ] External component management (PLL, MOSFETs, LNA, antennas)
+- [ ] External component management (PLL, MOSFETs, LNA, antennas, ethernet PHY)
 - [ ] Interactive configuration wizard
 - [ ] System diagnostics and monitoring tools
 - [ ] Auto-configuration algorithms
@@ -942,6 +956,40 @@ class CompatibilityLayer:
         self.legacy_mode = True
         # Apply legacy behavior patterns
 ```
+
+### 4.5 Adaptive Gain and Fixed-Point Scaling
+
+**Objective:**
+Implement dynamic average power detection of incoming signals on the FPGA, allowing the RP2040 to adaptively adjust digital gain and fixed-point bit placement within the FPGA processing pipeline to optimize signal representation and prevent overflow/underflow.
+
+**Hardware Context:**
+The following schematic snippet illustrates the analog front-end and ADC interface relevant to the incoming signal chain. The digital signal from the ADC (U1 AD9215BCPZ-105) is the input to the FPGA, where power detection and adaptive scaling will occur.
+![Original Image](c:/Users/DARSHG~1/AppData/Local/Temp/temp_image_1764088427160.png)
+
+**Implementation Details:**
+
+1.  **FPGA (Verilog) Logic**:
+    *   **Average Power Detector**: A dedicated Verilog module will calculate the average power (mean square value) from the ADC's digital output samples over a configurable window. This module will output the calculated average power and a valid flag.
+    *   **RP2040 Interface Extension**: The `rp2040_interface.v` module will be updated to include a new read-only register that exposes the average power level calculated by the FPGA to the RP2040 via SPI.
+    *   **Adaptive Gain and Fixed-Point Scaler**: A new Verilog module, `adaptive_gain_scaler.v`, will be introduced into the FPGA's processing pipeline (e.g., after ADC data acquisition). This module will take the incoming digital samples and apply a combined digital gain and bit-shift operation.
+        *   The RP2040 will provide an 8-bit `gain_control` signal, where specific bits will encode both the digital gain multiplier and the fixed-point bit-shift amount (e.g., 4 bits for gain factor, 4 bits for shift direction and magnitude).
+        *   This allows the RP2040 to dynamically adjust the internal fixed-point representation of the signal within the FPGA: shifting left to utilize more fractional bits for low-level signals (increasing precision) or shifting right to allocate more integer bits for high-level signals (preventing overflow).
+
+2.  **RP2040 (C Firmware) Logic**:
+    *   **SPI/JTAG Register Access**: Implement or leverage existing SPI or JTAG functions to read from the new average power register and write to the `gain_control` register in the FPGA.
+    *   **Adaptive Control Algorithm**: Develop a control loop within the RP2040 firmware that:
+        *   Periodically reads the average power level from the FPGA.
+        *   Compares the detected power against a target range.
+        *   Calculates the necessary digital gain and fixed-point bit-shift to bring the signal within optimal dynamic range, considering both amplitude and precision requirements.
+        *   Encodes these gain and shift values into the 8-bit `gain_control` register and sends it to the FPGA via SPI or JTAG. This effectively implements a semi-floating point representation by adjusting the binary point dynamically.
+
+**Deliverables:**
+-   [ ] FPGA Verilog modules (`average_power_detector.v`, `adaptive_gain_scaler.v`)
+-   [ ] Updated `rp2040_interface.v` and `fpga_processing_pipeline.v` to integrate new modules and expose average power.
+-   [ ] RP2040 firmware (`.c` files) for reading average power and implementing adaptive gain/scaling logic.
+-   [ ] Documentation detailing the `gain_control` register encoding scheme and the adaptive control algorithm.
+-   [ ] Seamless integtration with the rest of the libraries, including the config wizard and the other modules.
+
 
 ## Deliverables
 - [ ] Complete FPGA-based SDR driver with enhanced functionality
@@ -1150,6 +1198,7 @@ class DeploymentManager:
 - [ ] Safe deployment manager with rollback capabilities
 - [ ] Performance benchmarking and monitoring tools
 - [ ] Migration documentation and best practices guide
+- [ ] Easy COMPILED AND SIMULATED tests of all functionality within and beyond expected operation range. 
 
 ---
 

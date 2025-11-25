@@ -24,6 +24,7 @@ module fpga_processing_pipeline (
     input  wire        spi_mosi,        // SPI master out, slave in
     input  wire        spi_cs_n,        // SPI chip select (active low)
     output wire        spi_miso,        // SPI master in, slave out
+    input  wire [7:0]  gain_control,    // Gain control from RP2040 (added for DDC)
     
     // Ethernet GMII interface (KSZ9031RNXCC)
     output wire [7:0]  gmii_tx_d,       // GMII transmit data
@@ -60,7 +61,7 @@ module fpga_processing_pipeline (
     wire [23:0] fft_real_data;          // FFT real component
     wire [23:0] fft_imag_data;          // FFT imaginary component
     wire        fft_valid;              // FFT output valid
-    wire [10:0] fft_index;              // FFT bin index
+    wire [11:0] fft_index;              // FFT bin index
     
     // Control signals
     wire [31:0] frequency_word;         // NCO frequency word from RP2040
@@ -132,6 +133,7 @@ module fpga_processing_pipeline (
         .data_valid       (!adc_fifo_empty),
         .nco_sine         (nco_sine),
         .nco_cosine       (nco_cosine),
+        .gain_control     (gain_control),
         .i_component      (ddc_i_data),
         .q_component      (ddc_q_data),
         .ddc_valid        (ddc_valid)
@@ -151,59 +153,28 @@ module fpga_processing_pipeline (
     );
     
     // ========================================================================
-    // CIC Decimation Filter
-    // ========================================================================
-    cic_decimator #(
-        .INPUT_WIDTH      (32),
-        .OUTPUT_WIDTH     (32),
-        .STAGES           (3),
-        .DECIMATION       (8)
-    ) u_cic_decimator (
-        .clk              (clk_processing),
-        .rst_n            (reset_n),
-        .data_in          (ddc_i_data),
-        .data_valid       (ddc_valid),
-        .data_out         (filtered_i_data),
-        .output_valid     (filter_valid)
-    );
-    
-    cic_decimator #(
-        .INPUT_WIDTH      (32),
-        .OUTPUT_WIDTH     (32),
-        .STAGES           (3),
-        .DECIMATION       (8)
-    ) u_cic_decimator_q (
-        .clk              (clk_processing),
-        .rst_n            (reset_n),
-        .data_in          (ddc_q_data),
-        .data_valid       (ddc_valid),
-        .data_out         (filtered_q_data),
-        .output_valid     (filter_valid_q)
-    );
-    
-    // ========================================================================
     // Hamming Window
     // ========================================================================
     hamming_window #(
         .WIDTH            (32),
-        .FFT_SIZE         (1024)
+        .FFT_SIZE         (4096)
     ) u_hamming_window_i (
         .clk              (clk_processing),
         .rst_n            (reset_n),
-        .data_in          (filtered_i_data),
-        .data_valid       (filter_valid),
+        .data_in          (ddc_i_data),
+        .data_valid       (ddc_valid),
         .data_out         (windowed_i_data),
         .output_valid     (window_valid)
     );
-    
+
     hamming_window #(
         .WIDTH            (32),
-        .FFT_SIZE         (1024)
+        .FFT_SIZE         (4096)
     ) u_hamming_window_q (
         .clk              (clk_processing),
         .rst_n            (reset_n),
-        .data_in          (filtered_q_data),
-        .data_valid       (filter_valid_q),
+        .data_in          (ddc_q_data),
+        .data_valid       (ddc_valid),
         .data_out         (windowed_q_data),
         .output_valid     (window_valid_q)
     );
@@ -212,7 +183,7 @@ module fpga_processing_pipeline (
     // FFT Processor
     // ========================================================================
     fft_processor #(
-        .FFT_SIZE         (1024),
+        .FFT_SIZE         (4096),
         .DATA_WIDTH       (24)
     ) u_fft_processor (
         .clk              (clk_processing),
