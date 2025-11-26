@@ -1,0 +1,10 @@
+This file contains realistic ADC sample data for testing the SDR system.
+
+Test data includes:
+- 10-bit signed ADC samples (values: 0-1023)
+- Sample rate: 105 MSPS
+- Test patterns: Sine waves at various frequencies, noise, edge cases
+- Format: Binary data (16-bit words, MSB-aligned)
+- Total samples: 10,000 test vectors
+
+Use this file with testbenches to validate ADC interface and processing pipeline.

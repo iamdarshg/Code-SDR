@@ -1,0 +1,36 @@
+{
+  "description": "FFT test vectors for SDR FPGA validation",
+  "fft_size": 1024,
+  "sample_rate": 105000000,
+  "test_cases": [
+    {
+      "name": "Single tone at 10 MHz",
+      "frequency_hz": 10000000,
+      "amplitude": 0.8,
+      "expected_bin": 97,
+      "tolerance_bins": 2,
+      "snr_db_min": 40
+    },
+    {
+      "name": "Multi-tone test",
+      "frequencies_hz": [5000000, 15000000, 30000000],
+      "amplitudes": [0.5, 0.3, 0.2],
+      "expected_bins": [48, 146, 292]
+    },
+    {
+      "name": "Noise floor test",
+      "noise_snr_db": -60,
+      "peak_suppression_db": 20
+    },
+    {
+      "name": "Windowing validation",
+      "window_type": "hamming",
+      "sidelobe_suppression_db": 43
+    }
+  ],
+  "golden_reference": {
+    "impulse_response": [511, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    "dc_response": [0, 512, 0, 0, 0, 0, 0, 0, 0, 0],
+    "noise_floor_db": -70
+  }
+}

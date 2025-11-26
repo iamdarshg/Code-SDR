@@ -1,0 +1,31 @@
+{
+  "description": "Digital filter coefficients for FPGA validation",
+  "cic_decimator": {
+    "stages": 3,
+    "decimation_factor": 8,
+    "differential_delay": 2,
+    "passband_ripple_db": 0.1,
+    "stopband_attenuation_db": 80,
+    "coefficients": {
+      "integrator_gain": [1, 1, 1],
+      "comb_delay": [1, -1, 1, -1, 1, -1],
+      "decimation_coefficients": [1, 8, 28, 56, 70, 56, 28, 8, 1]
+    }
+  },
+  "compensation_filter": {
+    "order": 3,
+    "cutoff_normalized": 0.125,
+    "type": "butterworth",
+    "coefficients": {
+      "b": [0.098531, 0.295593, 0.295593, 0.098531],
+      "a": [1.0, -1.19322, 0.641351, -0.14401]
+    }
+  },
+  "hamming_window": {
+    "size": 1024,
+    "alpha": 0.54,
+    "beta": 0.46,
+    "sidelobe_suppression_db": 43,
+    "mainlobe_width_hz": 1.3
+  }
+}
