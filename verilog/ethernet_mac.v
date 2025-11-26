@@ -26,7 +26,13 @@ module ethernet_mac #(
     input  wire [15:0]  packet_len,               // Packet length
     input  wire        packet_valid,              // Packet valid flag
     output wire        packet_ack,                // Packet acknowledged
-    
+
+    // Receive data interface
+    output wire [DATA_WIDTH-1:0] rx_packet_data,  // Received packet data
+    output wire [15:0]  rx_packet_len,            // Received packet length
+    output wire        rx_packet_valid,           // Received packet valid
+    input  wire        rx_packet_ack,             // Received packet acknowledged
+
     // Status signals
     output wire        link_status,               // Ethernet link status
     output wire [31:0] packet_counter             // Packet counter
@@ -225,69 +231,203 @@ module ethernet_mac #(
     end
     
     // ========================================================================
-    // RX State Machine (simplified)
+    // RX State Machine (complete implementation)
     // ========================================================================
-    
+
+    localparam RX_IDLE      = 4'd0;
+    localparam RX_PREAMBLE  = 4'd1;
+    localparam RX_SFD       = 4'd2;
+    localparam RX_MAC_HDR   = 4'd3;
+    localparam RX_DATA      = 4'd4;
+    localparam RX_CRC       = 4'd5;
+    localparam RX_DONE      = 4'd6;
+    localparam RX_ERROR     = 4'd7;
+
     reg [3:0] rx_state;
     reg [7:0] rx_byte_counter;
     reg [31:0] rx_crc_reg;
+    reg [31:0] rx_calculated_crc;
+    reg [47:0] rx_dest_mac;
+    reg [47:0] rx_src_mac;
     reg link_status_reg;
-    
+
+    // Receive data buffer (to hold received frame)
+    reg [DATA_WIDTH-1:0] rx_data_buffer [0:511];  // Buffer for received packet
+    reg [8:0] rx_buffer_write_ptr;
+    reg [15:0] rx_frame_length;
+    reg rx_packet_valid;
+
     always @(posedge clk or negedge rst_n) begin
         if (!rst_n) begin
-            rx_state <= TX_IDLE;
+            rx_state <= RX_IDLE;
             rx_byte_counter <= 8'd0;
             rx_crc_reg <= 32'hFFFFFFFF;
+            rx_calculated_crc <= 32'h00000000;
+            rx_dest_mac <= 48'h0;
+            rx_src_mac <= 48'h0;
             link_status_reg <= 1'b0;
+            rx_buffer_write_ptr <= 9'd0;
+            rx_frame_length <= 16'd0;
+            rx_packet_valid <= 1'b0;
         end else begin
-            // Link status detection (simplified)
-            link_status_reg <= gmii_rx_dv;
-            
-            // RX state machine (basic frame detection)
+            // Link status detection
+            link_status_reg <= gmii_rx_dv | link_status_reg;
+
+            // RX state machine with complete CRC validation
             case (rx_state)
-                TX_IDLE: begin
+                RX_IDLE: begin
+                    rx_packet_valid <= 1'b0;
+                    rx_buffer_write_ptr <= 9'd0;
+                    rx_frame_length <= 16'd0;
                     if (gmii_rx_dv && gmii_rx_d == 8'h55) begin
-                        rx_state <= TX_PREAMBLE;
+                        rx_state <= RX_PREAMBLE;
                         rx_byte_counter <= 8'd0;
+                        rx_crc_reg <= 32'hFFFFFFFF;  // Reset CRC
+                    end else if (!gmii_rx_dv) begin
+                        link_status_reg <= 1'b0;  // No activity, link down
                     end
                 end
-                
-                TX_PREAMBLE: begin
+
+                RX_PREAMBLE: begin
                     if (gmii_rx_dv) begin
-                        rx_byte_counter <= rx_byte_counter + 1;
-                        if (rx_byte_counter >= 8'd6 && gmii_rx_d == 8'hD5) begin
-                            rx_state <= TX_MAC_HDR;
-                            rx_byte_counter <= 8'd0;
+                        if (gmii_rx_d == 8'h55) begin
+                            rx_byte_counter <= rx_byte_counter + 1;
+                            if (rx_byte_counter >= 8'd6) begin
+                                rx_state <= RX_SFD;
+                                rx_byte_counter <= 8'd0;
+                            end
+                        end else begin
+                            // Unexpected byte during preamble
+                            rx_state <= RX_ERROR;
                         end
                     end else begin
-                        rx_state <= TX_IDLE;
+                        rx_state <= RX_IDLE;
                     end
                 end
-                
-                TX_MAC_HDR: begin
+
+                RX_SFD: begin
+                    if (gmii_rx_dv && gmii_rx_d == 8'hD5) begin
+                        rx_state <= RX_MAC_HDR;
+                        rx_byte_counter <= 8'd0;
+                    end else if (!gmii_rx_dv) begin
+                        rx_state <= RX_IDLE;
+                    end else begin
+                        rx_state <= RX_ERROR;
+                    end
+                end
+
+                RX_MAC_HDR: begin
                     if (gmii_rx_dv) begin
                         rx_byte_counter <= rx_byte_counter + 1;
+
+                        // Extract MAC addresses
+                        case (rx_byte_counter)
+                            8'd0: rx_dest_mac[47:40] <= gmii_rx_d;
+                            8'd1: rx_dest_mac[39:32] <= gmii_rx_d;
+                            8'd2: rx_dest_mac[31:24] <= gmii_rx_d;
+                            8'd3: rx_dest_mac[23:16] <= gmii_rx_d;
+                            8'd4: rx_dest_mac[15:8]  <= gmii_rx_d;
+                            8'd5: rx_dest_mac[7:0]   <= gmii_rx_d;
+                            8'd6: rx_src_mac[47:40]  <= gmii_rx_d;
+                            8'd7: rx_src_mac[39:32]  <= gmii_rx_d;
+                            8'd8: rx_src_mac[31:24]  <= gmii_rx_d;
+                            8'd9: rx_src_mac[23:16]  <= gmii_rx_d;
+                            8'd10: rx_src_mac[15:8]  <= gmii_rx_d;
+                            8'd11: rx_src_mac[7:0]   <= gmii_rx_d;
+                            // 8'd12: EtherType MSB (skip for now)
+                            // 8'd13: EtherType LSB (skip for now)
+                        endcase
+
+                        // Update CRC for all header bytes
+                        rx_crc_reg <= crc32_byte(rx_crc_reg, gmii_rx_d);
+
                         if (rx_byte_counter >= 8'd13) begin
-                            rx_state <= TX_DATA;
+                            rx_state <= RX_DATA;
                             rx_byte_counter <= 8'd0;
                         end
                     end else begin
-                        rx_state <= TX_IDLE;
+                        rx_state <= RX_ERROR;  // Frame too short
                     end
                 end
-                
-                TX_DATA: begin
+
+                RX_DATA: begin
                     if (gmii_rx_dv) begin
                         rx_byte_counter <= rx_byte_counter + 1;
+
+                        // Store data byte in buffer (handle 32-bit word packing)
+                        if (rx_buffer_write_ptr[1:0] == 2'b00) begin
+                            rx_data_buffer[rx_buffer_write_ptr[8:2]][7:0] <= gmii_rx_d;
+                        end else if (rx_buffer_write_ptr[1:0] == 2'b01) begin
+                            rx_data_buffer[rx_buffer_write_ptr[8:2]][15:8] <= gmii_rx_d;
+                        end else if (rx_buffer_write_ptr[1:0] == 2'b10) begin
+                            rx_data_buffer[rx_buffer_write_ptr[8:2]][23:16] <= gmii_rx_d;
+                        end else begin  // 2'b11
+                            rx_data_buffer[rx_buffer_write_ptr[8:2]][31:24] <= gmii_rx_d;
+                        end
+
+                        rx_buffer_write_ptr <= rx_buffer_write_ptr + 1;
+
+                        // Update CRC for data bytes
+                        rx_crc_reg <= crc32_byte(rx_crc_reg, gmii_rx_d);
                     end else begin
-                        // Frame end
-                        rx_state <= TX_IDLE;
+                        // End of frame - check CRC
+                        rx_frame_length <= {rx_buffer_write_ptr, 2'b00}; // Convert to bytes
+                        rx_state <= RX_CRC;
+                        rx_byte_counter <= 8'd0;
+                        rx_calculated_crc <= ~rx_crc_reg;  // Final CRC inversion
                     end
                 end
-                
-                default: rx_state <= TX_IDLE;
+
+                RX_CRC: begin
+                    if (!gmii_rx_dv) begin  // Wait for CRC bytes
+                        rx_byte_counter <= rx_byte_counter + 1;
+
+                        case (rx_byte_counter)
+                            8'd0: rx_calculated_crc[7:0]   <= gmii_rx_d;   // Should match calculated
+                            8'd1: rx_calculated_crc[15:8]  <= gmii_rx_d;
+                            8'd2: rx_calculated_crc[23:16] <= gmii_rx_d;
+                            8'd3: rx_calculated_crc[31:24] <= gmii_rx_d;
+                        endcase
+
+                        if (rx_byte_counter >= 8'd3) begin
+                            // Check if received CRC matches calculated CRC
+                            if (gmii_rx_d == rx_calculated_crc[31:24] &&
+                                gmii_rx_d_prev[0] == rx_calculated_crc[23:16] &&
+                                gmii_rx_d_prev[1] == rx_calculated_crc[15:8] &&
+                                gmii_rx_d_prev[2] == rx_calculated_crc[7:0]) begin
+                                rx_packet_valid <= 1'b1;
+                                rx_state <= RX_DONE;
+                            end else begin
+                                rx_packet_valid <= 1'b0;
+                                rx_state <= RX_ERROR;
+                            end
+                        end
+                    end
+                end
+
+                RX_DONE: begin
+                    // Packet successfully received - ready for next
+                    rx_state <= RX_IDLE;
+                end
+
+                RX_ERROR: begin
+                    // Error condition - reset for next packet
+                    rx_packet_valid <= 1'b0;
+                    rx_state <= RX_IDLE;
+                end
+
+                default: rx_state <= RX_IDLE;
             endcase
         end
+    end
+
+    // Register for previous CRC bytes comparison
+    reg [7:0] gmii_rx_d_prev [0:2];
+
+    always @(posedge clk) begin
+        gmii_rx_d_prev[0] <= gmii_rx_d_prev[1];
+        gmii_rx_d_prev[1] <= gmii_rx_d_prev[2];
+        gmii_rx_d_prev[2] <= gmii_rx_d;
     end
     
     // ========================================================================
@@ -322,5 +462,39 @@ module ethernet_mac #(
     end
     
     assign packet_counter = packet_counter_reg;
+
+    // ========================================================================
+    // Receive Interface Assignments
+    // ========================================================================
+
+    // Simple receive interface - for a proper DMA implementation, this would
+    // be replaced with a streaming interface to the DMA engine
+    reg [8:0] rx_read_ptr;
+    reg [8:0] rx_words_available;
+
+    always @(posedge clk or negedge rst_n) begin
+        if (!rst_n) begin
+            rx_read_ptr <= 9'd0;
+            rx_words_available <= 9'd0;
+        end else begin
+            if (rx_packet_valid && rx_packet_ack) begin
+                // Calculate number of 32-bit words in received packet
+                rx_words_available <= (rx_frame_length + 3) >> 2; // Ceiling division by 4
+                rx_read_ptr <= 9'd0;
+            end else if (rx_words_available > 0) begin
+                // This is a simplified read mechanism - in practice this would
+                // be controlled by a DMA engine
+                rx_read_ptr <= rx_read_ptr + 1;
+                if (rx_read_ptr >= rx_words_available - 1) begin
+                    rx_words_available <= 9'd0;
+                end
+            end
+        end
+    end
+
+    // Output received packet data
+    assign rx_packet_data = (rx_words_available > 0) ? rx_data_buffer[rx_read_ptr] : 32'd0;
+    assign rx_packet_len = rx_frame_length;
+    assign rx_packet_valid = (rx_words_available > 0);
 
 endmodule
