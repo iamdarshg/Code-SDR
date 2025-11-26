@@ -44,32 +44,18 @@ module adaptive_gain_scaler #(
 
     // Adaptive Fixed-Point Scaling (Bit Shifting)
     wire [DATA_WIDTH-1:0] shifted_sample;
-    integer               shift_val;
 
-    // Decode shift_amount_code:
+    // Decode shift_amount_code and apply shift in one step:
     // If shift_amount_code < 8, it's a right shift (e.g., 0=0, 1=1, ..., 7=7)
     // If shift_amount_code == 8, it's no shift
     // If shift_amount_code > 8, it's a left shift (e.g., 9=1, 10=2, ..., 15=7)
-    always @(*) begin
-        if (shift_amount_code == 4'd8) begin // No shift
-            shift_val = 0;
-        end else if (shift_amount_code < 4'd8) begin // Right shift
-            shift_val = -(shift_amount_code);
-        end else begin // Left shift
-            shift_val = shift_amount_code - 4'd8;
-        end
-    end
-
-    // Apply shift
-    always @(*) begin
-        if (shift_val > 0) begin // Left shift
-            shifted_sample = gained_sample << shift_val;
-        end else if (shift_val < 0) begin // Right shift
-            shifted_sample = gained_sample >>> (-shift_val); // Arithmetic right shift for signed
-        end else begin // No shift
-            shifted_sample = gained_sample;
-        end
-    end
+    // Shift the gained sample (which is 2*DATA_WIDTH wide) to fit output
+    assign shifted_sample = (shift_amount_code == 4'd8) ? gained_sample[DATA_WIDTH-1:0] :  // No shift
+                           (shift_amount_code < 4'd8) ?   // Right shift
+                             gained_sample >>> shift_amount_code :
+                           (shift_amount_code > 4'd8) ?   // Left shift
+                             gained_sample << (shift_amount_code - 4'd8) :
+                             gained_sample[DATA_WIDTH-1:0]; // Default (shouldn't happen)
 
     assign sample_out = shifted_sample;
     assign sample_valid_out = sample_valid_in;

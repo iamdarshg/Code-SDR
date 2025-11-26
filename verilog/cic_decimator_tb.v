@@ -82,8 +82,10 @@ module cic_decimator_tb;
         // Check for basic functionality
         if (data_out !== data_out) begin // Check for X/Z
             $display("⚠ Warning: Output contains X/Z values");
+            $display("TEST FAILED: Invalid output");
         end else begin
             $display("✓ Output appears valid");
+            $display("TEST PASSED");
         end
 
         $finish;

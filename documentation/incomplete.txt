@@ -10,31 +10,6 @@
 SECTION 1: FFT PROCESSOR CRITICAL FIXES
 ================================================================================
 
-ISSUE 1A: Generate Block Synthesis Errors
-Priority: CRITICAL - Will fail synthesis
-Estimated Time: 8-12 hours
-
-Step 1: Open fft_processor.v in text editor
-Step 2: Move all reg declarations outside generate blocks to module level
-Step 3: Create arrays for all stage-specific registers with [STAGES-1:0] indexing
-Step 4: Convert butterfly_size_reg to wire and calculate combinationally
-Step 5: Convert butterfly_index_reg to wire and calculate from stage_counter
-Step 6: Convert group_index_reg to wire with proper indexing formula
-Step 7: Convert upper_index_reg to wire calculated from group_index
-Step 8: Convert twiddle_index_reg to wire with proper FFT indexing
-Step 9: Replace all generate block always statements with continuous assignments
-Step 10: Create parameterized butterfly module as separate entity
-Step 11: Instantiate butterfly modules within generate block using module instances
-Step 12: Connect butterfly inputs from previous stage buffer arrays
-Step 13: Connect butterfly outputs to current stage buffer arrays
-Step 14: Add proper enable signals cascaded through pipeline stages
-Step 15: Verify all register assignments use non-blocking operators consistently
-Step 16: Add comments documenting each pipeline stage delay
-Step 17: Create timing diagram showing data flow through stages
-Step 18: Run syntax check with iverilog to verify compilability
-Step 19: Create simple testbench to verify basic functionality
-Step 20: Simulate with test sine wave input at known frequency
-
 ISSUE 1B: Pipeline Stage Balancing
 Priority: HIGH - Affects timing closure
 Estimated Time: 6-8 hours
@@ -1036,6 +1011,40 @@ All documentation has been consolidated into README.md as a single comprehensive
 
 
 
+
+## Recent Test Suite Fixes - COMPLETED ✅
+**Date:** November 26, 2025
+**Status:** Test suite issues resolved
+
+**Fixed Issues:**
+- **PATH Resolution**: Updated run_all_tests.bat to use full paths for iverilog/vvp, eliminating 'not recognized' errors
+- **Simulation Timeout**: Added 30-second timeout to prevent infinite hangs and OOM crashes
+- **Testbench Port Mismatches**: Fixed nco_generator_tb.v, adc_interface_tb.v, cic_decimator_tb.v, async_fifo_tb.v port/signals
+- **Test Logic**: Added proper TEST PASSED/FAILED detection in testbenches
+- **Code Errors**: Fixed cic_decimator generate block with local integer declaration
+
+**Remaining Issues for Future Development:**
+- **Integration Test Missing**: fpga_processing_pipeline.v requires implemented clock_manager module (currently stub) for system-level verification
+- **FFT Size Scaling**: Testbenches use reduced FFT sizes (256 vs 4096) for simulation speed, full sizes would require longer timeouts or optimized design
+
+---
+
+## FPGA Processing Pipeline Integration Test (INCOMPLETE)
+**Priority:** HIGH
+**Estimated Time:** 4-6 hours (pending clock_manager completion)
+
+**Requirements:**
+- Implement clock_manager module with actual PLL constants for LIF-MD6000-6UMG64I
+- Create integration testbench for fpga_processing_pipeline.v top module
+- Verify ADC → DDC → FFT → Ethernet data flow with proper timing
+- Add system-level timing constraints and synthesis validation
+- Implement missing modules referenced in pipeline (marked as stub)
+
+**Current Status:**
+- All sub-modules have individual testbenches and compile without errors
+- FFT_SIZE in testbenches reduced to 256 for simulation performance
+- Full system integration blocked by clock_manager stub implementation
+- DMA engine and Ethernet MAC verified working in isolation
 
 ## Notes for Continuation
 

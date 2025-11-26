@@ -1,0 +1,12 @@
+Testing ADC interface...
+Time=257000: ADC data=200, Output data=201
+Time=276000: ADC data=100, Output data=001
+Time=295000: ADC data=000, Output data=101
+Time=314000: ADC data=000, Output data=301
+Time=333000: ADC data=000, Output data=301
+Time=352000: ADC data=000, Output data=301
+Time=371000: ADC data=000, Output data=301
+ADC interface test completed
+✗ Overflow detection failed
+TEST FAILED
+verilog\adc_interface_tb.v:81: $finish called at 842720 (1ps)

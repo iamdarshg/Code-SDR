@@ -1,0 +1,1 @@
+Refer to this while debugging. when you think youre done, run the tests and verfiy that youve fixed the issues. keep debuggung until all isues have beeen fixed. dont change the tests unless absolutely necessary. if doing sp, ask me first with the exact detailes and reasoning to chnage the same.

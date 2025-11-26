@@ -179,11 +179,11 @@ module ethernet_mac #(
                         endcase
                         
                         if (tx_byte_counter[1:0] == 2'b11) begin
-                            // Update CRC for every 4 bytes
-                            crc32_reg <= crc32_byte(crc32_reg, packet_data[7:0]);
-                            crc32_reg <= crc32_byte(crc32_reg, packet_data[15:8]);
-                            crc32_reg <= crc32_byte(crc32_reg, packet_data[23:16]);
-                            crc32_reg <= crc32_byte(crc32_reg, packet_data[31:24]);
+                            // Update CRC for every 4 bytes (sequential updates)
+                            crc32_reg <= crc32_byte(crc32_byte(crc32_byte(crc32_byte(crc32_reg, packet_data[7:0]),
+                                                                           packet_data[15:8]),
+                                                               packet_data[23:16]),
+                                                    packet_data[31:24]);
                         end
                         
                         tx_byte_counter <= tx_byte_counter + 1;
@@ -255,7 +255,7 @@ module ethernet_mac #(
     reg [DATA_WIDTH-1:0] rx_data_buffer [0:511];  // Buffer for received packet
     reg [8:0] rx_buffer_write_ptr;
     reg [15:0] rx_frame_length;
-    reg rx_packet_valid;
+    wire rx_packet_valid;
 
     always @(posedge clk or negedge rst_n) begin
         if (!rst_n) begin

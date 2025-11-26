@@ -7,35 +7,32 @@ module adc_interface_tb;
     parameter CLK_PERIOD = 10; // 100 MHz
 
     // DUT signals
-    reg clk;
+    reg clk_adc;
     reg rst_n;
     reg [ADC_WIDTH-1:0] adc_data;
-    reg adc_clk;
+    reg adc_valid;
+    reg adc_ovr;
 
-    wire [ADC_WIDTH-1:0] data_out;
-    wire data_valid;
-    wire overflow_flag;
+    wire [31:0] adc_samples;
+    wire sample_valid;
+    wire overflow_detect;
 
     // Instantiate DUT
     adc_interface dut (
-        .clk(clk),
+        .clk_adc(clk_adc),
         .rst_n(rst_n),
         .adc_data(adc_data),
-        .adc_clk(adc_clk),
-        .data_out(data_out),
-        .data_valid(data_valid),
-        .overflow_flag(overflow_flag)
+        .adc_valid(adc_valid),
+        .adc_ovr(adc_ovr),
+        .adc_samples(adc_samples[ADC_WIDTH-1:0]), // Use lower bits for test
+        .sample_valid(sample_valid),
+        .overflow_detect(overflow_detect)
     );
 
     // Clock generation
     initial begin
-        clk = 0;
-        forever #(CLK_PERIOD/2) clk = ~clk;
-    end
-
-    initial begin
-        adc_clk = 0;
-        forever #9.52 adc_clk = ~adc_clk; // ~105 MHz
+        clk_adc = 0;
+        forever #9.52 clk_adc = ~clk_adc; // ~105 MHz
     end
 
     // Test sequence
@@ -43,6 +40,8 @@ module adc_interface_tb;
         // Initialize signals
         rst_n = 0;
         adc_data = 0;
+        adc_valid = 0;
+        adc_ovr = 0;
 
         // Reset
         #100;
@@ -55,13 +54,15 @@ module adc_interface_tb;
         $display("Testing ADC interface...");
 
         // Test various ADC values
-        adc_data = 10'h1FF; #20; // Max positive
-        adc_data = 10'h000; #20; // Zero
-        adc_data = 10'h200; #20; // Negative
-        adc_data = 10'h100; #20; // Mid-scale
+        @(posedge clk_adc); adc_data = 10'h1FF; adc_valid = 1; #9.52; adc_valid = 0;
+        @(posedge clk_adc); adc_data = 10'h000; adc_valid = 1; #9.52; adc_valid = 0;
+        @(posedge clk_adc); adc_data = 10'h200; adc_valid = 1; #9.52; adc_valid = 0;
+        @(posedge clk_adc); adc_data = 10'h100; adc_valid = 1; #9.52; adc_valid = 0;
 
         // Test overflow condition
-        adc_data = 10'h400; #20; // Overflow value
+        @(posedge clk_adc); adc_data = 10'h400; adc_valid = 1; adc_ovr = 1; #9.52; adc_valid = 0; adc_ovr = 0;
+        @(posedge clk_adc); adc_data = 10'h400; adc_valid = 1; adc_ovr = 1; #9.52; adc_valid = 0; adc_ovr = 0;
+        @(posedge clk_adc); adc_data = 10'h400; adc_valid = 1; adc_ovr = 1; #9.52; adc_valid = 0; adc_ovr = 0;
 
         // Wait for processing
         #500;
@@ -69,20 +70,22 @@ module adc_interface_tb;
         $display("ADC interface test completed");
 
         // Check results
-        if (overflow_flag) begin
+        if (overflow_detect) begin
             $display("✓ Overflow detection working");
+            $display("TEST PASSED");
         end else begin
             $display("✗ Overflow detection failed");
+            $display("TEST FAILED");
         end
 
         $finish;
     end
 
     // Monitor
-    always @(posedge clk) begin
-        if (data_valid) begin
+    always @(posedge clk_adc) begin
+        if (sample_valid) begin
             $display("Time=%0t: ADC data=%h, Output data=%h",
-                    $time, adc_data, data_out);
+                    $time, adc_data, adc_samples[9:0]);
         end
     end
 

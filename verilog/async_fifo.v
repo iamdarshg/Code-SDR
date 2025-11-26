@@ -117,12 +117,35 @@ module async_fifo #(
     // ========================================================================
     // Status signal generation
     // ========================================================================
-    
-    // Full condition: next write pointer equals synchronized read pointer
-    assign full = (wr_ptr_gray_next == rd_ptr_gray_sync2);
-    
+
+    // Registered flags for stability and safety margin
+    reg full_reg;
+    reg empty_reg;
+
+    // Full condition: next write pointer would equal synchronized read pointer
+    wire full_raw = (wr_ptr_gray_next == rd_ptr_gray_sync2);
+
     // Empty condition: write pointer equals synchronized read pointer
-    assign empty = (wr_ptr_gray_sync2 == rd_ptr_gray);
+    wire empty_raw = (wr_ptr_gray_sync2 == rd_ptr_gray);
+
+    always @(posedge wr_clk or negedge wr_rst_n) begin
+        if (!wr_rst_n) begin
+            full_reg <= 1'b0;
+        end else begin
+            full_reg <= full_raw;
+        end
+    end
+
+    always @(posedge rd_clk or negedge rd_rst_n) begin
+        if (!rd_rst_n) begin
+            empty_reg <= 1'b1;  // Empty at reset
+        end else begin
+            empty_reg <= empty_raw;
+        end
+    end
+
+    assign full = full_reg;
+    assign empty = empty_reg;
     
     // ========================================================================
     // Memory array (block RAM)

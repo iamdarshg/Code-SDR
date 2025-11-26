@@ -23,8 +23,11 @@ module cic_decimator #(
     // ========================================================================
     // Parameter calculations
     // ========================================================================
-    
-    localparam STAGE_WIDTH = INPUT_WIDTH + $clog2(STAGES + 1);
+
+    // Bit growth calculation: each integrator stage adds M*log2(R) bits
+    // For M=1 (comb delay), growth = STAGES * log2(DECIMATION)
+    localparam bit_growth = STAGES * $clog2(DECIMATION);
+    localparam STAGE_WIDTH = INPUT_WIDTH + bit_growth;
     localparam COMB_DELAY = 1;  // Comb filter delay
     
     // ========================================================================
@@ -49,23 +52,22 @@ module cic_decimator #(
     endgenerate
     
     // Integrator calculation (cumulative sum)
-    generate
-        always @(*) begin
-            if (data_valid) begin
-                // First integrator stage: integrate input data
-                integrator_next[0] = integrator[0] + data_in;
-                // Subsequent integrator stages: integrate previous output
-                for (i = 1; i < STAGES; i = i + 1) begin
-                    integrator_next[i] = integrator[i] + integrator[i-1];
-                end
-            end else begin
-                // Hold values when no data valid
-                for (i = 0; i < STAGES; i = i + 1) begin
-                    integrator_next[i] = integrator[i];
-                end
+    always @(*) begin
+        integer i;
+        if (data_valid) begin
+            // First integrator stage: integrate input data
+            integrator_next[0] = integrator[0] + data_in;
+            // Subsequent integrator stages: integrate previous output
+            for (i = 1; i < STAGES; i = i + 1) begin
+                integrator_next[i] = integrator[i] + integrator[i-1];
+            end
+        end else begin
+            // Hold values when no data valid
+            for (i = 0; i < STAGES; i = i + 1) begin
+                integrator_next[i] = integrator[i];
             end
         end
-    endgenerate
+    end
     
     // ========================================================================
     // Decimation logic
@@ -133,15 +135,15 @@ module cic_decimator #(
     // ========================================================================
     // Gain compensation and output scaling
     // ========================================================================
-    
+
     // Gain of CIC filter: (R*M)^N where R=decimation, M=delay, N=stages
     // For our case: (8*1)^3 = 512
     localparam GAIN = DECIMATION ** STAGES;
     localparam GAIN_SHIFT = $clog2(GAIN);
-    
-    // Apply gain compensation
-    wire [STAGE_WIDTH + GAIN_SHIFT - 1:0] scaled_output;
-    assign scaled_output = comb[STAGES-1] << GAIN_SHIFT;
+
+    // Apply gain compensation by dividing output by gain (with rounding)
+    wire [STAGE_WIDTH-1:0] scaled_output;
+    assign scaled_output = (comb[STAGES-1] + (1 << (GAIN_SHIFT-1))) >> GAIN_SHIFT;
     
     // Output register with saturation
     reg [OUTPUT_WIDTH-1:0] output_register;
@@ -151,10 +153,10 @@ module cic_decimator #(
             output_register <= 'd0;
         end else if (decimate_enable) begin
             // Saturation logic to prevent overflow
-            if (scaled_output[STAGE_WIDTH + GAIN_SHIFT - 1]) begin
+            if (scaled_output[STAGE_WIDTH - 1]) begin
                 // Negative saturation
                 output_register <= {1'b1, {(OUTPUT_WIDTH-1){1'b0}}};
-            end else if (scaled_output[STAGE_WIDTH + GAIN_SHIFT - 1:OUTPUT_WIDTH] != 'd0) begin
+            end else if (scaled_output[STAGE_WIDTH - 1:OUTPUT_WIDTH] != 'd0) begin
                 // Positive saturation
                 output_register <= {1'b0, {(OUTPUT_WIDTH-1){1'b1}}};
             end else begin

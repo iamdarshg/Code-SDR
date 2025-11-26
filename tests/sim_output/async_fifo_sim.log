@@ -1,0 +1,10 @@
+DATA MISMATCH: expected 00000000, got 00000001
+DATA MISMATCH: expected 00000001, got 00000002
+DATA MISMATCH: expected 00000002, got 00000003
+DATA MISMATCH: expected 00000003, got 00000004
+DATA MISMATCH: expected 00000004, got 00000005
+DATA MISMATCH: expected 00000005, got 00000006
+DATA MISMATCH: expected 00000006, got 00000007
+DATA MISMATCH: expected 00000007, got xxxxxxxx
+TEST FAILED: FIFO test failed
+verilog\async_fifo_tb.v:111: $finish called at 946000 (1ps)

@@ -103,9 +103,49 @@ module fft_processor #(
     reg [DATA_WIDTH-1:0] fft_buffer_real [0:1][0:FFT_SIZE-1];
     reg [DATA_WIDTH-1:0] fft_buffer_imag [0:1][0:FFT_SIZE-1];
 
-    // Stage control signals
+    // Stage control signals (moved to module level)
     reg [STAGES-1:0] stage_valid;
     reg [11:0] stage_counter [0:STAGES-1];
+
+    // Butterfly computation registers (moved to module level arrays)
+    reg [7:0] butterfly_size_reg [0:STAGES-1];
+    reg [11:0] butterfly_index_reg [0:STAGES-1];
+    reg [11:0] group_index_reg [0:STAGES-1];
+    reg [11:0] upper_index_reg [0:STAGES-1];
+    reg [10:0] twiddle_index_reg [0:STAGES-1];
+
+    // Butterfly input/output registers (per stage)
+    reg [DATA_WIDTH-1:0] a_r_reg [0:STAGES-1];
+    reg [DATA_WIDTH-1:0] a_i_reg [0:STAGES-1];
+    reg [DATA_WIDTH-1:0] b_r_reg [0:STAGES-1];
+    reg [DATA_WIDTH-1:0] b_i_reg [0:STAGES-1];
+
+    // Arithmetic pipeline registers (per stage)
+    reg [DATA_WIDTH*2-1:0] mult_result_real_reg [0:STAGES-1];
+    reg [DATA_WIDTH*2-1:0] mult_result_imag_reg [0:STAGES-1];
+    reg [DATA_WIDTH-1:0] output_real_top_reg [0:STAGES-1];
+    reg [DATA_WIDTH-1:0] output_imag_top_reg [0:STAGES-1];
+    reg [DATA_WIDTH-1:0] output_real_bottom_reg [0:STAGES-1];
+    reg [DATA_WIDTH-1:0] output_imag_bottom_reg [0:STAGES-1];
+
+    // Combinatorial butterfly parameter calculations
+    wire [7:0] butterfly_size [0:STAGES-1];
+    wire [11:0] butterfly_index [0:STAGES-1];
+    wire [11:0] group_index [0:STAGES-1];
+    wire [11:0] upper_index [0:STAGES-1];
+    wire [10:0] twiddle_index [0:STAGES-1];
+
+    // Generate combinatorial calculations for each stage
+    genvar calc_stage;
+    generate
+        for (calc_stage = 1; calc_stage < STAGES; calc_stage = calc_stage + 1) begin : butterfly_calc
+            assign butterfly_size[calc_stage] = 1 << calc_stage;
+            assign butterfly_index[calc_stage] = stage_counter[calc_stage] % (1 << calc_stage);
+            assign group_index[calc_stage] = (stage_counter[calc_stage] / (1 << calc_stage)) * ((1 << calc_stage) * 2);
+            assign upper_index[calc_stage] = group_index[calc_stage] + butterfly_index[calc_stage] + (butterfly_size[calc_stage] >> 1);
+            assign twiddle_index[calc_stage] = butterfly_index[calc_stage] * (FFT_SIZE >> (calc_stage + 1));
+        end
+    endgenerate
 
     // Overflow detection
     reg overflow_detected;
@@ -168,121 +208,105 @@ module fft_processor #(
     // Butterfly processing stages with improved algorithm
     // ========================================================================
 
-    genvar stage;
+    // Generate combinatorial assignments for butterfly parameters (synthesis-safe)
+    assign butterfly_size_reg[0] = 8'd0; // Unused for stage 0
+    assign butterfly_index_reg[0] = 12'd0;
+    assign group_index_reg[0] = 12'd0;
+    assign upper_index_reg[0] = 12'd0;
+    assign twiddle_index_reg[0] = 11'd0;
+
+    genvar comb_stage;
     generate
-        for (stage = 1; stage < STAGES; stage = stage + 1) begin : fft_stages
+        for (comb_stage = 1; comb_stage < STAGES; comb_stage = comb_stage + 1) begin : comb_assign
+            assign butterfly_size_reg[comb_stage] = 1 << comb_stage;
+            assign butterfly_index_reg[comb_stage] = butterfly_index[comb_stage];
+            assign group_index_reg[comb_stage] = group_index[comb_stage];
+            assign upper_index_reg[comb_stage] = upper_index[comb_stage];
+            assign twiddle_index_reg[comb_stage] = twiddle_index[comb_stage];
+        end
+    endgenerate
 
-            // Registers for butterfly computation (synthesizable)
-            reg [7:0] butterfly_size_reg;
-            reg [11:0] butterfly_index_reg;
-            reg [11:0] group_index_reg;
-            reg [11:0] upper_index_reg;
-            reg [DATA_WIDTH-1:0] a_r_reg, a_i_reg, b_r_reg, b_i_reg;
-            reg [10:0] twiddle_index_reg;
-
-            // Pipeline registers for arithmetic
-            reg [DATA_WIDTH*2-1:0] mult_result_real_reg;
-            reg [DATA_WIDTH*2-1:0] mult_result_imag_reg;
-            reg [DATA_WIDTH-1:0] output_real_top_reg, output_imag_top_reg;
-            reg [DATA_WIDTH-1:0] output_real_bottom_reg, output_imag_bottom_reg;
-
-            // Stage control
+    // Stage control logic for all stages (now outside generate block)
+    genvar ctrl_stage;
+    generate
+        for (ctrl_stage = 1; ctrl_stage < STAGES; ctrl_stage = ctrl_stage + 1) begin : stage_control
             always @(posedge clk or negedge rst_n) begin
                 if (!rst_n) begin
-                    stage_valid[stage] <= 1'b0;
-                    stage_counter[stage] <= 12'd0;
-                    butterfly_size_reg <= 8'd0;
-                    butterfly_index_reg <= 12'd0;
-                    group_index_reg <= 12'd0;
-                    upper_index_reg <= 12'd0;
-                    twiddle_index_reg <= 11'd0;
+                    stage_valid[ctrl_stage] <= 1'b0;
+                    stage_counter[ctrl_stage] <= 12'd0;
+                    // Initialize pipeline registers
+                    a_r_reg[ctrl_stage] <= {DATA_WIDTH{1'b0}};
+                    a_i_reg[ctrl_stage] <= {DATA_WIDTH{1'b0}};
+                    b_r_reg[ctrl_stage] <= {DATA_WIDTH{1'b0}};
+                    b_i_reg[ctrl_stage] <= {DATA_WIDTH{1'b0}};
+                    mult_result_real_reg[ctrl_stage] <= {DATA_WIDTH*2{1'b0}};
+                    mult_result_imag_reg[ctrl_stage] <= {DATA_WIDTH*2{1'b0}};
+                    output_real_top_reg[ctrl_stage] <= {DATA_WIDTH{1'b0}};
+                    output_imag_top_reg[ctrl_stage] <= {DATA_WIDTH{1'b0}};
+                    output_real_bottom_reg[ctrl_stage] <= {DATA_WIDTH{1'b0}};
+                    output_imag_bottom_reg[ctrl_stage] <= {DATA_WIDTH{1'b0}};
                 end else begin
-                    if (stage_counter[stage-1] == FFT_SIZE - 1 && stage_valid[stage-1]) begin
-                        stage_valid[stage] <= 1'b1;
-                        stage_counter[stage] <= 12'd0;
-                    end else if (stage_valid[stage]) begin
-                        stage_counter[stage] <= stage_counter[stage] + 1;
+                    // Stage activation logic
+                    if (stage_counter[ctrl_stage-1] == FFT_SIZE - 1 && stage_valid[ctrl_stage-1]) begin
+                        stage_valid[ctrl_stage] <= 1'b1;
+                        stage_counter[ctrl_stage] <= 12'd0;
+                    end else if (stage_valid[ctrl_stage]) begin
+                        stage_counter[ctrl_stage] <= stage_counter[ctrl_stage] + 1;
+
+                        // Butterfly computation when enabled
+                        if (butterfly_index_reg[ctrl_stage] < (butterfly_size_reg[ctrl_stage] >> 1)) begin
+                            // Load input values (registered to avoid long combinational paths)
+                            a_r_reg[ctrl_stage] <= fft_buffer_real[(ctrl_stage-1)%2][group_index_reg[ctrl_stage] + butterfly_index_reg[ctrl_stage]];
+                            a_i_reg[ctrl_stage] <= fft_buffer_imag[(ctrl_stage-1)%2][group_index_reg[ctrl_stage] + butterfly_index_reg[ctrl_stage]];
+                            b_r_reg[ctrl_stage] <= fft_buffer_real[(ctrl_stage-1)%2][upper_index_reg[ctrl_stage]];
+                            b_i_reg[ctrl_stage] <= fft_buffer_imag[(ctrl_stage-1)%2][upper_index_reg[ctrl_stage]];
+
+                            // Arithmetic pipeline stage 1: Multiplications
+                            begin
+                                reg [TWIDDLE_WIDTH-1:0] twiddle_r_val, twiddle_i_val;
+                                reg [DATA_WIDTH-1:0] b_r_scaled, b_i_scaled;
+
+                                twiddle_r_val = twiddle_real[twiddle_index_reg[ctrl_stage] % (FFT_SIZE/2)];
+                                twiddle_i_val = twiddle_imag[twiddle_index_reg[ctrl_stage] % (FFT_SIZE/2)];
+
+                                // Perform complex multiplication: b * W
+                                b_r_scaled = b_r_reg[ctrl_stage] >>> 4;
+                                b_i_scaled = b_i_reg[ctrl_stage] >>> 4;
+
+                                mult_result_real_reg[ctrl_stage] <= $signed(b_r_scaled) * $signed(twiddle_r_val) -
+                                                                   $signed(b_i_scaled) * $signed(twiddle_i_val);
+                                mult_result_imag_reg[ctrl_stage] <= $signed(b_r_scaled) * $signed(twiddle_i_val) +
+                                                                   $signed(b_i_scaled) * $signed(twiddle_r_val);
+                            end
+
+                            // Arithmetic pipeline stage 2: Rounding, saturation and final computation
+                            begin
+                                reg [DATA_WIDTH-1:0] bw_real_rounded, bw_imag_rounded;
+
+                                // Round back to original scale and round to nearest
+                                bw_real_rounded = (mult_result_real_reg[ctrl_stage] + (1 << (TWIDDLE_WIDTH + 3))) >>> (TWIDDLE_WIDTH + 4);
+                                bw_imag_rounded = (mult_result_imag_reg[ctrl_stage] + (1 << (TWIDDLE_WIDTH + 3))) >>> (TWIDDLE_WIDTH + 4);
+
+                                // Compute butterfly outputs with saturation
+                                output_real_top_reg[ctrl_stage] <= saturated_add(a_r_reg[ctrl_stage], bw_real_rounded);
+                                output_imag_top_reg[ctrl_stage] <= saturated_add(a_i_reg[ctrl_stage], bw_imag_rounded);
+                                output_real_bottom_reg[ctrl_stage] <= saturated_sub(a_r_reg[ctrl_stage], bw_real_rounded);
+                                output_imag_bottom_reg[ctrl_stage] <= saturated_sub(a_i_reg[ctrl_stage], bw_imag_rounded);
+
+                                // Store results back to buffer
+                                fft_buffer_real[ctrl_stage%2][group_index_reg[ctrl_stage] + butterfly_index_reg[ctrl_stage]] <= output_real_top_reg[ctrl_stage];
+                                fft_buffer_imag[ctrl_stage%2][group_index_reg[ctrl_stage] + butterfly_index_reg[ctrl_stage]] <= output_imag_top_reg[ctrl_stage];
+                                fft_buffer_real[ctrl_stage%2][upper_index_reg[ctrl_stage]] <= output_real_bottom_reg[ctrl_stage];
+                                fft_buffer_imag[ctrl_stage%2][upper_index_reg[ctrl_stage]] <= output_imag_bottom_reg[ctrl_stage];
+                            end
+
+                            // Check for overflow in multiplications
+                            if (mult_result_real_reg[ctrl_stage][DATA_WIDTH*2-1:DATA_WIDTH*2-8] != {8{mult_result_real_reg[ctrl_stage][DATA_WIDTH*2-9]}} ||
+                                mult_result_imag_reg[ctrl_stage][DATA_WIDTH*2-1:DATA_WIDTH*2-8] != {8{mult_result_imag_reg[ctrl_stage][DATA_WIDTH*2-9]}}) begin
+                                overflow_detected <= 1'b1;
+                            end
+                        end
                     end
-
-                    // Pre-compute butterfly parameters
-                    butterfly_size_reg <= 1 << stage;
-                    butterfly_index_reg <= stage_counter[stage] % (1 << stage);
-                    group_index_reg <= (stage_counter[stage] / (1 << stage)) * ((1 << stage) * 2);
-                    upper_index_reg <= group_index_reg + butterfly_index_reg + (butterfly_size_reg >> 1);
-                    // Correct twiddle indexing for Radix-2 FFT
-                    twiddle_index_reg <= butterfly_index_reg * (FFT_SIZE >> (stage + 1));
-                end
-            end
-
-            // Butterfly computation with proper twiddle indexing and rounding
-            always @(posedge clk) begin
-                if (stage_valid[stage] && butterfly_index_reg < (butterfly_size_reg >> 1)) begin
-                    // Load input values (registered to avoid long combinational paths)
-                    a_r_reg <= fft_buffer_real[(stage-1)%2][group_index_reg + butterfly_index_reg];
-                    a_i_reg <= fft_buffer_imag[(stage-1)%2][group_index_reg + butterfly_index_reg];
-                    b_r_reg <= fft_buffer_real[(stage-1)%2][upper_index_reg];
-                    b_i_reg <= fft_buffer_imag[(stage-1)%2][upper_index_reg];
-                end
-            end
-
-            // Arithmetic pipeline stage 1: Multiplications and initial additions
-            always @(posedge clk) begin
-                if (stage_valid[stage] && butterfly_index_reg < (butterfly_size_reg >> 1)) begin
-                    // Load twiddle factors
-                    reg [TWIDDLE_WIDTH-1:0] twiddle_r_val, twiddle_i_val;
-                    twiddle_r_val = twiddle_real[twiddle_index_reg % (FFT_SIZE/2)];
-                    twiddle_i_val = twiddle_imag[twiddle_index_reg % (FFT_SIZE/2)];
-
-                    // Perform complex multiplication: b * W
-                    // Truncate to prevent overflow, then scale back
-                    reg [DATA_WIDTH-1:0] b_r_scaled, b_i_scaled;
-                    b_r_scaled = b_r_reg >>> 4; // Scale down to prevent intermediate overflow
-                    b_i_scaled = b_i_reg >>> 4;
-
-                    // Real part: b_r * w_r - b_i * w_i
-                    mult_result_real_reg <= $signed(b_r_scaled) * $signed(twiddle_r_val) -
-                                           $signed(b_i_scaled) * $signed(twiddle_i_val);
-
-                    // Imaginary part: b_r * w_i + b_i * w_r
-                    mult_result_imag_reg <= $signed(b_r_scaled) * $signed(twiddle_i_val) +
-                                           $signed(b_i_scaled) * $signed(twiddle_r_val);
-                end
-            end
-
-            // Arithmetic pipeline stage 2: Rounding, saturation and final computation
-            always @(posedge clk) begin
-                if (stage_valid[stage] && butterfly_index_reg < (butterfly_size_reg >> 1)) begin
-                    // Round back to original scale and round to nearest
-                    reg [DATA_WIDTH-1:0] bw_real_rounded, bw_imag_rounded;
-
-                    // Round: add 0.5 and truncate
-                    bw_real_rounded = (mult_result_real_reg + (1 << (TWIDDLE_WIDTH + 3))) >>> (TWIDDLE_WIDTH + 4);
-                    bw_imag_rounded = (mult_result_imag_reg + (1 << (TWIDDLE_WIDTH + 3))) >>> (TWIDDLE_WIDTH + 4);
-
-                    // Compute butterfly outputs with saturation
-                    // Top output: a + bw_rounded
-                    output_real_top_reg <= saturated_add(a_r_reg, bw_real_rounded);
-                    output_imag_top_reg <= saturated_add(a_i_reg, bw_imag_rounded);
-
-                    // Bottom output: a - bw_rounded
-                    output_real_bottom_reg <= saturated_sub(a_r_reg, bw_real_rounded);
-                    output_imag_bottom_reg <= saturated_sub(a_i_reg, bw_imag_rounded);
-
-                    // Check for overflow in multiplications
-                    if (mult_result_real_reg[DATA_WIDTH*2-1:DATA_WIDTH*2-8] != {8{mult_result_real_reg[DATA_WIDTH*2-9]}} ||
-                        mult_result_imag_reg[DATA_WIDTH*2-1:DATA_WIDTH*2-8] != {8{mult_result_imag_reg[DATA_WIDTH*2-9]}}) begin
-                        overflow_detected <= 1'b1;
-                    end
-                end
-            end
-
-            // Store results back to buffer
-            always @(posedge clk) begin
-                if (stage_valid[stage] && butterfly_index_reg < (butterfly_size_reg >> 1)) begin
-                    fft_buffer_real[stage%2][group_index_reg + butterfly_index_reg] <= output_real_top_reg;
-                    fft_buffer_imag[stage%2][group_index_reg + butterfly_index_reg] <= output_imag_top_reg;
-                    fft_buffer_real[stage%2][upper_index_reg] <= output_real_bottom_reg;
-                    fft_buffer_imag[stage%2][upper_index_reg] <= output_imag_bottom_reg;
                 end
             end
         end
