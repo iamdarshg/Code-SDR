@@ -85,23 +85,33 @@ module fpga_processing_pipeline (
     wire        eth_packet_ack;         // Ethernet packet acknowledged
     
     // ========================================================================
-    // Clock manager instance
+    // Clock manager instance - Optimized for Ethernet throughput in non-FFT modes
     // ========================================================================
     wire [31:0] frequency_word;
     wire [7:0]  gain_control;
     wire [3:0]  filter_select;
     wire        enable_control;
 
+    // Ethernet clock optimization: Use standard 125MHz for GMII compliance
+    // Boost to higher speed (250MHz) only when FFT active for maximum spectrum processing
+    wire clk_125m_eth_standard;
+    wire clk_250m_eth_boosted;
+    wire use_boosted_eth_clock = (processing_mode == 3'd0); // Spectrum mode only
+
     clock_manager u_clock_manager (
         .clk_100m_in      (clk_100m_in),
         .rst_n            (rst_n),
         .clk_600m         (clk_600m),
         .clk_1200m_fft    (clk_1200m_fft),
-        .clk_250m_eth     (clk_250m_eth),
+        .clk_125m_eth     (clk_125m_eth_standard),
+        .clk_250m_eth     (clk_250m_eth_boosted),
         .clk_105m_adc     (adc_clock),
         .reset_n          (reset_n),
         .locked           (pll_locked)
     );
+
+    // Select appropriate Ethernet clock based on processing mode
+    wire clk_ethernet = use_boosted_eth_clock ? clk_250m_eth_boosted : clk_125m_eth_standard;
     
     // ========================================================================
     // ADC Interface and Data Conditioning
@@ -166,51 +176,100 @@ module fpga_processing_pipeline (
     );
 
     // ========================================================================
-    // Hamming Window - 600MHz domain
+    // Conditional FFT Pipeline - Only instantiated when spectrum mode is active
+    // This minimizes LUT usage for IQ streaming and audio modes
     // ========================================================================
-    hamming_window #(
-        .WIDTH            (32),
-        .FFT_SIZE         (4096)
-    ) u_hamming_window_i (
-        .clk              (clk_600m),
-        .rst_n            (reset_n),
-        .data_in          (ddc_i_data),
-        .data_valid       (ddc_valid),
-        .data_out         (windowed_i_data),
-        .output_valid     (window_valid)
-    );
 
-    hamming_window #(
-        .WIDTH            (32),
-        .FFT_SIZE         (4096)
-    ) u_hamming_window_q (
-        .clk              (clk_600m),
-        .rst_n            (reset_n),
-        .data_in          (ddc_q_data),
-        .data_valid       (ddc_valid),
-        .data_out         (windowed_q_data),
-        .output_valid     (window_valid_q)
-    );
+    wire [31:0] conditional_windowed_i_data;
+    wire [31:0] conditional_windowed_q_data;
+    wire        conditional_window_valid;
+    wire        conditional_window_valid_q;
+    wire [23:0] conditional_fft_real_data;
+    wire [23:0] conditional_fft_imag_data;
+    wire        conditional_fft_valid;
+    wire [11:0] conditional_fft_index;
+    wire        conditional_fft_overflow_flag;
+    wire        conditional_fft_processing_active;
 
-    // ========================================================================
-    // FFT Processor - Dedicated 1.2GHz FFT domain for maximum performance
-    // ========================================================================
-    fft_processor #(
-        .FFT_SIZE         (4096),
-        .DATA_WIDTH       (24)
-    ) u_fft_processor (
-        .clk              (clk_1200m_fft),
-        .rst_n            (reset_n),
-        .real_in          (windowed_i_data[23:0]),
-        .imag_in          (windowed_q_data[23:0]),
-        .data_valid       (window_valid && window_valid_q),
-        .real_out         (fft_real_data),
-        .imag_out         (fft_imag_data),
-        .fft_valid        (fft_valid),
-        .fft_index        (fft_index),
-        .overflow_flag    (fft_overflow_flag),
-        .processing_active (fft_processing_active)
-    );
+    // Conditionally instantiate FFT pipeline only when in spectrum mode
+    generate
+        if (processing_mode == 3'd0) begin : FFT_PIPELINE_ENABLED
+            // ========================================================================
+            // Hamming Window - 600MHz domain (FFT mode only)
+            // ========================================================================
+            hamming_window #(
+                .WIDTH            (32),
+                .FFT_SIZE         (4096)
+            ) u_hamming_window_i (
+                .clk              (clk_600m),
+                .rst_n            (reset_n),
+                .data_in          (ddc_i_data),
+                .data_valid       (ddc_valid),
+                .data_out         (conditional_windowed_i_data),
+                .output_valid     (conditional_window_valid)
+            );
+
+            hamming_window #(
+                .WIDTH            (32),
+                .FFT_SIZE         (4096)
+            ) u_hamming_window_q (
+                .clk              (clk_600m),
+                .rst_n            (reset_n),
+                .data_in          (ddc_q_data),
+                .data_valid       (ddc_valid),
+                .data_out         (conditional_windowed_q_data),
+                .output_valid     (conditional_window_valid_q)
+            );
+
+            // ========================================================================
+            // FFT Processor - Dedicated 1.2GHz FFT domain for maximum performance
+            // ========================================================================
+            fft_processor #(
+                .FFT_SIZE         (4096),
+                .DATA_WIDTH       (24)
+            ) u_fft_processor (
+                .clk              (clk_1200m_fft),
+                .rst_n            (reset_n),
+                .real_in          (conditional_windowed_i_data[23:0]),
+                .imag_in          (conditional_windowed_q_data[23:0]),
+                .data_valid       (conditional_window_valid && conditional_window_valid_q),
+                .real_out         (conditional_fft_real_data),
+                .imag_out         (conditional_fft_imag_data),
+                .fft_valid        (conditional_fft_valid),
+                .fft_index        (conditional_fft_index),
+                .overflow_flag    (conditional_fft_overflow_flag),
+                .processing_active (conditional_fft_processing_active)
+            );
+        end else begin : FFT_PIPELINE_DISABLED
+            // ========================================================================
+            // FFT Pipeline Disabled - Minimal LUT usage for IQ/Audio streaming
+            // ========================================================================
+
+            // Assign IDs/zeroes to avoid compilation errors - these won't use LUTs
+            assign conditional_windowed_i_data = 32'h0;
+            assign conditional_windowed_q_data = 32'h0;
+            assign conditional_window_valid = 1'b0;
+            assign conditional_window_valid_q = 1'b0;
+            assign conditional_fft_real_data = 24'h0;
+            assign conditional_fft_imag_data = 24'h0;
+            assign conditional_fft_valid = 1'b0;
+            assign conditional_fft_index = 12'h0;
+            assign conditional_fft_overflow_flag = 1'b0;
+            assign conditional_fft_processing_active = 1'b0;
+        end
+    endgenerate
+
+    // Map conditional signals to global wires
+    assign windowed_i_data = conditional_windowed_i_data;
+    assign windowed_q_data = conditional_windowed_q_data;
+    assign window_valid = conditional_window_valid;
+    assign window_valid_q = conditional_window_valid_q;
+    assign fft_real_data = conditional_fft_real_data;
+    assign fft_imag_data = conditional_fft_imag_data;
+    assign fft_valid = conditional_fft_valid;
+    assign fft_index = conditional_fft_index;
+    assign fft_overflow_flag = conditional_fft_overflow_flag;
+    assign fft_processing_active = conditional_fft_processing_active;
     
     // ========================================================================
     // Dynamic Reconfiguration Logic - Prompt 1.3 Implementation
@@ -298,10 +357,10 @@ module fpga_processing_pipeline (
     end
 
     // ========================================================================
-    // UDP/IP Protocol Stack (Mode-Aware) - 250MHz Ethernet domain
+    // UDP/IP Protocol Stack (Optimized clock based on processing mode)
     // ========================================================================
     udp_ip_stack u_udp_ip_stack (
-        .clk              (clk_250m_eth),
+        .clk              (clk_ethernet),
         .rst_n            (reset_n && !mode_invalid),  // Disable stack for invalid modes
         .app_data         (selected_data),
         .app_len          (selected_len),
@@ -317,10 +376,10 @@ module fpga_processing_pipeline (
     );
 
     // ========================================================================
-    // Ethernet MAC Layer - 250MHz Ethernet domain
+    // Ethernet MAC Layer - Clock optimized for throughput when FFT disabled
     // ========================================================================
     ethernet_mac u_ethernet_mac (
-        .clk              (clk_250m_eth),
+        .clk              (clk_ethernet),
         .rst_n            (reset_n),
         .gmii_tx_d        (gmii_tx_d),
         .gmii_tx_en       (gmii_tx_en),
@@ -379,11 +438,11 @@ module fpga_processing_pipeline (
     };
     
     // ========================================================================
-    // GMII output assignments (250MHz Ethernet domain for optimized UDP overhead)
+    // GMII output assignments - Clock dynamically selected based on processing mode
     // ========================================================================
     assign gmii_crs = 1'b0;          // No carrier sense (full-duplex)
     assign gmii_col = 1'b0;          // No collision (full-duplex)
-    assign gmii_tx_clk = clk_250m_eth;  // Transmit clock - 250MHz for reduced overhead
-    assign gmii_rx_clk = clk_250m_eth;  // Receive clock - 250MHz for reduced overhead
+    assign gmii_tx_clk = clk_ethernet;  // Dynamic clock: 125MHz for IQ/Audio, 250MHz for FFT
+    assign gmii_rx_clk = clk_ethernet;  // Dynamic clock: 125MHz for IQ/Audio, 250MHz for FFT
 
 endmodule
