@@ -150,19 +150,31 @@ module async_fifo #(
     // ========================================================================
     // Memory array (block RAM)
     // ========================================================================
-    
+
     // Dual-port RAM for FIFO storage
     reg [WIDTH-1:0] mem [0:DEPTH-1];
-    
+
+    // Read data register
+    reg [WIDTH-1:0] dout_reg;
+
     // Write port
     always @(posedge wr_clk) begin
         if (wr_en && !full) begin
             mem[wr_ptr_bin[ADDR_WIDTH-1:0]] <= din;
         end
     end
-    
-    // Read port
-    assign dout = mem[rd_ptr_bin[ADDR_WIDTH-1:0]];
+
+    // Read port with registered output
+    // Read data on read enable, then increment pointer
+    always @(posedge rd_clk or negedge rd_rst_n) begin
+        if (!rd_rst_n) begin
+            dout_reg <= 'd0;
+        end else if (rd_en && !empty) begin
+            dout_reg <= mem[rd_ptr_bin[ADDR_WIDTH-1:0]];
+        end
+    end
+
+    assign dout = dout_reg;
     
     // ========================================================================
     // FIFO status counters (optional for monitoring)

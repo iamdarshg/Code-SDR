@@ -9,4 +9,4 @@ Time=371000: ADC data=000, Output data=301
 ADC interface test completed
 ✓ Overflow detection working
 TEST PASSED
-verilog\adc_interface_tb.v:81: $finish called at 842720 (1ps)
+verilog/adc_interface_tb.v:81: $finish called at 842720 (1ps)

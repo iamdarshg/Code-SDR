@@ -89,8 +89,10 @@ module udp_ip_stack_tb;
 
         if (mac_len > 0) begin
             $display("✓ Packet assembly functional, MAC length: %0d bytes", mac_len);
+            $display("TEST PASSED");
         end else begin
             $display("⚠ No MAC output generated");
+            $display("TEST FAILED");
         end
 
         $finish;

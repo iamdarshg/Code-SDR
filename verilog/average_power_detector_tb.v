@@ -64,8 +64,10 @@ module average_power_detector_tb;
         // Basic checks
         if (avg_power_valid) begin
             $display("✓ Average power calculation functional: 0x%h", avg_power_out);
+            $display("TEST PASSED");
         end else begin
             $display("⚠ No valid average power output");
+            $display("TEST FAILED");
         end
 
         $finish;

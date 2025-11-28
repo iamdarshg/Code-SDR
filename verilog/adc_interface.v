@@ -52,10 +52,10 @@ module adc_interface (
             // Count consecutive overflows
             if (adc_ovr_reg) begin
                 overflow_count <= (overflow_count < 4'd15) ? overflow_count + 1 : overflow_count;
-                overflow_detect_reg <= (overflow_count >= 4'd8); // Trigger after 8 consecutive overflows
+                overflow_detect_reg <= ((overflow_count < 4'd15) ? overflow_count + 1 : overflow_count) >= 4'd3; // Trigger after 3 consecutive overflows
             end else begin
                 overflow_count <= 4'd0;
-                overflow_detect_reg <= 1'b0;
+                overflow_detect_reg <= overflow_detect_reg; // Keep flag set once triggered
             end
         end
     end

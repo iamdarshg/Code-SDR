@@ -63,8 +63,10 @@ module adaptive_gain_scaler_tb;
 
         if (sample_valid_out) begin
             $display("✓ Scaling and gain functional");
+            $display("TEST PASSED");
         end else begin
             $display("⚠ Output not valid");
+            $display("TEST FAILED");
         end
 
         $finish;

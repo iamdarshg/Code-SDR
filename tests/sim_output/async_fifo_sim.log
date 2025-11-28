@@ -1,10 +1,60 @@
-DATA MISMATCH: expected 00000000, got 00000001
-DATA MISMATCH: expected 00000001, got 00000002
-DATA MISMATCH: expected 00000002, got 00000003
-DATA MISMATCH: expected 00000003, got 00000004
-DATA MISMATCH: expected 00000004, got 00000005
-DATA MISMATCH: expected 00000005, got 00000006
-DATA MISMATCH: expected 00000006, got 00000007
-DATA MISMATCH: expected 00000007, got xxxxxxxx
-TEST FAILED: FIFO test failed
-verilog\async_fifo_tb.v:111: $finish called at 946000 (1ps)
+[ASYNC_FIFO_TB] Starting FIFO testbench simulation
+[ASYNC_FIFO_TB] Test parameters: WIDTH=32, DEPTH=16
+[ASYNC_FIFO_TB] Write clock: ~83.33 MHz, Read clock: 100 MHz
+[ASYNC_FIFO_TB] Applying reset...
+[ASYNC_FIFO_TB] Reset complete. Waiting for stabilization...
+[ASYNC_FIFO_TB] Starting write operations...
+[ASYNC_FIFO_TB] Write 0: full=0, din=00000000
+[ASYNC_FIFO_TB]   Writing data 00000000
+[ASYNC_FIFO_TB] Write 1: full=0, din=00000001
+[ASYNC_FIFO_TB]   Writing data 00000001
+[ASYNC_FIFO_TB] Write 2: full=0, din=00000002
+[ASYNC_FIFO_TB]   Writing data 00000002
+[ASYNC_FIFO_TB] Write 3: full=0, din=00000003
+[ASYNC_FIFO_TB]   Writing data 00000003
+[ASYNC_FIFO_TB] Write 4: full=0, din=00000004
+[ASYNC_FIFO_TB]   Writing data 00000004
+[ASYNC_FIFO_TB] Write 5: full=0, din=00000005
+[ASYNC_FIFO_TB]   Writing data 00000005
+[ASYNC_FIFO_TB] Write 6: full=0, din=00000006
+[ASYNC_FIFO_TB]   Writing data 00000006
+[ASYNC_FIFO_TB] Write 7: full=0, din=00000007
+[ASYNC_FIFO_TB]   Writing data 00000007
+[ASYNC_FIFO_TB] Write operations complete. Waiting for cross-domain sync...
+[ASYNC_FIFO_TB] Starting read operations and verification...
+[ASYNC_FIFO_TB] Read 0: empty=0, expected=00000000
+[ASYNC_FIFO_TB]   Read data: 00000000
+[ASYNC_FIFO_TB]   Data verified successfully
+[ASYNC_FIFO_TB] Read 1: empty=0, expected=00000001
+[ASYNC_FIFO_TB]   Read data: 00000001
+[ASYNC_FIFO_TB]   Data verified successfully
+[ASYNC_FIFO_TB] Read 2: empty=0, expected=00000002
+[ASYNC_FIFO_TB]   Read data: 00000002
+[ASYNC_FIFO_TB]   Data verified successfully
+[ASYNC_FIFO_TB] Read 3: empty=0, expected=00000003
+[ASYNC_FIFO_TB]   Read data: 00000003
+[ASYNC_FIFO_TB]   Data verified successfully
+[ASYNC_FIFO_TB] Read 4: empty=0, expected=00000004
+[ASYNC_FIFO_TB]   Read data: 00000004
+[ASYNC_FIFO_TB]   Data verified successfully
+[ASYNC_FIFO_TB] Read 5: empty=0, expected=00000005
+[ASYNC_FIFO_TB]   Read data: 00000005
+[ASYNC_FIFO_TB]   Data verified successfully
+[ASYNC_FIFO_TB] Read 6: empty=0, expected=00000006
+[ASYNC_FIFO_TB]   Read data: 00000006
+[ASYNC_FIFO_TB]   Data verified successfully
+[ASYNC_FIFO_TB] Read 7: empty=0, expected=00000007
+[ASYNC_FIFO_TB]   Read data: 00000007
+[ASYNC_FIFO_TB]   Data verified successfully
+[ASYNC_FIFO_TB] Read and verification complete.
+[ASYNC_FIFO_TB] Final test state: full=0, empty=0
+[ASYNC_FIFO_TB] Test result: PASSED
+TEST PASSED: FIFO read/write test successful
+[ASYNC_FIFO_TB] Dumping final testbench state:
+[ASYNC_FIFO_TB]   wr_rst_n=1, rd_rst_n=1
+[ASYNC_FIFO_TB]   wr_en=0, rd_en=0
+[ASYNC_FIFO_TB]   din=00000007, dout=00000007
+[ASYNC_FIFO_TB]   full=0, empty=1
+[ASYNC_FIFO_TB]   Loop counter i=8
+[ASYNC_FIFO_TB]   Expected data=00000008
+verilog\async_fifo_tb.v:173: $finish called at 946000 (1ps)

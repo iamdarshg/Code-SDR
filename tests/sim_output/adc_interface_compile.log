@@ -1,0 +1,5 @@
+verilog/adc_interface_tb.v:63: warning: Numeric constant truncated to 10 bits.
+verilog/adc_interface_tb.v:64: warning: Numeric constant truncated to 10 bits.
+verilog/adc_interface_tb.v:65: warning: Numeric constant truncated to 10 bits.
+verilog/adc_interface_tb.v:21: warning: Port 6 (adc_samples) of adc_interface expects 32 bits, got 10.
+verilog/adc_interface_tb.v:21:        : Padding 22 high bits of the port.
