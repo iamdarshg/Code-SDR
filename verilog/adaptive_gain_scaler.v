@@ -58,6 +58,18 @@ module adaptive_gain_scaler #(
                              gained_sample[DATA_WIDTH-1:0]; // Default (shouldn't happen)
 
     assign sample_out = shifted_sample;
-    assign sample_valid_out = sample_valid_in;
+
+    // Register the valid signal to persist
+    reg sample_valid_out_reg;
+    assign sample_valid_out = sample_valid_out_reg;
+
+    always @(posedge clk or negedge rst_n) begin
+        if (!rst_n) begin
+            sample_valid_out_reg <= 0;
+        end else if (sample_valid_in) begin
+            sample_valid_out_reg <= 1;
+        end
+        // Keep it high once set, until reset
+    end
 
 endmodule

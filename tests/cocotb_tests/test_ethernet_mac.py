@@ -20,8 +20,8 @@ async def test_ethernet_mac_packet_tx(dut):
     await RisingEdge(dut.clk)
 
     # Test packet transmission
-    dut.packet_data.value = 32'hDEADBEEF
-    dut.packet_len.value = 16'd4
+    dut.packet_data.value = 0xDEADBEEF
+    dut.packet_len.value = 4
     dut.packet_valid.value = 1
 
     # Wait for packet acknowledgment

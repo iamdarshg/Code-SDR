@@ -71,11 +71,7 @@ module fpga_processing_pipeline (
     wire        fft_overflow_flag;      // FFT overflow detection
     wire        fft_processing_active;  // FFT processing activity
     
-    // Control signals
-    wire [31:0] frequency_word;         // NCO frequency word from RP2040
-    wire [7:0]  gain_control;           // Gain control settings
-    wire [3:0]  filter_select;          // Filter selection
-    wire        enable_control;         // System enable control
+
     
     // Ethernet interface signals
     wire [31:0] eth_packet_data;        // Ethernet packet data

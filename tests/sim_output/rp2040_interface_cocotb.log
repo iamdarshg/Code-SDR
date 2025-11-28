@@ -7,4 +7,4 @@ collecting ... collected 0 items / 1 error
 =========================== short test summary info ===========================
 ERROR tests/cocotb_tests/test_rp2040_interface.py
 !!!!!!!!!!!!!!!!!!! Interrupted: 1 error during collection !!!!!!!!!!!!!!!!!!!!
-============================== 1 error in 0.47s ===============================
+============================== 1 error in 0.54s ===============================

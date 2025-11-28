@@ -107,3 +107,5 @@ if %FAILED% EQU 0 if %TIMEOUTS% EQU 0 (
     echo OVERALL RESULT: SOME TESTS FAILED
 )
 echo ========================================
+
+exit

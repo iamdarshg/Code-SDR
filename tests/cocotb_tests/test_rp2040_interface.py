@@ -16,7 +16,7 @@ async def test_rp2040_register_write(dut):
     # Initialize
     dut.spi_cs_n.value = 1
     dut.spi_mosi.value = 0
-    dut.status_reg.value = 16'hABCD
+    dut.status_reg.value = 0xABCD
     dut.pll_locked.value = 1
     dut.eth_link_status.value = 1
 
@@ -61,7 +61,7 @@ async def test_rp2040_status_read(dut):
     cocotb.start_soon(spi_clock.start())
 
     # Status register read test (register 0x10)
-    dut.status_reg.value = 16'hABCD
+    dut.status_reg.value = 0xABCD
 
     # Start SPI transaction for status read
     dut.spi_cs_n.value = 0

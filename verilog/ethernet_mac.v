@@ -102,6 +102,7 @@ module ethernet_mac #(
                         packet_len_reg <= packet_len;
                         tx_byte_counter <= 8'd0;
                         crc32_reg <= 32'hFFFFFFFF;
+                        packet_counter_reg <= packet_counter_reg + 1;
                         tx_state <= TX_PREAMBLE;
                     end
                     tx_en_reg <= 1'b0;

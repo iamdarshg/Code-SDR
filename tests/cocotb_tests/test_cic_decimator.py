@@ -23,7 +23,7 @@ async def test_cic_decimator_basic(dut):
     expected_gain = 512
 
     # Send impulse
-    dut.data_in.value = 32'h10000  # Impulse
+    dut.data_in.value = 0x10000  # Impulse
     dut.data_valid.value = 1
     await RisingEdge(dut.clk)
     dut.data_valid.value = 0
@@ -61,7 +61,7 @@ async def test_cic_decimator_saturation(dut):
     await RisingEdge(dut.clk)
 
     # Test with maximum input
-    dut.data_in.value = 32'h7FFFFFFF  # Maximum positive
+    dut.data_in.value = 0x7FFFFFFF  # Maximum positive
     dut.data_valid.value = 1
     await RisingEdge(dut.clk)
     dut.data_valid.value = 0

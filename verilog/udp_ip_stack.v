@@ -182,13 +182,23 @@ module udp_ip_stack #(
     // ========================================================================
     // Control signals
     // ========================================================================
-    
+
     // Application ready when in IDLE state
     assign app_ready = (frame_state == IDLE);
-    
+
+    // Register for MAC length to keep value after transmission
+    reg [15:0] mac_len_reg;
+    always @(posedge clk or negedge rst_n) begin
+        if (!rst_n) begin
+            mac_len_reg <= 0;
+        end else if (frame_state == DONE) begin
+            mac_len_reg <= total_bytes;
+        end
+    end
+
     // MAC interface signals
     assign mac_data = (frame_state != IDLE) ? packet_data : 32'd0;
-    assign mac_len = total_bytes;
+    assign mac_len = mac_len_reg;
     assign mac_valid = (frame_state != IDLE && frame_state != DONE);
 
 endmodule
