@@ -22,23 +22,20 @@ module nco_generator #(
     // ========================================================================
     // ROM table for sine/cosine lookup
     // ========================================================================
-    
+
     // Initialize ROM with sine and cosine values
     reg [15:0] sin_rom [0:ROM_DEPTH-1];
     reg [15:0] cos_rom [0:ROM_DEPTH-1];
-    
+    integer rom_init_i;
+
     // ROM initialization block
     initial begin
         // Quarter sine wave stored in ROM (0 to 90 degrees)
         // Then mirrored for full 360-degree coverage
-        integer i;
-        for (i = 0; i < ROM_DEPTH; i = i + 1) begin
-            // Calculate angle in radians (0 to π/2)
-            real angle = (i * 3.141592653589793) / (2.0 * ROM_DEPTH);
-            // Generate sine value (scaled to 16-bit signed)
-            sin_rom[i] = $rtoi($sin(angle) * 32767.0);
-            // Generate cosine value (scaled to 16-bit signed)
-            cos_rom[i] = $rtoi($cos(angle) * 32767.0);
+        for (rom_init_i = 0; rom_init_i < ROM_DEPTH; rom_init_i = rom_init_i + 1) begin
+            // Calculate angle in radians (0 to π/2) and scale sine/cosine
+            sin_rom[rom_init_i] = $rtoi($sin((rom_init_i * 3.14159265358979323846) / (2.0 * ROM_DEPTH)) * 32767.0);
+            cos_rom[rom_init_i] = $rtoi($cos((rom_init_i * 3.14159265358979323846) / (2.0 * ROM_DEPTH)) * 32767.0);
         end
     end
     

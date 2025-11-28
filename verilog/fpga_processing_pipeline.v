@@ -22,7 +22,6 @@ module fpga_processing_pipeline (
     input  wire        spi_mosi,        // SPI master out, slave in
     input  wire        spi_cs_n,        // SPI chip select (active low)
     output wire        spi_miso,        // SPI master in, slave out
-    input  wire [7:0]  gain_control,    // Gain control from RP2040 (added for DDC)
 
     // Dynamic Reconfiguration - Prompt 1.3
     input  wire [2:0]  processing_mode,   // Processing mode selection

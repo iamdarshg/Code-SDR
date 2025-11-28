@@ -14,6 +14,7 @@ module average_power_detector_tb;
     reg                         sample_valid_in;
     wire [DATA_WIDTH-1:0]       avg_power_out;
     wire                        avg_power_valid;
+    reg [31:0]                  i;
 
     // Instantiate DUT
     average_power_detector dut (
@@ -48,7 +49,6 @@ module average_power_detector_tb;
         $display("Testing Average Power Detector...");
 
         // Input a sequence of samples
-        integer i;
         for (i = 0; i < 2048; i = i + 1) begin  // Two full windows
             sample_in = i % 256;  // Pseudo-random samples
             sample_valid_in = 1;
@@ -63,7 +63,7 @@ module average_power_detector_tb;
 
         // Basic checks
         if (avg_power_valid) begin
-            $display("✓ Average power calculation functional: 0x%h", avg_power_out);
+            $display("(OK) Average power calculation functional: 0x%h", avg_power_out);
             $display("TEST PASSED");
         end else begin
             $display("⚠ No valid average power output");

@@ -30,7 +30,7 @@ module ethernet_mac #(
     // Receive data interface
     output wire [DATA_WIDTH-1:0] rx_packet_data,  // Received packet data
     output wire [15:0]  rx_packet_len,            // Received packet length
-    output wire        rx_packet_valid,           // Received packet valid
+    output reg         rx_packet_valid,           // Received packet valid
     input  wire        rx_packet_ack,             // Received packet acknowledged
 
     // Status signals
@@ -255,7 +255,6 @@ module ethernet_mac #(
     reg [DATA_WIDTH-1:0] rx_data_buffer [0:511];  // Buffer for received packet
     reg [8:0] rx_buffer_write_ptr;
     reg [15:0] rx_frame_length;
-    wire rx_packet_valid;
 
     always @(posedge clk or negedge rst_n) begin
         if (!rst_n) begin
@@ -481,6 +480,7 @@ module ethernet_mac #(
                 // Calculate number of 32-bit words in received packet
                 rx_words_available <= (rx_frame_length + 3) >> 2; // Ceiling division by 4
                 rx_read_ptr <= 9'd0;
+                rx_packet_valid <= 1'b0;  // Clear valid after acknowledgment
             end else if (rx_words_available > 0) begin
                 // This is a simplified read mechanism - in practice this would
                 // be controlled by a DMA engine
@@ -495,6 +495,5 @@ module ethernet_mac #(
     // Output received packet data
     assign rx_packet_data = (rx_words_available > 0) ? rx_data_buffer[rx_read_ptr] : 32'd0;
     assign rx_packet_len = rx_frame_length;
-    assign rx_packet_valid = (rx_words_available > 0);
 
 endmodule

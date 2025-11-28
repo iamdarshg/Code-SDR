@@ -1,0 +1,10 @@
+============================= test session starts =============================
+platform win32 -- Python 3.12.2, pytest-8.4.1, pluggy-1.6.0 -- C:\Program Files\Python312\python.exe
+cachedir: .pytest_cache
+rootdir: D:\Code projects\Code-SDR
+collecting ... collected 0 items / 1 error
+
+=========================== short test summary info ===========================
+ERROR tests/cocotb_tests/test_cic_decimator.py
+!!!!!!!!!!!!!!!!!!! Interrupted: 1 error during collection !!!!!!!!!!!!!!!!!!!!
+============================== 1 error in 0.44s ===============================

@@ -1,0 +1,16 @@
+verilog\adc_interface_tb.v:63: warning: Numeric constant truncated to 10 bits.
+verilog\adc_interface_tb.v:64: warning: Numeric constant truncated to 10 bits.
+verilog\adc_interface_tb.v:65: warning: Numeric constant truncated to 10 bits.
+verilog\fpga_processing_pipeline.v:77: error: 'gain_control' has already been declared in this scope.
+verilog\fpga_processing_pipeline.v:25:      : It was declared here as a net.
+verilog\fpga_processing_pipeline.v:90: error: 'frequency_word' has already been declared in this scope.
+verilog\fpga_processing_pipeline.v:76:      : It was declared here as a net.
+verilog\fpga_processing_pipeline.v:91: error: 'gain_control' has already been declared in this scope.
+verilog\fpga_processing_pipeline.v:25:      : It was declared here as a net.
+verilog\fpga_processing_pipeline.v:92: error: 'filter_select' has already been declared in this scope.
+verilog\fpga_processing_pipeline.v:78:      : It was declared here as a net.
+verilog\fpga_processing_pipeline.v:93: error: 'enable_control' has already been declared in this scope.
+verilog\fpga_processing_pipeline.v:79:      : It was declared here as a net.
+verilog\rp2040_interface.v:118: warning: Numeric constant truncated to 4 bits.
+verilog\rp2040_interface.v:120: warning: Numeric constant truncated to 4 bits.
+verilog\rp2040_interface.v:175: warning: Numeric constant truncated to 4 bits.

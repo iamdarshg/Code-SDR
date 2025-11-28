@@ -37,6 +37,8 @@ module cic_decimator #(
     genvar i;
     reg [STAGE_WIDTH-1:0] integrator [0:STAGES-1];
     reg [STAGE_WIDTH-1:0] integrator_next [0:STAGES-1];
+    integer integrator_loop_i;
+    integer comb_loop_j;
     
     // Integrator stage registers
     generate
@@ -53,18 +55,17 @@ module cic_decimator #(
     
     // Integrator calculation (cumulative sum)
     always @(*) begin
-        integer i;
         if (data_valid) begin
             // First integrator stage: integrate input data
             integrator_next[0] = integrator[0] + data_in;
             // Subsequent integrator stages: integrate previous output
-            for (i = 1; i < STAGES; i = i + 1) begin
-                integrator_next[i] = integrator[i] + integrator[i-1];
+            for (integrator_loop_i = 1; integrator_loop_i < STAGES; integrator_loop_i = integrator_loop_i + 1) begin
+                integrator_next[integrator_loop_i] = integrator[integrator_loop_i] + integrator[integrator_loop_i-1];
             end
         end else begin
             // Hold values when no data valid
-            for (i = 0; i < STAGES; i = i + 1) begin
-                integrator_next[i] = integrator[i];
+            for (integrator_loop_i = 0; integrator_loop_i < STAGES; integrator_loop_i = integrator_loop_i + 1) begin
+                integrator_next[integrator_loop_i] = integrator[integrator_loop_i];
             end
         end
     end
@@ -104,18 +105,17 @@ module cic_decimator #(
     
     generate
         for (i = 0; i < STAGES; i = i + 1) begin : comb_stages
-            integer j;
-            
+
             // Comb filter delay line
             always @(posedge clk or negedge rst_n) begin
                 if (!rst_n) begin
-                    for (j = 0; j <= COMB_DELAY; j = j + 1) begin
-                        comb_delay[i][j] <= 'd0;
+                    for (comb_loop_j = 0; comb_loop_j <= COMB_DELAY; comb_loop_j = comb_loop_j + 1) begin
+                        comb_delay[i][comb_loop_j] <= 'd0;
                     end
                 end else if (decimate_enable) begin
                     // Shift delay line
-                    for (j = COMB_DELAY; j > 0; j = j + 1) begin
-                        comb_delay[i][j] <= comb_delay[i][j-1];
+                    for (comb_loop_j = COMB_DELAY; comb_loop_j > 0; comb_loop_j = comb_loop_j + 1) begin
+                        comb_delay[i][comb_loop_j] <= comb_delay[i][comb_loop_j-1];
                     end
                     comb_delay[i][0] <= comb[i];
                 end
