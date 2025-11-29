@@ -4,6 +4,3 @@ verilog\adc_interface_tb.v:65: warning: Numeric constant truncated to 10 bits.
 verilog\rp2040_interface.v:118: warning: Numeric constant truncated to 4 bits.
 verilog\rp2040_interface.v:120: warning: Numeric constant truncated to 4 bits.
 verilog\rp2040_interface.v:175: warning: Numeric constant truncated to 4 bits.
-verilog\compensation_filter.v:78: register ``i'' unknown in digital_downconverter_tb.dut.u_compensation_filter_i.
-verilog\compensation_filter.v:78: register ``i'' unknown in digital_downconverter_tb.dut.u_compensation_filter_q.
-2 error(s) during elaboration.

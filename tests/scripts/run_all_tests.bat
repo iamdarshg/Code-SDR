@@ -14,7 +14,7 @@ set /a TIMEOUTS=0
 set /a TOTAL_MODULES=0
 
 REM Test timeout in seconds
-set /a SIM_TIMEOUT=60
+set /a SIM_TIMEOUT=10
 
 REM Module list (all with available testbenches)
 set "MODULES=adc_interface nco_generator cic_decimator async_fifo ethernet_mac fft_processor hamming_window rp2040_interface udp_ip_stack adaptive_gain_scaler average_power_detector digital_downconverter dma_engine"
@@ -61,12 +61,12 @@ for %%M in (%MODULES%) do (
             echo   compilation: OK
 
             REM Run with timeout
-            start /B vvp tests\sim_output\%%M.vvp ^> tests\sim_output\%%M_sim.log 2^>^&1
-            timeout /t %SIM_TIMEOUT% /nobreak ^>nul
-            taskkill /f /im vvp.exe ^>nul 2^>^&1
+            start /B vvp tests\sim_output\%%M.vvp > tests\sim_output\%%M_sim.log 2>&1
+            timeout /t %SIM_TIMEOUT% /nobreak > nul
+            taskkill /f /im vvp.exe > nul 2>&1
 
             REM Check for finish signal
-            findstr "$finish called" tests\sim_output\%%M_sim.log ^>nul 2^>^&1
+            findstr "$finish called" tests\sim_output\%%M_sim.log > nul 2>&1
             if !errorlevel! == 0 (
                 echo   iverilog: PASS
                 if "!TEST_RESULT!"=="UNKNOWN" set "TEST_RESULT=PASS"

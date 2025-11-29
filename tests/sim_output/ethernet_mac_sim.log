@@ -1,0 +1,7 @@
+Testing Ethernet MAC...
+Packet sent, waiting for transmission...
+Packet counter: 0
+Link status: 1
+Ethernet MAC test completed
+⚠ No packets transmitted
+verilog\ethernet_mac_tb.v:110: $finish called at 11208000 (1ps)

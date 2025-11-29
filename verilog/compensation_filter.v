@@ -66,8 +66,8 @@ module compensation_filter #(
     reg [TAPS-1:0] data_valid_shift;
 
     always @(posedge clk or negedge rst_n) begin
+        integer i; // Declare i at the beginning of the always block
         if (!rst_n) begin
-            integer i;
             for (i = 0; i < TAPS; i = i + 1) begin
                 delay_line[i] <= {WIDTH{1'b0}};
             end
@@ -94,13 +94,13 @@ module compensation_filter #(
     reg accumulator_valid;
 
     always @(posedge clk or negedge rst_n) begin
+        integer i; // Declare i at the beginning of the always block
         if (!rst_n) begin
             accumulator <= {WIDTH+COEFF_WIDTH{1'b0}};
             accumulator_valid <= 1'b0;
         end else begin
             if (data_valid_shift[TAPS-1]) begin
                 // Compute FIR sum
-                integer i;
                 accumulator = 0;
                 for (i = 0; i < TAPS; i = i + 1) begin
                     // Sign-extend coefficients and multiply
