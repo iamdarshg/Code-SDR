@@ -7,6 +7,18 @@ setlocal enabledelayedexpansion
 
 cd /d "%~dp0\..\.."
 
+REM Set Python environment variables for cocotb
+set "PYTHON_DIR=C:\Program Files\Python312"
+set "PYTHON_USER_SITE=C:\Users\Darsh Gupta\AppData\Roaming\Python\Python312\site-packages"
+set "PATH=!PYTHON_DIR!;!PATH!"
+set "PYTHONPATH=!PYTHON_USER_SITE!;!PYTHONPATH!"
+set "COCOTB_REDUCED_LOG_FMT=1"
+
+REM Configure cocotb simulator and sources
+set "COCOTB_SIM=icarus"
+set "VERILOG_SOURCES=verilog/adaptive_gain_scaler.v verilog/adc_interface.v verilog/async_fifo.v verilog/average_power_detector.v verilog/cic_decimator.v verilog/clock_manager.v verilog/compensation_filter.v verilog/digital_downconverter.v verilog/dma_engine.v verilog/ethernet_mac.v verilog/fft_processor.v verilog/fpga_processing_pipeline.v verilog/hamming_window.v verilog/nco_generator.v verilog/rp2040_interface.v verilog/udp_ip_stack.v"
+set "TOPLEVEL_LANG=verilog"
+
 REM Initialize counters
 set /a PASSED=0
 set /a FAILED=0
@@ -39,7 +51,13 @@ for %%M in (%MODULES%) do (
     REM Check if cocotb test exists
     if exist "tests\cocotb_tests\test_%%M.py" (
         echo Running cocotb test...
-        python -m pytest tests\cocotb_tests\test_%%M.py -v --tb=no > tests\sim_output\%%M_cocotb.log 2^>^&1
+        set "TOPLEVEL=%%M"
+        set "MODULE=test_%%M"
+        set "COCOTB_OUT_DIR=tests\sim_output\%%M_out"
+        set "SIM_BUILD=tests\sim_output\%%M_sim_build"
+        md "tests\sim_output\%%M_out" 2>nul
+        md "tests\sim_output\%%M_sim_build" 2>nul
+        "%PYTHON_DIR%\python.exe" -m pytest tests\cocotb_tests\test_%%M.py -v --tb=no > tests\sim_output\%%M_cocotb.log 2^>^&1
         if !errorlevel! == 0 (
             echo   cocotb: PASS
             set "TEST_RESULT=PASS"

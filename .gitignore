@@ -1,0 +1,6 @@
+*.out
+*.bin
+*.pcap
+*.npy
+*.log
+*.tmp

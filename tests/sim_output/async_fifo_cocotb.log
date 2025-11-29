@@ -8,4 +8,4 @@ collecting ... collected 0 items / 1 error
 =========================== short test summary info ===========================
 ERROR tests/cocotb_tests/test_async_fifo.py
 !!!!!!!!!!!!!!!!!!! Interrupted: 1 error during collection !!!!!!!!!!!!!!!!!!!!
-============================== 1 error in 0.38s ===============================
+============================== 1 error in 0.61s ===============================
