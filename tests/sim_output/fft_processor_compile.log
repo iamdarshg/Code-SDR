@@ -1,7 +1,129 @@
-verilog\adc_interface_tb.v:63: warning: Numeric constant truncated to 10 bits.
-verilog\adc_interface_tb.v:64: warning: Numeric constant truncated to 10 bits.
-verilog\adc_interface_tb.v:65: warning: Numeric constant truncated to 10 bits.
-verilog\rp2040_interface.v:118: warning: Numeric constant truncated to 4 bits.
-verilog\rp2040_interface.v:120: warning: Numeric constant truncated to 4 bits.
-verilog\rp2040_interface.v:175: warning: Numeric constant truncated to 4 bits.
-verilog\fft_processor.v:369: assert: ../iverilog/expr_synth.cc:105: failed assertion expr_width() >= rsig->vector_width()
+%Warning-WIDTHTRUNC: verilog/fft_processor.v:70:23: Bit extraction of array[255:0] requires 8 bit index, not 12 bits.
+                                                  : ... note: In instance 'fft_processor_tb.dut'
+   70 |             input_real[bit_reversed_addr] <= real_in;
+      |                       ^
+                     ... For warning description see https://verilator.org/warn/WIDTHTRUNC?v=5.042
+                     ... Use "/* verilator lint_off WIDTHTRUNC */" and lint_on around source to disable this message.
+%Warning-WIDTHTRUNC: verilog/fft_processor.v:71:23: Bit extraction of array[255:0] requires 8 bit index, not 12 bits.
+                                                  : ... note: In instance 'fft_processor_tb.dut'
+   71 |             input_imag[bit_reversed_addr] <= imag_in;
+      |                       ^
+%Warning-WIDTHTRUNC: verilog/fft_processor.v:93:29: Operator ASSIGN expects 16 bits on the Assign RHS, but Assign RHS's RTOIS generates 32 bits.
+                                                  : ... note: In instance 'fft_processor_tb.dut'
+   93 |             twiddle_real[k] = $rtoi(cos_val * (2.0 ** (TWIDDLE_WIDTH - 1) - 1));
+      |                             ^
+%Warning-WIDTHTRUNC: verilog/fft_processor.v:94:29: Operator ASSIGN expects 16 bits on the Assign RHS, but Assign RHS's RTOIS generates 32 bits.
+                                                  : ... note: In instance 'fft_processor_tb.dut'
+   94 |             twiddle_imag[k] = $rtoi(sin_val * (2.0 ** (TWIDDLE_WIDTH - 1) - 1));
+      |                             ^
+%Warning-WIDTHTRUNC: verilog/fft_processor.v:146:46: Operator ASSIGNW expects 11 bits on the Assign RHS, but Assign RHS's MUL generates 32 or 12 bits.
+                                                   : ... note: In instance 'fft_processor_tb.dut'
+  146 |             assign twiddle_index[calc_stage] = butterfly_index[calc_stage] * (FFT_SIZE >> (calc_stage + 1));
+      |                                              ^
+%Warning-WIDTHTRUNC: verilog/fft_processor.v:202:31: Bit extraction of array[255:0] requires 8 bit index, not 12 bits.
+                                                   : ... note: In instance 'fft_processor_tb.dut'
+  202 |             fft_buffer_real[0][stage_counter[0]] <= input_real[stage_counter[0]];
+      |                               ^
+%Warning-WIDTHTRUNC: verilog/fft_processor.v:202:63: Bit extraction of array[255:0] requires 8 bit index, not 12 bits.
+                                                   : ... note: In instance 'fft_processor_tb.dut'
+  202 |             fft_buffer_real[0][stage_counter[0]] <= input_real[stage_counter[0]];
+      |                                                               ^
+%Warning-WIDTHTRUNC: verilog/fft_processor.v:203:31: Bit extraction of array[255:0] requires 8 bit index, not 12 bits.
+                                                   : ... note: In instance 'fft_processor_tb.dut'
+  203 |             fft_buffer_imag[0][stage_counter[0]] <= input_imag[stage_counter[0]];
+      |                               ^
+%Warning-WIDTHTRUNC: verilog/fft_processor.v:203:63: Bit extraction of array[255:0] requires 8 bit index, not 12 bits.
+                                                   : ... note: In instance 'fft_processor_tb.dut'
+  203 |             fft_buffer_imag[0][stage_counter[0]] <= input_imag[stage_counter[0]];
+      |                                                               ^
+%Warning-WIDTHTRUNC: verilog/fft_processor.v:259:85: Bit extraction of array[255:0] requires 8 bit index, not 12 bits.
+                                                   : ... note: In instance 'fft_processor_tb.dut'
+  259 |                             a_r_reg[ctrl_stage] <= fft_buffer_real[(ctrl_stage-1)%2][group_index_reg[ctrl_stage] + butterfly_index_reg[ctrl_stage]];
+      |                                                                                     ^
+%Warning-WIDTHTRUNC: verilog/fft_processor.v:260:85: Bit extraction of array[255:0] requires 8 bit index, not 12 bits.
+                                                   : ... note: In instance 'fft_processor_tb.dut'
+  260 |                             a_i_reg[ctrl_stage] <= fft_buffer_imag[(ctrl_stage-1)%2][group_index_reg[ctrl_stage] + butterfly_index_reg[ctrl_stage]];
+      |                                                                                     ^
+%Warning-WIDTHTRUNC: verilog/fft_processor.v:261:85: Bit extraction of array[255:0] requires 8 bit index, not 12 bits.
+                                                   : ... note: In instance 'fft_processor_tb.dut'
+  261 |                             b_r_reg[ctrl_stage] <= fft_buffer_real[(ctrl_stage-1)%2][upper_index_reg[ctrl_stage]];
+      |                                                                                     ^
+%Warning-WIDTHTRUNC: verilog/fft_processor.v:262:85: Bit extraction of array[255:0] requires 8 bit index, not 12 bits.
+                                                   : ... note: In instance 'fft_processor_tb.dut'
+  262 |                             b_i_reg[ctrl_stage] <= fft_buffer_imag[(ctrl_stage-1)%2][upper_index_reg[ctrl_stage]];
+      |                                                                                     ^
+%Warning-WIDTHTRUNC: verilog/fft_processor.v:287:49: Operator ASSIGN expects 24 bits on the Assign RHS, but Assign RHS's SHIFTR generates 48 bits.
+                                                   : ... note: In instance 'fft_processor_tb.dut'
+  287 |                                 bw_real_rounded = (mult_result_real_reg[ctrl_stage] + (1 << (TWIDDLE_WIDTH + 3))) >>> (TWIDDLE_WIDTH + 4);
+      |                                                 ^
+%Warning-WIDTHTRUNC: verilog/fft_processor.v:288:49: Operator ASSIGN expects 24 bits on the Assign RHS, but Assign RHS's SHIFTR generates 48 bits.
+                                                   : ... note: In instance 'fft_processor_tb.dut'
+  288 |                                 bw_imag_rounded = (mult_result_imag_reg[ctrl_stage] + (1 << (TWIDDLE_WIDTH + 3))) >>> (TWIDDLE_WIDTH + 4);
+      |                                                 ^
+%Warning-WIDTHTRUNC: verilog/fft_processor.v:297:62: Bit extraction of array[255:0] requires 8 bit index, not 12 bits.
+                                                   : ... note: In instance 'fft_processor_tb.dut'
+  297 |                                 fft_buffer_real[ctrl_stage%2][group_index_reg[ctrl_stage] + butterfly_index_reg[ctrl_stage]] <= output_real_top_reg[ctrl_stage];
+      |                                                              ^
+%Warning-WIDTHTRUNC: verilog/fft_processor.v:298:62: Bit extraction of array[255:0] requires 8 bit index, not 12 bits.
+                                                   : ... note: In instance 'fft_processor_tb.dut'
+  298 |                                 fft_buffer_imag[ctrl_stage%2][group_index_reg[ctrl_stage] + butterfly_index_reg[ctrl_stage]] <= output_imag_top_reg[ctrl_stage];
+      |                                                              ^
+%Warning-WIDTHTRUNC: verilog/fft_processor.v:299:62: Bit extraction of array[255:0] requires 8 bit index, not 12 bits.
+                                                   : ... note: In instance 'fft_processor_tb.dut'
+  299 |                                 fft_buffer_real[ctrl_stage%2][upper_index_reg[ctrl_stage]] <= output_real_bottom_reg[ctrl_stage];
+      |                                                              ^
+%Warning-WIDTHTRUNC: verilog/fft_processor.v:300:62: Bit extraction of array[255:0] requires 8 bit index, not 12 bits.
+                                                   : ... note: In instance 'fft_processor_tb.dut'
+  300 |                                 fft_buffer_imag[ctrl_stage%2][upper_index_reg[ctrl_stage]] <= output_imag_bottom_reg[ctrl_stage];
+      |                                                              ^
+%Warning-WIDTHTRUNC: verilog/fft_processor.v:369:71: Bit extraction of array[255:0] requires 8 bit index, not 12 bits.
+                                                   : ... note: In instance 'fft_processor_tb.dut'
+  369 |     assign real_out = output_valid_reg ? fft_buffer_real[(STAGES-1)%2][output_counter] : 24'd0;
+      |                                                                       ^
+%Warning-WIDTHTRUNC: verilog/fft_processor.v:370:71: Bit extraction of array[255:0] requires 8 bit index, not 12 bits.
+                                                   : ... note: In instance 'fft_processor_tb.dut'
+  370 |     assign imag_out = output_valid_reg ? fft_buffer_imag[(STAGES-1)%2][output_counter] : 24'd0;
+      |                                                                       ^
+%Warning-WIDTHTRUNC: verilog/fft_processor_tb.v:72:21: Operator ASSIGNDLY expects 24 bits on the Assign RHS, but Assign RHS's MODDIVS generates 32 bits.
+                                                     : ... note: In instance 'fft_processor_tb'
+   72 |             real_in <= ($random % (1 << (DATA_WIDTH-2)));  
+      |                     ^~
+%Warning-WIDTHTRUNC: verilog/fft_processor_tb.v:73:21: Operator ASSIGNDLY expects 24 bits on the Assign RHS, but Assign RHS's MODDIVS generates 32 bits.
+                                                     : ... note: In instance 'fft_processor_tb'
+   73 |             imag_in <= ($random % (1 << (DATA_WIDTH-2)));
+      |                     ^~
+%Warning-INITIALDLY: verilog/fft_processor_tb.v:72:21: Non-blocking assignment '<=' in initial/final block
+                                                     : ... This will be executed as a blocking assignment '='!
+   72 |             real_in <= ($random % (1 << (DATA_WIDTH-2)));  
+      |                     ^~
+                     ... For warning description see https://verilator.org/warn/INITIALDLY?v=5.042
+                     ... Use "/* verilator lint_off INITIALDLY */" and lint_on around source to disable this message.
+%Warning-INITIALDLY: verilog/fft_processor_tb.v:73:21: Non-blocking assignment '<=' in initial/final block
+                                                     : ... This will be executed as a blocking assignment '='!
+   73 |             imag_in <= ($random % (1 << (DATA_WIDTH-2)));
+      |                     ^~
+%Warning-INITIALDLY: verilog/fft_processor_tb.v:74:24: Non-blocking assignment '<=' in initial/final block
+                                                     : ... This will be executed as a blocking assignment '='!
+   74 |             data_valid <= 1'b1;
+      |                        ^~
+%Warning-INITIALDLY: verilog/fft_processor_tb.v:78:20: Non-blocking assignment '<=' in initial/final block
+                                                     : ... This will be executed as a blocking assignment '='!
+   78 |         data_valid <= 1'b0;
+      |                    ^~
+%Warning-MULTIDRIVEN: verilog/fft_processor.v:103:26: Signal has multiple driving blocks with different clocking: 'fft_processor_tb.dut.fft_buffer_real'
+                      verilog/fft_processor.v:202:13: ... Location of first driving block
+  202 |             fft_buffer_real[0][stage_counter[0]] <= input_real[stage_counter[0]];
+      |             ^~~~~~~~~~~~~~~
+                      verilog/fft_processor.v:297:33: ... Location of other driving block
+  297 |                                 fft_buffer_real[ctrl_stage%2][group_index_reg[ctrl_stage] + butterfly_index_reg[ctrl_stage]] <= output_real_top_reg[ctrl_stage];
+      |                                 ^~~~~~~~~~~~~~~
+                      ... For warning description see https://verilator.org/warn/MULTIDRIVEN?v=5.042
+                      ... Use "/* verilator lint_off MULTIDRIVEN */" and lint_on around source to disable this message.
+%Warning-MULTIDRIVEN: verilog/fft_processor.v:104:26: Signal has multiple driving blocks with different clocking: 'fft_processor_tb.dut.fft_buffer_imag'
+                      verilog/fft_processor.v:203:13: ... Location of first driving block
+  203 |             fft_buffer_imag[0][stage_counter[0]] <= input_imag[stage_counter[0]];
+      |             ^~~~~~~~~~~~~~~
+                      verilog/fft_processor.v:298:33: ... Location of other driving block
+  298 |                                 fft_buffer_imag[ctrl_stage%2][group_index_reg[ctrl_stage] + butterfly_index_reg[ctrl_stage]] <= output_imag_top_reg[ctrl_stage];
+      |                                 ^~~~~~~~~~~~~~~
+%Error: Exiting due to 29 warning(s)

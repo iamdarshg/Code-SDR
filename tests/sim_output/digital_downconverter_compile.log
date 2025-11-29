@@ -1,6 +1,28 @@
-verilog\adc_interface_tb.v:63: warning: Numeric constant truncated to 10 bits.
-verilog\adc_interface_tb.v:64: warning: Numeric constant truncated to 10 bits.
-verilog\adc_interface_tb.v:65: warning: Numeric constant truncated to 10 bits.
-verilog\rp2040_interface.v:118: warning: Numeric constant truncated to 4 bits.
-verilog\rp2040_interface.v:120: warning: Numeric constant truncated to 4 bits.
-verilog\rp2040_interface.v:175: warning: Numeric constant truncated to 4 bits.
+%Error-MODMISSING: verilog/digital_downconverter.v:84:5: Cannot find file containing module: 'adaptive_gain_scaler'
+   84 |     adaptive_gain_scaler u_i_gain_scaler (
+      |     ^~~~~~~~~~~~~~~~~~~~
+                   ... For error description see https://verilator.org/warn/MODMISSING?v=5.042
+                   ... This may be because there's no search path specified with -I<dir>.
+                   ... Looked in:
+                        adaptive_gain_scaler
+                        adaptive_gain_scaler.v
+                        adaptive_gain_scaler.sv
+                        tests/sim_output/digital_downconverter_verilator_build/adaptive_gain_scaler
+                        tests/sim_output/digital_downconverter_verilator_build/adaptive_gain_scaler.v
+                        tests/sim_output/digital_downconverter_verilator_build/adaptive_gain_scaler.sv
+%Error-MODMISSING: verilog/digital_downconverter.v:94:5: Cannot find file containing module: 'adaptive_gain_scaler'
+   94 |     adaptive_gain_scaler u_q_gain_scaler (
+      |     ^~~~~~~~~~~~~~~~~~~~
+%Error-MODMISSING: verilog/digital_downconverter.v:112:5: Cannot find file containing module: 'cic_decimator'
+  112 |     cic_decimator #(
+      |     ^~~~~~~~~~~~~
+%Error-MODMISSING: verilog/digital_downconverter.v:126:5: Cannot find file containing module: 'cic_decimator'
+  126 |     cic_decimator #(
+      |     ^~~~~~~~~~~~~
+%Error-MODMISSING: verilog/digital_downconverter.v:148:5: Cannot find file containing module: 'compensation_filter'
+  148 |     compensation_filter #(
+      |     ^~~~~~~~~~~~~~~~~~~
+%Error-MODMISSING: verilog/digital_downconverter.v:162:5: Cannot find file containing module: 'compensation_filter'
+  162 |     compensation_filter #(
+      |     ^~~~~~~~~~~~~~~~~~~
+%Error: Exiting due to 6 error(s)

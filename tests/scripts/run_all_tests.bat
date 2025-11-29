@@ -5,18 +5,16 @@ REM Generates concise, readable output
 
 setlocal enabledelayedexpansion
 
-cd /d "%~dp0\..\.."
+REM Change directory to the project root within WSL
+set "WSL_PROJECT_ROOT=/mnt/d/Code-SDR"
 
-REM Set Python environment variables for cocotb
-set "PYTHON_DIR=C:\Program Files\Python312"
-set "PYTHON_USER_SITE=C:\Users\Darsh Gupta\AppData\Roaming\Python\Python312\site-packages"
-set "PATH=!PYTHON_DIR!;!PATH!"
-set "PYTHONPATH=!PYTHON_USER_SITE!;!PYTHONPATH!"
+REM Set Python environment variables for cocotb (within WSL)
+REM Python dependencies are managed within the WSL environment.
 set "COCOTB_REDUCED_LOG_FMT=1"
 
-REM Configure cocotb simulator and sources
-set "COCOTB_SIM=icarus"
-set "VERILOG_SOURCES=verilog/adaptive_gain_scaler.v verilog/adc_interface.v verilog/async_fifo.v verilog/average_power_detector.v verilog/cic_decimator.v verilog/clock_manager.v verilog/compensation_filter.v verilog/digital_downconverter.v verilog/dma_engine.v verilog/ethernet_mac.v verilog/fft_processor.v verilog/fpga_processing_pipeline.v verilog/hamming_window.v verilog/nco_generator.v verilog/rp2040_interface.v verilog/udp_ip_stack.v"
+REM Configure cocotb simulator and sources (within WSL)
+set "COCOTB_SIM=verilator"
+set "VERILOG_SOURCES_WSL=verilog/adaptive_gain_scaler.v verilog/adc_interface.v verilog/async_fifo.v verilog/average_power_detector.v verilog/cic_decimator.v verilog/clock_manager.v verilog/compensation_filter.v verilog/digital_downconverter.v verilog/dma_engine.v verilog/ethernet_mac.v verilog/fft_processor.v verilog/fpga_processing_pipeline.v verilog/hamming_window.v verilog/nco_generator.v verilog/rp2040_interface.v verilog/udp_ip_stack.v"
 set "TOPLEVEL_LANG=verilog"
 
 REM Initialize counters
@@ -57,7 +55,8 @@ for %%M in (%MODULES%) do (
         set "SIM_BUILD=tests\sim_output\%%M_sim_build"
         md "tests\sim_output\%%M_out" 2>nul
         md "tests\sim_output\%%M_sim_build" 2>nul
-        "%PYTHON_DIR%\python.exe" -m pytest tests\cocotb_tests\test_%%M.py -v --tb=no > tests\sim_output\%%M_cocotb.log 2^>^&1
+        set "COCOTB_LOG_LEVEL=DEBUG"
+        wsl -d kali-linux -u darsh -- bash -c "cd %WSL_PROJECT_ROOT% && /usr/bin/python3 -m pytest --sim=verilator --toplevel=%%M tests/cocotb_tests/test_%%M.py -v --tb=no" > tests\sim_output\%%M_cocotb.log 2^>^&1
         if !errorlevel! == 0 (
             echo   cocotb: PASS
             set "TEST_RESULT=PASS"
@@ -71,30 +70,35 @@ for %%M in (%MODULES%) do (
 
     REM Check if iverilog test exists
     if exist "verilog\%%M.v" if exist "verilog\%%M_tb.v" (
-        echo Running iverilog test...
+        echo Running verilator test...
 
-        REM Compile
-        iverilog -g2012 -I verilog -o "tests\sim_output\%%M.vvp" -s %%M_tb verilog\*.v > "tests\sim_output\%%M_compile.log" 2>&1
-        if exist "tests\sim_output\%%M.vvp" (
+        REM Compile and Run with Verilator via WSL
+        wsl -d kali-linux -u darsh -- bash -c "cd %WSL_PROJECT_ROOT% && mkdir -p tests/sim_output/%%M_verilator_build && verilator --cc --exe verilog/%%M_tb.v verilog/%%M.v --top-module %%M_tb --Mdir tests/sim_output/%%M_verilator_build --timing --Wno-WIDTHEXPAND > tests/sim_output/%%M_compile.log 2>&1"
+        if !errorlevel! == 0 (
             echo   compilation: OK
-
-            REM Run with timeout
-            start /B vvp tests\sim_output\%%M.vvp > tests\sim_output\%%M_sim.log 2>&1
-            timeout /t %SIM_TIMEOUT% /nobreak > nul
-            taskkill /f /im vvp.exe > nul 2>&1
-
-            REM Check for finish signal
-            findstr "$finish called" tests\sim_output\%%M_sim.log > nul 2>&1
+            REM Build Verilator executable via WSL
+            wsl -d kali-linux -u darsh -- bash -c "cd %WSL_PROJECT_ROOT% && make -C tests/sim_output/%%M_verilator_build -f V%%M_tb.mk > tests/sim_output/%%M_build.log 2>&1"
             if !errorlevel! == 0 (
-                echo   iverilog: PASS
-                if "!TEST_RESULT!"=="UNKNOWN" set "TEST_RESULT=PASS"
+                echo   build: OK
+                REM Run with timeout via WSL
+                wsl -d kali-linux -u darsh -- bash -c "cd %WSL_PROJECT_ROOT% && tests/sim_output/%%M_verilator_build/V%%M_tb > tests/sim_output/%%M_sim.log 2>&1 & pid=$! ; ( sleep %SIM_TIMEOUT% && kill $pid 2>/dev/null ) & wait $pid"
+                
+                REM Check for finish signal (still reading from Windows path)
+                findstr "$finish called" tests\sim_output\%%M_sim.log > nul 2>&1
+                if !errorlevel! == 0 (
+                    echo   verilator: PASS
+                    if "!TEST_RESULT!"=="UNKNOWN" set "TEST_RESULT=PASS"
+                ) else (
+                    echo   verilator: TIMEOUT
+                    set "TEST_RESULT=FAIL"
+                    set /a TIMEOUTS+=1
+                )
             ) else (
-                echo   iverilog: TIMEOUT
+                echo   verilator: BUILD FAIL
                 set "TEST_RESULT=FAIL"
-                set /a TIMEOUTS+=1
             )
         ) else (
-            echo   iverilog: COMPILE FAIL
+            echo   verilator: COMPILE FAIL
             set "TEST_RESULT=FAIL"
         )
     ) else (

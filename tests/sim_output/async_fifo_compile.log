@@ -1,6 +1,23 @@
-verilog\adc_interface_tb.v:63: warning: Numeric constant truncated to 10 bits.
-verilog\adc_interface_tb.v:64: warning: Numeric constant truncated to 10 bits.
-verilog\adc_interface_tb.v:65: warning: Numeric constant truncated to 10 bits.
-verilog\rp2040_interface.v:118: warning: Numeric constant truncated to 4 bits.
-verilog\rp2040_interface.v:120: warning: Numeric constant truncated to 4 bits.
-verilog\rp2040_interface.v:175: warning: Numeric constant truncated to 4 bits.
+%Warning-INITIALDLY: verilog/async_fifo_tb.v:108:21: Non-blocking assignment '<=' in initial/final block
+                                                   : ... This will be executed as a blocking assignment '='!
+  108 |                 din <= i[WIDTH-1:0];
+      |                     ^~
+                     ... For warning description see https://verilator.org/warn/INITIALDLY?v=5.042
+                     ... Use "/* verilator lint_off INITIALDLY */" and lint_on around source to disable this message.
+%Warning-INITIALDLY: verilog/async_fifo_tb.v:109:23: Non-blocking assignment '<=' in initial/final block
+                                                   : ... This will be executed as a blocking assignment '='!
+  109 |                 wr_en <= 1'b1;
+      |                       ^~
+%Warning-INITIALDLY: verilog/async_fifo_tb.v:116:19: Non-blocking assignment '<=' in initial/final block
+                                                   : ... This will be executed as a blocking assignment '='!
+  116 |             wr_en <= 1'b0;
+      |                   ^~
+%Warning-INITIALDLY: verilog/async_fifo_tb.v:132:23: Non-blocking assignment '<=' in initial/final block
+                                                   : ... This will be executed as a blocking assignment '='!
+  132 |                 rd_en <= 1'b1;
+      |                       ^~
+%Warning-INITIALDLY: verilog/async_fifo_tb.v:134:23: Non-blocking assignment '<=' in initial/final block
+                                                   : ... This will be executed as a blocking assignment '='!
+  134 |                 rd_en <= 1'b0;
+      |                       ^~
+%Error: Exiting due to 5 warning(s)

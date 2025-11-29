@@ -1,0 +1,16 @@
+# Requirements for FPGA simulation and testing
+cocotb>=1.8.0
+cocotb-bus>=0.2.1
+cocotb-coverage>=0.2.0
+numpy>=1.21.0
+scipy>=1.7.0
+matplotlib>=3.5.0
+
+# Additional tools for simulation
+pytest>=7.0.0
+pytest-xdist>=2.5.0
+pytest-cov>=3.0.0
+pytest-cocotb
+
+# Optional: For waveform viewing integration
+# Note: GTKWave is typically installed separately as system package

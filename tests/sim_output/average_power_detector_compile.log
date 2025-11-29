@@ -1,6 +1,7 @@
-verilog\adc_interface_tb.v:63: warning: Numeric constant truncated to 10 bits.
-verilog\adc_interface_tb.v:64: warning: Numeric constant truncated to 10 bits.
-verilog\adc_interface_tb.v:65: warning: Numeric constant truncated to 10 bits.
-verilog\rp2040_interface.v:118: warning: Numeric constant truncated to 4 bits.
-verilog\rp2040_interface.v:120: warning: Numeric constant truncated to 4 bits.
-verilog\rp2040_interface.v:175: warning: Numeric constant truncated to 4 bits.
+%Warning-WIDTHTRUNC: verilog/average_power_detector.v:52:26: Operator ASSIGNW expects 32 bits on the Assign RHS, but Assign RHS's SHIFTR generates 74 bits.
+                                                           : ... note: In instance 'average_power_detector_tb.dut'
+   52 |     assign avg_power_out = sum_of_squares >>> AVG_WINDOW_BITS;
+      |                          ^
+                     ... For warning description see https://verilator.org/warn/WIDTHTRUNC?v=5.042
+                     ... Use "/* verilator lint_off WIDTHTRUNC */" and lint_on around source to disable this message.
+%Error: Exiting due to 1 warning(s)

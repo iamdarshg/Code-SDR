@@ -1,6 +1,3 @@
-verilog\adc_interface_tb.v:63: warning: Numeric constant truncated to 10 bits.
-verilog\adc_interface_tb.v:64: warning: Numeric constant truncated to 10 bits.
-verilog\adc_interface_tb.v:65: warning: Numeric constant truncated to 10 bits.
-verilog\rp2040_interface.v:118: warning: Numeric constant truncated to 4 bits.
-verilog\rp2040_interface.v:120: warning: Numeric constant truncated to 4 bits.
-verilog\rp2040_interface.v:175: warning: Numeric constant truncated to 4 bits.
+- V e r i l a t i o n   R e p o r t: Verilator 5.042 2025-11-02 rev (Debian 5.042-1)
+- Verilator: Built from 0.000 MB sources in 0 modules, into 0.000 MB in 0 C++ files needing 0.000 MB
+- Verilator: Walltime 0.058 s (elab=0.000, cvt=0.000, bld=0.000); cpu 0.004 s on 1 threads; alloced 20.340 MB

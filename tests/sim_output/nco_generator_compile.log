@@ -1,6 +1,11 @@
-verilog\adc_interface_tb.v:63: warning: Numeric constant truncated to 10 bits.
-verilog\adc_interface_tb.v:64: warning: Numeric constant truncated to 10 bits.
-verilog\adc_interface_tb.v:65: warning: Numeric constant truncated to 10 bits.
-verilog\rp2040_interface.v:118: warning: Numeric constant truncated to 4 bits.
-verilog\rp2040_interface.v:120: warning: Numeric constant truncated to 4 bits.
-verilog\rp2040_interface.v:175: warning: Numeric constant truncated to 4 bits.
+%Warning-WIDTHTRUNC: verilog/nco_generator.v:37:33: Operator ASSIGN expects 16 bits on the Assign RHS, but Assign RHS's RTOIS generates 32 bits.
+                                                  : ... note: In instance 'nco_generator_tb.dut'
+   37 |             sin_rom[rom_init_i] = $rtoi($sin((rom_init_i * 3.14159265358979323846) / (2.0 * ROM_DEPTH)) * 32767.0);
+      |                                 ^
+                     ... For warning description see https://verilator.org/warn/WIDTHTRUNC?v=5.042
+                     ... Use "/* verilator lint_off WIDTHTRUNC */" and lint_on around source to disable this message.
+%Warning-WIDTHTRUNC: verilog/nco_generator.v:38:33: Operator ASSIGN expects 16 bits on the Assign RHS, but Assign RHS's RTOIS generates 32 bits.
+                                                  : ... note: In instance 'nco_generator_tb.dut'
+   38 |             cos_rom[rom_init_i] = $rtoi($cos((rom_init_i * 3.14159265358979323846) / (2.0 * ROM_DEPTH)) * 32767.0);
+      |                                 ^
+%Error: Exiting due to 2 warning(s)

@@ -1,6 +1,7 @@
-verilog\adc_interface_tb.v:63: warning: Numeric constant truncated to 10 bits.
-verilog\adc_interface_tb.v:64: warning: Numeric constant truncated to 10 bits.
-verilog\adc_interface_tb.v:65: warning: Numeric constant truncated to 10 bits.
-verilog\rp2040_interface.v:118: warning: Numeric constant truncated to 4 bits.
-verilog\rp2040_interface.v:120: warning: Numeric constant truncated to 4 bits.
-verilog\rp2040_interface.v:175: warning: Numeric constant truncated to 4 bits.
+%Warning-WIDTHTRUNC: verilog/adaptive_gain_scaler.v:53:27: Operator ASSIGNW expects 32 bits on the Assign RHS, but Assign RHS's COND generates 64 bits.
+                                                         : ... note: In instance 'adaptive_gain_scaler_tb.dut'
+   53 |     assign shifted_sample = (shift_amount_code == 4'd8) ? gained_sample[DATA_WIDTH-1:0] :   
+      |                           ^
+                     ... For warning description see https://verilator.org/warn/WIDTHTRUNC?v=5.042
+                     ... Use "/* verilator lint_off WIDTHTRUNC */" and lint_on around source to disable this message.
+%Error: Exiting due to 1 warning(s)
