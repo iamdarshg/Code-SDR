@@ -1,23 +1,3 @@
-%Warning-INITIALDLY: verilog/async_fifo_tb.v:108:21: Non-blocking assignment '<=' in initial/final block
-                                                   : ... This will be executed as a blocking assignment '='!
-  108 |                 din <= i[WIDTH-1:0];
-      |                     ^~
-                     ... For warning description see https://verilator.org/warn/INITIALDLY?v=5.042
-                     ... Use "/* verilator lint_off INITIALDLY */" and lint_on around source to disable this message.
-%Warning-INITIALDLY: verilog/async_fifo_tb.v:109:23: Non-blocking assignment '<=' in initial/final block
-                                                   : ... This will be executed as a blocking assignment '='!
-  109 |                 wr_en <= 1'b1;
-      |                       ^~
-%Warning-INITIALDLY: verilog/async_fifo_tb.v:116:19: Non-blocking assignment '<=' in initial/final block
-                                                   : ... This will be executed as a blocking assignment '='!
-  116 |             wr_en <= 1'b0;
-      |                   ^~
-%Warning-INITIALDLY: verilog/async_fifo_tb.v:132:23: Non-blocking assignment '<=' in initial/final block
-                                                   : ... This will be executed as a blocking assignment '='!
-  132 |                 rd_en <= 1'b1;
-      |                       ^~
-%Warning-INITIALDLY: verilog/async_fifo_tb.v:134:23: Non-blocking assignment '<=' in initial/final block
-                                                   : ... This will be executed as a blocking assignment '='!
-  134 |                 rd_en <= 1'b0;
-      |                       ^~
-%Error: Exiting due to 5 warning(s)
+- V e r i l a t i o n   R e p o r t: Verilator 5.042 2025-11-02 rev (Debian 5.042-1)
+- Verilator: Built from 0.053 MB sources in 3 modules, into 0.056 MB in 5 C++ files needing 0.000 MB
+- Verilator: Walltime 0.215 s (elab=0.009, cvt=0.053, bld=0.000); cpu 0.037 s on 1 threads; alloced 21.680 MB

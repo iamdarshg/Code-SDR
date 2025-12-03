@@ -18,7 +18,7 @@ Vnco_generator_tb__Syms::Vnco_generator_tb__Syms(VerilatedContext* contextp, con
     , TOP{this, namep}
 {
     // Check resources
-    Verilated::stackCheck(218);
+    Verilated::stackCheck(214);
     // Configure time unit / time precision
     _vm_contextp__->timeunit(-9);
     _vm_contextp__->timeprecision(-12);

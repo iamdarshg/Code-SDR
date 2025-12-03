@@ -105,15 +105,15 @@ module async_fifo_tb;
             @(posedge wr_clk);
             $display("[ASYNC_FIFO_TB] Write %0d: full=%b, din=%h", i, full, i[WIDTH-1:0]);
             if (!full) begin
-                din <= i[WIDTH-1:0];
-                wr_en <= 1'b1;
+                din = i[WIDTH-1:0];
+                wr_en = 1'b1;
                 $display("[ASYNC_FIFO_TB]   Writing data %h", i[WIDTH-1:0]);
             end else begin
                 $display("[ASYNC_FIFO_TB]   FIFO full, cannot write");
-                i--; // retry
+                i = i - 1; // retry
             end
             @(posedge wr_clk);
-            wr_en <= 1'b0;
+            wr_en = 1'b0;
         end
 
         $display("[ASYNC_FIFO_TB] Write operations complete. Waiting for cross-domain sync...");
@@ -129,9 +129,9 @@ module async_fifo_tb;
             @(posedge rd_clk);
             $display("[ASYNC_FIFO_TB] Read %0d: empty=%b, expected=%h", i, empty, expected_data);
             if (!empty) begin
-                rd_en <= 1'b1;
+                rd_en = 1'b1;
                 @(posedge rd_clk);
-                rd_en <= 1'b0;
+                rd_en = 1'b0;
                 #1; // Settle time
                 $display("[ASYNC_FIFO_TB]   Read data: %h", dout);
                 if (dout !== expected_data) begin
@@ -143,7 +143,7 @@ module async_fifo_tb;
                 expected_data = expected_data + 1;
             end else begin
                 $display("[ASYNC_FIFO_TB]   FIFO empty, cannot read");
-                i--; // retry
+                i = i - 1; // retry
             end
         end
 
