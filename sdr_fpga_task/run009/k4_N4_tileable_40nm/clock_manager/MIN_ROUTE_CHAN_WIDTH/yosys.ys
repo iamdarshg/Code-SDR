@@ -1,0 +1,39 @@
+# Yosys synthesis script for clock_manager
+# Read verilog files
+read_verilog  ./benchmark/clock_manager.v
+
+# Technology mapping
+hierarchy -top clock_manager
+proc
+techmap -D NO_LUT -map +/adff2dff.v
+
+# Synthesis
+flatten
+opt_expr
+opt_clean
+check
+opt -nodffe -nosdff
+fsm
+opt -nodffe -nosdff
+wreduce
+peepopt
+opt_clean
+opt -nodffe -nosdff
+memory -nomap
+opt_clean
+opt -fast -full -nodffe -nosdff
+memory_map
+opt -full -nodffe -nosdff
+techmap
+opt -fast -nodffe -nosdff
+clean
+
+# LUT mapping
+abc -lut 4
+
+# Check
+synth -run check
+
+# Clean and output blif
+opt_clean -purge
+write_blif clock_manager_yosys_out.blif

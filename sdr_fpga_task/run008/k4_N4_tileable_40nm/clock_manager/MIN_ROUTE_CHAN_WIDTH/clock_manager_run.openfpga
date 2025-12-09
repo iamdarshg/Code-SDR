@@ -1,0 +1,12 @@
+# Read OpenFPGA architecture definition
+read_openfpga_arch -f /opt/openfpga/work/sdr_fpga_task/run008/k4_N4_tileable_40nm/clock_manager/MIN_ROUTE_CHAN_WIDTH/arch/sdr_fpga_arch.xml
+
+# Read OpenFPGA simulation settings
+read_openfpga_simulation_setting -f /opt/openfpga/openfpga_flow/openfpga_simulation_settings/fixed_sim_openfpga.xml
+
+# Annotate the OpenFPGA architecture to VPR data base
+# to debug use --verbose options
+link_openfpga_arch --activity_file clock_manager_ace_out.act --sort_gsb_chan_node_in_edges
+
+# Finish and exit OpenFPGA
+exit

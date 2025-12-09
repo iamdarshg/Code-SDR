@@ -1,0 +1,18 @@
+# Benchmark "clock_manager" written by ABC on Wed Dec  3 16:08:29 2025
+.model clock_manager
+.inputs clk_100m_in rst_n
+.outputs clk_600m clk_1200m_fft clk_125m_eth clk_250m_eth clk_105m_adc \
+ locked
+.names rst_n locked
+1 1
+.names clk_100m_in clk_600m
+1 1
+.names clk_100m_in clk_250m_eth
+1 1
+.names clk_100m_in clk_125m_eth
+1 1
+.names clk_100m_in clk_1200m_fft
+1 1
+.names clk_100m_in clk_105m_adc
+1 1
+.end

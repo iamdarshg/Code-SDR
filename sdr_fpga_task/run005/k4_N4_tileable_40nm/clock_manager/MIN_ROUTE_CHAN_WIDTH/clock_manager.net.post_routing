@@ -1,0 +1,150 @@
+<?xml version="1.0"?>
+<block name="clock_manager.net.post_routing" instance="FPGA_packed_netlist[0]" architecture_id="SHA256:ed690e22fd156e14883e2a32275e876eda60a0cbc7eee75fb10621755a59a544" atom_netlist_id="SHA256:f488008f7630fa120733f285fc0a93cb49d39e51d630292765833b9f5f87a726">
+	<inputs>clk_100m_in rst_n</inputs>
+	<outputs>out:clk_600m out:clk_1200m_fft out:clk_125m_eth out:clk_250m_eth out:clk_105m_adc out:locked</outputs>
+	<clocks></clocks>
+	<block name="out:clk_600m" instance="io[0]" mode="outpad">
+		<inputs>
+			<port name="outpad">clk_100m_in</port>
+		</inputs>
+		<outputs>
+			<port name="inpad">open</port>
+		</outputs>
+		<clocks />
+		<block name="out:clk_600m" instance="outpad[0]">
+			<attributes />
+			<parameters />
+			<inputs>
+				<port name="outpad">io.outpad[0]-&gt;outpad</port>
+			</inputs>
+			<outputs />
+			<clocks />
+		</block>
+	</block>
+	<block name="out:clk_1200m_fft" instance="io[1]" mode="outpad">
+		<inputs>
+			<port name="outpad">clk_100m_in</port>
+		</inputs>
+		<outputs>
+			<port name="inpad">open</port>
+		</outputs>
+		<clocks />
+		<block name="out:clk_1200m_fft" instance="outpad[0]">
+			<attributes />
+			<parameters />
+			<inputs>
+				<port name="outpad">io.outpad[0]-&gt;outpad</port>
+			</inputs>
+			<outputs />
+			<clocks />
+		</block>
+	</block>
+	<block name="out:clk_125m_eth" instance="io[2]" mode="outpad">
+		<inputs>
+			<port name="outpad">clk_100m_in</port>
+		</inputs>
+		<outputs>
+			<port name="inpad">open</port>
+		</outputs>
+		<clocks />
+		<block name="out:clk_125m_eth" instance="outpad[0]">
+			<attributes />
+			<parameters />
+			<inputs>
+				<port name="outpad">io.outpad[0]-&gt;outpad</port>
+			</inputs>
+			<outputs />
+			<clocks />
+		</block>
+	</block>
+	<block name="out:clk_250m_eth" instance="io[3]" mode="outpad">
+		<inputs>
+			<port name="outpad">clk_100m_in</port>
+		</inputs>
+		<outputs>
+			<port name="inpad">open</port>
+		</outputs>
+		<clocks />
+		<block name="out:clk_250m_eth" instance="outpad[0]">
+			<attributes />
+			<parameters />
+			<inputs>
+				<port name="outpad">io.outpad[0]-&gt;outpad</port>
+			</inputs>
+			<outputs />
+			<clocks />
+		</block>
+	</block>
+	<block name="out:clk_105m_adc" instance="io[4]" mode="outpad">
+		<inputs>
+			<port name="outpad">clk_100m_in</port>
+		</inputs>
+		<outputs>
+			<port name="inpad">open</port>
+		</outputs>
+		<clocks />
+		<block name="out:clk_105m_adc" instance="outpad[0]">
+			<attributes />
+			<parameters />
+			<inputs>
+				<port name="outpad">io.outpad[0]-&gt;outpad</port>
+			</inputs>
+			<outputs />
+			<clocks />
+		</block>
+	</block>
+	<block name="out:locked" instance="io[5]" mode="outpad">
+		<inputs>
+			<port name="outpad">rst_n</port>
+		</inputs>
+		<outputs>
+			<port name="inpad">open</port>
+		</outputs>
+		<clocks />
+		<block name="out:locked" instance="outpad[0]">
+			<attributes />
+			<parameters />
+			<inputs>
+				<port name="outpad">io.outpad[0]-&gt;outpad</port>
+			</inputs>
+			<outputs />
+			<clocks />
+		</block>
+	</block>
+	<block name="clk_100m_in" instance="io[6]" mode="inpad">
+		<inputs>
+			<port name="outpad">open</port>
+		</inputs>
+		<outputs>
+			<port name="inpad">inpad[0].inpad[0]-&gt;inpad</port>
+		</outputs>
+		<clocks />
+		<block name="clk_100m_in" instance="inpad[0]">
+			<attributes />
+			<parameters />
+			<inputs />
+			<outputs>
+				<port name="inpad">clk_100m_in</port>
+			</outputs>
+			<clocks />
+		</block>
+	</block>
+	<block name="rst_n" instance="io[7]" mode="inpad">
+		<inputs>
+			<port name="outpad">open</port>
+		</inputs>
+		<outputs>
+			<port name="inpad">inpad[0].inpad[0]-&gt;inpad</port>
+		</outputs>
+		<clocks />
+		<block name="rst_n" instance="inpad[0]">
+			<attributes />
+			<parameters />
+			<inputs />
+			<outputs>
+				<port name="inpad">rst_n</port>
+			</outputs>
+			<clocks />
+		</block>
+	</block>
+</block>
