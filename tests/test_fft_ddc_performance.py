@@ -13,12 +13,14 @@ import time
 import sys
 import os
 import json
+import logging
 from typing import Dict, List, Tuple, Any
 import matplotlib.pyplot as plt
 from scipy import signal
+import argparse
 
 # Add the software directory to path
-sys.path.append(os.path.join(os.path.dirname(__file__), 'wideband-sdr-software'))
+sys.path.append(os.path.join(os.path.dirname(__file__), '..', 'wideband-sdr-software'))
 from digital_downconverter import DigitalDownconverter
 
 class PerformanceBenchmark:
@@ -38,7 +40,7 @@ class PerformanceBenchmark:
         Returns:
             Dictionary of test signals
         """
-        print("Generating test signals...")
+        logging.info("Generating test signals...")
         
         # Signal parameters
         sample_rate = 100e6  # 100 MSPS
@@ -104,9 +106,8 @@ class PerformanceBenchmark:
         if fft_sizes is None:
             fft_sizes = [256, 512, 1024, 2048, 4096, 8192]
         
-        print(f"\n=== FFT Performance Benchmark ===")
-        print(f"Test signal: {signal_type}")
-        print(f"FFT sizes: {fft_sizes}")
+        logging.info(f"Starting FFT Performance Benchmark for signal: {signal_type}")
+        logging.info(f"FFT sizes to be tested: {fft_sizes}")
         
         results = {
             'signal_type': signal_type,
@@ -193,8 +194,8 @@ class PerformanceBenchmark:
                 {'sample_rate': 20e6, 'center_freq': 433e6, 'bandwidth': 100e3},
             ]
         
-        print(f"\n=== DDC Performance Benchmark ===")
-        print(f"Testing {len(test_configurations)} configurations")
+        logging.info("Starting DDC Performance Benchmark")
+        logging.info(f"Testing {len(test_configurations)} configurations")
         
         results = {
             'configurations': test_configurations,
@@ -267,7 +268,7 @@ class PerformanceBenchmark:
         Returns:
             Dictionary with benchmark results
         """
-        print(f"\n=== Combined Pipeline Benchmark ===")
+        logging.info("Starting Combined Pipeline Benchmark")
         
         # Configuration
         sample_rate = 100e6
@@ -353,7 +354,7 @@ class PerformanceBenchmark:
         Args:
             output_file: Output JSON file path
         """
-        print(f"\n=== Generating Performance Report ===")
+        logging.info(f"Generating performance report: {output_file}")
         
         # Compile all results
         report = {
@@ -385,7 +386,7 @@ class PerformanceBenchmark:
         if 'ddc_performance' in self.results:
             ddc_results = self.results['ddc_performance']
             max_throughput = max(ddc_results['throughput_msps'])
-            avg_compression = np.mean([len(config['sample_rate'])/bandwidth for config in ddc_results['configurations']])
+            avg_compression = np.mean([config['sample_rate'] / config['bandwidth'] for config in ddc_results['configurations']])
             print(f"DDC Performance:")
             print(f"  Maximum throughput: {max_throughput:.1f} MSPS")
             print(f"  Average compression ratio: {avg_compression:.0f}:1")
@@ -404,7 +405,7 @@ class PerformanceBenchmark:
         Args:
             output_dir: Output directory for plots
         """
-        print(f"\n=== Creating Performance Plots ===")
+        logging.info(f"Creating performance plots in directory: {output_dir}")
         
         os.makedirs(output_dir, exist_ok=True)
         
@@ -422,7 +423,8 @@ class PerformanceBenchmark:
         """Plot FFT performance results"""
         fft_results = self.results['fft_performance']
         
-        fig, ((ax1, ax2), (ax3, ax4)) = plt.subplots(2, 2, figsize=(12, 8))
+        fig, ((ax1, ax2), (ax3, ax4)) = plt.subplots(2, 2, figsize=(14, 10))
+        fig.suptitle('FFT Performance Analysis', fontsize=16)
         
         # Throughput vs FFT Size
         ax1.plot(fft_results['fft_sizes'], fft_results['throughput_msps'], 'bo-')
@@ -446,14 +448,14 @@ class PerformanceBenchmark:
         ax3.set_title('FFT Memory Usage')
         ax3.grid(True)
         
-        # Accuracy
-        ax4.plot(fft_results['fft_sizes'], fft_results['accuracy_metrics'], 'mo-')
-        ax4.set_xlabel('FFT Size')
-        ax4.set_ylabel('Energy Conservation Error')
-        ax4.set_title('FFT Numerical Accuracy')
+        # Throughput vs. Computation Time
+        ax4.plot(fft_results['throughput_msps'], np.array(fft_results['computation_times'])*1000, 'go-')
+        ax4.set_xlabel('Throughput (MSPS)')
+        ax4.set_ylabel('Computation Time (ms)')
+        ax4.set_title('Throughput vs. Computation Time')
         ax4.grid(True)
         
-        plt.tight_layout()
+        plt.tight_layout(rect=[0, 0.03, 1, 0.95])
         plt.savefig(os.path.join(output_dir, 'fft_performance.png'), dpi=150, bbox_inches='tight')
         plt.close()
     
@@ -461,7 +463,15 @@ class PerformanceBenchmark:
         """Plot DDC performance results"""
         ddc_results = self.results['ddc_performance']
         
-        fig, ((ax1, ax2), (ax3, ax4)) = plt.subplots(2, 2, figsize=(12, 8))
+        fig = plt.figure(figsize=(14, 15))
+        fig.suptitle('DDC Performance Analysis', fontsize=16)
+        gs = fig.add_gridspec(3, 2)
+
+        ax1 = fig.add_subplot(gs[0, 0])
+        ax2 = fig.add_subplot(gs[0, 1])
+        ax3 = fig.add_subplot(gs[1, 0])
+        ax4 = fig.add_subplot(gs[1, 1])
+        ax5 = fig.add_subplot(gs[2, :])
         
         # Throughput vs Sample Rate
         sample_rates = [config['sample_rate']/1e6 for config in ddc_results['configurations']]
@@ -493,16 +503,27 @@ class PerformanceBenchmark:
         ax4.set_title('Filter Bandwidth Utilization')
         ax4.grid(True)
         
-        plt.tight_layout()
+        # Filter Performance
+        for i, config in enumerate(ddc_results['configurations']):
+            ddc = DigitalDownconverter(config['sample_rate'], config['center_freq'], config['bandwidth'])
+            freqs, mag_response = ddc.get_frequency_response(1024)
+            ax5.plot(freqs / 1e6, mag_response, label=f"Config {i+1}")
+
+        ax5.set_xlabel('Frequency (MHz)')
+        ax5.set_ylabel('Magnitude (dB)')
+        ax5.set_title('Filter Frequency Response')
+        ax5.legend()
+        ax5.grid(True)
+
+        plt.tight_layout(rect=[0, 0.03, 1, 0.95])
         plt.savefig(os.path.join(output_dir, 'ddc_performance.png'), dpi=150, bbox_inches='tight')
         plt.close()
 
 
-def run_comprehensive_benchmark():
+def run_comprehensive_benchmark(output_file: str, output_dir: str):
     """Run comprehensive performance benchmark suite"""
-    print("=== Wideband SDR Performance Benchmark Suite ===")
-    print(f"Started at: {time.strftime('%Y-%m-%d %H:%M:%S')}")
-    print("=" * 50)
+    logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
+    logging.info("Starting Wideband SDR Performance Benchmark Suite")
     
     # Initialize benchmark
     benchmark = PerformanceBenchmark()
@@ -522,21 +543,27 @@ def run_comprehensive_benchmark():
     benchmark.benchmark_combined_pipeline()
     
     # Generate report
-    benchmark.generate_performance_report('fft_ddc_performance_report.json')
+    benchmark.generate_performance_report(output_file)
     
     # Create plots
-    benchmark.create_performance_plots('performance_plots')
+    benchmark.create_performance_plots(output_dir)
     
-    print(f"\n=== Benchmark Complete ===")
-    print(f"Completed at: {time.strftime('%Y-%m-%d %H:%M:%S')}")
+    logging.info("Benchmark Complete")
     
     return benchmark
 
 
 if __name__ == "__main__":
+    parser = argparse.ArgumentParser(description="Run comprehensive performance benchmark suite for Wideband SDR")
+    parser.add_argument('--output-file', type=str, default='fft_ddc_performance_report.json',
+                        help='Output file for performance report')
+    parser.add_argument('--output-dir', type=str, default='performance_plots',
+                        help='Output directory for performance plots')
+    args = parser.parse_args()
+
     # Run comprehensive benchmark
-    results = run_comprehensive_benchmark()
+    results = run_comprehensive_benchmark(output_file=args.output_file, output_dir=args.output_dir)
     
     print("\nBenchmark completed successfully!")
-    print("Check 'fft_ddc_performance_report.json' for detailed results.")
-    print("Check 'performance_plots/' directory for visualization charts.")
+    print(f"Check '{args.output_file}' for detailed results.")
+    print(f"Check '{args.output_dir}/' directory for visualization charts.")

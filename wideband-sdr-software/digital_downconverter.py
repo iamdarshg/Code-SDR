@@ -69,27 +69,22 @@ class DigitalDownconverter:
         Returns:
             Filter coefficients array
         """
-        # Normalized cutoff frequency
-        nyquist = self.sample_rate / 2.0
-        normalized_cutoff = (self.bandwidth / 2.0) / nyquist
-        
         # Filter length - trade-off between performance and quality
         # Longer filters = better attenuation but more CPU usage
-        filter_length = min(101, int(self.sample_rate / self.bandwidth * 10))
+        # Increased max length from 101 to 257 for better convergence
+        filter_length = min(257, int(self.sample_rate / self.bandwidth * 10))
         if filter_length % 2 == 0:
             filter_length += 1  # Ensure odd length for linear phase
             
-        # Design FIR filter using Remez algorithm
-        filter_coeffs = signal.remez(
-            filter_length,
-            [0, normalized_cutoff * 0.95, normalized_cutoff, nyquist],
-            [1, 0],
-            Hz=self.sample_rate
-        )
+        # Design FIR filter using firwin for robustness, as remez was failing to converge
+        cutoff_freq = self.bandwidth * 0.5  # Cutoff is half the bandwidth
         
-        # Apply window for better side-lobe suppression
-        window = self.window_func(filter_length)
-        filter_coeffs *= window
+        filter_coeffs = signal.firwin(
+            numtaps=filter_length,
+            cutoff=cutoff_freq,
+            window='hann',
+            fs=self.sample_rate
+        )
         
         # Normalize to unity gain at DC
         filter_coeffs /= np.sum(filter_coeffs)
@@ -167,10 +162,10 @@ class DigitalDownconverter:
         Returns:
             Filtered samples
         """
-        # Use lfilter for real-time processing
-        # For better performance with long filters, consider using fftfilt
-        filtered_real = signal.lfilter(self.filter_coeffs, 1, samples.real)
-        filtered_imag = signal.lfilter(self.filter_coeffs, 1, samples.imag)
+        # For better performance with long filters, use fftconvolve
+        # The 'auto' method selects the fastest convolution method
+        filtered_real = signal.fftconvolve(samples.real, self.filter_coeffs, mode='same')
+        filtered_imag = signal.fftconvolve(samples.imag, self.filter_coeffs, mode='same')
         
         return filtered_real + 1j * filtered_imag
     
@@ -352,19 +347,19 @@ class PolyphaseFilterBank:
         """Design prototype low-pass filter"""
         # Filter length based on transition bandwidth
         transition_bw = self.channel_bandwidth * 0.1  # 10% transition
-        filter_length = int(4 / (transition_bw / self.sample_rate))
+        # Increased filter length for better performance
+        filter_length = int(8 / (transition_bw / self.sample_rate))
         if filter_length % 2 == 0:
             filter_length += 1
             
-        # Design filter
-        nyquist = self.sample_rate / 2.0
+        # Design filter using firwin for robustness
         cutoff = self.channel_bandwidth / 2.0
         
-        coeffs = signal.remez(
-            filter_length,
-            [0, cutoff, cutoff + transition_bw, nyquist],
-            [1, 0],
-            Hz=self.sample_rate
+        coeffs = signal.firwin(
+            numtaps=filter_length,
+            cutoff=cutoff,
+            window='hann',
+            fs=self.sample_rate
         )
         
         return coeffs
