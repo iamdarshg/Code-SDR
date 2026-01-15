@@ -1,0 +1,30 @@
+name: Python CI
+
+on: [push, pull_request]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v3
+    - name: Set up Python 3.9
+      uses: actions/setup-python@v3
+      with:
+        python-version: 3.9
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+    - name: Run tests
+      run: |
+        python tests/test_integration.py
+        python wideband-sdr-software/test_calibration.py
+        python tests/test_fft_ddc_performance.py --output-file=report-optimized.json --output-dir=plots-optimized
+    - name: Upload artifacts
+      uses: actions/upload-artifact@v3
+      with:
+        name: performance-reports
+        path: |
+          report-optimized.json
+          plots-optimized/

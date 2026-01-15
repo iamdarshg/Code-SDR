@@ -1,0 +1,183 @@
+{
+  "timestamp": "2026-01-15 14:06:28",
+  "system_info": {
+    "numpy_version": "2.4.1",
+    "python_version": "3.12.12 (main, Nov  7 2025, 00:07:10) [GCC 13.3.0]",
+    "platform": "linux"
+  },
+  "benchmarks": {
+    "fft_performance": {
+      "signal_type": "wideband_noise",
+      "fft_sizes": [
+        256,
+        512,
+        1024,
+        2048,
+        4096,
+        8192
+      ],
+      "computation_times": [
+        0.5809768732000293,
+        0.3601567431999456,
+        0.25716592850001235,
+        0.21305756310002835,
+        0.21675278719994823,
+        0.27005660039999385
+      ],
+      "throughput_msps": [
+        17.21216878207312,
+        27.7653332578267,
+        38.88291134958619,
+        46.92786237917254,
+        46.127831291861646,
+        37.007945686930256
+      ],
+      "memory_usage": [
+        4096,
+        8192,
+        16384,
+        32768,
+        65536,
+        131072
+      ],
+      "accuracy_metrics": [
+        0.0,
+        1.8833401338996261e-16,
+        3.532315601365209e-16,
+        0.0,
+        0.0,
+        1.7307860509386367e-16
+      ]
+    },
+    "ddc_performance": {
+      "configurations": [
+        {
+          "sample_rate": 50000000.0,
+          "center_freq": 95500000.0,
+          "bandwidth": 200000.0
+        },
+        {
+          "sample_rate": 100000000.0,
+          "center_freq": 95500000.0,
+          "bandwidth": 200000.0
+        },
+        {
+          "sample_rate": 100000000.0,
+          "center_freq": 1000000000.0,
+          "bandwidth": 1000000.0
+        },
+        {
+          "sample_rate": 50000000.0,
+          "center_freq": 2400000000.0,
+          "bandwidth": 5000000.0
+        },
+        {
+          "sample_rate": 20000000.0,
+          "center_freq": 433000000.0,
+          "bandwidth": 100000.0
+        }
+      ],
+      "throughput_msps": [
+        5.344594779342801,
+        5.828744503643275,
+        5.427977405922376,
+        6.936784115208022,
+        5.24289993645706
+      ],
+      "processing_times": [
+        0.09355246200002512,
+        0.1715635330001078,
+        0.1842306858000029,
+        0.0720795100000032,
+        0.03814682759998504
+      ],
+      "decimation_factors": [
+        125,
+        250,
+        50,
+        5,
+        100
+      ],
+      "output_bw_utilization": [
+        0.0068359375,
+        0.005859375,
+        0.0078125,
+        0.091796875,
+        0.0068359375
+      ],
+      "filter_performance": [
+        {
+          "processed_samples": 2501024,
+          "total_processing_time": 0.46845890899999176,
+          "throughput_samples_per_sec": 5338833.250794348,
+          "output_sample_rate": 400000.0,
+          "decimation_factor": 125,
+          "filter_length": 257,
+          "bandwidth": 200000.0,
+          "center_frequency": 95500000.0
+        },
+        {
+          "processed_samples": 5001024,
+          "total_processing_time": 0.8583606570002758,
+          "throughput_samples_per_sec": 5826250.258809793,
+          "output_sample_rate": 400000.0,
+          "decimation_factor": 250,
+          "filter_length": 257,
+          "bandwidth": 200000.0,
+          "center_frequency": 95500000.0
+        },
+        {
+          "processed_samples": 5001024,
+          "total_processing_time": 0.9202785659997517,
+          "throughput_samples_per_sec": 5434250.220276617,
+          "output_sample_rate": 2000000.0,
+          "decimation_factor": 50,
+          "filter_length": 257,
+          "bandwidth": 1000000.0,
+          "center_frequency": 1000000000.0
+        },
+        {
+          "processed_samples": 2501024,
+          "total_processing_time": 0.36000887699992745,
+          "throughput_samples_per_sec": 6947117.584549183,
+          "output_sample_rate": 10000000.0,
+          "decimation_factor": 5,
+          "filter_length": 101,
+          "bandwidth": 5000000.0,
+          "center_frequency": 2400000000.0
+        },
+        {
+          "processed_samples": 1001024,
+          "total_processing_time": 0.19129471799988096,
+          "throughput_samples_per_sec": 5232888.86628131,
+          "output_sample_rate": 200000.0,
+          "decimation_factor": 100,
+          "filter_length": 257,
+          "bandwidth": 100000.0,
+          "center_frequency": 433000000.0
+        }
+      ]
+    },
+    "combined_pipeline": {
+      "configuration": {
+        "sample_rate": 100000000.0,
+        "center_freq": 95500000.0,
+        "bandwidth": 200000.0,
+        "fft_size": 2048
+      },
+      "processing_times": [
+        20.58531520700012,
+        23.820553505999897,
+        20.453673935000097
+      ],
+      "memory_efficiency": [],
+      "real_time_factor": [
+        20.58531520700012,
+        23.820553505999897,
+        20.453673935000097
+      ],
+      "average_throughput_msps": 4.62537951629004,
+      "std_processing_time": 1.5570618456790317
+    }
+  }
+}
