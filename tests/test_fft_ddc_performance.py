@@ -20,8 +20,8 @@ from scipy import signal
 import argparse
 
 # Add the software directory to path
-sys.path.append(os.path.join(os.path.dirname(__file__), '..', 'wideband-sdr-software'))
-from digital_downconverter import DigitalDownconverter
+sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
+from wideband_sdr_software.digital_downconverter import DigitalDownconverter
 
 class PerformanceBenchmark:
     """

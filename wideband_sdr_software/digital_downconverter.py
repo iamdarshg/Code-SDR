@@ -12,6 +12,7 @@ import numpy as np
 import scipy.signal as signal
 from typing import Tuple, Optional, Union
 import time
+from .nco_synchronizer import NCOSynchronizer
 
 class DigitalDownconverter:
     """
@@ -44,6 +45,9 @@ class DigitalDownconverter:
         # NCO frequency (normalized)
         self.nco_freq = center_freq / sample_rate
         
+        # Initialize NCO Synchronizer for efficient NCO generation
+        self.nco = NCOSynchronizer(sample_rate, -center_freq)
+
         # Design low-pass filter
         self.filter_coeffs = self._design_lowpass_filter()
         
@@ -143,9 +147,8 @@ class DigitalDownconverter:
         Returns:
             Frequency-translated samples
         """
-        # Generate NCO (Numerically Controlled Oscillator)
-        t = np.arange(len(samples), dtype=np.float64) / self.sample_rate
-        nco = np.exp(-1j * 2 * np.pi * self.nco_freq * t)
+        # Generate NCO samples using the efficient NCOSynchronizer
+        nco = self.nco.generate_nco_samples(len(samples))
         
         # Apply frequency shift (complex multiplication)
         downconverted = samples * nco
@@ -199,6 +202,7 @@ class DigitalDownconverter:
         if center_freq is not None and center_freq != self.center_freq:
             self.center_freq = center_freq
             self.nco_freq = center_freq / self.sample_rate
+            self.nco.update_frequency(-center_freq)
             updated = True
             
         if bandwidth is not None and bandwidth != self.bandwidth:
@@ -262,52 +266,6 @@ class DigitalDownconverter:
         self.throughput = 0.0
 
 
-class NCOSynchronizer:
-    """
-    NCO Phase Synchronizer for improved frequency accuracy
-    """
-    
-    def __init__(self, sample_rate: float, frequency: float, phase_offset: float = 0.0):
-        """
-        Initialize NCO Synchronizer
-        
-        Args:
-            sample_rate: Sample rate in Hz
-            frequency: Target frequency in Hz
-            phase_offset: Initial phase offset in radians
-        """
-        self.sample_rate = sample_rate
-        self.frequency = frequency
-        self.phase_offset = phase_offset
-        self.phase_increment = 2 * np.pi * frequency / sample_rate
-        self.phase = phase_offset
-    
-    def generate_nco_samples(self, num_samples: int) -> np.ndarray:
-        """
-        Generate synchronized NCO samples
-        
-        Args:
-            num_samples: Number of samples to generate
-            
-        Returns:
-            Complex NCO samples
-        """
-        phases = self.phase + self.phase_increment * np.arange(num_samples)
-        
-        # Update phase for next call (wrap to prevent overflow)
-        self.phase = phases[-1] % (2 * np.pi)
-        
-        return np.exp(1j * phases)
-    
-    def update_frequency(self, frequency: float) -> None:
-        """
-        Update NCO frequency
-        
-        Args:
-            frequency: New frequency in Hz
-        """
-        self.frequency = frequency
-        self.phase_increment = 2 * np.pi * frequency / self.sample_rate
 
 
 class PolyphaseFilterBank:
