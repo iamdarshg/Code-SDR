@@ -12,7 +12,7 @@ import numpy as np
 import scipy.signal as signal
 from typing import Tuple, Optional, Union
 import time
-from .nco_synchronizer import NCOSynchronizer
+from nco_synchronizer import NCOSynchronizer
 
 class DigitalDownconverter:
     """
