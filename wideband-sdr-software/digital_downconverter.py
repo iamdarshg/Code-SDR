@@ -167,10 +167,9 @@ class DigitalDownconverter:
         """
         # For better performance with long filters, use fftconvolve
         # The 'auto' method selects the fastest convolution method
-        filtered_real = signal.fftconvolve(samples.real, self.filter_coeffs, mode='same')
-        filtered_imag = signal.fftconvolve(samples.imag, self.filter_coeffs, mode='same')
-        
-        return filtered_real + 1j * filtered_imag
+        # A single convolution on the complex signal is more efficient
+        # than two separate convolutions on the real and imaginary parts.
+        return signal.fftconvolve(samples, self.filter_coeffs, mode='same')
     
     def _apply_decimation(self, samples: np.ndarray) -> np.ndarray:
         """
