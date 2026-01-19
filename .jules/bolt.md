@@ -1,3 +1,7 @@
 ## 2024-05-20 - Single vs. Dual Convolution for Complex Signals
 **Learning:** In `digital_downconverter.py`, the `_apply_lowpass_filter` function was performing two separate `fftconvolve` operations—one on the real part and one on the imaginary part of the complex signal. Combining these into a single `fftconvolve` on the complex signal itself resulted in a 28% reduction in the combined pipeline processing time. This is because `scipy.signal.fftconvolve` is optimized for complex inputs, and a single operation reduces Python overhead.
 **Action:** When I encounter filtering or convolution operations on complex-valued data, I will ensure they are performed in a single operation rather than being split by real and imaginary components.
+
+## 2024-05-21 - fftconvolve: Complex vs. Real Convolutions
+**Learning:** An attempt to "optimize" `_apply_lowpass_filter` by splitting the `fftconvolve` operation into two separate convolutions for the real and imaginary parts of the signal resulted in a significant performance *decrease*. The original implementation, which uses a single `fftconvolve` on the complex signal, is more efficient. This confirms that `scipy.signal.fftconvolve` is highly optimized for complex-valued signals.
+**Action:** Avoid splitting complex convolutions into separate real and imaginary operations. Trust that SciPy's built-in functions are optimized for complex data.
