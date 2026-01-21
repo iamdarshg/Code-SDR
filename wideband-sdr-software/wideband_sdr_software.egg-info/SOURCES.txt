@@ -1,0 +1,5 @@
+setup.py
+wideband_sdr_software.egg-info/PKG-INFO
+wideband_sdr_software.egg-info/SOURCES.txt
+wideband_sdr_software.egg-info/dependency_links.txt
+wideband_sdr_software.egg-info/top_level.txt

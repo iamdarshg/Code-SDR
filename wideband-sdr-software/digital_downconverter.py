@@ -34,6 +34,8 @@ class DigitalDownconverter:
             center_freq: Center frequency to downconvert from in Hz
             bandwidth: Output bandwidth in Hz
         """
+        if bandwidth <= 0:
+            raise ValueError("Bandwidth must be positive")
         self.sample_rate = sample_rate
         self.center_freq = center_freq
         self.bandwidth = bandwidth
@@ -111,6 +113,9 @@ class DigitalDownconverter:
         """
         start_time = time.perf_counter()
         
+        if not isinstance(samples, np.ndarray) or not np.iscomplexobj(samples):
+            raise TypeError("Input samples must be a complex numpy array")
+
         if len(samples) == 0:
             return np.array([], dtype=np.complex64)
         

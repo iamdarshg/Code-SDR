@@ -1,5 +1,5 @@
 {
-  "timestamp": "2026-01-17 13:01:30",
+  "timestamp": "2026-01-21 18:06:04",
   "system_info": {
     "numpy_version": "2.4.1",
     "python_version": "3.12.12 (main, Nov  7 2025, 00:07:10) [GCC 13.3.0]",
@@ -17,20 +17,20 @@
         8192
       ],
       "computation_times": [
-        0.48517668689999593,
-        0.3279225473999986,
-        0.23730186390000085,
-        0.2073529940000128,
-        0.1923519671999941,
-        0.20967159909999963
+        0.4748449251000039,
+        0.31882127309999647,
+        0.23814941649999924,
+        0.21405257369999617,
+        0.19925385249999863,
+        0.2170593357999991
       ],
       "throughput_msps": [
-        20.61078421532064,
-        30.494615509930753,
-        42.13772212178551,
-        48.21891310621434,
-        51.979380016448864,
-        47.66616004694752
+        21.059237387646068,
+        31.365134147945007,
+        41.987757715123486,
+        46.7097210146751,
+        50.17888424516193,
+        46.04381545334132
       ],
       "memory_usage": [
         4096,
@@ -42,11 +42,11 @@
       ],
       "accuracy_metrics": [
         0.0,
-        1.7901010750429764e-16,
+        1.7231656449552851e-16,
         0.0,
         0.0,
         0.0,
-        1.7400193226405283e-16
+        3.3683507695550554e-16
       ]
     },
     "ddc_performance": {
@@ -78,18 +78,18 @@
         }
       ],
       "throughput_msps": [
-        5.054311416696046,
-        4.641915102659372,
-        5.008147329197962,
-        5.8903278768785015,
-        7.657704821531766
+        5.024263000055392,
+        4.760983779065561,
+        4.913484630308583,
+        5.86067058364819,
+        7.627277058733958
       ],
       "processing_times": [
-        0.09892544379998754,
-        0.21542832599999429,
-        0.1996746369999755,
-        0.08488491819999808,
-        0.026117486199996164
+        0.09951708339999073,
+        0.21004062319999547,
+        0.2035215483999991,
+        0.08531446920000008,
+        0.02622167760000025
       ],
       "decimation_factors": [
         125,
@@ -108,8 +108,8 @@
       "filter_performance": [
         {
           "processed_samples": 2501024,
-          "total_processing_time": 0.4955767939999305,
-          "throughput_samples_per_sec": 5046693.126636496,
+          "total_processing_time": 0.49850863599999684,
+          "throughput_samples_per_sec": 5017012.383312084,
           "output_sample_rate": 400000.0,
           "decimation_factor": 125,
           "filter_length": 257,
@@ -118,8 +118,8 @@
         },
         {
           "processed_samples": 5001024,
-          "total_processing_time": 1.0776191990000257,
-          "throughput_samples_per_sec": 4640808.185897847,
+          "total_processing_time": 1.050675105000039,
+          "throughput_samples_per_sec": 4759819.639963597,
           "output_sample_rate": 400000.0,
           "decimation_factor": 250,
           "filter_length": 257,
@@ -128,8 +128,8 @@
         },
         {
           "processed_samples": 5001024,
-          "total_processing_time": 0.9988457439999934,
-          "throughput_samples_per_sec": 5006803.132556605,
+          "total_processing_time": 1.0180885769999861,
+          "throughput_samples_per_sec": 4912169.837654576,
           "output_sample_rate": 2000000.0,
           "decimation_factor": 50,
           "filter_length": 257,
@@ -138,8 +138,8 @@
         },
         {
           "processed_samples": 2501024,
-          "total_processing_time": 0.4236935970000104,
-          "throughput_samples_per_sec": 5902907.236995461,
+          "total_processing_time": 0.4246487240000363,
+          "throughput_samples_per_sec": 5889630.3194821,
           "output_sample_rate": 10000000.0,
           "decimation_factor": 5,
           "filter_length": 101,
@@ -148,8 +148,8 @@
         },
         {
           "processed_samples": 1001024,
-          "total_processing_time": 0.12981373699994947,
-          "throughput_samples_per_sec": 7711233.211015177,
+          "total_processing_time": 0.13153835400001412,
+          "throughput_samples_per_sec": 7610130.198222585,
           "output_sample_rate": 200000.0,
           "decimation_factor": 100,
           "filter_length": 257,
@@ -166,18 +166,18 @@
         "fft_size": 2048
       },
       "processing_times": [
-        12.526878776999979,
-        12.527599296999995,
-        12.556478982999977
+        13.490319804000023,
+        12.603350233000015,
+        12.673999707999997
       ],
       "memory_efficiency": [],
       "real_time_factor": [
-        12.526878776999979,
-        12.527599296999995,
-        12.556478982999977
+        13.490319804000023,
+        12.603350233000015,
+        12.673999707999997
       ],
-      "average_throughput_msps": 7.976398993127074,
-      "std_processing_time": 0.013786981007740947
+      "average_throughput_msps": 7.738406821284165,
+      "std_processing_time": 0.40250394992281413
     }
   }
 }
