@@ -7,3 +7,7 @@
 pytest_cache/
 __pycache__/
 *.egg-info
+tests/cocotb_tests/sim_build/
+fft_ddc_performance_report.json
+performance_plots/
+tests/cocotb_tests/results.xml
