@@ -1,6 +1,0 @@
-Testing UDP/IP Stack...
-Packet data sent, waiting for MAC layer processing...
-UDP/IP Stack test completed
-⚠ No MAC output generated
-TEST FAILED
-verilog\udp_ip_stack_tb.v:98: $finish called at 1200000 (1ps)

@@ -1,5 +1,0 @@
-Testing Average Power Detector...
-Average Power Detector test completed
-⚠ No valid average power output
-TEST FAILED
-verilog\average_power_detector_tb.v:73: $finish called at 21680000 (1ps)
