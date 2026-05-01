@@ -6,3 +6,11 @@
 *.tmp
 pytest_cache/
 __pycache__/
+tests/sim_output/
+tests/cocotb_tests/sim_build/
+tests/cocotb_tests/results.xml
+performance_plots/
+fft_ddc_performance_report.json
+*.vcd
+*.vvp
+*.egg-info/
