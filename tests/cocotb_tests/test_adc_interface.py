@@ -10,7 +10,7 @@ import numpy as np
 async def test_adc_basic_functionality(dut):
     """Basic ADC interface functionality test"""
     # Start 105 MHz ADC clock (ADC sampling rate)
-    adc_clock = Clock(dut.adc_clk, 9.52, units="ns")  # ~105 MHz
+    adc_clock = Clock(dut.clk_adc, 9.52, units="ns")  # ~105 MHz
     cocotb.start_soon(adc_clock.start())
 
     # Start 100 MHz system clock
@@ -52,7 +52,7 @@ async def test_adc_basic_functionality(dut):
 @cocotb.test()
 async def test_adc_overflow_detection(dut):
     """Test ADC overflow detection and flagging"""
-    adc_clock = Clock(dut.adc_clk, 9.52, units="ns")
+    adc_clock = Clock(dut.clk_adc, 9.52, units="ns")
     cocotb.start_soon(adc_clock.start())
 
     sys_clock = Clock(dut.clk, 10, units="ns")
@@ -87,7 +87,7 @@ async def test_adc_overflow_detection(dut):
 @cocotb.test()
 async def test_adc_data_rate_conversion(dut):
     """Test ADC data rate conversion and synchronization"""
-    adc_clock = Clock(dut.adc_clk, 9.52, units="ns")  # 105 MHz
+    adc_clock = Clock(dut.clk_adc, 9.52, units="ns")  # 105 MHz
     cocotb.start_soon(adc_clock.start())
 
     sys_clock = Clock(dut.clk, 10, units="ns")  # 100 MHz
@@ -106,7 +106,7 @@ async def test_adc_data_rate_conversion(dut):
     for i in range(sample_count):
         dut.adc_data.value = i & 0x3FF  # 10-bit counter
 
-        await RisingEdge(dut.adc_clk)  # ADC sample edge
+        await RisingEdge(dut.clk_adc)  # ADC sample edge
 
         # Check for valid data at system clock
         if dut.data_valid.value:

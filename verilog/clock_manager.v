@@ -5,6 +5,7 @@
 // ============================================================================
 
 `timescale 1ns/1ps
+`default_nettype none
 
 module clock_manager (
     input  wire clk_100m_in,     // Primary 100 MHz input clock
@@ -25,9 +26,6 @@ module clock_manager (
     // ========================================================================
     // Behavioral Clock Generation for Simulation
     // ========================================================================
-
-    // In actual hardware, this would be a PLL primitive (e.g. ALTPLL, ClockWizard)
-    // For simulation, we generate clocks using simple ratios or delays.
 
     reg r_clk_600m = 0;
     reg r_clk_1200m_fft = 0;
@@ -51,23 +49,19 @@ module clock_manager (
 
     // 105 MHz (9.524 ns period)
     always #4.762 r_clk_105m_adc = ~r_clk_105m_adc;
-`else
-    // For synthesis, we pass through the input clock to allow bitstream generation
-    // though actual PLL parameters must be set in the FPGA project.
-    assign clk_600m       = clk_100m_in;
-    assign clk_1200m_fft  = clk_100m_in;
-    assign clk_125m_eth   = clk_100m_in;
-    assign clk_250m_eth   = clk_100m_in;
-    assign clk_105m_adc   = clk_100m_in;
-`endif
 
-    // Map registers to outputs in simulation
-`ifdef SIMULATION
     assign clk_600m       = r_clk_600m;
     assign clk_1200m_fft  = r_clk_1200m_fft;
     assign clk_125m_eth   = r_clk_125m_eth;
     assign clk_250m_eth   = r_clk_250m_eth;
     assign clk_105m_adc   = r_clk_105m_adc;
+`else
+    // For synthesis, we pass through the input clock to allow bitstream generation
+    assign clk_600m       = clk_100m_in;
+    assign clk_1200m_fft  = clk_100m_in;
+    assign clk_125m_eth   = clk_100m_in;
+    assign clk_250m_eth   = clk_100m_in;
+    assign clk_105m_adc   = clk_100m_in;
 `endif
 
     // ========================================================================
@@ -85,6 +79,6 @@ module clock_manager (
     end
 
     assign reset_n = reset_sync_reg[2];
-    assign locked = reset_sync_reg[2]; // Locked when reset sync is complete
+    assign locked = reset_sync_reg[2];
 
 endmodule
