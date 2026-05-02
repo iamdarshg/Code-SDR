@@ -337,7 +337,7 @@ module fpga_processing_pipeline (
         .power_profile    (power_profile),
         .status_reg       (system_status_int),
         .pll_locked       (pll_locked_int),
-        .rst_n            (reset_n)
+        .rst_n            (reset_n),
         .eth_link_status  (eth_link_status_int)
     );
 
