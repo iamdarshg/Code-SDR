@@ -1,0 +1,35 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "title": "SDR Configuration",
+    "type": "object",
+    "properties": {
+        "system": {
+            "type": "object",
+            "properties": {
+                "frequency": { "type": "integer", "minimum": 1000000, "maximum": 10000000000 },
+                "sample_rate": { "type": "integer", "minimum": 1000, "maximum": 105000000 },
+                "gain": { "type": "integer", "minimum": 0, "maximum": 63 },
+                "enable": { "type": "boolean" }
+            },
+            "required": ["frequency", "sample_rate", "gain", "enable"]
+        },
+        "processing": {
+            "type": "object",
+            "properties": {
+                "mode": { "type": "integer", "enum": [0, 1, 2] },
+                "modulation": { "type": "integer" },
+                "bandwidth_limit": { "type": "integer", "minimum": 0, "maximum": 100 }
+            },
+            "required": ["mode", "modulation", "bandwidth_limit"]
+        },
+        "network": {
+            "type": "object",
+            "properties": {
+                "ip_address": { "type": "string", "format": "ipv4" },
+                "port": { "type": "integer", "minimum": 1, "maximum": 65535 }
+            },
+            "required": ["ip_address", "port"]
+        }
+    },
+    "required": ["system", "processing", "network"]
+}

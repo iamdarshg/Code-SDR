@@ -2,7 +2,6 @@
 import cocotb
 from cocotb.clock import Clock
 from cocotb.triggers import RisingEdge, Timer, FallingEdge
-from cocotb.result import TestFailure
 import numpy as np
 
 

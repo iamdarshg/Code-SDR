@@ -517,6 +517,10 @@ python benchmark_system.py
 
 ## 📚 Documentation
 
+### Deployment
+- **Deployment Procedures**: Detailed build and flashing instructions
+- **Build System**: Automated versioning and build scripts
+
 ### Technical Documentation
 - **FPGA Architecture**: Comprehensive architecture specification
 - **Integration Guide**: Hardware/software integration

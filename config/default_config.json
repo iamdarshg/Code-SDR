@@ -1,0 +1,17 @@
+{
+    "system": {
+        "frequency": 100000000,
+        "sample_rate": 1000000,
+        "gain": 30,
+        "enable": false
+    },
+    "processing": {
+        "mode": 0,
+        "modulation": 0,
+        "bandwidth_limit": 80
+    },
+    "network": {
+        "ip_address": "192.168.0.2",
+        "port": 10000
+    }
+}
