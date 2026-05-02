@@ -44,6 +44,9 @@ class DigitalDownconverter:
         # NCO frequency (normalized)
         self.nco_freq = center_freq / sample_rate
         
+        # Window function for filtering
+        self.window_func = signal.windows.hann
+
         # Design low-pass filter
         self.filter_coeffs = self._design_lowpass_filter()
         
@@ -51,9 +54,6 @@ class DigitalDownconverter:
         self.processed_samples = 0
         self.processing_time = 0.0
         self.throughput = 0.0
-        
-        # Window function for filtering
-        self.window_func = signal.windows.hann
         
         print(f"DDC initialized:")
         print(f"  Input sample rate: {sample_rate/1e6:.1f} MSPS")
@@ -79,13 +79,27 @@ class DigitalDownconverter:
         if filter_length % 2 == 0:
             filter_length += 1  # Ensure odd length for linear phase
             
-        # Design FIR filter using Remez algorithm
-        filter_coeffs = signal.remez(
-            filter_length,
-            [0, normalized_cutoff * 0.95, normalized_cutoff, nyquist],
-            [1, 0],
-            Hz=self.sample_rate
-        )
+        # Design FIR filter
+        # Optimization: Remez algorithm sometimes fails to converge for narrow transition bands.
+        # Fallback to firwin if remez fails, or use it directly for better stability.
+        try:
+            # Use a slightly wider transition band to improve convergence
+            pass_end = self.bandwidth * 0.45
+            stop_start = self.bandwidth * 0.55
+            filter_coeffs = signal.remez(
+                filter_length,
+                [0, pass_end, stop_start, nyquist],
+                [1, 0],
+                fs=self.sample_rate
+            )
+        except ValueError:
+            # Fallback to window method if Remez fails
+            filter_coeffs = signal.firwin(
+                filter_length,
+                self.bandwidth / 2.0,
+                fs=self.sample_rate,
+                window='hann'
+            )
         
         # Apply window for better side-lobe suppression
         window = self.window_func(filter_length)

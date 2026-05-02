@@ -385,7 +385,8 @@ class PerformanceBenchmark:
         if 'ddc_performance' in self.results:
             ddc_results = self.results['ddc_performance']
             max_throughput = max(ddc_results['throughput_msps'])
-            avg_compression = np.mean([len(config['sample_rate'])/bandwidth for config in ddc_results['configurations']])
+            # Fix: Calculate compression ratio from decimation factors which are stored in the results
+            avg_compression = np.mean(ddc_results['decimation_factors'])
             print(f"DDC Performance:")
             print(f"  Maximum throughput: {max_throughput:.1f} MSPS")
             print(f"  Average compression ratio: {avg_compression:.0f}:1")
