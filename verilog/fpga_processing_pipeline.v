@@ -56,7 +56,6 @@ module fpga_processing_pipeline (
     // Internal wires - Explicitly declared
     // ========================================================================
     
-    // Clock manager outputs
     wire clk_600m;
     wire clk_1200m_fft;
     wire clk_125m_eth_standard;
@@ -65,7 +64,6 @@ module fpga_processing_pipeline (
     wire reset_n;
     wire pll_locked_int;
 
-    // RP2040 Interface Outputs
     wire [31:0] frequency_word;
     wire [7:0]  gain_control;
     wire [3:0]  filter_select;
@@ -77,57 +75,48 @@ module fpga_processing_pipeline (
     wire [7:0]  thermal_scaling;
     wire        resource_opt_en;
     wire [7:0]  power_profile;
-    wire        streaming_mode_unused; // From basic control
+    wire        streaming_mode_unused;
     wire [7:0]  bandwidth_limit_unused;
 
-    // ADC interface signals
-    wire [31:0] adc_data_proc;          // ADC data in processing domain
-    wire        adc_valid_proc;         // ADC valid signal in processing domain
+    wire [31:0] adc_data_proc;
+    wire        adc_valid_proc;
     wire        overflow_detect;
-    
-    // FIFO signals
+
     wire [31:0] adc_data_cross;
     wire        adc_fifo_full;
     wire        adc_fifo_empty;
 
-    // DDC signals
-    wire [31:0] ddc_i_data;             // DDC I component data
-    wire [31:0] ddc_q_data;             // DDC Q component data
-    wire        ddc_valid;              // DDC output valid
-    
-    // NCO signals
+    wire [31:0] ddc_i_data;
+    wire [31:0] ddc_q_data;
+    wire        ddc_valid;
+
     wire [15:0] nco_sine;
     wire [15:0] nco_cosine;
     wire        nco_valid;
 
-    // FFT Pipeline signals
     wire [31:0] windowed_i_data;
     wire [31:0] windowed_q_data;
     wire        window_valid;
     wire        window_valid_q;
-    wire [23:0] fft_real_data;          // FFT real component
-    wire [23:0] fft_imag_data;          // FFT imaginary component
-    wire        fft_valid;              // FFT output valid
-    wire [11:0] fft_index;              // FFT bin index
-    wire        fft_overflow_flag;      // FFT overflow detection
-    wire        fft_processing_active;  // FFT processing activity
-    
-    // Protocol stack signals
-    wire [31:0] eth_packet_data;        // Ethernet packet data
-    wire [15:0] eth_packet_len;         // Ethernet packet length
-    wire        eth_packet_valid;       // Ethernet packet valid
+    wire [23:0] fft_real_data;
+    wire [23:0] fft_imag_data;
+    wire        fft_valid;
+    wire [11:0] fft_index;
+    wire        fft_overflow_flag;
+    wire        fft_processing_active;
+
+    wire [31:0] eth_packet_data;
+    wire [15:0] eth_packet_len;
+    wire        eth_packet_valid;
     wire        app_ready;
 
-    // Ethernet MAC signals
-    wire        eth_packet_ack;         // Ethernet packet acknowledged
+    wire        eth_packet_ack;
     wire        eth_link_status_int;
     wire [31:0] packet_counter_int;
 
     // ========================================================================
     // Clock manager instance
     // ========================================================================
-
-    wire use_boosted_eth_clock = (processing_mode == 3'd0); // Spectrum mode only
 
     clock_manager u_clock_manager (
         .clk_100m_in      (clk_100m_in),
@@ -141,10 +130,11 @@ module fpga_processing_pipeline (
         .locked           (pll_locked_int)
     );
 
-    wire clk_ethernet = use_boosted_eth_clock ? clk_250m_eth_boosted : clk_125m_eth_standard;
+    // Fixed 125MHz GMII clock per specification
+    wire clk_ethernet = clk_125m_eth_standard;
     
     // ========================================================================
-    // ADC Interface and Data Conditioning
+    // Pipeline Modules
     // ========================================================================
     adc_interface u_adc_interface (
         .clk_adc          (adc_clock),
@@ -157,9 +147,6 @@ module fpga_processing_pipeline (
         .overflow_detect  (overflow_detect)
     );
 
-    // ========================================================================
-    // Asynchronous FIFO
-    // ========================================================================
     async_fifo #(
         .WIDTH            (32),
         .DEPTH            (256)
@@ -176,9 +163,6 @@ module fpga_processing_pipeline (
         .empty            (adc_fifo_empty)
     );
     
-    // ========================================================================
-    // Digital Downconversion (DDC)
-    // ========================================================================
     digital_downconverter u_ddc (
         .clk              (clk_600m),
         .rst_n            (reset_n),
@@ -192,9 +176,6 @@ module fpga_processing_pipeline (
         .ddc_valid        (ddc_valid)
     );
 
-    // ========================================================================
-    // NCO Generator
-    // ========================================================================
     nco_generator u_nco_generator (
         .clk              (clk_600m),
         .rst_n            (reset_n),
@@ -204,10 +185,6 @@ module fpga_processing_pipeline (
         .cosine_out       (nco_cosine),
         .valid_out        (nco_valid)
     );
-
-    // ========================================================================
-    // Static FFT Pipeline Instantiation - Driven by Runtime Enables
-    // ========================================================================
 
     wire mode_spectrum_en = (processing_mode == 3'd0);
     wire fft_pipeline_en = mode_spectrum_en && enable_control && !clock_gating_en;
@@ -253,10 +230,6 @@ module fpga_processing_pipeline (
         .processing_active (fft_processing_active)
     );
 
-    // ========================================================================
-    // Data Selection and Audio Demodulation
-    // ========================================================================
-
     wire mode_iq_stream_en = (processing_mode == 3'd1);
     wire mode_audio_demod_en = (processing_mode == 3'd2);
     wire mode_invalid = (processing_mode > 3'd2);
@@ -264,16 +237,13 @@ module fpga_processing_pipeline (
     wire [15:0] demodulated_audio;
     wire        audio_valid;
 
-    // AM Demodulation
     wire [31:0] am_envelope = $signed(ddc_i_data) * $signed(ddc_i_data) + $signed(ddc_q_data) * $signed(ddc_q_data);
     wire [15:0] am_audio = am_envelope[30:15];
 
-    // FM Demodulation
     reg [31:0] ddc_i_prev, ddc_q_prev;
     wire [31:0] fm_phase_diff = $signed(ddc_i_data) * $signed(ddc_q_prev) - $signed(ddc_q_data) * $signed(ddc_i_prev);
     wire [15:0] fm_audio = fm_phase_diff[25:10];
 
-    // FSK Demodulation
     reg [15:0] fsk_threshold;
     wire [15:0] fsk_audio = (am_envelope[30:15] > fsk_threshold) ? 16'h7FFF : 16'h0000;
 
@@ -297,7 +267,10 @@ module fpga_processing_pipeline (
     assign audio_valid = mode_audio_demod_en && ddc_valid;
     assign demodulated_audio = selected_audio;
 
-    wire [31:0] selected_data = (mode_spectrum_en) ? {fft_real_data, fft_imag_data} :
+    // Fixed spectrum mode data packing: Use upper 16 bits of 24-bit FFT components
+    wire [31:0] fft_data_packed = {fft_real_data[23:8], fft_imag_data[23:8]};
+
+    wire [31:0] selected_data = (mode_spectrum_en) ? fft_data_packed :
                                (mode_iq_stream_en) ? {ddc_i_data[15:0], ddc_q_data[15:0]} :
                                (mode_audio_demod_en) ? {demodulated_audio, 16'h0} : 32'h0;
 
@@ -305,13 +278,10 @@ module fpga_processing_pipeline (
                          (mode_iq_stream_en) ? ddc_valid :
                          (mode_audio_demod_en) ? audio_valid : 1'b0;
 
-    wire [3:0] selected_len = (mode_spectrum_en) ? 4'd6 :
+    wire [3:0] selected_len = (mode_spectrum_en) ? 4'd4 :
                              (mode_iq_stream_en) ? 4'd4 :
                              (mode_audio_demod_en) ? 4'd2 : 4'd0;
 
-    // ========================================================================
-    // UDP/IP and Ethernet MAC
-    // ========================================================================
     udp_ip_stack u_udp_ip_stack (
         .clk              (clk_ethernet),
         .rst_n            (reset_n && !mode_invalid),
@@ -345,9 +315,6 @@ module fpga_processing_pipeline (
         .packet_counter   (packet_counter_int)
     );
     
-    // ========================================================================
-    // RP2040 Interface
-    // ========================================================================
     wire [15:0] system_status_int;
 
     rp2040_interface u_rp2040_interface (
@@ -388,7 +355,6 @@ module fpga_processing_pipeline (
         enable_control
     };
     
-    // Assign top-level outputs
     assign pll_locked = pll_locked_int;
     assign eth_link_status = eth_link_status_int;
     assign packet_counter = packet_counter_int;
