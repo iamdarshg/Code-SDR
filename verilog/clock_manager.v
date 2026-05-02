@@ -2,6 +2,7 @@
 // Clock Manager Module
 // ============================================================================
 // Clock distribution and PLL instantiation for LIF-MD6000-6UMG64I FPGA
+// Updated with realistic 105 MSPS targets.
 // ============================================================================
 
 `timescale 1ns/1ps
@@ -12,11 +13,11 @@ module clock_manager (
     input  wire rst_n,          // System reset (active low)
 
     // Clock outputs
-    output wire clk_600m,       // 600 MHz clock for DDC and windowing
-    output wire clk_1200m_fft,  // 1200 MHz clock for FFT processor
-    output wire clk_125m_eth,   // 125 MHz Ethernet clock (standard)
-    output wire clk_250m_eth,   // 250 MHz Ethernet clock (boosted)
-    output wire clk_105m_adc,   // 105 MHz ADC clock
+    output wire clk_600m,       // Placeholder (deprecated)
+    output wire clk_1200m_fft,  // Placeholder (deprecated)
+    output wire clk_125m_eth,   // 125 MHz Ethernet clock
+    output wire clk_250m_eth,   // 250 MHz Ethernet clock
+    output wire clk_105m_adc,   // 105 MHz ADC/FFT clock
 
     // Reset and Status
     output wire reset_n,        // Synchronized reset (active low)
@@ -27,36 +28,23 @@ module clock_manager (
     // Behavioral Clock Generation for Simulation
     // ========================================================================
 
-    reg r_clk_600m = 0;
-    reg r_clk_1200m_fft = 0;
     reg r_clk_125m_eth = 0;
-    reg r_clk_250m_eth = 0;
     reg r_clk_105m_adc = 0;
 
-    // Simulation-only clock generators
 `ifdef SIMULATION
-    // 600 MHz (1.666 ns period)
-    always #0.833 r_clk_600m = ~r_clk_600m;
-
-    // 1200 MHz (0.833 ns period)
-    always #0.416 r_clk_1200m_fft = ~r_clk_1200m_fft;
-
     // 125 MHz (8 ns period)
     always #4.0 r_clk_125m_eth = ~r_clk_125m_eth;
-    
-    // 250 MHz (4 ns period)
-    always #2.0 r_clk_250m_eth = ~r_clk_250m_eth;
 
     // 105 MHz (9.524 ns period)
     always #4.762 r_clk_105m_adc = ~r_clk_105m_adc;
 
-    assign clk_600m       = r_clk_600m;
-    assign clk_1200m_fft  = r_clk_1200m_fft;
+    assign clk_600m       = r_clk_105m_adc;
+    assign clk_1200m_fft  = r_clk_105m_adc;
     assign clk_125m_eth   = r_clk_125m_eth;
-    assign clk_250m_eth   = r_clk_250m_eth;
+    assign clk_250m_eth   = r_clk_125m_eth;
     assign clk_105m_adc   = r_clk_105m_adc;
 `else
-    // For synthesis, we pass through the input clock to allow bitstream generation
+    // For synthesis, we pass through the input clock
     assign clk_600m       = clk_100m_in;
     assign clk_1200m_fft  = clk_100m_in;
     assign clk_125m_eth   = clk_100m_in;
@@ -67,15 +55,10 @@ module clock_manager (
     // ========================================================================
     // Reset Synchronization
     // ========================================================================
-
     reg [2:0] reset_sync_reg;
-
     always @(posedge clk_100m_in or negedge rst_n) begin
-        if (!rst_n) begin
-            reset_sync_reg <= 3'b000;
-        end else begin
-            reset_sync_reg <= {reset_sync_reg[1:0], 1'b1};
-        end
+        if (!rst_n) reset_sync_reg <= 3'b000;
+        else reset_sync_reg <= {reset_sync_reg[1:0], 1'b1};
     end
 
     assign reset_n = reset_sync_reg[2];

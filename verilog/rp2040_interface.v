@@ -51,7 +51,6 @@ module rp2040_interface #(
     localparam REG_STREAM_MODE  = 8'h04;
     localparam REG_BW_LIMIT     = 8'h05;
     localparam REG_STATUS       = 8'h10;
-    localparam REG_VERSION      = 8'h11;
     localparam REG_PROC_MODE    = 8'h20;
     localparam REG_MODULATION   = 8'h21;
     localparam REG_FILTER_BW    = 8'h22;
@@ -64,8 +63,6 @@ module rp2040_interface #(
     // SPI Transaction FSM
     // ========================================================================
     
-    `include "version_auto.v"
-
     reg [5:0] bit_counter;
     reg [7:0] addr_shift;
     reg [31:0] data_shift_in;
@@ -101,7 +98,6 @@ module rp2040_interface #(
                 case ({addr_shift[6:0], spi_mosi})
                     REG_STATUS: data_shift_out <= {16'd0, status_reg};
                     REG_FREQ_WORD: data_shift_out <= freq_word_reg;
-                    REG_VERSION: data_shift_out <= VERSION;
                     default: data_shift_out <= 32'hDEADBEEF;
                 endcase
             end else if (bit_counter >= 6'd8) begin

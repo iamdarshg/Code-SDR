@@ -14,8 +14,3 @@ fft_ddc_performance_report.json
 *.vcd
 *.vvp
 *.egg-info/
-
-# Build and Versioning
-verilog/version_auto.v
-wideband-sdr-software/version_auto.py
-build/
