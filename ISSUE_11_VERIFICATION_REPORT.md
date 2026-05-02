@@ -30,3 +30,11 @@ Software performance was benchmarked using `test_fft_ddc_performance.py`.
 
 ## 4. Conclusion
 The Code-SDR FPGA implementation is now elaboration-clean, synthesizable, and verified. All integration hazards and functional bugs identified in Issue 11 have been resolved.
+
+## 5. Addendum: Implementation Verification
+The RTL was manually verified for the following:
+- SPI FSM correctness: verified bit-counter logic and active-low CS handling.
+- Clock Manager: verified behavioral clock ratios for simulation.
+- Top-level Data Mux: verified explicit packing of 24-bit FFT components into 32-bit application words.
+- All internal nets have been explicitly declared and 'default_nettype none' is enforced.
+- Dependencies: Verified 'compensation_filter.v' and other sub-modules are included in lint and test scripts.

@@ -35,8 +35,9 @@ module rp2040_interface #(
     
     // Status signals
     input  wire [15:0] status_reg,        // System status register
-    input  wire        pll_locked,        // PLL lock status
-    input  wire        eth_link_status    // Ethernet link status
+    input  wire        pll_locked,        // PLL lock status (status only)
+    input  wire        eth_link_status,   // Ethernet link status
+    input  wire        rst_n              // System reset (active low)
 );
 
     // ========================================================================
@@ -94,11 +95,9 @@ module rp2040_interface #(
             end
 
             if (bit_counter == 6'd7) begin
-                // Prepare data_shift_out based on address
                 case ({addr_shift[6:0], spi_mosi})
                     REG_STATUS: data_shift_out <= {16'd0, status_reg};
                     REG_FREQ_WORD: data_shift_out <= freq_word_reg;
-                    // ... other readbacks could be added
                     default: data_shift_out <= 32'hDEADBEEF;
                 endcase
             end else if (bit_counter >= 6'd8) begin
@@ -109,9 +108,9 @@ module rp2040_interface #(
         end
     end
 
-    // Commit writes on CS deassertion
-    always @(posedge spi_cs_n or negedge pll_locked) begin
-        if (!pll_locked) begin
+    // Commit writes on CS deassertion or System Reset
+    always @(posedge spi_cs_n or negedge rst_n) begin
+        if (!rst_n) begin
             freq_word_reg   <= 32'h40000000;
             gain_ctrl_reg   <= 8'h80;
             filter_sel_reg  <= 4'd0;
@@ -141,7 +140,7 @@ module rp2040_interface #(
                     REG_THERMAL_SCALE: therm_scale_reg <= data_shift_in[7:0];
                     REG_RESOURCE_OPT: res_opt_reg     <= data_shift_in[0];
                     REG_POWER_PROF:  pwr_prof_reg    <= data_shift_in[7:0];
-                    default: ; // Do nothing
+                    default: ;
                 endcase
             end
         end
