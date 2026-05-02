@@ -8,6 +8,7 @@ def generate_twiddles(fft_size=1024, data_width=16):
     scale = (2**(data_width-1)) - 1
 
     for k in range(fft_size // 2):
+        # Angle for radix-2 DIF: e^(-j * 2pi * k / N)
         angle = -2.0 * math.pi * k / fft_size
         cos_val = math.cos(angle)
         sin_val = math.sin(angle)
@@ -24,8 +25,8 @@ def generate_twiddles(fft_size=1024, data_width=16):
         r_val = r & ((1 << data_width) - 1)
         i_val = i & ((1 << data_width) - 1)
 
-        twiddle_real.append(f"{r_val:0{data_width//4}x}")
-        twiddle_imag.append(f"{i_val:0{data_width//4}x}")
+        twiddle_real.append(f"{r_val:04x}")
+        twiddle_imag.append(f"{i_val:04x}")
 
     with open('verilog/twiddle_real.mem', 'w') as f:
         f.write('\n'.join(twiddle_real))

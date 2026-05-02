@@ -1,7 +1,8 @@
 // ============================================================================
 // LIF-MD6000-6UMG64I FPGA Processing Pipeline - Top Level Module
 // ============================================================================
-// Updated to support 1024-pt FFT with sustained 105 MSPS throughput.
+// Updated to support 1024-pt FFT with sustained 105 MSPS throughput
+// and safe CDC to Ethernet domain.
 // ============================================================================
 
 `timescale 1ns/1ps
@@ -55,9 +56,9 @@ module fpga_processing_pipeline (
     localparam ADDR_WIDTH = $clog2(FFT_SIZE);
 
     // ========================================================================
-    // Internal Clocks
+    // Internal Clocks & Reset
     // ========================================================================
-    wire clk_105m; // Unified clock for ADC, DDC, Window, and FFT
+    wire clk_105m;
     wire clk_125m_eth;
     wire reset_n;
     wire pll_locked_int;
@@ -65,8 +66,8 @@ module fpga_processing_pipeline (
     clock_manager u_clock_manager (
         .clk_100m_in      (clk_100m_in),
         .rst_n            (rst_n),
-        .clk_600m         (), // Unused
-        .clk_1200m_fft    (), // Unused
+        .clk_600m         (),
+        .clk_1200m_fft    (),
         .clk_125m_eth     (clk_125m_eth),
         .clk_250m_eth     (),
         .clk_105m_adc     (clk_105m),
@@ -75,7 +76,7 @@ module fpga_processing_pipeline (
     );
 
     // ========================================================================
-    // Control Interface
+    // RP2040 Interface
     // ========================================================================
     wire [31:0] frequency_word;
     wire [7:0]  gain_control;
@@ -88,6 +89,7 @@ module fpga_processing_pipeline (
     wire [7:0]  thermal_scaling;
     wire        resource_opt_en;
     wire [7:0]  power_profile;
+    wire        eth_link_status_int;
 
     rp2040_interface u_rp2040_interface (
         .spi_clk          (spi_clk),
@@ -110,11 +112,11 @@ module fpga_processing_pipeline (
         .status_reg       (system_status),
         .pll_locked       (pll_locked_int),
         .rst_n            (reset_n),
-        .eth_link_status  (eth_link_status)
+        .eth_link_status  (eth_link_status_int)
     );
 
     // ========================================================================
-    // Signal Processing Chain (All at 105 MHz)
+    // ADC & DDC Chain (105 MHz)
     // ========================================================================
     wire [31:0] adc_data_proc;
     wire        adc_valid_proc;
@@ -132,8 +134,6 @@ module fpga_processing_pipeline (
     );
 
     wire [15:0] nco_sine, nco_cosine;
-    wire        nco_valid;
-
     nco_generator u_nco_generator (
         .clk              (clk_105m),
         .rst_n            (reset_n),
@@ -141,12 +141,11 @@ module fpga_processing_pipeline (
         .enable           (enable_control),
         .sine_out         (nco_sine),
         .cosine_out       (nco_cosine),
-        .valid_out        (nco_valid)
+        .valid_out        ()
     );
 
-    wire [31:0] ddc_i_data, ddc_q_data;
+    wire [31:0] ddc_i, ddc_q;
     wire        ddc_valid;
-
     digital_downconverter u_ddc (
         .clk              (clk_105m),
         .rst_n            (reset_n),
@@ -155,43 +154,31 @@ module fpga_processing_pipeline (
         .nco_sine         (nco_sine),
         .nco_cosine       (nco_cosine),
         .gain_control     (gain_control),
-        .i_component      (ddc_i_data),
-        .q_component      (ddc_q_data),
+        .i_component      (ddc_i),
+        .q_component      (ddc_q),
         .ddc_valid        (ddc_valid)
     );
 
-    wire [31:0] window_i, window_q;
-    wire        window_valid;
+    // Audio Demod (Internal bits)
+    wire [31:0] am_env = $signed(ddc_i) * $signed(ddc_i) + $signed(ddc_q) * $signed(ddc_q);
+    wire [15:0] am_aud = am_env[30:15];
+    reg [31:0] i_prev, q_prev;
+    wire [31:0] fm_pd = $signed(ddc_i) * $signed(q_prev) - $signed(ddc_q) * $signed(i_prev);
+    wire [15:0] fm_aud = fm_pd[25:10];
+    always @(posedge clk_105m) if (ddc_valid) begin i_prev <= ddc_i; q_prev <= ddc_q; end
+    wire [15:0] sel_aud = (modulation_type == 8'h01) ? am_aud : (modulation_type == 8'h02) ? fm_aud : 16'd0;
 
-    hamming_window #(
-        .WIDTH            (32),
-        .FFT_SIZE         (FFT_SIZE)
-    ) u_hamming_window_i (
-        .clk              (clk_105m),
-        .rst_n            (reset_n),
-        .data_in          (ddc_i_data),
-        .data_valid       (ddc_valid),
-        .data_out         (window_i),
-        .output_valid     (window_valid)
-    );
+    // Windowing and FFT
+    wire [31:0] win_i, win_q;
+    wire        win_v;
+    hamming_window #(.FFT_SIZE(FFT_SIZE)) u_win_i (.clk(clk_105m), .rst_n(reset_n), .data_in(ddc_i), .data_valid(ddc_valid), .data_out(win_i), .output_valid(win_v));
+    hamming_window #(.FFT_SIZE(FFT_SIZE)) u_win_q (.clk(clk_105m), .rst_n(reset_n), .data_in(ddc_q), .data_valid(ddc_valid), .data_out(win_q), .output_valid());
 
-    hamming_window #(
-        .WIDTH            (32),
-        .FFT_SIZE         (FFT_SIZE)
-    ) u_hamming_window_q (
-        .clk              (clk_105m),
-        .rst_n            (reset_n),
-        .data_in          (ddc_q_data),
-        .data_valid       (ddc_valid),
-        .data_out         (window_q),
-        .output_valid     ()
-    );
-
-    wire [23:0] fft_real, fft_imag;
-    wire        fft_valid;
-    wire [ADDR_WIDTH-1:0] fft_idx;
-    wire [31:0] fft_frame_count;
-    wire        fft_overflow;
+    wire [23:0] fft_r, fft_im;
+    wire        fft_v;
+    wire [ADDR_WIDTH-1:0] fft_id;
+    wire [31:0] fft_fc;
+    wire        fft_ov;
 
     fft_processor #(
         .FFT_SIZE         (FFT_SIZE),
@@ -199,45 +186,124 @@ module fpga_processing_pipeline (
     ) u_fft_processor (
         .clk              (clk_105m),
         .rst_n            (reset_n),
-        .real_in          (window_i[23:0]),
-        .imag_in          (window_q[23:0]),
-        .data_valid       (window_valid),
-
-        .real_out         (fft_real),
-        .imag_out         (fft_imag),
-        .fft_valid        (fft_valid),
-        .fft_index        (fft_idx),
-        .frame_count      (fft_frame_count),
-        .overflow_flag    (fft_overflow),
+        .real_in          (win_i[23:0]),
+        .imag_in          (win_q[23:0]),
+        .data_valid       (win_v),
+        .real_out         (fft_r),
+        .imag_out         (fft_im),
+        .fft_valid        (fft_v),
+        .fft_index        (fft_id),
+        .frame_count      (fft_fc),
+        .overflow_flag    (fft_ov),
         .processing_active ()
     );
 
     // ========================================================================
-    // Packetization and Output
+    // Metadata-Enriched Multi-Word Packetizer
     // ========================================================================
+    // We need more than one 32-bit word to carry all requested metadata.
+    // Word 0: [31:22] bin_idx, [21] overflow, [20:0] frame_count[20:0]
+    // Word 1: [31:16] real, [15:0] imag
+    reg [31:0] packet_word;
+    reg [1:0] word_cnt;
+    reg packet_valid_int;
 
-    // Metadata-enriched data packing
-    // [31:22] = Bin Index, [21:20] = Flags (Overflow, Mode), [19:0] = Data
-    wire [31:0] packet_data = {fft_idx, fft_overflow, processing_mode[0], fft_real[23:4]};
+    wire mode_spectrum_en = (processing_mode == 3'd0);
+    wire mode_iq_stream_en = (processing_mode == 3'd1);
+    wire mode_audio_demod_en = (processing_mode == 3'd2);
 
-    udp_ip_stack u_udp_ip_stack (
-        .clk              (clk_125m_eth),
-        .rst_n            (reset_n),
-        .app_data         (packet_data),
-        .app_len          (16'd4),
-        .app_valid        (fft_valid),
-        .app_ready        (),
-        .src_ip           (32'hC0A80002),
-        .dst_ip           (32'hC0A80001),
-        .src_port         (16'd10000),
-        .dst_port         (16'd10001),
-        .mac_data         (),
-        .mac_len          (),
-        .mac_valid        ()
+    always @(posedge clk_105m or negedge reset_n) begin
+        if (!reset_n) begin
+            word_cnt <= 0;
+            packet_valid_int <= 0;
+        end else begin
+            packet_valid_int <= 0;
+            if (mode_spectrum_en && fft_v) begin
+                if (word_cnt == 0) begin
+                    packet_word <= {fft_id, fft_ov, 1'b0, fft_fc[19:0]};
+                    word_cnt <= 1;
+                    packet_valid_int <= 1;
+                end else begin
+                    packet_word <= {fft_r[23:8], fft_im[23:8]};
+                    word_cnt <= 0;
+                    packet_valid_int <= 1;
+                end
+            end else if (mode_iq_stream_en && ddc_valid) begin
+                packet_word <= {ddc_i[15:0], ddc_q[15:0]};
+                packet_valid_int <= 1;
+                word_cnt <= 0;
+            end else if (mode_audio_demod_en && ddc_valid) begin
+                packet_word <= {sel_aud, 16'h0};
+                packet_valid_int <= 1;
+                word_cnt <= 0;
+            end
+        end
+    end
+
+    // ========================================================================
+    // CDC Bridge: 105 MHz (FFT) -> 125 MHz (Ethernet)
+    // ========================================================================
+    wire [31:0] cdc_fifo_data;
+    wire        cdc_fifo_empty;
+    wire        cdc_fifo_full;
+    wire        cdc_rd_en;
+
+    async_fifo #(
+        .WIDTH(32),
+        .DEPTH(256)
+    ) u_fft_cdc_fifo (
+        .wr_clk(clk_105m),
+        .rd_clk(clk_125m_eth),
+        .wr_rst_n(reset_n),
+        .rd_rst_n(reset_n),
+        .din(packet_word),
+        .wr_en(packet_valid_int),
+        .rd_en(cdc_rd_en),
+        .dout(cdc_fifo_data),
+        .full(cdc_fifo_full),
+        .empty(cdc_fifo_empty)
     );
 
-    // Standard GMII Assignments
+    assign cdc_rd_en = !cdc_fifo_empty; // Aggressive read
+
+    // ========================================================================
+    // UDP/MAC Path (125 MHz)
+    // ========================================================================
+    wire [31:0] eth_data;
+    wire [15:0] eth_len;
+    wire        eth_v;
+    wire        eth_ack;
+
+    udp_ip_stack u_udp_ip_stack (
+        .clk(clk_125m_eth),
+        .rst_n(reset_n),
+        .app_data(cdc_fifo_data),
+        .app_len(16'd4),
+        .app_valid(!cdc_fifo_empty),
+        .app_ready(),
+        .src_ip(32'hC0A80002), .dst_ip(32'hC0A80001),
+        .src_port(16'd10000), .dst_port(16'd10001),
+        .mac_data(eth_data), .mac_len(eth_len), .mac_valid(eth_v)
+    );
+
+    ethernet_mac u_ethernet_mac (
+        .clk(clk_125m_eth),
+        .rst_n(reset_n),
+        .gmii_tx_d(gmii_tx_d), .gmii_tx_en(gmii_tx_en), .gmii_tx_er(gmii_tx_er),
+        .gmii_rx_d(gmii_rx_d), .gmii_rx_dv(gmii_rx_dv), .gmii_rx_er(gmii_rx_er),
+        .packet_data(eth_data), .packet_len(eth_len), .packet_valid(eth_v), .packet_ack(eth_ack),
+        .link_status(eth_link_status_int), .packet_counter(packet_counter)
+    );
+
     assign pll_locked = pll_locked_int;
+    assign eth_link_status = eth_link_status_int;
+    assign processing_mode_out = processing_mode;
+    assign modulation_type_out = modulation_type;
+    assign filter_bandwidth_out = filter_bandwidth;
+    assign clock_gating_en_out = clock_gating_en;
+    assign thermal_scaling_out = thermal_scaling;
+    assign resource_opt_en_out = resource_opt_en;
+    assign power_profile_out = power_profile;
     assign gmii_crs = 1'b0;
     assign gmii_col = 1'b0;
     assign gmii_tx_clk = clk_125m_eth;
