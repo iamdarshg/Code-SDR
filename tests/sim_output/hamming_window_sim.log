@@ -1,8 +1,0 @@
-Testing Hamming Window...
-Hamming Window test completed - 64 samples processed
-✓ Windowing appears functional
-TEST PASSED
-First coefficient should be near zero
-Middle coefficient should be amplitude scaled
-Last coefficient should be near zero
-verilog\hamming_window_tb.v:84: $finish called at 1835000 (1ps)
