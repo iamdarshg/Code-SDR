@@ -5,7 +5,6 @@ module fft_processor_tb;
     // Testbench parameters
     parameter FFT_SIZE = 1024;
     parameter DATA_WIDTH = 24;
-    parameter SCALE_FACTOR = 24;
 
     // DUT signals
     reg clk;
@@ -16,15 +15,15 @@ module fft_processor_tb;
     wire [DATA_WIDTH-1:0] real_out;
     wire [DATA_WIDTH-1:0] imag_out;
     wire fft_valid;
-    wire [11:0] fft_index;
+    wire [$clog2(FFT_SIZE)-1:0] fft_index;
+    wire [31:0] frame_count;
     wire overflow_flag;
     wire processing_active;
 
     // Instantiate DUT
     fft_processor # (
         .FFT_SIZE(FFT_SIZE),
-        .DATA_WIDTH(DATA_WIDTH),
-        .SCALE_FACTOR(SCALE_FACTOR)
+        .DATA_WIDTH(DATA_WIDTH)
     ) dut (
         .clk(clk),
         .rst_n(rst_n),
@@ -35,6 +34,7 @@ module fft_processor_tb;
         .imag_out(imag_out),
         .fft_valid(fft_valid),
         .fft_index(fft_index),
+        .frame_count(frame_count),
         .overflow_flag(overflow_flag),
         .processing_active(processing_active)
     );

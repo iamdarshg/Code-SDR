@@ -20,13 +20,8 @@ module fpga_processing_pipeline (
     input  wire        spi_cs_n,
     output wire        spi_miso,
 
-    input  wire [2:0]  processing_mode,
-    input  wire [7:0]  modulation_type,
-    input  wire [7:0]  filter_bandwidth,
-    input  wire        clock_gating_en,
-    input  wire [7:0]  thermal_scaling,
-    input  wire        resource_opt_en,
-    input  wire [7:0]  power_profile,
+    output wire [2:0]  processing_mode_out,
+    output wire [7:0]  modulation_type_out,
 
     output wire [7:0]  gmii_tx_d,
     output wire        gmii_tx_en,
@@ -50,7 +45,7 @@ module fpga_processing_pipeline (
     wire clk_250m_unused;
     wire clk_600m_unused;
     wire clk_fft_unused;
-    wire reset_n = rst_n & pll_locked;
+    wire reset_n;
 
     clock_manager u_clock_manager (
         .clk_100m_in(clk_100m_in),
@@ -60,6 +55,7 @@ module fpga_processing_pipeline (
         .clk_125m_eth(clk_125m_eth),
         .clk_250m_eth(clk_250m_unused),
         .clk_105m_adc(clk_105m_adc),
+        .reset_n(reset_n),
         .locked(pll_locked)
     );
 
@@ -77,10 +73,14 @@ module fpga_processing_pipeline (
     wire rp_resource_opt_en;
     wire [7:0] rp_power_profile;
 
-    wire mode_spectrum_en = (processing_mode == 3'd0);
-    wire mode_iq_stream_en = (processing_mode == 3'd1);
-    wire mode_audio_demod_en = (processing_mode == 3'd2);
-    wire mode_invalid = (processing_mode > 3'd2);
+    wire [2:0] active_processing_mode = rp_processing_mode;
+    wire [7:0] active_modulation_type = rp_modulation_type;
+    wire active_resource_opt_en = rp_resource_opt_en;
+
+    wire mode_spectrum_en = (active_processing_mode == 3'd0);
+    wire mode_iq_stream_en = (active_processing_mode == 3'd1);
+    wire mode_audio_demod_en = (active_processing_mode == 3'd2);
+    wire mode_invalid = (active_processing_mode > 3'd2);
 
     wire [31:0] adc_samples;
     wire adc_sample_valid;
@@ -128,31 +128,31 @@ module fpga_processing_pipeline (
         .ddc_valid(ddc_valid)
     );
 
-    wire [31:0] windowed_i_data;
-    wire [31:0] windowed_q_data;
+    wire [23:0] windowed_i_data;
+    wire [23:0] windowed_q_data;
     wire window_valid_i;
     wire window_valid_q;
     wire fft_input_valid = mode_spectrum_en && window_valid_i && window_valid_q;
 
     hamming_window #(
-        .WIDTH(32),
+        .DATA_WIDTH(24),
         .FFT_SIZE(1024)
     ) u_hamming_window_i (
         .clk(clk_105m_adc),
         .rst_n(reset_n),
-        .data_in(ddc_i_data),
+        .data_in(ddc_i_data[23:0]),
         .data_valid(ddc_valid),
         .data_out(windowed_i_data),
         .output_valid(window_valid_i)
     );
 
     hamming_window #(
-        .WIDTH(32),
+        .DATA_WIDTH(24),
         .FFT_SIZE(1024)
     ) u_hamming_window_q (
         .clk(clk_105m_adc),
         .rst_n(reset_n),
-        .data_in(ddc_q_data),
+        .data_in(ddc_q_data[23:0]),
         .data_valid(ddc_valid),
         .data_out(windowed_q_data),
         .output_valid(window_valid_q)
@@ -161,7 +161,8 @@ module fpga_processing_pipeline (
     wire [23:0] fft_real_data;
     wire [23:0] fft_imag_data;
     wire fft_valid;
-    wire [11:0] fft_index;
+    wire [9:0] fft_index;
+    wire [31:0] fft_frame_count;
     wire fft_overflow_flag;
     wire fft_processing_active;
 
@@ -171,13 +172,14 @@ module fpga_processing_pipeline (
     ) u_fft_processor (
         .clk(clk_105m_adc),
         .rst_n(reset_n),
-        .real_in(windowed_i_data[23:0]),
-        .imag_in(windowed_q_data[23:0]),
+        .real_in(windowed_i_data),
+        .imag_in(windowed_q_data),
         .data_valid(fft_input_valid),
         .real_out(fft_real_data),
         .imag_out(fft_imag_data),
         .fft_valid(fft_valid),
         .fft_index(fft_index),
+        .frame_count(fft_frame_count),
         .overflow_flag(fft_overflow_flag),
         .processing_active(fft_processing_active)
     );
@@ -195,9 +197,9 @@ module fpga_processing_pipeline (
     wire [15:0] fm_audio = fm_phase_diff[25:10];
     wire [15:0] fsk_audio = (am_envelope[30:15] > fsk_threshold) ? 16'h7FFF : 16'h0000;
 
-    assign demodulated_audio = (modulation_type == 8'h01) ? am_audio :
-                               (modulation_type == 8'h02) ? fm_audio :
-                               (modulation_type == 8'h03) ? fsk_audio : 16'h0000;
+    assign demodulated_audio = (active_modulation_type == 8'h01) ? am_audio :
+                               (active_modulation_type == 8'h02) ? fm_audio :
+                               (active_modulation_type == 8'h03) ? fsk_audio : 16'h0000;
 
     always @(posedge clk_105m_adc or negedge reset_n) begin
         if (!reset_n) begin
@@ -231,8 +233,9 @@ module fpga_processing_pipeline (
         .fft_imag(fft_imag_data),
         .fft_valid(fft_valid && mode_spectrum_en),
         .fft_index(fft_index),
+        .fft_frame_count(fft_frame_count),
         .fft_overflow(fft_overflow_flag),
-        .mode({5'd0, processing_mode}),
+        .mode({5'd0, active_processing_mode}),
         .app_data(fft_app_data),
         .app_len(fft_app_len),
         .app_valid(fft_app_valid),
@@ -275,6 +278,7 @@ module fpga_processing_pipeline (
     wire [15:0] eth_packet_len;
     wire eth_packet_valid;
     wire eth_packet_ack;
+    wire [15:0] system_status_int;
 
     udp_ip_stack u_udp_ip_stack (
         .clk(clk_125m_eth),
@@ -331,15 +335,15 @@ module fpga_processing_pipeline (
         .thermal_scaling(rp_thermal_scaling),
         .resource_opt_en(rp_resource_opt_en),
         .power_profile(rp_power_profile),
-        .status_reg(system_status),
+        .status_reg(system_status_int),
         .pll_locked(pll_locked),
         .eth_link_status(eth_link_status)
     );
 
-    assign system_status = {
+    assign system_status_int = {
         mode_invalid,
-        clock_gating_en,
-        processing_mode[2:1],
+        rp_clock_gating_en,
+        active_processing_mode[2:1],
         eth_link_status,
         pll_locked,
         adc_overflow_detect,
@@ -347,12 +351,15 @@ module fpga_processing_pipeline (
         ddc_valid,
         fft_packet_fifo_full,
         fft_packet_fifo_empty,
-        processing_mode[0],
+        active_processing_mode[0],
         enable_control,
         fft_processing_active,
         fft_overflow_flag,
-        resource_opt_en
+        active_resource_opt_en
     };
+    assign system_status = system_status_int;
+    assign processing_mode_out = active_processing_mode;
+    assign modulation_type_out = active_modulation_type;
 
     assign gmii_crs = 1'b0;
     assign gmii_col = 1'b0;

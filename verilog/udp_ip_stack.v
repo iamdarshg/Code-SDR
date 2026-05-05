@@ -2,8 +2,10 @@
 // ============================================================================
 // UDP/IP Protocol Stack Module
 // ============================================================================
-// Lightweight transmit-only UDP/IPv4 framer for 32-bit application words.
-// app_data and app_len are latched together when app_valid && app_ready.
+// Transmit-only UDP/IPv4 framer for 32-bit application packet streams.
+// The first app word accepted in IDLE starts a UDP packet and latches app_len.
+// DATA then consumes app_len bytes from the app stream, one 32-bit word at a
+// time, so 256-bin FFT subframes are emitted as real UDP payloads.
 // ============================================================================
 
 `timescale 1ns/1ps
@@ -36,10 +38,13 @@ module udp_ip_stack #(
     localparam DONE    = 3'd4;
 
     reg [2:0] state;
-    reg [2:0] word_counter;
-    reg [DATA_WIDTH-1:0] packet_data;
-    reg [DATA_WIDTH-1:0] app_data_latched;
+    reg [2:0] header_word;
+    reg [15:0] payload_bytes_remaining;
     reg [15:0] app_len_latched;
+    reg [31:0] first_payload_word;
+    reg        first_payload_pending;
+    reg [DATA_WIDTH-1:0] packet_data;
+    reg packet_valid_reg;
     reg [15:0] mac_len_reg;
 
     wire [15:0] udp_length = 16'd8 + app_len_latched;
@@ -48,64 +53,87 @@ module udp_ip_stack #(
     always @(posedge clk or negedge rst_n) begin
         if (!rst_n) begin
             state <= IDLE;
-            word_counter <= 3'd0;
-            packet_data <= {DATA_WIDTH{1'b0}};
-            app_data_latched <= {DATA_WIDTH{1'b0}};
+            header_word <= 3'd0;
+            payload_bytes_remaining <= 16'd0;
             app_len_latched <= 16'd0;
+            first_payload_word <= 32'd0;
+            first_payload_pending <= 1'b0;
+            packet_data <= 32'd0;
+            packet_valid_reg <= 1'b0;
             mac_len_reg <= 16'd0;
         end else begin
+            packet_valid_reg <= 1'b0;
+
             case (state)
                 IDLE: begin
-                    word_counter <= 3'd0;
-                    packet_data <= {DATA_WIDTH{1'b0}};
+                    header_word <= 3'd0;
                     if (app_valid) begin
-                        app_data_latched <= app_data;
                         app_len_latched <= app_len;
+                        payload_bytes_remaining <= app_len;
                         mac_len_reg <= 16'd28 + app_len;
+                        first_payload_word <= app_data;
+                        first_payload_pending <= 1'b1;
                         state <= IP_HDR;
                     end
                 end
 
                 IP_HDR: begin
-                    case (word_counter)
+                    packet_valid_reg <= 1'b1;
+                    case (header_word)
                         3'd0: packet_data <= {8'h45, 8'h00, ipv4_total_length};
                         3'd1: packet_data <= {16'h0001, 16'h4000};
                         3'd2: packet_data <= {8'h40, 8'h11, 16'h0000};
                         3'd3: packet_data <= src_ip;
                         3'd4: packet_data <= dst_ip;
-                        default: packet_data <= {DATA_WIDTH{1'b0}};
+                        default: packet_data <= 32'd0;
                     endcase
 
-                    if (word_counter == 3'd4) begin
-                        word_counter <= 3'd0;
+                    if (header_word == 3'd4) begin
+                        header_word <= 3'd0;
                         state <= UDP_HDR;
                     end else begin
-                        word_counter <= word_counter + 1'b1;
+                        header_word <= header_word + 1'b1;
                     end
                 end
 
                 UDP_HDR: begin
-                    case (word_counter)
+                    packet_valid_reg <= 1'b1;
+                    case (header_word)
                         3'd0: packet_data <= {src_port, dst_port};
                         3'd1: packet_data <= {udp_length, 16'h0000};
-                        default: packet_data <= {DATA_WIDTH{1'b0}};
+                        default: packet_data <= 32'd0;
                     endcase
 
-                    if (word_counter == 3'd1) begin
-                        word_counter <= 3'd0;
+                    if (header_word == 3'd1) begin
+                        header_word <= 3'd0;
                         state <= DATA;
                     end else begin
-                        word_counter <= word_counter + 1'b1;
+                        header_word <= header_word + 1'b1;
                     end
                 end
 
                 DATA: begin
-                    packet_data <= app_data_latched;
-                    state <= DONE;
+                    if (first_payload_pending) begin
+                        packet_data <= first_payload_word;
+                        packet_valid_reg <= 1'b1;
+                        first_payload_pending <= 1'b0;
+                        payload_bytes_remaining <= (payload_bytes_remaining > 16'd4) ?
+                                                   payload_bytes_remaining - 16'd4 : 16'd0;
+                        if (payload_bytes_remaining <= 16'd4) begin
+                            state <= DONE;
+                        end
+                    end else if (app_valid) begin
+                        packet_data <= app_data;
+                        packet_valid_reg <= 1'b1;
+                        payload_bytes_remaining <= (payload_bytes_remaining > 16'd4) ?
+                                                   payload_bytes_remaining - 16'd4 : 16'd0;
+                        if (payload_bytes_remaining <= 16'd4) begin
+                            state <= DONE;
+                        end
+                    end
                 end
 
                 DONE: begin
-                    packet_data <= {DATA_WIDTH{1'b0}};
                     state <= IDLE;
                 end
 
@@ -116,9 +144,10 @@ module udp_ip_stack #(
         end
     end
 
-    assign app_ready = (state == IDLE);
+    assign app_ready = (state == IDLE) || ((state == DATA) && !first_payload_pending);
     assign mac_data = packet_data;
     assign mac_len = mac_len_reg;
-    assign mac_valid = (state == IP_HDR) || (state == UDP_HDR) || (state == DATA);
+    assign mac_valid = packet_valid_reg;
 
 endmodule
+`default_nettype wire

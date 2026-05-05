@@ -112,6 +112,39 @@ async def test_two_tone_and_back_to_back_frames(dut):
 
 
 @cocotb.test()
+async def test_continuous_input_sustains_one_sample_per_clock(dut):
+    cocotb.start_soon(Clock(dut.clk, 10, units="ns").start())
+    await reset(dut)
+
+    n = np.arange(N)
+    frames = [
+        900 * np.exp(2j * np.pi * tone * n / N)
+        for tone in (7, 71, 203)
+    ]
+
+    for frame in frames:
+        for sample in frame:
+            dut.real_in.value = to_twos(np.real(sample))
+            dut.imag_in.value = to_twos(np.imag(sample))
+            dut.data_valid.value = 1
+            await RisingEdge(dut.clk)
+
+    dut.data_valid.value = 0
+
+    valid_count = 0
+    timeout = N * 6
+    while valid_count < N * len(frames) and timeout > 0:
+        await RisingEdge(dut.clk)
+        if int(dut.fft_valid.value):
+            valid_count += 1
+        timeout -= 1
+
+    assert valid_count == N * len(frames), (
+        f"continuous 105 MSPS stream dropped bins: got {valid_count}"
+    )
+
+
+@cocotb.test()
 async def test_frame_local_overflow_metadata(dut):
     cocotb.start_soon(Clock(dut.clk, 10, units="ns").start())
     await reset(dut)

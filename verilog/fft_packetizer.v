@@ -1,19 +1,16 @@
+`default_nettype none
 // ============================================================================
 // FFT Packetizer
 // ============================================================================
-// Converts natural-order FFT bins into 32-bit application words and carries the
-// word length across the FFT-to-Ethernet CDC with the payload.
-//
-// Data word:
-//   [31:16] real[23:8], [15:0] imag[23:8]
-//
-// Footer words, emitted after each frame for each 256-bin subframe:
-//   0: 0xF17A0000 | subframe
-//   1: frame_counter[31:0]
-//   2: {start_bin[15:0], end_bin[15:0]}
-//   3: {fft_size[15:0], mode[7:0], overflow, 7'd0}
-//   4: timestamp[31:0]
-//   5: {packet_sequence[15:0], subframe[7:0], 8'hA5}
+// Accepts one FFT bin per fft_clk and emits one UDP application packet per
+// 256-bin subframe in eth_clk. Payload layout:
+//   words 0..255: {real[23:8], imag[23:8]}
+//   word 256:     0xF17A0000 | subframe_index
+//   word 257:     frame_counter
+//   word 258:     {start_bin, end_bin}
+//   word 259:     {fft_size, mode, overflow, 7'd0}
+//   word 260:     timestamp
+//   word 261:     {packet_sequence, subframe_index, 8'hA5}
 // ============================================================================
 
 `timescale 1ns/1ps
@@ -29,7 +26,8 @@ module fft_packetizer #(
     input  wire [DATA_WIDTH-1:0] fft_real,
     input  wire [DATA_WIDTH-1:0] fft_imag,
     input  wire                  fft_valid,
-    input  wire [11:0]           fft_index,
+    input  wire [$clog2(FFT_SIZE)-1:0] fft_index,
+    input  wire [31:0]           fft_frame_count,
     input  wire                  fft_overflow,
     input  wire [7:0]            mode,
     output wire [31:0]           app_data,
@@ -40,91 +38,31 @@ module fft_packetizer #(
     output wire                  fifo_empty
 );
 
-    localparam FIFO_WIDTH = 48;
+    localparam INDEX_WIDTH = $clog2(FFT_SIZE);
+    localparam FIFO_WIDTH = 32 + INDEX_WIDTH + 32 + 32 + 1;
     localparam META_WORDS = 6;
-    localparam SUBFRAMES = FFT_SIZE / BINS_PER_SUBFRAME;
+    localparam WORDS_PER_PACKET = BINS_PER_SUBFRAME + META_WORDS;
+    localparam [15:0] PACKET_BYTES = WORDS_PER_PACKET * 4;
     localparam [15:0] FFT_SIZE_WORD = FFT_SIZE;
 
     reg [31:0] timestamp_counter;
-    reg [31:0] frame_counter;
-    reg [15:0] packet_sequence;
-    reg [7:0]  meta_subframe;
-    reg [2:0]  meta_word;
-    reg        meta_active;
-    reg        frame_overflow;
-    reg [31:0] frame_timestamp;
-
-    reg [31:0] wr_payload;
-    reg [15:0] wr_len;
-    reg        wr_en;
-
-    wire [15:0] subframe_start = meta_subframe * BINS_PER_SUBFRAME;
-    wire [15:0] subframe_end = subframe_start + BINS_PER_SUBFRAME - 1;
-
-    always @* begin
-        wr_payload = 32'd0;
-        wr_len = 16'd4;
-        wr_en = 1'b0;
-
-        if (meta_active) begin
-            wr_en = !fifo_full;
-            case (meta_word)
-                3'd0: wr_payload = 32'hF17A0000 | {24'd0, meta_subframe};
-                3'd1: wr_payload = frame_counter;
-                3'd2: wr_payload = {subframe_start, subframe_end};
-                3'd3: wr_payload = {FFT_SIZE_WORD, mode, frame_overflow, 7'd0};
-                3'd4: wr_payload = frame_timestamp;
-                3'd5: wr_payload = {packet_sequence, meta_subframe, 8'hA5};
-                default: wr_payload = 32'd0;
-            endcase
-        end else if (fft_valid) begin
-            wr_en = !fifo_full;
-            wr_payload = {fft_real[DATA_WIDTH-1:DATA_WIDTH-16], fft_imag[DATA_WIDTH-1:DATA_WIDTH-16]};
-        end
-    end
-
     always @(posedge fft_clk or negedge rst_n) begin
         if (!rst_n) begin
             timestamp_counter <= 32'd0;
-            frame_counter <= 32'd0;
-            packet_sequence <= 16'd0;
-            meta_subframe <= 8'd0;
-            meta_word <= 3'd0;
-            meta_active <= 1'b0;
-            frame_overflow <= 1'b0;
-            frame_timestamp <= 32'd0;
         end else begin
             timestamp_counter <= timestamp_counter + 1'b1;
-
-            if (fft_valid && fft_index == 12'd0) begin
-                frame_overflow <= fft_overflow;
-                frame_timestamp <= timestamp_counter;
-            end else if (fft_valid) begin
-                frame_overflow <= frame_overflow | fft_overflow;
-            end
-
-            if (!meta_active && fft_valid && fft_index == FFT_SIZE-1) begin
-                meta_active <= 1'b1;
-                meta_subframe <= 8'd0;
-                meta_word <= 3'd0;
-            end else if (meta_active && !fifo_full) begin
-                if (meta_word == META_WORDS-1) begin
-                    meta_word <= 3'd0;
-                    packet_sequence <= packet_sequence + 1'b1;
-                    if (meta_subframe == SUBFRAMES-1) begin
-                        meta_active <= 1'b0;
-                        frame_counter <= frame_counter + 1'b1;
-                    end else begin
-                        meta_subframe <= meta_subframe + 1'b1;
-                    end
-                end else begin
-                    meta_word <= meta_word + 1'b1;
-                end
-            end
         end
     end
 
-    wire [FIFO_WIDTH-1:0] fifo_din = {wr_len, wr_payload};
+    wire [31:0] bin_word = {fft_real[DATA_WIDTH-1:DATA_WIDTH-16],
+                            fft_imag[DATA_WIDTH-1:DATA_WIDTH-16]};
+    wire [FIFO_WIDTH-1:0] fifo_din = {
+        fft_overflow,
+        timestamp_counter,
+        fft_frame_count,
+        fft_index,
+        bin_word
+    };
     wire [FIFO_WIDTH-1:0] fifo_dout;
     wire fifo_rd_en;
 
@@ -137,39 +75,108 @@ module fft_packetizer #(
         .wr_rst_n(rst_n),
         .rd_rst_n(rst_n),
         .din(fifo_din),
-        .wr_en(wr_en),
+        .wr_en(fft_valid && !fifo_full),
         .rd_en(fifo_rd_en),
         .dout(fifo_dout),
         .full(fifo_full),
         .empty(fifo_empty)
     );
 
-    reg [FIFO_WIDTH-1:0] app_word;
+    wire fifo_overflow = fifo_dout[FIFO_WIDTH-1];
+    wire [31:0] fifo_timestamp = fifo_dout[FIFO_WIDTH-2 -: 32];
+    wire [31:0] fifo_frame = fifo_dout[FIFO_WIDTH-34 -: 32];
+    wire [INDEX_WIDTH-1:0] fifo_index = fifo_dout[31+INDEX_WIDTH:32];
+    wire [31:0] fifo_bin_word = fifo_dout[31:0];
+
+    localparam PKT_IDLE = 2'd0;
+    localparam PKT_DATA = 2'd1;
+    localparam PKT_META = 2'd2;
+
+    reg [1:0] state;
+    reg [8:0] data_word_count;
+    reg [2:0] meta_word_count;
+    reg [31:0] app_data_reg;
     reg app_valid_reg;
     reg fifo_rd_pending;
+    reg [31:0] frame_latched;
+    reg [31:0] timestamp_latched;
+    reg overflow_latched;
+    reg [7:0] subframe_latched;
+    reg [15:0] packet_sequence;
 
-    assign fifo_rd_en = !fifo_empty && !fifo_rd_pending && (!app_valid_reg || app_ready);
+    wire start_packet = !fifo_empty && !fifo_rd_pending && !app_valid_reg;
+    assign fifo_rd_en = ((state == PKT_IDLE) && start_packet) ||
+                        ((state == PKT_DATA) && app_ready && (data_word_count < BINS_PER_SUBFRAME) &&
+                         !fifo_empty && !fifo_rd_pending);
+
+    wire [15:0] start_bin = subframe_latched * BINS_PER_SUBFRAME;
+    wire [15:0] end_bin = start_bin + BINS_PER_SUBFRAME - 1;
 
     always @(posedge eth_clk or negedge rst_n) begin
         if (!rst_n) begin
-            app_word <= {FIFO_WIDTH{1'b0}};
+            state <= PKT_IDLE;
+            data_word_count <= 9'd0;
+            meta_word_count <= 3'd0;
+            app_data_reg <= 32'd0;
             app_valid_reg <= 1'b0;
             fifo_rd_pending <= 1'b0;
+            frame_latched <= 32'd0;
+            timestamp_latched <= 32'd0;
+            overflow_latched <= 1'b0;
+            subframe_latched <= 8'd0;
+            packet_sequence <= 16'd0;
         end else begin
+            if (app_ready) begin
+                app_valid_reg <= 1'b0;
+            end
+
             if (fifo_rd_en) begin
                 fifo_rd_pending <= 1'b1;
             end else if (fifo_rd_pending) begin
-                app_word <= fifo_dout;
-                app_valid_reg <= 1'b1;
                 fifo_rd_pending <= 1'b0;
-            end else if (app_ready) begin
-                app_valid_reg <= 1'b0;
+                app_data_reg <= fifo_bin_word;
+                app_valid_reg <= 1'b1;
+                overflow_latched <= overflow_latched | fifo_overflow;
+
+                if (state == PKT_IDLE) begin
+                    frame_latched <= fifo_frame;
+                    timestamp_latched <= fifo_timestamp;
+                    overflow_latched <= fifo_overflow;
+                    subframe_latched <= fifo_index[INDEX_WIDTH-1:8];
+                    data_word_count <= 9'd1;
+                    state <= PKT_DATA;
+                end else begin
+                    data_word_count <= data_word_count + 1'b1;
+                end
+            end else if (state == PKT_DATA && app_ready && data_word_count == BINS_PER_SUBFRAME) begin
+                meta_word_count <= 3'd0;
+                state <= PKT_META;
+            end else if (state == PKT_META && app_ready && !app_valid_reg) begin
+                app_valid_reg <= 1'b1;
+                case (meta_word_count)
+                    3'd0: app_data_reg <= 32'hF17A0000 | {24'd0, subframe_latched};
+                    3'd1: app_data_reg <= frame_latched;
+                    3'd2: app_data_reg <= {start_bin, end_bin};
+                    3'd3: app_data_reg <= {FFT_SIZE_WORD, mode, overflow_latched, 7'd0};
+                    3'd4: app_data_reg <= timestamp_latched;
+                    3'd5: app_data_reg <= {packet_sequence, subframe_latched, 8'hA5};
+                    default: app_data_reg <= 32'd0;
+                endcase
+
+                if (meta_word_count == META_WORDS-1) begin
+                    packet_sequence <= packet_sequence + 1'b1;
+                    state <= PKT_IDLE;
+                    data_word_count <= 9'd0;
+                end else begin
+                    meta_word_count <= meta_word_count + 1'b1;
+                end
             end
         end
     end
 
-    assign app_len = app_word[47:32];
-    assign app_data = app_word[31:0];
+    assign app_data = app_data_reg;
+    assign app_len = PACKET_BYTES;
     assign app_valid = app_valid_reg;
 
 endmodule
+`default_nettype wire
