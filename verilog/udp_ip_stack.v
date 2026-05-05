@@ -50,6 +50,8 @@ module udp_ip_stack #(
 
     wire [15:0] udp_length = 16'd8 + app_len_latched;
     wire [15:0] ipv4_total_length = 16'd20 + udp_length;
+    wire [15:0] ipv4_header_checksum =
+        ipv4_checksum(ipv4_total_length, src_ip, dst_ip);
     wire output_can_advance = !packet_valid_reg || mac_ready;
 
     assign app_ready = ((state == IDLE) && output_can_advance) ||
@@ -93,7 +95,7 @@ module udp_ip_stack #(
 
                     case (header_word)
                         3'd1: packet_data <= {16'h0001, 16'h4000};
-                        3'd2: packet_data <= {8'h40, 8'h11, 16'h0000};
+                        3'd2: packet_data <= {8'h40, 8'h11, ipv4_header_checksum};
                         3'd3: packet_data <= src_ip;
                         3'd4: packet_data <= dst_ip;
                         default: packet_data <= 32'd0;
@@ -163,6 +165,29 @@ module udp_ip_stack #(
             endcase
         end
     end
+
+    function [15:0] ipv4_checksum;
+        input [15:0] total_length;
+        input [31:0] src_addr;
+        input [31:0] dst_addr;
+        reg [19:0] sum;
+        reg [19:0] folded;
+        begin
+            sum = 20'd0;
+            sum = sum + 16'h4500;
+            sum = sum + total_length;
+            sum = sum + 16'h0001;
+            sum = sum + 16'h4000;
+            sum = sum + 16'h4011;
+            sum = sum + src_addr[31:16];
+            sum = sum + src_addr[15:0];
+            sum = sum + dst_addr[31:16];
+            sum = sum + dst_addr[15:0];
+            folded = sum[15:0] + sum[19:16];
+            folded = folded[15:0] + folded[19:16];
+            ipv4_checksum = ~folded[15:0];
+        end
+    endfunction
 
 endmodule
 `default_nettype wire
