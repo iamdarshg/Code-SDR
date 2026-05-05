@@ -1,0 +1,4 @@
+(fp_lib_table
+  (version 7)
+  (lib (name "MABA-011108")(type "KiCad")(uri "${KIPRJMOD}/MABA-011108")(options "")(descr ""))
+)

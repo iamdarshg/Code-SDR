@@ -1,29 +1,33 @@
 // ============================================================================
 // LIF-MD6000-6UMG64I FPGA Processing Pipeline - Top Level Module
 // ============================================================================
-// Optimized for 105 MSPS FFT with 1G Ethernet-compliant UDP packetization.
-// Implements frame segmentation (4 packets/FFT frame) to respect 1500B MTU.
+// Issue #12 receive path: 105 MHz ADC domain -> DDC/window/1024 FFT ->
+// packetized UDP application stream across an async FIFO into 125 MHz Ethernet.
 // ============================================================================
 
 `timescale 1ns/1ps
-`default_nettype none
 
 module fpga_processing_pipeline (
     input  wire        clk_100m_in,
     input  wire        rst_n,
-    
+
     input  wire [9:0]  adc_data,
     input  wire        adc_valid,
     input  wire        adc_ovr,
-    
+
     input  wire        spi_clk,
     input  wire        spi_mosi,
     input  wire        spi_cs_n,
     output wire        spi_miso,
 
-    output wire [2:0]  processing_mode_out,
-    output wire [7:0]  modulation_type_out,
-    
+    input  wire [2:0]  processing_mode,
+    input  wire [7:0]  modulation_type,
+    input  wire [7:0]  filter_bandwidth,
+    input  wire        clock_gating_en,
+    input  wire [7:0]  thermal_scaling,
+    input  wire        resource_opt_en,
+    input  wire [7:0]  power_profile,
+
     output wire [7:0]  gmii_tx_d,
     output wire        gmii_tx_en,
     output wire        gmii_tx_er,
@@ -34,168 +38,325 @@ module fpga_processing_pipeline (
     output wire        gmii_col,
     output wire        gmii_tx_clk,
     output wire        gmii_rx_clk,
-    
+
     output wire        pll_locked,
     output wire        eth_link_status,
     output wire [15:0] system_status,
     output wire [31:0] packet_counter
 );
 
-    localparam FFT_SIZE = 1024;
-    localparam ADDR_WIDTH = $clog2(FFT_SIZE);
-
-    // ========================================================================
-    // Clocks & Reset
-    // ========================================================================
-    wire clk_105m, clk_125m_eth, reset_n, pll_locked_int;
+    wire clk_105m_adc;
+    wire clk_125m_eth;
+    wire clk_250m_unused;
+    wire clk_600m_unused;
+    wire clk_fft_unused;
+    wire reset_n = rst_n & pll_locked;
 
     clock_manager u_clock_manager (
-        .clk_100m_in(clk_100m_in), .rst_n(rst_n),
-        .clk_125m_eth(clk_125m_eth), .clk_105m_adc(clk_105m),
-        .reset_n(reset_n), .locked(pll_locked_int)
+        .clk_100m_in(clk_100m_in),
+        .rst_n(rst_n),
+        .clk_600m(clk_600m_unused),
+        .clk_1200m_fft(clk_fft_unused),
+        .clk_125m_eth(clk_125m_eth),
+        .clk_250m_eth(clk_250m_unused),
+        .clk_105m_adc(clk_105m_adc),
+        .locked(pll_locked)
     );
 
-    reg [31:0] timestamp_cnt;
-    always @(posedge clk_105m or negedge reset_n) begin
-        if (!reset_n) timestamp_cnt <= 0;
-        else timestamp_cnt <= timestamp_cnt + 1;
-    end
-
-    // ========================================================================
-    // Configuration & RP2040
-    // ========================================================================
     wire [31:0] frequency_word;
-    wire [7:0] gain_control, modulation_type;
+    wire [7:0] gain_control;
     wire [3:0] filter_select;
-    wire [2:0] processing_mode;
-    wire enable_control, eth_link_status_int;
+    wire enable_control;
+    wire rp_streaming_mode;
+    wire [7:0] rp_bandwidth_limit;
+    wire [2:0] rp_processing_mode;
+    wire [7:0] rp_modulation_type;
+    wire [7:0] rp_filter_bandwidth;
+    wire rp_clock_gating_en;
+    wire [7:0] rp_thermal_scaling;
+    wire rp_resource_opt_en;
+    wire [7:0] rp_power_profile;
 
-    rp2040_interface u_rp2040_interface (
-        .spi_clk(spi_clk), .spi_mosi(spi_mosi), .spi_cs_n(spi_cs_n), .spi_miso(spi_miso),
-        .frequency_word(frequency_word), .gain_control(gain_control), .filter_select(filter_select),
-        .enable_control(enable_control), .processing_mode(processing_mode), .modulation_type(modulation_type),
-        .status_reg(system_status), .pll_locked(pll_locked_int), .rst_n(reset_n), .eth_link_status(eth_link_status_int)
-    );
+    wire mode_spectrum_en = (processing_mode == 3'd0);
+    wire mode_iq_stream_en = (processing_mode == 3'd1);
+    wire mode_audio_demod_en = (processing_mode == 3'd2);
+    wire mode_invalid = (processing_mode > 3'd2);
 
-    // ========================================================================
-    // DSP: ADC -> DDC -> Window -> FFT
-    // ========================================================================
     wire [31:0] adc_samples;
-    wire adc_v;
-    adc_interface u_adc_int (.clk_adc(clk_105m), .rst_n(reset_n), .adc_data(adc_data), .adc_valid(adc_valid), .adc_ovr(adc_ovr), .adc_samples(adc_samples), .sample_valid(adc_v));
+    wire adc_sample_valid;
+    wire adc_overflow_detect;
 
-    wire [15:0] nco_sin, nco_cos;
-    nco_generator u_nco (.clk(clk_105m), .rst_n(reset_n), .frequency_word(frequency_word), .enable(enable_control), .sine_out(nco_sin), .cosine_out(nco_cos), .valid_out());
-
-    wire [31:0] ddc_i, ddc_q;
-    wire ddc_v;
-    digital_downconverter u_ddc (.clk(clk_105m), .rst_n(reset_n), .adc_data(adc_samples), .data_valid(adc_v), .nco_sine(nco_sin), .nco_cosine(nco_cos), .gain_control(gain_control), .i_component(ddc_i), .q_component(ddc_q), .ddc_valid(ddc_v));
-
-    wire [23:0] win_i, win_q;
-    wire win_v;
-    hamming_window #(.DATA_WIDTH(24)) u_win_i (.clk(clk_105m), .rst_n(reset_n), .data_in(ddc_i[23:0]), .data_valid(ddc_v), .data_out(win_i), .output_valid(win_v));
-    hamming_window #(.DATA_WIDTH(24)) u_win_q (.clk(clk_105m), .rst_n(reset_n), .data_in(ddc_q[23:0]), .data_valid(ddc_v), .data_out(win_q), .output_valid());
-
-    wire [23:0] fft_r, fft_im;
-    wire fft_v, fft_ov;
-    wire [ADDR_WIDTH-1:0] fft_idx;
-    wire [31:0] fft_fc;
-
-    fft_processor #(.DATA_WIDTH(24)) u_fft (
-        .clk(clk_105m), .rst_n(reset_n), .real_in(win_i), .imag_in(win_q), .data_valid(win_v),
-        .real_out(fft_r), .imag_out(fft_im), .fft_valid(fft_v), .fft_index(fft_idx),
-        .frame_count(fft_fc), .overflow_flag(fft_ov), .processing_active()
+    adc_interface u_adc_interface (
+        .clk_adc(clk_105m_adc),
+        .rst_n(reset_n),
+        .adc_data(adc_data),
+        .adc_valid(adc_valid),
+        .adc_ovr(adc_ovr),
+        .adc_samples(adc_samples),
+        .sample_valid(adc_sample_valid),
+        .overflow_detect(adc_overflow_detect)
     );
 
-    // ========================================================================
-    // Multi-Packet UDP Packetizer (MTU compliant)
-    // Segments 1024 bins into 4 packets of 256 bins each.
-    // Egress: 105 MSPS -> 1:4 Decimation = ~26 FPS * 1024 bins * 4B = ~107 Mbps.
-    // ========================================================================
-    reg [31:0] pkt_word;
-    reg pkt_v;
-    reg [15:0] app_len_sig;
-    reg [ADDR_WIDTH:0] pkt_cnt; // 0..1023
-    reg [2:0] pkt_state;
-    wire frame_selected = (fft_fc[1:0] == 2'b00); // 1:4 decimation for bandwidth
+    wire [15:0] nco_sine;
+    wire [15:0] nco_cosine;
+    wire nco_valid;
 
-    localparam ST_IDLE = 3'd0, ST_DATA = 3'd1, ST_META = 3'd2;
-    localparam WORDS_PER_PACKET = 256;
-    localparam PACKET_DATA_BYTES = WORDS_PER_PACKET * 4;
+    nco_generator u_nco_generator (
+        .clk(clk_105m_adc),
+        .rst_n(reset_n),
+        .frequency_word(frequency_word),
+        .enable(enable_control),
+        .sine_out(nco_sine),
+        .cosine_out(nco_cosine),
+        .valid_out(nco_valid)
+    );
 
-    always @(posedge clk_105m or negedge reset_n) begin
+    wire [31:0] ddc_i_data;
+    wire [31:0] ddc_q_data;
+    wire ddc_valid;
+
+    digital_downconverter u_ddc (
+        .clk(clk_105m_adc),
+        .rst_n(reset_n),
+        .adc_data(adc_samples),
+        .data_valid(adc_sample_valid),
+        .nco_sine(nco_sine),
+        .nco_cosine(nco_cosine),
+        .gain_control(gain_control),
+        .i_component(ddc_i_data),
+        .q_component(ddc_q_data),
+        .ddc_valid(ddc_valid)
+    );
+
+    wire [31:0] windowed_i_data;
+    wire [31:0] windowed_q_data;
+    wire window_valid_i;
+    wire window_valid_q;
+    wire fft_input_valid = mode_spectrum_en && window_valid_i && window_valid_q;
+
+    hamming_window #(
+        .WIDTH(32),
+        .FFT_SIZE(1024)
+    ) u_hamming_window_i (
+        .clk(clk_105m_adc),
+        .rst_n(reset_n),
+        .data_in(ddc_i_data),
+        .data_valid(ddc_valid),
+        .data_out(windowed_i_data),
+        .output_valid(window_valid_i)
+    );
+
+    hamming_window #(
+        .WIDTH(32),
+        .FFT_SIZE(1024)
+    ) u_hamming_window_q (
+        .clk(clk_105m_adc),
+        .rst_n(reset_n),
+        .data_in(ddc_q_data),
+        .data_valid(ddc_valid),
+        .data_out(windowed_q_data),
+        .output_valid(window_valid_q)
+    );
+
+    wire [23:0] fft_real_data;
+    wire [23:0] fft_imag_data;
+    wire fft_valid;
+    wire [11:0] fft_index;
+    wire fft_overflow_flag;
+    wire fft_processing_active;
+
+    fft_processor #(
+        .FFT_SIZE(1024),
+        .DATA_WIDTH(24)
+    ) u_fft_processor (
+        .clk(clk_105m_adc),
+        .rst_n(reset_n),
+        .real_in(windowed_i_data[23:0]),
+        .imag_in(windowed_q_data[23:0]),
+        .data_valid(fft_input_valid),
+        .real_out(fft_real_data),
+        .imag_out(fft_imag_data),
+        .fft_valid(fft_valid),
+        .fft_index(fft_index),
+        .overflow_flag(fft_overflow_flag),
+        .processing_active(fft_processing_active)
+    );
+
+    wire [15:0] demodulated_audio;
+    wire audio_valid = mode_audio_demod_en && ddc_valid;
+    wire [31:0] am_envelope = $signed(ddc_i_data) * $signed(ddc_i_data) +
+                              $signed(ddc_q_data) * $signed(ddc_q_data);
+    wire [15:0] am_audio = am_envelope[30:15];
+    reg [31:0] ddc_i_prev;
+    reg [31:0] ddc_q_prev;
+    reg [15:0] fsk_threshold;
+    wire [31:0] fm_phase_diff = $signed(ddc_i_data) * $signed(ddc_q_prev) -
+                                $signed(ddc_q_data) * $signed(ddc_i_prev);
+    wire [15:0] fm_audio = fm_phase_diff[25:10];
+    wire [15:0] fsk_audio = (am_envelope[30:15] > fsk_threshold) ? 16'h7FFF : 16'h0000;
+
+    assign demodulated_audio = (modulation_type == 8'h01) ? am_audio :
+                               (modulation_type == 8'h02) ? fm_audio :
+                               (modulation_type == 8'h03) ? fsk_audio : 16'h0000;
+
+    always @(posedge clk_105m_adc or negedge reset_n) begin
         if (!reset_n) begin
-            pkt_state <= ST_IDLE; pkt_cnt <= 0; pkt_word <= 0; pkt_v <= 0; app_len_sig <= 0;
-        end else begin
-            pkt_v <= 0;
-            case (pkt_state)
-                ST_IDLE: if (fft_v && fft_idx == 0 && frame_selected) begin
-                    pkt_word <= {fft_r[23:8], fft_im[23:8]}; // First SC16 word
-                    pkt_v <= 1;
-                    pkt_cnt <= 1;
-                    app_len_sig <= PACKET_DATA_BYTES + 16; // 1024B data + 16B metadata
-                    pkt_state <= ST_DATA;
-                end
-                ST_DATA: if (fft_v) begin
-                    pkt_word <= {fft_r[23:8], fft_im[23:8]};
-                    pkt_v <= 1;
-                    pkt_cnt <= pkt_cnt + 1;
-                    // Trigger metadata footer every 256 bins
-                    if (pkt_cnt[7:0] == 8'hFF) pkt_state <= ST_META;
-                end
-                ST_META: begin
-                    // 4-word metadata footer (16 bytes)
-                    case (pkt_cnt[1:0])
-                        2'b00: pkt_word <= 32'hFEEDFEED; // Sub-packet Sync
-                        2'b01: pkt_word <= fft_fc;
-                        2'b10: pkt_word <= timestamp_cnt;
-                        2'b11: begin
-                            pkt_word <= {16'h0, 15'h0, fft_ov};
-                            if (pkt_cnt == 1024+3) pkt_state <= ST_IDLE; // End of frame
-                            else pkt_state <= ST_DATA;
-                        end
-                    endcase
-                    pkt_v <= 1;
-                    pkt_cnt <= pkt_cnt + 1;
-                end
-            endcase
+            ddc_i_prev <= 32'd0;
+            ddc_q_prev <= 32'd0;
+            fsk_threshold <= 16'h4000;
+        end else if (ddc_valid) begin
+            ddc_i_prev <= ddc_i_data;
+            ddc_q_prev <= ddc_q_data;
+            fsk_threshold <= (fsk_threshold * 7 + am_envelope[30:15]) >> 3;
         end
     end
 
-    // ========================================================================
-    // CDC & UDP (125 MHz)
-    // ========================================================================
-    wire [31:0] cdc_dout;
-    wire cdc_empty, stack_ready;
-    async_fifo #(.WIDTH(32), .DEPTH(2048)) u_cdc (
-        .wr_clk(clk_105m), .rd_clk(clk_125m_eth), .wr_rst_n(reset_n), .rd_rst_n(reset_n),
-        .din(pkt_word), .wr_en(pkt_v), .rd_en(!cdc_empty && stack_ready),
-        .dout(cdc_dout), .full(), .empty(cdc_empty)
+    wire [31:0] fft_app_data;
+    wire [15:0] fft_app_len;
+    wire fft_app_valid;
+    wire app_ready;
+    wire fft_app_ready = mode_spectrum_en ? app_ready : 1'b0;
+    wire fft_packet_fifo_full;
+    wire fft_packet_fifo_empty;
+
+    fft_packetizer #(
+        .FFT_SIZE(1024),
+        .BINS_PER_SUBFRAME(256),
+        .DATA_WIDTH(24)
+    ) u_fft_packetizer (
+        .fft_clk(clk_105m_adc),
+        .eth_clk(clk_125m_eth),
+        .rst_n(reset_n),
+        .fft_real(fft_real_data),
+        .fft_imag(fft_imag_data),
+        .fft_valid(fft_valid && mode_spectrum_en),
+        .fft_index(fft_index),
+        .fft_overflow(fft_overflow_flag),
+        .mode({5'd0, processing_mode}),
+        .app_data(fft_app_data),
+        .app_len(fft_app_len),
+        .app_valid(fft_app_valid),
+        .app_ready(fft_app_ready),
+        .fifo_full(fft_packet_fifo_full),
+        .fifo_empty(fft_packet_fifo_empty)
     );
 
-    wire [31:0] eth_data;
-    wire [15:0] eth_len;
-    wire eth_v, eth_ack;
-    udp_ip_stack u_udp (
-        .clk(clk_125m_eth), .rst_n(reset_n), .app_data(cdc_dout), .app_len(app_len_sig),
-        .app_valid(!cdc_empty), .app_ready(stack_ready),
-        .src_ip(32'hC0A80002), .dst_ip(32'hC0A80001), .src_port(16'd10000), .dst_port(16'd10001),
-        .mac_data(eth_data), .mac_len(eth_len), .mac_valid(eth_v)
+    wire [31:0] iq_or_audio_data = mode_iq_stream_en ? {ddc_i_data[15:0], ddc_q_data[15:0]} :
+                                   mode_audio_demod_en ? {demodulated_audio, 16'd0} : 32'd0;
+    wire [15:0] iq_or_audio_len = mode_audio_demod_en ? 16'd2 : 16'd4;
+    wire iq_or_audio_valid = (mode_iq_stream_en && ddc_valid) || audio_valid;
+    wire [31:0] iq_audio_app_data;
+    wire [15:0] iq_audio_app_len;
+    wire iq_audio_app_valid;
+    wire iq_audio_app_ready = mode_spectrum_en ? 1'b0 : app_ready;
+    wire iq_audio_fifo_full;
+    wire iq_audio_fifo_empty;
+
+    app_stream_cdc u_iq_audio_stream_cdc (
+        .wr_clk(clk_105m_adc),
+        .rd_clk(clk_125m_eth),
+        .rst_n(reset_n),
+        .wr_data(iq_or_audio_data),
+        .wr_len(iq_or_audio_len),
+        .wr_valid(iq_or_audio_valid),
+        .wr_full(iq_audio_fifo_full),
+        .rd_data(iq_audio_app_data),
+        .rd_len(iq_audio_app_len),
+        .rd_valid(iq_audio_app_valid),
+        .rd_ready(iq_audio_app_ready),
+        .rd_empty(iq_audio_fifo_empty)
     );
 
-    ethernet_mac u_mac (
-        .clk(clk_125m_eth), .rst_n(reset_n),
-        .gmii_tx_d(gmii_tx_d), .gmii_tx_en(gmii_tx_en), .gmii_tx_er(gmii_tx_er),
-        .gmii_rx_d(gmii_rx_d), .gmii_rx_dv(gmii_rx_dv), .gmii_rx_er(gmii_rx_er),
-        .packet_data(eth_data), .packet_len(eth_len), .packet_valid(eth_v), .packet_ack(eth_ack),
-        .link_status(eth_link_status_int), .packet_counter(packet_counter)
+    wire [31:0] selected_data = mode_spectrum_en ? fft_app_data : iq_audio_app_data;
+    wire [15:0] selected_len = mode_spectrum_en ? fft_app_len : iq_audio_app_len;
+    wire selected_valid = mode_spectrum_en ? fft_app_valid : iq_audio_app_valid;
+
+    wire [31:0] eth_packet_data;
+    wire [15:0] eth_packet_len;
+    wire eth_packet_valid;
+    wire eth_packet_ack;
+
+    udp_ip_stack u_udp_ip_stack (
+        .clk(clk_125m_eth),
+        .rst_n(reset_n && !mode_invalid),
+        .app_data(selected_data),
+        .app_len(selected_len),
+        .app_valid(selected_valid),
+        .app_ready(app_ready),
+        .src_ip(32'hC0A80002),
+        .dst_ip(32'hC0A80001),
+        .src_port(16'd10000),
+        .dst_port(16'd10001),
+        .mac_data(eth_packet_data),
+        .mac_len(eth_packet_len),
+        .mac_valid(eth_packet_valid)
     );
 
-    assign pll_locked = pll_locked_int;
-    assign eth_link_status = eth_link_status_int;
-    assign processing_mode_out = processing_mode;
-    assign modulation_type_out = modulation_type;
-    assign gmii_crs = 1'b0; assign gmii_col = 1'b0;
-    assign gmii_tx_clk = clk_125m_eth; assign gmii_rx_clk = clk_125m_eth;
+    ethernet_mac u_ethernet_mac (
+        .clk(clk_125m_eth),
+        .rst_n(reset_n),
+        .gmii_tx_d(gmii_tx_d),
+        .gmii_tx_en(gmii_tx_en),
+        .gmii_tx_er(gmii_tx_er),
+        .gmii_rx_d(gmii_rx_d),
+        .gmii_rx_dv(gmii_rx_dv),
+        .gmii_rx_er(gmii_rx_er),
+        .packet_data(eth_packet_data),
+        .packet_len(eth_packet_len),
+        .packet_valid(eth_packet_valid),
+        .packet_ack(eth_packet_ack),
+        .rx_packet_data(),
+        .rx_packet_len(),
+        .rx_packet_valid(),
+        .rx_packet_ack(1'b1),
+        .link_status(eth_link_status),
+        .packet_counter(packet_counter)
+    );
+
+    rp2040_interface u_rp2040_interface (
+        .spi_clk(spi_clk),
+        .spi_mosi(spi_mosi),
+        .spi_cs_n(spi_cs_n),
+        .spi_miso(spi_miso),
+        .frequency_word(frequency_word),
+        .gain_control(gain_control),
+        .filter_select(filter_select),
+        .enable_control(enable_control),
+        .streaming_mode(rp_streaming_mode),
+        .bandwidth_limit(rp_bandwidth_limit),
+        .processing_mode(rp_processing_mode),
+        .modulation_type(rp_modulation_type),
+        .filter_bandwidth(rp_filter_bandwidth),
+        .clock_gating_en(rp_clock_gating_en),
+        .thermal_scaling(rp_thermal_scaling),
+        .resource_opt_en(rp_resource_opt_en),
+        .power_profile(rp_power_profile),
+        .status_reg(system_status),
+        .pll_locked(pll_locked),
+        .eth_link_status(eth_link_status)
+    );
+
+    assign system_status = {
+        mode_invalid,
+        clock_gating_en,
+        processing_mode[2:1],
+        eth_link_status,
+        pll_locked,
+        adc_overflow_detect,
+        selected_valid,
+        ddc_valid,
+        fft_packet_fifo_full,
+        fft_packet_fifo_empty,
+        processing_mode[0],
+        enable_control,
+        fft_processing_active,
+        fft_overflow_flag,
+        resource_opt_en
+    };
+
+    assign gmii_crs = 1'b0;
+    assign gmii_col = 1'b0;
+    assign gmii_tx_clk = clk_125m_eth;
+    assign gmii_rx_clk = clk_125m_eth;
 
 endmodule

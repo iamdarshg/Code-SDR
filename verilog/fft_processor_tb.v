@@ -3,7 +3,7 @@
 module fft_processor_tb;
 
     // Testbench parameters
-    parameter FFT_SIZE = 256; // Reduced for simulation speed
+    parameter FFT_SIZE = 1024;
     parameter DATA_WIDTH = 24;
     parameter SCALE_FACTOR = 24;
 
@@ -66,19 +66,20 @@ module fft_processor_tb;
         // Wait a bit
         #100;
 
-        // Apply test data - simple impulse
+        // Apply a DC frame. With per-stage scaling, bin 0 should retain the
+        // input amplitude and all other natural-order bins should be near zero.
         repeat (FFT_SIZE) begin
             @(posedge clk);
-            real_in <= ($random % (1 << (DATA_WIDTH-2))); // Random data
-            imag_in <= ($random % (1 << (DATA_WIDTH-2)));
+            real_in <= 24'sd2048;
+            imag_in <= 24'sd0;
             data_valid <= 1'b1;
         end
 
         @(posedge clk);
         data_valid <= 1'b0;
 
-        // Wait for processing (conservative wait)
-        #1000000; // 1 ms for larger FFT
+        // Wait for processing (1024 load + 5120 butterflies + 1024 outputs).
+        #100000;
 
         // Check if any FFT output was produced
         if (fft_started) begin
