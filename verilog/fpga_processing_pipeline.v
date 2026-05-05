@@ -293,7 +293,8 @@ module fpga_processing_pipeline (
         .dst_port(16'd10001),
         .mac_data(eth_packet_data),
         .mac_len(eth_packet_len),
-        .mac_valid(eth_packet_valid)
+        .mac_valid(eth_packet_valid),
+        .mac_ready(eth_packet_ack)
     );
 
     ethernet_mac u_ethernet_mac (

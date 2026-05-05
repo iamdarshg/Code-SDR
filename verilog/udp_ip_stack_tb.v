@@ -26,6 +26,7 @@ module udp_ip_stack_tb;
     wire [DATA_WIDTH-1:0] mac_data;
     wire [15:0]           mac_len;
     wire                  mac_valid;
+    reg                   mac_ready;
 
     // Instantiate DUT
     udp_ip_stack dut (
@@ -41,7 +42,8 @@ module udp_ip_stack_tb;
         .dst_port(dst_port),
         .mac_data(mac_data),
         .mac_len(mac_len),
-        .mac_valid(mac_valid)
+        .mac_valid(mac_valid),
+        .mac_ready(mac_ready)
     );
 
     // Clock generation (125 MHz GMII clock)
@@ -57,6 +59,7 @@ module udp_ip_stack_tb;
         app_data = 0;
         app_len = 0;
         app_valid = 0;
+        mac_ready = 1;
         src_ip = 32'hC0A80101;    // 192.168.1.1
         dst_ip = 32'hC0A80102;    // 192.168.1.2
         src_port = 16'd12345;

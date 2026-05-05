@@ -39,6 +39,7 @@ set_global_assignment -name STRATIX_OPTIMIZATION_TECHNIQUE SPEED
 
 # Add Verilog source files
 set_global_assignment -name VERILOG_FILE fpga_processing_pipeline.v
+set_global_assignment -name VERILOG_FILE lifmd6000_clock_pll.v
 set_global_assignment -name VERILOG_FILE clock_manager.v
 set_global_assignment -name VERILOG_FILE adc_interface.v
 set_global_assignment -name VERILOG_FILE async_fifo.v
@@ -50,12 +51,18 @@ set_global_assignment -name VERILOG_FILE nco_generator.v
 set_global_assignment -name VERILOG_FILE cic_decimator.v
 set_global_assignment -name VERILOG_FILE hamming_window.v
 set_global_assignment -name VERILOG_FILE fft_processor.v
+set_global_assignment -name VERILOG_FILE fft_packetizer.v
+set_global_assignment -name VERILOG_FILE app_stream_cdc.v
 set_global_assignment -name VERILOG_FILE udp_ip_stack.v
 set_global_assignment -name VERILOG_FILE ethernet_mac.v
 set_global_assignment -name VERILOG_FILE rp2040_interface.v
 
 # Add timing constraints
 set_global_assignment -name SDC_FILE fpga_timing_constraints.sdc
+
+# Hardware clock-manager path. The committed lifmd6000_clock_pll.v is a wrapper
+# for the vendor-generated 100 MHz -> 105/125 MHz PLL IP.
+set_global_assignment -name VERILOG_MACRO "USE_LIFMD6000_PLL=1"
 
 # Add PLL IP cores for clock generation
 set_global_assignment -name QIP_FILE clocks/clocks.qip
@@ -105,9 +112,8 @@ execute_module -tool asm
 
 puts "Quartus Synthesis completed successfully for LIF-MD6000-6UMG64I!"
 puts "Clock targets:"
-puts "  System Clock: 600MHz"
-puts "  FFT Clock: 1.2GHz"
-puts "  Ethernet Clock: 250MHz"
+puts "  ADC/DSP/FFT Clock: 105MHz"
+puts "  Ethernet Clock: 125MHz"
 puts "  ADC Clock: 105MHz"
 puts ""
 puts "Check timing reports for fMAX achievement."

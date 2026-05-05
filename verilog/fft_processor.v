@@ -66,8 +66,15 @@ module fft_processor #(
 
     wire signed [DATA_WIDTH-1:0] stage_r [0:STAGES];
     wire signed [DATA_WIDTH-1:0] stage_i [0:STAGES];
+    wire [ADDR_WIDTH-1:0] stage_count [0:STAGES];
+    wire [31:0] stage_frame [0:STAGES];
+    wire stage_valid [0:STAGES];
+
     assign stage_r[0] = data_valid ? $signed(real_in) : {DATA_WIDTH{1'b0}};
     assign stage_i[0] = data_valid ? $signed(imag_in) : {DATA_WIDTH{1'b0}};
+    assign stage_count[0] = in_count;
+    assign stage_frame[0] = frame_counter;
+    assign stage_valid[0] = data_valid;
 
     reg [ADDR_WIDTH-1:0] count_pipe [0:PIPELINE_LATENCY-1];
     reg [31:0] frame_pipe [0:PIPELINE_LATENCY-1];
@@ -101,7 +108,8 @@ module fft_processor #(
             reg signed [DATA_WIDTH-1:0] delay_real [0:DELAY-1];
             reg signed [DATA_WIDTH-1:0] delay_imag [0:DELAY-1];
 
-            wire bf_state = in_count[STAGES-1-s];
+            wire [ADDR_WIDTH-1:0] ctrl_count = stage_count[s];
+            wire bf_state = ctrl_count[STAGES-1-s];
             wire signed [DATA_WIDTH-1:0] x_r = stage_r[s];
             wire signed [DATA_WIDTH-1:0] x_i = stage_i[s];
             wire signed [DATA_WIDTH-1:0] d_r = delay_real[DELAY-1];
@@ -122,7 +130,7 @@ module fft_processor #(
             wire signed [DATA_WIDTH-1:0] diff_r = full_d_r[DATA_WIDTH:1];
             wire signed [DATA_WIDTH-1:0] diff_i = full_d_i[DATA_WIDTH:1];
 
-            wire [ADDR_WIDTH-1:0] tw_idx_full = (in_count << s);
+            wire [ADDR_WIDTH-1:0] tw_idx_full = (ctrl_count << s);
             wire [ADDR_WIDTH-2:0] tw_idx = tw_idx_full[ADDR_WIDTH-2:0];
             wire signed [TWIDDLE_WIDTH-1:0] w_r = twiddle_real[tw_idx];
             wire signed [TWIDDLE_WIDTH-1:0] w_i = twiddle_imag[tw_idx];
@@ -140,17 +148,23 @@ module fft_processor #(
                              {(TWIDDLE_WIDTH+2){rot_r_wide[DATA_WIDTH-1]}});
             wire rot_ov_i = (rot_i_wide[DATA_WIDTH+TWIDDLE_WIDTH:DATA_WIDTH-1] !=
                              {(TWIDDLE_WIDTH+2){rot_i_wide[DATA_WIDTH-1]}});
-            assign stage_overflow[s] = data_valid &&
+            assign stage_overflow[s] = stage_valid[s] &&
                 (sum_ov_r | sum_ov_i | diff_ov_r | diff_ov_i | rot_ov_r | rot_ov_i);
 
             reg signed [DATA_WIDTH-1:0] next_r;
             reg signed [DATA_WIDTH-1:0] next_i;
+            reg [ADDR_WIDTH-1:0] next_count;
+            reg [31:0] next_frame;
+            reg next_valid;
             integer d;
 
             always @(posedge clk or negedge rst_n) begin
                 if (!rst_n) begin
                     next_r <= {DATA_WIDTH{1'b0}};
                     next_i <= {DATA_WIDTH{1'b0}};
+                    next_count <= {ADDR_WIDTH{1'b0}};
+                    next_frame <= 32'd0;
+                    next_valid <= 1'b0;
                     for (d = 0; d < DELAY; d = d + 1) begin
                         delay_real[d] <= {DATA_WIDTH{1'b0}};
                         delay_imag[d] <= {DATA_WIDTH{1'b0}};
@@ -167,6 +181,9 @@ module fft_processor #(
                         next_r <= sum_r;
                         next_i <= sum_i;
                     end
+                    next_count <= ctrl_count;
+                    next_frame <= stage_frame[s];
+                    next_valid <= stage_valid[s];
 
                     for (d = 1; d < DELAY; d = d + 1) begin
                         delay_real[d] <= delay_real[d-1];
@@ -177,6 +194,9 @@ module fft_processor #(
 
             assign stage_r[s+1] = next_r;
             assign stage_i[s+1] = next_i;
+            assign stage_count[s+1] = next_count;
+            assign stage_frame[s+1] = next_frame;
+            assign stage_valid[s+1] = next_valid;
         end
     endgenerate
 
