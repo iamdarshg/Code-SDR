@@ -22,11 +22,12 @@ module ethernet_mac #(
     input  wire        gmii_rx_dv,      // GMII receive data valid
     input  wire        gmii_rx_er,      // GMII receive error
     
-    // Data interface
-    input  wire [DATA_WIDTH-1:0] packet_data,    // Packet data to transmit
-    input  wire [15:0]  packet_len,               // Packet length
-    input  wire        packet_valid,              // Packet valid flag
-    output wire        packet_ack,                // Packet acknowledged
+    // Streaming transmit interface. packet_ack is the per-word ready signal:
+    // a transfer occurs when packet_valid and packet_ack are both high.
+    input  wire [DATA_WIDTH-1:0] packet_data,    // Packet word to transmit
+    input  wire [15:0]  packet_len,               // Total packet length in bytes
+    input  wire        packet_valid,              // Packet word valid flag
+    output wire        packet_ack,                // Packet word accepted
 
     // Receive data interface
     output wire [DATA_WIDTH-1:0] rx_packet_data,  // Received packet data
@@ -66,6 +67,8 @@ module ethernet_mac #(
     reg [15:0] packet_len_reg;
     reg [31:0] packet_counter_reg;
     reg [DATA_WIDTH-1:0] tx_word_reg;
+    wire tx_word_ready;
+    wire tx_word_fire;
     
     // CRC32 calculation
     function [31:0] crc32_byte(input [31:0] crc, input [7:0] data);
@@ -82,6 +85,12 @@ module ethernet_mac #(
             crc32_byte = {crc_next[7:0], crc[23:8]};
         end
     endfunction
+
+    assign tx_word_ready = (tx_state == TX_IDLE) ||
+                           (tx_state == TX_DATA &&
+                            tx_byte_counter < packet_len_reg &&
+                            tx_byte_counter[1:0] == 2'b00);
+    assign tx_word_fire = tx_word_ready && packet_valid;
     
     always @(posedge clk or negedge rst_n) begin
         if (!rst_n) begin
@@ -97,7 +106,7 @@ module ethernet_mac #(
         end else begin
             case (tx_state)
                 TX_IDLE: begin
-                    if (packet_valid) begin
+                    if (tx_word_fire) begin
                         packet_len_reg <= packet_len;
                         tx_word_reg <= packet_data;
                         tx_byte_counter <= 8'd0;
@@ -163,11 +172,11 @@ module ethernet_mac #(
                 
                 TX_DATA: begin
                     if (tx_byte_counter < packet_len_reg[15:0]) begin
-                        if (tx_byte_counter[1:0] == 2'b00 && packet_valid) begin
+                        if (tx_word_fire && tx_state == TX_DATA) begin
                             tx_word_reg <= packet_data;
                         end
                         case (tx_byte_counter[1:0])
-                            2'b00: tx_data_reg <= packet_valid ? packet_data[7:0] : tx_word_reg[7:0];
+                            2'b00: tx_data_reg <= tx_word_fire ? packet_data[7:0] : tx_word_reg[7:0];
                             2'b01: tx_data_reg <= tx_word_reg[15:8];
                             2'b10: tx_data_reg <= tx_word_reg[23:16];
                             2'b11: tx_data_reg <= tx_word_reg[31:24];
@@ -420,9 +429,7 @@ module ethernet_mac #(
     assign gmii_tx_d = tx_data_reg;
     assign gmii_tx_en = tx_en_reg;
     assign gmii_tx_er = tx_er_reg;
-    assign packet_ack = (tx_state == TX_DATA &&
-                         tx_byte_counter < packet_len_reg &&
-                         tx_byte_counter[1:0] == 2'b00);
+    assign packet_ack = tx_word_ready;
     assign link_status = link_status_reg;
     assign packet_counter = packet_counter_reg;
     assign rx_packet_data = (rx_words_available > 0) ? rx_data_buffer[rx_read_ptr] : 32'd0;

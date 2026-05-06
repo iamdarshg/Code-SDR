@@ -5,8 +5,9 @@
 // Transmit-only UDP/IPv4 framer for 32-bit application packet streams.
 //
 // The first app word accepted in IDLE starts a UDP packet and latches app_len.
-// The stack then holds each MAC word valid until mac_ready accepts it, so a
-// downstream MAC stall cannot rotate or drop header/payload words.
+// mac_ready is a per-word ready signal from the MAC: it is asserted for the
+// first word of a packet and for each later 32-bit word boundary. The stack
+// holds mac_valid/mac_data stable until that ready/valid handshake completes.
 // ============================================================================
 
 `timescale 1ns/1ps
