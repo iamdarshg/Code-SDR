@@ -1,84 +1,64 @@
 // ============================================================================
 // Clock Manager Module
 // ============================================================================
-// Clock distribution and PLL instantiation for LIF-MD6000-6UMG64I FPGA
+// Hardware clock plan for issue #12:
+//   - clk_105m_adc: ADC, DDC, windowing, and FFT receive path.
+//   - clk_125m_eth: GMII/UDP/Ethernet domain.
+//
+// Hardware builds must define USE_LIFMD6000_PLL after generating the
+// board-specific lifmd6000_clock_pll wrapper. Without that define this module
+// is an explicit simulation/source-only stub and does not claim hardware timing.
 // ============================================================================
 
 `timescale 1ns/1ps
-`default_nettype none
 
 module clock_manager (
-    input  wire clk_100m_in,     // Primary 100 MHz input clock
-    input  wire rst_n,          // System reset (active low)
+    input  wire clk_100m_in,
+    input  wire rst_n,
 
-    // Clock outputs
-    output wire clk_600m,       // 600 MHz clock for DDC and windowing
-    output wire clk_1200m_fft,  // 1200 MHz clock for FFT processor
-    output wire clk_125m_eth,   // 125 MHz Ethernet clock (standard)
-    output wire clk_250m_eth,   // 250 MHz Ethernet clock (boosted)
-    output wire clk_105m_adc,   // 105 MHz ADC clock
+    output wire clk_600m,
+    output wire clk_1200m_fft,
+    output wire clk_125m_eth,
+    output wire clk_250m_eth,
+    output wire clk_105m_adc,
 
-    // Reset and Status
-    output wire reset_n,        // Synchronized reset (active low)
-    output wire locked          // PLL lock status (active high)
+    output wire reset_n,
+    output wire locked
 );
 
-    // ========================================================================
-    // Behavioral Clock Generation for Simulation
-    // ========================================================================
+`ifdef USE_LIFMD6000_PLL
+    wire pll_clk_105m_adc;
+    wire pll_clk_125m_eth;
+    wire pll_locked;
 
-    reg r_clk_600m = 0;
-    reg r_clk_1200m_fft = 0;
-    reg r_clk_125m_eth = 0;
-    reg r_clk_250m_eth = 0;
-    reg r_clk_105m_adc = 0;
+    lifmd6000_clock_pll u_lifmd6000_clock_pll (
+        .clk_in(clk_100m_in),
+        .reset_n(rst_n),
+        .clk_105m_adc(pll_clk_105m_adc),
+        .clk_125m_eth(pll_clk_125m_eth),
+        .locked(pll_locked)
+    );
 
-    // Simulation-only clock generators
-`ifdef SIMULATION
-    // 600 MHz (1.666 ns period)
-    always #0.833 r_clk_600m = ~r_clk_600m;
-
-    // 1200 MHz (0.833 ns period)
-    always #0.416 r_clk_1200m_fft = ~r_clk_1200m_fft;
-
-    // 125 MHz (8 ns period)
-    always #4.0 r_clk_125m_eth = ~r_clk_125m_eth;
-    
-    // 250 MHz (4 ns period)
-    always #2.0 r_clk_250m_eth = ~r_clk_250m_eth;
-
-    // 105 MHz (9.524 ns period)
-    always #4.762 r_clk_105m_adc = ~r_clk_105m_adc;
-
-    assign clk_600m       = r_clk_600m;
-    assign clk_1200m_fft  = r_clk_1200m_fft;
-    assign clk_125m_eth   = r_clk_125m_eth;
-    assign clk_250m_eth   = r_clk_250m_eth;
-    assign clk_105m_adc   = r_clk_105m_adc;
+    assign clk_105m_adc = pll_clk_105m_adc;
+    assign clk_125m_eth = pll_clk_125m_eth;
+    assign locked = pll_locked;
+`elsif SIMULATION
+    assign clk_105m_adc = clk_100m_in;
+    assign clk_125m_eth = clk_100m_in;
+    assign locked = rst_n;
 `else
-    // For synthesis, we pass through the input clock to allow bitstream generation
-    assign clk_600m       = clk_100m_in;
-    assign clk_1200m_fft  = clk_100m_in;
-    assign clk_125m_eth   = clk_100m_in;
-    assign clk_250m_eth   = clk_100m_in;
-    assign clk_105m_adc   = clk_100m_in;
+    initial begin
+        $error("Define USE_LIFMD6000_PLL for synthesis or SIMULATION for behavioral clock pass-through");
+    end
+    assign clk_105m_adc = clk_100m_in;
+    assign clk_125m_eth = clk_100m_in;
+    assign locked = 1'b0;
 `endif
 
-    // ========================================================================
-    // Reset Synchronization
-    // ========================================================================
-
-    reg [2:0] reset_sync_reg;
-
-    always @(posedge clk_100m_in or negedge rst_n) begin
-        if (!rst_n) begin
-            reset_sync_reg <= 3'b000;
-        end else begin
-            reset_sync_reg <= {reset_sync_reg[1:0], 1'b1};
-        end
-    end
-
-    assign reset_n = reset_sync_reg[2];
-    assign locked = reset_sync_reg[2];
+    // Legacy outputs kept for older modules; issue #12 does not use them.
+    assign clk_600m = clk_105m_adc;
+    assign clk_1200m_fft = clk_105m_adc;
+    assign clk_250m_eth = clk_125m_eth;
+    assign reset_n = rst_n & locked;
 
 endmodule

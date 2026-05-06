@@ -1,0 +1,9 @@
+EESchema-DOCLIB  Version 2.0
+#
+$CMP MABA-011108
+D Audio Transformers / Signal Transformers 5-10000 MHz
+K
+F RF Balun 5MHz ~ 10GHz 1:1 6-SMD Module
+$ENDCMP
+#
+#End Doc Library

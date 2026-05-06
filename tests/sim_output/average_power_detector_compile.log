@@ -1,7 +1,0 @@
-%Warning-WIDTHTRUNC: verilog/average_power_detector.v:52:26: Operator ASSIGNW expects 32 bits on the Assign RHS, but Assign RHS's SHIFTR generates 74 bits.
-                                                           : ... note: In instance 'average_power_detector_tb.dut'
-   52 |     assign avg_power_out = sum_of_squares >>> AVG_WINDOW_BITS;
-      |                          ^
-                     ... For warning description see https://verilator.org/warn/WIDTHTRUNC?v=5.042
-                     ... Use "/* verilator lint_off WIDTHTRUNC */" and lint_on around source to disable this message.
-%Error: Exiting due to 1 warning(s)

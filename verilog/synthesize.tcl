@@ -12,6 +12,7 @@ set_property target_language Verilog [current_project]
 
 # Add source files
 add_files fpga_processing_pipeline.v
+add_files lifmd6000_clock_pll.v
 add_files clock_manager.v
 add_files adc_interface.v
 add_files async_fifo.v
@@ -23,6 +24,8 @@ add_files nco_generator.v
 add_files cic_decimator.v
 add_files hamming_window.v
 add_files fft_processor.v
+add_files fft_packetizer.v
+add_files app_stream_cdc.v
 add_files udp_ip_stack.v
 add_files ethernet_mac.v
 add_files rp2040_interface.v
@@ -31,6 +34,7 @@ add_files rp2040_interface.v
 add_files fpga_timing_constraints.xdc
 
 # Set synthesis properties
+set_property verilog_define {USE_LIFMD6000_PLL=1} [current_fileset]
 set_property synth_design.max_bram_utilization 90 [current_project]
 set_property synth_design.max_dsp_utilization 80 [current_project]
 set_property synth_design.max_uram_utilization 80 [current_project]

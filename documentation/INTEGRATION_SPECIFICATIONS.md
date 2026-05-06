@@ -141,10 +141,11 @@ Total:              42+ bytes
 #### Payload Structure (Processed Mode)
 ```
 Offset  Size    Description
-0x00    4       Timestamp (32-bit counter)
-0x04    4       FFT bin index
-0x08    4       Real component (24-bit padded)
-0x0C    4       Imaginary component (24-bit padded)
+0x00    4       FFT metadata:
+                [31:22] = Bin Index (0-1023)
+                [21]    = Overflow Flag
+                [20]    = Reserved
+                [19:0]  = FFT Real Component (Upper 20 bits)
 ```
 
 #### Payload Structure (Direct Streaming Mode)
