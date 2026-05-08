@@ -73,6 +73,13 @@ module fpga_processing_pipeline (
     wire rp_resource_opt_en;
     wire [7:0] rp_power_profile;
 
+    wire [47:0] rp_src_mac;
+    wire [47:0] rp_dst_mac;
+    wire [31:0] rp_src_ip;
+    wire [31:0] rp_dst_ip;
+    wire [15:0] rp_src_port;
+    wire [15:0] rp_dst_port;
+
     wire [2:0] active_processing_mode = rp_processing_mode;
     wire [7:0] active_modulation_type = rp_modulation_type;
     wire active_resource_opt_en = rp_resource_opt_en;
@@ -287,15 +294,18 @@ module fpga_processing_pipeline (
         .app_len(selected_len),
         .app_valid(selected_valid),
         .app_ready(app_ready),
-        .src_ip(32'hC0A80002),
-        .dst_ip(32'hC0A80001),
-        .src_port(16'd10000),
-        .dst_port(16'd10001),
+        .src_ip(rp_src_ip),
+        .dst_ip(rp_dst_ip),
+        .src_port(rp_src_port),
+        .dst_port(rp_dst_port),
         .mac_data(eth_packet_data),
         .mac_len(eth_packet_len),
         .mac_valid(eth_packet_valid),
         .mac_ready(eth_packet_ack)
     );
+
+    wire [31:0] tx_pkt_count;
+    wire [31:0] rx_pkt_count;
 
     ethernet_mac u_ethernet_mac (
         .clk(clk_125m_eth),
@@ -306,6 +316,8 @@ module fpga_processing_pipeline (
         .gmii_rx_d(gmii_rx_d),
         .gmii_rx_dv(gmii_rx_dv),
         .gmii_rx_er(gmii_rx_er),
+        .src_mac(rp_src_mac),
+        .dst_mac(rp_dst_mac),
         .packet_data(eth_packet_data),
         .packet_len(eth_packet_len),
         .packet_valid(eth_packet_valid),
@@ -315,8 +327,11 @@ module fpga_processing_pipeline (
         .rx_packet_valid(),
         .rx_packet_ack(1'b1),
         .link_status(eth_link_status),
-        .packet_counter(packet_counter)
+        .tx_packet_counter(tx_pkt_count),
+        .rx_packet_counter(rx_pkt_count)
     );
+
+    assign packet_counter = tx_pkt_count;
 
     rp2040_interface u_rp2040_interface (
         .spi_clk(spi_clk),
@@ -336,9 +351,16 @@ module fpga_processing_pipeline (
         .thermal_scaling(rp_thermal_scaling),
         .resource_opt_en(rp_resource_opt_en),
         .power_profile(rp_power_profile),
+        .src_mac(rp_src_mac),
+        .dst_mac(rp_dst_mac),
+        .src_ip(rp_src_ip),
+        .dst_ip(rp_dst_ip),
+        .src_port(rp_src_port),
+        .dst_port(rp_dst_port),
         .status_reg(system_status_int),
         .pll_locked(pll_locked),
-        .eth_link_status(eth_link_status)
+        .eth_link_status(eth_link_status),
+        .rst_n(rst_n)
     );
 
     assign system_status_int = {
