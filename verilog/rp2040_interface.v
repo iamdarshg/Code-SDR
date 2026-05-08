@@ -32,6 +32,14 @@ module rp2040_interface #(
     output wire [7:0]  thermal_scaling,   // Thermal scaling control
     output wire        resource_opt_en,   // Resource optimization enable
     output wire [7:0]  power_profile,     // Power consumption profile
+
+    // Network Configuration
+    output wire [47:0] src_mac,
+    output wire [47:0] dst_mac,
+    output wire [31:0] src_ip,
+    output wire [31:0] dst_ip,
+    output wire [15:0] src_port,
+    output wire [15:0] dst_port,
     
     // Status signals
     input  wire [15:0] status_reg,        // System status register
@@ -59,6 +67,14 @@ module rp2040_interface #(
     localparam REG_RESOURCE_OPT = 8'h25;
     localparam REG_POWER_PROF   = 8'h26;
 
+    localparam REG_SRC_MAC_LO   = 8'h30;
+    localparam REG_SRC_MAC_HI   = 8'h31;
+    localparam REG_DST_MAC_LO   = 8'h32;
+    localparam REG_DST_MAC_HI   = 8'h33;
+    localparam REG_SRC_IP       = 8'h34;
+    localparam REG_DST_IP       = 8'h35;
+    localparam REG_UDP_PORTS    = 8'h36;
+
     // ========================================================================
     // SPI Transaction FSM
     // ========================================================================
@@ -81,6 +97,15 @@ module rp2040_interface #(
     reg [7:0]  therm_scale_reg;
     reg        res_opt_reg;
     reg [7:0]  pwr_prof_reg;
+
+    reg [31:0] src_mac_lo_reg;
+    reg [15:0] src_mac_hi_reg;
+    reg [31:0] dst_mac_lo_reg;
+    reg [15:0] dst_mac_hi_reg;
+    reg [31:0] src_ip_reg;
+    reg [31:0] dst_ip_reg;
+    reg [15:0] src_port_reg;
+    reg [15:0] dst_port_reg;
 
     always @(posedge spi_clk or posedge spi_cs_n) begin
         if (spi_cs_n) begin
@@ -124,6 +149,15 @@ module rp2040_interface #(
             therm_scale_reg <= 8'd0;
             res_opt_reg     <= 1'b0;
             pwr_prof_reg    <= 8'd0;
+
+            src_mac_lo_reg  <= 32'h00000001;
+            src_mac_hi_reg  <= 16'h0200;
+            dst_mac_lo_reg  <= 32'hFFFFFFFF;
+            dst_mac_hi_reg  <= 16'hFFFF;
+            src_ip_reg      <= 32'hC0A80002;
+            dst_ip_reg      <= 32'hC0A80001;
+            src_port_reg    <= 16'd10000;
+            dst_port_reg    <= 16'd10001;
         end else begin
             if (bit_counter == 6'd40) begin
                 case (addr_shift)
@@ -140,6 +174,17 @@ module rp2040_interface #(
                     REG_THERMAL_SCALE: therm_scale_reg <= data_shift_in[7:0];
                     REG_RESOURCE_OPT: res_opt_reg     <= data_shift_in[0];
                     REG_POWER_PROF:  pwr_prof_reg    <= data_shift_in[7:0];
+
+                    REG_SRC_MAC_LO:  src_mac_lo_reg  <= data_shift_in;
+                    REG_SRC_MAC_HI:  src_mac_hi_reg  <= data_shift_in[15:0];
+                    REG_DST_MAC_LO:  dst_mac_lo_reg  <= data_shift_in;
+                    REG_DST_MAC_HI:  dst_mac_hi_reg  <= data_shift_in[15:0];
+                    REG_SRC_IP:      src_ip_reg      <= data_shift_in;
+                    REG_DST_IP:      dst_ip_reg      <= data_shift_in;
+                    REG_UDP_PORTS:   begin
+                        src_port_reg <= data_shift_in[31:16];
+                        dst_port_reg <= data_shift_in[15:0];
+                    end
                     default: ;
                 endcase
             end
@@ -160,6 +205,14 @@ module rp2040_interface #(
     assign resource_opt_en = res_opt_reg;
     assign power_profile = pwr_prof_reg;
 
+    assign src_mac = {src_mac_hi_reg, src_mac_lo_reg};
+    assign dst_mac = {dst_mac_hi_reg, dst_mac_lo_reg};
+    assign src_ip = src_ip_reg;
+    assign dst_ip = dst_ip_reg;
+    assign src_port = src_port_reg;
+    assign dst_port = dst_port_reg;
+
     assign spi_miso = (spi_cs_n) ? 1'bz : data_shift_out[31];
 
 endmodule
+`default_nettype wire
