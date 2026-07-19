@@ -1,0 +1,207 @@
+name: Agent route hardware
+
+on:
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  route-v2:
+    runs-on: ubuntu-latest
+    timeout-minutes: 330
+    steps:
+      - name: Check out recovered V2 hardware
+        uses: actions/checkout@v4
+        with:
+          ref: codex/hardware-validation-redesign
+          fetch-depth: 0
+
+      - name: Set up Java 25
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '25'
+
+      - name: Prepare KiCad 9 and Freerouting
+        shell: bash
+        run: |
+          set -euo pipefail
+          docker pull kicad/kicad:9.0.9-full
+          curl -fL --retry 4 --retry-delay 5 \
+            -o "$RUNNER_TEMP/freerouting-2.2.4.jar" \
+            https://github.com/freerouting/freerouting/releases/download/v2.2.4/freerouting-2.2.4.jar
+          java -version
+          docker run --rm --entrypoint /bin/bash kicad/kicad:9.0.9-full -lc \
+            'kicad-cli version && python3 -c "import pcbnew; print(pcbnew.GetBuildVersion())"'
+
+      - name: Export constrained Specctra design
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p hardware/v2/build
+          printf '{"components": {}}\n' > hardware/v2/build/schematic_paths.json
+          docker run --rm --user 0:0 \
+            -v "$GITHUB_WORKSPACE:/work" -w /work \
+            --entrypoint /bin/bash kicad/kicad:9.0.9-full -lc \
+            'python3 hardware/v2/tools/export_route_checkpoint.py'
+          test -s hardware/v2/build/Code-SDR-V2.dsn
+          if grep -q '^    (net GND' hardware/v2/build/Code-SDR-V2.dsn; then
+            echo 'GND must not be track-routed' >&2
+            exit 1
+          fi
+
+      - name: Autoroute V2
+        shell: bash
+        run: |
+          set -euo pipefail
+          SES=hardware/v2/build/Code-SDR-V2-routed.ses
+          LOG=hardware/v2/build/freerouting-v2.log
+          timeout --signal=TERM --kill-after=2m 285m \
+            java -Xmx5600m -jar "$RUNNER_TEMP/freerouting-2.2.4.jar" \
+              -de hardware/v2/build/Code-SDR-V2.dsn \
+              -do "$SES" \
+              -mp 120 -mt 0 -da -dct 1 --gui.enabled=false \
+              2>&1 | tee "$LOG"
+          test -s "$SES"
+          tail -n 100 "$LOG"
+
+      - name: Import route and refill planes
+        shell: bash
+        run: |
+          set -euo pipefail
+          cat > hardware/v2/build/import_ci.py <<'PY'
+          from pathlib import Path
+          import pcbnew
+
+          root = Path('hardware/v2')
+          board_path = root / 'Code-SDR-V2.kicad_pcb'
+          ses_path = root / 'build' / 'Code-SDR-V2-routed.ses'
+          board = pcbnew.LoadBoard(str(board_path))
+          if not pcbnew.ImportSpecctraSES(board, str(ses_path)):
+              raise RuntimeError('KiCad failed to import Specctra session')
+          pcbnew.ZONE_FILLER(board).Fill(board.Zones())
+          pcbnew.SaveBoard(str(board_path), board)
+          tracks = list(board.GetTracks())
+          vias = sum(isinstance(item, pcbnew.PCB_VIA) for item in tracks)
+          print(f'Imported route: {len(tracks)-vias} segments, {vias} vias')
+          PY
+          docker run --rm --user 0:0 \
+            -v "$GITHUB_WORKSPACE:/work" -w /work \
+            --entrypoint /bin/bash kicad/kicad:9.0.9-full -lc \
+            'python3 hardware/v2/build/import_ci.py && python3 hardware/v2/tools/add_rf_via_fences.py'
+
+      - name: Validate V2 route
+        shell: bash
+        run: |
+          set -euo pipefail
+          docker run --rm --user 0:0 \
+            -v "$GITHUB_WORKSPACE:/work" -w /work \
+            --entrypoint /bin/bash kicad/kicad:9.0.9-full -lc '
+              python3 hardware/v2/tools/validate_route.py
+              kicad-cli sch erc --format json --severity-all \
+                -o hardware/v2/build/erc-v2.json hardware/v2/Code-SDR-V2.kicad_sch
+              kicad-cli pcb drc --format json --severity-all --all-track-errors \
+                --schematic-parity --units mm \
+                -o hardware/v2/build/drc-v2.json hardware/v2/Code-SDR-V2.kicad_pcb
+            '
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+          for name in ('erc-v2.json', 'drc-v2.json'):
+              data = json.loads((Path('hardware/v2/build') / name).read_text())
+              print(name, {key: len(value) for key, value in data.items() if isinstance(value, list)})
+          drc = json.loads(Path('hardware/v2/build/drc-v2.json').read_text())
+          summary = {
+              'violations': len(drc.get('violations', [])),
+              'unconnected_items': len(drc.get('unconnected_items', [])),
+              'schematic_parity': len(drc.get('schematic_parity', [])),
+          }
+          Path('hardware/v2/build/route-summary.json').write_text(json.dumps(summary, indent=2) + '\n')
+          print('V2 route summary:', summary)
+          PY
+
+      - name: Export V2 review images and manufacturing previews
+        if: always()
+        shell: bash
+        run: |
+          mkdir -p hardware/v2/build/review
+          docker run --rm --user 0:0 \
+            -v "$GITHUB_WORKSPACE:/work" -w /work \
+            --entrypoint /bin/bash kicad/kicad:9.0.9-full -lc '
+              kicad-cli pcb render --quality basic --background transparent --floor \
+                --rotate 0,0,0 --zoom 1.05 --width 2000 --height 1250 \
+                -o hardware/v2/build/review/pcb-top.png hardware/v2/Code-SDR-V2.kicad_pcb || true
+              kicad-cli pcb render --quality basic --background transparent --floor \
+                --rotate 0,180,0 --zoom 1.05 --width 2000 --height 1250 \
+                -o hardware/v2/build/review/pcb-bottom.png hardware/v2/Code-SDR-V2.kicad_pcb || true
+              kicad-cli pcb export gerbers -o hardware/v2/build/review/gerbers/ \
+                hardware/v2/Code-SDR-V2.kicad_pcb || true
+              kicad-cli pcb export drill -o hardware/v2/build/review/gerbers/ \
+                hardware/v2/Code-SDR-V2.kicad_pcb || true
+            '
+
+      - name: Upload V2 routed result
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: Code-SDR-V2-route-result
+          path: |
+            hardware/v2/Code-SDR-V2.kicad_pcb
+            hardware/v2/build/Code-SDR-V2.dsn
+            hardware/v2/build/Code-SDR-V2-routed.ses
+            hardware/v2/build/freerouting-v2.log
+            hardware/v2/build/ROUTE_STATISTICS.csv
+            hardware/v2/build/erc-v2.json
+            hardware/v2/build/drc-v2.json
+            hardware/v2/build/route-summary.json
+            hardware/v2/build/review/**
+          if-no-files-found: warn
+          retention-days: 2
+
+  audit-v1:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - name: Check out latest main
+        uses: actions/checkout@v4
+        with:
+          ref: main
+      - name: Pull KiCad 9 image
+        run: docker pull kicad/kicad:9.0.9-full
+      - name: Audit legacy V1 without modifying it
+        shell: bash
+        run: |
+          set +e
+          mkdir -p hardware/validation-output
+          docker run --rm --user 0:0 \
+            -v "$GITHUB_WORKSPACE:/work" -w /work \
+            --entrypoint /bin/bash kicad/kicad:9.0.9-full -lc '
+              kicad-cli sch erc --format json --severity-all \
+                -o hardware/validation-output/erc-v1.json hardware/Wideband-Test-V1.kicad_sch
+              kicad-cli pcb drc --format json --severity-all --all-track-errors \
+                --schematic-parity --units mm \
+                -o hardware/validation-output/drc-v1.json hardware/Wideband-Test-V1.kicad_pcb
+            '
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+          out = {}
+          for key, name in [('erc', 'erc-v1.json'), ('drc', 'drc-v1.json')]:
+              path = Path('hardware/validation-output') / name
+              if not path.exists():
+                  out[key] = {'missing': True}
+                  continue
+              data = json.loads(path.read_text())
+              out[key] = {k: len(v) for k, v in data.items() if isinstance(v, list)}
+          Path('hardware/validation-output/V1_AUDIT_SUMMARY.json').write_text(json.dumps(out, indent=2) + '\n')
+          print(out)
+          PY
+          exit 0
+      - name: Upload V1 audit
+        uses: actions/upload-artifact@v4
+        with:
+          name: Wideband-Test-V1-audit
+          path: hardware/validation-output/**
+          retention-days: 2
