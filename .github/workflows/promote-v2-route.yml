@@ -1,0 +1,90 @@
+name: Promote validated V2 route
+
+on:
+  push:
+    branches: [agent/v2-route-final]
+    paths:
+      - '.github/promote-v2-route.json'
+
+permissions:
+  actions: read
+  contents: write
+
+env:
+  GH_TOKEN: ${{ github.token }}
+
+jobs:
+  promote:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: agent/v2-route-final
+          fetch-depth: 0
+      - name: Download and verify selected route artifact
+        run: |
+          set -euo pipefail
+          run_id=$(jq -r '.run_id' .github/promote-v2-route.json)
+          artifact=$(jq -r '.artifact_name' .github/promote-v2-route.json)
+          max_signal_opens=$(jq -r '.max_signal_opens' .github/promote-v2-route.json)
+          test "$run_id" != null
+          test "$artifact" != null
+          mkdir -p route-artifact hardware/v2/routing hardware/v2/build/promotion
+          gh run download "$run_id" --repo "$GITHUB_REPOSITORY" \
+            --name "$artifact" --dir route-artifact
+          summary=$(find route-artifact -name finish-sweep-summary.json -print -quit)
+          board=$(find route-artifact -name Code-SDR-V2.kicad_pcb -print -quit)
+          accepted=$(find route-artifact -name accepted-patches.json -print -quit)
+          drc=$(find route-artifact -name drc-finish-sweep.json -print -quit)
+          test -s "$summary"
+          test -s "$board"
+          jq -e --argjson limit "$max_signal_opens" '
+            .after.signal_opens <= $limit and
+            .after.signal_opens < .before.signal_opens and
+            .after.nonlibrary_violations == 0 and
+            .after.parity == 0
+          ' "$summary"
+          cp "$board" hardware/v2/Code-SDR-V2.kicad_pcb
+          cp "$summary" hardware/v2/routing/finish-sweep-summary.json
+          test -z "$accepted" || cp "$accepted" hardware/v2/routing/accepted-patches.json
+          test -z "$drc" || cp "$drc" hardware/v2/routing/drc-promoted.json
+      - name: Revalidate in clean final branch
+        run: |
+          set -euo pipefail
+          docker pull kicad/kicad:9.0.9-full
+          docker run --rm --user 0:0 \
+            -v "$GITHUB_WORKSPACE:/work" -w /work \
+            --entrypoint /bin/bash kicad/kicad:9.0.9-full -lc '
+              set -euo pipefail
+              kicad-cli pcb drc --format json --severity-all --all-track-errors \
+                --schematic-parity --units mm \
+                -o hardware/v2/build/promotion/drc.json \
+                hardware/v2/Code-SDR-V2.kicad_pcb || true
+              python3 hardware/v2/tools/validate_route.py \
+                > hardware/v2/build/promotion/validate-route.log
+            '
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+          d=json.loads(Path('hardware/v2/build/promotion/drc.json').read_text())
+          real=[v for v in d.get('violations',[]) if not v.get('type','').startswith('lib_footprint_')]
+          parity=d.get('schematic_parity',[])
+          if real:
+              raise SystemExit(f'Promotion rejected: {len(real)} real DRC violations')
+          if parity:
+              raise SystemExit(f'Promotion rejected: {len(parity)} parity findings')
+          PY
+          cp hardware/v2/build/promotion/drc.json hardware/v2/routing/drc-promoted.json
+          cp hardware/v2/build/promotion/validate-route.log hardware/v2/routing/validate-route.log
+          cp hardware/v2/build/ROUTE_STATISTICS.csv hardware/v2/routing/ROUTE_STATISTICS.csv
+      - name: Commit promoted checkpoint
+        run: |
+          set -euo pipefail
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          git add hardware/v2/Code-SDR-V2.kicad_pcb hardware/v2/routing
+          git diff --cached --quiet && exit 0
+          signal_opens=$(jq -r '.after.signal_opens' hardware/v2/routing/finish-sweep-summary.json)
+          git commit -m "feat(hardware): promote V2 route checkpoint (${signal_opens} opens) [skip ci]"
+          git push origin HEAD:agent/v2-route-final
