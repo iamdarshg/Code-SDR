@@ -1,4 +1,4 @@
-name: V2 deterministic short-gap patch
+name: V2 deterministic safe local escapes
 
 on:
   pull_request:
@@ -21,13 +21,12 @@ jobs:
           set -euo pipefail
           mkdir -p route5 hardware/v2/build
           gh run download 29689598311 --repo "$GITHUB_REPOSITORY" --name Code-SDR-V2-route-five-pass --dir route5
-          find route5 -maxdepth 4 -type f -print
           cp route5/Code-SDR-V2.kicad_pcb hardware/v2/Code-SDR-V2.kicad_pcb
           cp route5/build/drc-diagnostic.json hardware/v2/build/drc-before-patch.json
-      - name: Patch short disconnected components
+      - name: Add only straight same-layer local escapes
         run: |
           docker pull kicad/kicad:9.0.9-full
-          cat > hardware/v2/build/patch_short_gaps.py <<'PY'
+          cat > hardware/v2/build/patch_safe_escapes.py <<'PY'
           import json, math, re
           from pathlib import Path
           import pcbnew
@@ -51,83 +50,63 @@ jobs:
                   return 'POWER'
               return 'DEFAULT'
 
-          widths={'RF_CRITICAL':0.35,'RF_50':0.35,'IF_DIFF':0.20,'DIGITAL_HS':0.15,'POWER':0.60,'DEFAULT':0.15}
+          widths={'RF_CRITICAL':0.35,'RF_50':0.35,'IF_DIFF':0.20,'DIGITAL_HS':0.15,'POWER':0.25,'DEFAULT':0.15}
 
           def pos(item):
-              p=item.get('pos',{})
-              return float(p['x']),float(p['y'])
-
+              p=item['pos']; return float(p['x']),float(p['y'])
           def layer(item):
               m=re.search(r' on (F\.Cu|B\.Cu|In2\.Cu)',item['description'])
               return m.group(1) if m else 'F.Cu'
-
-          def add_track(net_name,a,b,width,lay='F.Cu'):
-              if math.dist(a,b)<1e-4: return
+          def add_track(name,a,b,w,lay):
               t=pcbnew.PCB_TRACK(board)
               t.SetStart(pcbnew.VECTOR2I_MM(*a)); t.SetEnd(pcbnew.VECTOR2I_MM(*b))
-              t.SetWidth(pcbnew.FromMM(width)); t.SetLayer(layer_ids[lay]); t.SetNet(nets[net_name])
-              board.Add(t)
-
-          def add_via(net_name,p):
-              v=pcbnew.PCB_VIA(board)
-              v.SetPosition(pcbnew.VECTOR2I_MM(*p)); v.SetWidth(pcbnew.FromMM(0.45)); v.SetDrill(pcbnew.FromMM(0.20))
-              v.SetLayerPair(pcbnew.F_Cu,pcbnew.B_Cu); v.SetNet(nets[net_name]); board.Add(v)
+              t.SetWidth(pcbnew.FromMM(w)); t.SetLayer(layer_ids[lay]); t.SetNet(nets[name]); board.Add(t)
 
           patched=[]
           for entry in drc.get('unconnected_items',[]):
               items=entry.get('items',[])
               if len(items)!=2: continue
-              text=' '.join(i['description'] for i in items)
+              text=' '.join(i.get('description','') for i in items)
               m=re.search(r'\[([^\]]+)\]',text)
               if not m: continue
               name=m.group(1)
-              if name in {'GND','CHASSIS_GND'} or name not in nets: continue
+              if name=='GND' or name not in nets: continue
               a,b=pos(items[0]),pos(items[1]); d=math.dist(a,b)
-              if d>5.6: continue
-              cls=net_class(name); width=widths[cls]
               la,lb=layer(items[0]),layer(items[1])
-              if cls=='RF_CRITICAL' and (la!='F.Cu' or lb!='F.Cu'):
-                  continue
-              if la!='F.Cu': add_via(name,a)
-              if lb!='F.Cu': add_via(name,b)
-              mid=(b[0],a[1])
-              add_track(name,a,mid,width,'F.Cu'); add_track(name,mid,b,width,'F.Cu')
-              patched.append((name,d,la,lb))
+              if d>3.0 or la!=lb: continue
+              cls=net_class(name)
+              # Keep critical RF at its controlled geometry; local connections only.
+              add_track(name,a,b,widths[cls],la)
+              patched.append({'net':name,'distance_mm':d,'layer':la,'class':cls})
 
-          island_constants={n:getattr(pcbnew,n) for n in dir(pcbnew) if 'ISLAND_REMOVAL' in n}
-          print('island constants',island_constants)
-          for zone in board.Zones():
-              if zone.GetNetname()=='GND' and board.GetLayerName(zone.GetLayer())=='F.Cu':
-                  if hasattr(zone,'SetIslandRemovalMode'):
-                      zone.SetIslandRemovalMode(island_constants.get('ISLAND_REMOVAL_MODE_ALWAYS',1))
-                  if hasattr(zone,'SetMinIslandArea'):
-                      zone.SetMinIslandArea(0)
           pcbnew.ZONE_FILLER(board).Fill(board.Zones())
           pcbnew.SaveBoard(str(root/'Code-SDR-V2.kicad_pcb'),board)
-          (root/'build/short-patches.json').write_text(json.dumps(patched,indent=2)+'\n')
+          (root/'build/safe-patches.json').write_text(json.dumps(patched,indent=2)+'\n')
           print('patched',len(patched))
           PY
           docker run --rm --user 0:0 -v "$GITHUB_WORKSPACE:/work" -w /work --entrypoint /bin/bash kicad/kicad:9.0.9-full -lc '
-            python3 hardware/v2/build/patch_short_gaps.py
-            kicad-cli pcb drc --format json --severity-all --all-track-errors --schematic-parity --units mm -o hardware/v2/build/drc-short-patch.json hardware/v2/Code-SDR-V2.kicad_pcb || true
+            python3 hardware/v2/build/patch_safe_escapes.py
+            kicad-cli pcb drc --format json --severity-all --all-track-errors --schematic-parity --units mm -o hardware/v2/build/drc-safe-patch.json hardware/v2/Code-SDR-V2.kicad_pcb || true
           '
           python3 - <<'PY'
           import json
+          from collections import Counter
           from pathlib import Path
-          d=json.loads(Path('hardware/v2/build/drc-short-patch.json').read_text())
+          d=json.loads(Path('hardware/v2/build/drc-safe-patch.json').read_text())
           s={k:len(d.get(k,[])) for k in ('violations','unconnected_items','schematic_parity')}
-          Path('hardware/v2/build/short-patch-summary.json').write_text(json.dumps(s,indent=2)+'\n')
+          s['violation_types']=dict(Counter(x.get('type','unknown') for x in d.get('violations',[])))
+          Path('hardware/v2/build/safe-patch-summary.json').write_text(json.dumps(s,indent=2)+'\n')
           print(s)
           PY
       - name: Upload patched board
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: Code-SDR-V2-short-patch
+          name: Code-SDR-V2-safe-patch
           path: |
             hardware/v2/Code-SDR-V2.kicad_pcb
-            hardware/v2/build/drc-short-patch.json
-            hardware/v2/build/short-patch-summary.json
-            hardware/v2/build/short-patches.json
+            hardware/v2/build/drc-safe-patch.json
+            hardware/v2/build/safe-patch-summary.json
+            hardware/v2/build/safe-patches.json
           retention-days: 1
           if-no-files-found: warn
