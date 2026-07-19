@@ -22,8 +22,7 @@ jobs:
           fetch-depth: 0
 
       - name: Fetch every reachable ref
-        run: |
-          git fetch --all --tags --prune --force
+        run: git fetch --all --tags --prune --force
 
       - name: Build PCB recovery report
         shell: bash
@@ -41,6 +40,11 @@ jobs:
             git for-each-ref --sort=refname --format='%(refname) %(objectname)' refs/heads refs/remotes refs/tags
             echo '```'
             echo
+            echo '## Current hardware tree'
+            echo '```text'
+            find hardware -type f -not -path '*/build/*' -not -path '*/validation-output/*' -print | sort
+            echo '```'
+            echo
             echo '## Current KiCad project files'
             echo '```text'
             find . -type f \( -name '*.kicad_pcb' -o -name '*.kicad_sch' -o -name '*.kicad_pro' -o -name '*.kicad_dru' \) -not -path './.git/*' -print | sort
@@ -48,17 +52,17 @@ jobs:
             echo
             echo '## KiCad and handoff files seen anywhere in history'
             echo '```text'
-            git log --all --name-only --pretty=format: | sed '/^$/d' | grep -E '(^|/)(past_conversation\.md|[^/]+\.kicad_(pcb|sch|pro|dru))$' | sort -u || true
+            git log --all --name-only --pretty=format: | sed '/^$/d' | grep -E '(^|/)(past_conversation\.md|handoff\.md|[^/]+\.kicad_(pcb|sch|pro|dru))$' | sort -u || true
             echo '```'
             echo
             echo '## Commits touching PCB boards or handoff notes'
             echo '```text'
-            git log --all --date=iso-strict --pretty='format:%H %ad %D %s' -- '*.kicad_pcb' 'past_conversation.md' '**/past_conversation.md' || true
+            git log --all --date=iso-strict --pretty='format:%H %ad %D %s' -- '*.kicad_pcb' 'past_conversation.md' '**/past_conversation.md' 'handoff.md' || true
             echo '```'
             echo
             echo '## Deleted or renamed candidate files'
             echo '```text'
-            git log --all --diff-filter=DR --summary -- '*.kicad_pcb' '*.kicad_sch' '*.kicad_pro' 'past_conversation.md' '**/past_conversation.md' || true
+            git log --all --diff-filter=DR --summary -- '*.kicad_pcb' '*.kicad_sch' '*.kicad_pro' 'past_conversation.md' '**/past_conversation.md' 'handoff.md' || true
             echo '```'
             echo
             echo '## Board count by reachable commit tip'
@@ -67,6 +71,11 @@ jobs:
               count=$(git ls-tree -r --name-only "$sha" | grep -cE '\.kicad_pcb$' || true)
               printf '%s %s boards=%s\n' "$ref" "$sha" "$count"
             done < <(git for-each-ref --format='%(refname) %(objectname)' refs/heads refs/remotes refs/tags)
+            echo '```'
+            echo
+            echo '## Handoff references to PCB count, modularity, V2, and ESC'
+            echo '```text'
+            grep -nEi 'two (pcb|board)|dual[- ]board|modular|separate.*(pcb|board|esc)|esc.*(pcb|board)|hardware/v2|Code-SDR-V2' handoff.md || true
             echo '```'
           } > "$report"
 
@@ -80,6 +89,6 @@ jobs:
           if git diff --cached --quiet; then
             echo 'No report changes to commit.'
           else
-            git commit -m 'chore: inventory PCB recovery history [skip ci]'
+            git commit -m 'chore: refresh PCB recovery inventory [skip ci]'
             git push origin HEAD:agent/pcb-recovery-routing
           fi
