@@ -54,14 +54,16 @@ jobs:
               if z.GetNetname()=='GND' and z.GetLayer() in (pcbnew.F_Cu,pcbnew.B_Cu):
                   z.SetIslandRemovalMode(always)
                   z.SetPadConnection(pcbnew.ZONE_CONNECTION_FULL)
+                  z.UnFill()
+                  z.SetNeedRefill(True)
                   changed.append(b.GetLayerName(z.GetLayer()))
           for fp in b.GetFootprints():
               for pad in fp.Pads():
                   if pad.GetNetname()=='GND':
                       pad.SetZoneConnection(pcbnew.ZONE_CONNECTION_FULL)
-          pcbnew.ZONE_FILLER(b).Fill(b.Zones())
+          pcbnew.ZONE_FILLER(b).Fill(b.Zones(),True)
           pcbnew.SaveBoard(str(p),b)
-          print({'zones_set_to_remove_all_islands':changed})
+          print({'zones_unfilled_and_refilled_with_island_removal':changed})
           PY
           docker run --rm --user 0:0 -v "$GITHUB_WORKSPACE:/work" -w /work --entrypoint /bin/bash kicad/kicad:9.0.9-full -lc '
             python3 hardware/v2/build/remove_gnd_islands.py
