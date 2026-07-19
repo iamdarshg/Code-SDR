@@ -101,7 +101,7 @@ if (Test-Path -LiteralPath $toolCache) {
 }
 
 Copy-Item -LiteralPath (Join-Path $repoRoot "hardware\HARDWARE_VALIDATION.md"),
-    (Join-Path $repoRoot "hardware\reccomendations.md"),
+    (Join-Path $repoRoot "hardware\recommendations.md"),
     (Join-Path $repoRoot "documentation\INTEGRATION_SPECIFICATIONS.md"),
     (Join-Path $repoRoot "documentation\FPGA_ARCHITECTURE.md") -Destination $docsDir
 Copy-Item -LiteralPath (Join-Path $repoRoot "hardware\redesign\FREQUENCY_PLAN.csv"),

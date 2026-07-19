@@ -21,3 +21,5 @@ fft_ddc_performance_report.json
 /hardware/v2/release/*
 !/hardware/v2/release/Code-SDR-V2-final.zip
 *.kicad_prl
+*.bak
+**/fp-info-cache
