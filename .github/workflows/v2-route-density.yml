@@ -1,0 +1,233 @@
+name: V2 dense-escape routing tournament
+
+on:
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+
+env:
+  ROUTE_BRANCH: agent/v2-route-density
+
+jobs:
+  route:
+    if: github.head_ref == 'agent/v2-route-density'
+    name: density-${{ matrix.name }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 90
+    strategy:
+      fail-fast: false
+      max-parallel: 4
+      matrix:
+        include:
+          - name: balanced-current
+            algorithm: freerouting-router
+            power: 350
+            ifdiff: 180
+            digital: 120
+            default: 120
+            via: 450
+            via_drill: 200
+            passes: 18
+            update: global
+            items: random
+            ripup: 40
+            viacost: 8
+          - name: dense-current
+            algorithm: freerouting-router
+            power: 250
+            ifdiff: 150
+            digital: 100
+            default: 100
+            via: 400
+            via_drill: 150
+            passes: 22
+            update: hybrid
+            items: prioritized
+            ripup: 70
+            viacost: 4
+          - name: dense-v19
+            algorithm: freerouting-router-v19
+            power: 250
+            ifdiff: 150
+            digital: 100
+            default: 100
+            via: 400
+            via_drill: 150
+            passes: 24
+            update: global
+            items: random
+            ripup: 90
+            viacost: 5
+          - name: ultra-escape-v19
+            algorithm: freerouting-router-v19
+            power: 200
+            ifdiff: 150
+            digital: 100
+            default: 100
+            via: 400
+            via_drill: 150
+            passes: 28
+            update: hybrid
+            items: prioritized
+            ripup: 130
+            viacost: 3
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ env.ROUTE_BRANCH }}
+          fetch-depth: 0
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '25'
+      - name: Prepare tools
+        shell: bash
+        run: |
+          set -euo pipefail
+          docker pull kicad/kicad:9.0.9-full
+          curl -fL --retry 4 --retry-delay 5 -o "$RUNNER_TEMP/freerouting.jar" \
+            https://github.com/freerouting/freerouting/releases/download/v2.2.4/freerouting-2.2.4.jar
+          mkdir -p hardware/v2/build/${{ matrix.name }}
+          printf '{"components": {}}\n' > hardware/v2/build/schematic_paths.json
+      - name: Export and relax dense routing geometry
+        shell: bash
+        env:
+          NAME: ${{ matrix.name }}
+          POWER_WIDTH: ${{ matrix.power }}
+          IF_WIDTH: ${{ matrix.ifdiff }}
+          DIGITAL_WIDTH: ${{ matrix.digital }}
+          DEFAULT_WIDTH: ${{ matrix.default }}
+          VIA_DIAMETER: ${{ matrix.via }}
+          VIA_DRILL: ${{ matrix.via_drill }}
+        run: |
+          set -euo pipefail
+          docker run --rm --user 0:0 -v "$GITHUB_WORKSPACE:/work" -w /work \
+            --entrypoint /bin/bash kicad/kicad:9.0.9-full -lc \
+            'python3 hardware/v2/tools/export_route_checkpoint.py'
+          python3 - <<'PY'
+          import os,re
+          from pathlib import Path
+          p=Path('hardware/v2/build/Code-SDR-V2.dsn')
+          s=p.read_text()
+          widths={
+            'IF_DIFF':int(os.environ['IF_WIDTH']),
+            'DIGITAL_HS':int(os.environ['DIGITAL_WIDTH']),
+            'POWER':int(os.environ['POWER_WIDTH']),
+            'DEFAULT':int(os.environ['DEFAULT_WIDTH']),
+          }
+          for name,width in widths.items():
+              marker=f'    (class {name}\n'
+              start=s.index(marker); depth=0; end=None
+              for i in range(start,len(s)):
+                  if s[i]=='(': depth+=1
+                  elif s[i]==')':
+                      depth-=1
+                      if depth==0: end=i+1; break
+              block=s[start:end]
+              block=re.sub(r'\(width \d+\)',f'(width {width})',block,count=1)
+              s=s[:start]+block+s[end:]
+          old='Via[0-3]_450:200_um'
+          new=f"Via[0-3]_{os.environ['VIA_DIAMETER']}:{os.environ['VIA_DRILL']}_um"
+          s=s.replace(old,new)
+          if os.environ['VIA_DIAMETER']!='450':
+              s=s.replace('(shape (circle F.Cu 450))',f"(shape (circle F.Cu {os.environ['VIA_DIAMETER']}))")
+              s=s.replace('(shape (circle In1.Cu 450))',f"(shape (circle In1.Cu {os.environ['VIA_DIAMETER']}))")
+              s=s.replace('(shape (circle In2.Cu 450))',f"(shape (circle In2.Cu {os.environ['VIA_DIAMETER']}))")
+              s=s.replace('(shape (circle B.Cu 450))',f"(shape (circle B.Cu {os.environ['VIA_DIAMETER']}))")
+          out=Path('hardware/v2/build')/os.environ['NAME']/'input.dsn'
+          out.write_text(s)
+          print({'candidate':os.environ['NAME'],'widths':widths,'via':new})
+          PY
+          ! grep -q '^    (net GND' hardware/v2/build/${{ matrix.name }}/input.dsn
+      - name: Route candidate
+        shell: bash
+        run: |
+          set -euo pipefail
+          extra=()
+          if [[ '${{ matrix.update }}' == hybrid ]]; then extra+=( -hr 1:2 ); fi
+          timeout --signal=TERM --kill-after=2m 75m \
+            java -Xmx5600m -jar "$RUNNER_TEMP/freerouting.jar" \
+            -de hardware/v2/build/${{ matrix.name }}/input.dsn \
+            -do hardware/v2/build/${{ matrix.name }}/routed.ses \
+            -mp '${{ matrix.passes }}' -mt 2 -oit 0 \
+            -us '${{ matrix.update }}' -is '${{ matrix.items }}' "${extra[@]}" \
+            -da -dct 1 --gui.enabled=false \
+            --router.algorithm='${{ matrix.algorithm }}' \
+            --router.automatic_neckdown=true \
+            --router.scoring.startRipupCosts='${{ matrix.ripup }}' \
+            --router.scoring.viaCosts='${{ matrix.viacost }}' \
+            2>&1 | tee hardware/v2/build/${{ matrix.name }}/freerouting.log
+          test -s hardware/v2/build/${{ matrix.name }}/routed.ses
+      - name: Import and score
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          dir=hardware/v2/build/${{ matrix.name }}
+          test -s "$dir/routed.ses" || exit 0
+          cat > "$dir/import.py" <<PY
+          from pathlib import Path
+          import pcbnew
+          src=Path('hardware/v2/Code-SDR-V2.kicad_pcb')
+          out=Path('$dir/Code-SDR-V2-${{ matrix.name }}.kicad_pcb')
+          b=pcbnew.LoadBoard(str(src))
+          if not pcbnew.ImportSpecctraSES(b,'$dir/routed.ses'): raise SystemExit('SES import failed')
+          for z in b.Zones():
+              z.SetPadConnection(pcbnew.ZONE_CONNECTION_FULL)
+          pcbnew.ZONE_FILLER(b).Fill(b.Zones())
+          pcbnew.SaveBoard(str(out),b)
+          PY
+          docker run --rm --user 0:0 -v "$GITHUB_WORKSPACE:/work" -w /work --entrypoint /bin/bash kicad/kicad:9.0.9-full -lc \
+            "python3 '$dir/import.py'; kicad-cli pcb drc --format json --severity-all --all-track-errors --schematic-parity --units mm -o '$dir/drc.json' '$dir/Code-SDR-V2-${{ matrix.name }}.kicad_pcb' || true"
+          NAME='${{ matrix.name }}' python3 - <<'PY'
+          import json,os,re
+          from pathlib import Path
+          d=Path('hardware/v2/build')/os.environ['NAME']
+          r=json.loads((d/'drc.json').read_text()); log=(d/'freerouting.log').read_text(errors='replace')
+          passes=[{'pass':int(a),'router_unrouted':int(b),'router_violations':int(c)} for a,b,c in re.findall(r'pass #(\d+).*?\((\d+) unrouted and (\d+) violations\)',log)]
+          s={'name':os.environ['NAME'],'unconnected_items':len(r.get('unconnected_items',[])),'violations':len(r.get('violations',[])),'parity':len(r.get('schematic_parity',[])),'last_router_pass':passes[-1] if passes else None,'all_passes':passes}
+          (d/'summary.json').write_text(json.dumps(s,indent=2)+'\n'); print(json.dumps(s,indent=2))
+          PY
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: v2-density-${{ matrix.name }}
+          path: hardware/v2/build/${{ matrix.name }}/
+          if-no-files-found: warn
+          retention-days: 2
+
+  leaderboard:
+    if: always()
+    needs: route
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: v2-density-*
+          path: candidates
+      - name: Rank candidates
+        run: |
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+          rows=[]
+          for p in Path('candidates').rglob('summary.json'):
+              try: rows.append(json.loads(p.read_text()))
+              except Exception: pass
+          rows.sort(key=lambda x:(x['parity'],x['unconnected_items'],x['violations']))
+          Path('leaderboard.json').write_text(json.dumps(rows,indent=2)+'\n')
+          lines=['# V2 dense-escape leaderboard','', '| Rank | Candidate | Router opens | KiCad opens | Violations | Parity |','|---:|---|---:|---:|---:|---:|']
+          for i,r in enumerate(rows,1):
+              rp=r.get('last_router_pass') or {}
+              lines.append(f"| {i} | {r['name']} | {rp.get('router_unrouted','n/a')} | {r['unconnected_items']} | {r['violations']} | {r['parity']} |")
+          Path('leaderboard.md').write_text('\n'.join(lines)+'\n'); print('\n'.join(lines))
+          PY
+      - uses: actions/upload-artifact@v4
+        with:
+          name: v2-density-leaderboard
+          path: |
+            leaderboard.json
+            leaderboard.md
+          retention-days: 2
