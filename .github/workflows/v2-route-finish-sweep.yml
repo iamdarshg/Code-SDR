@@ -1,0 +1,194 @@
+name: V2 routing finish sweep
+
+on:
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+  actions: read
+
+concurrency:
+  group: v2-routing-finish-sweep-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+env:
+  GH_TOKEN: ${{ github.token }}
+
+jobs:
+  finish-sweep:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@v4
+      - name: Recover clean routed candidate
+        run: |
+          set -euo pipefail
+          mkdir -p baseline hardware/v2/build/finish-sweep
+          gh run download 29694149006 --repo "$GITHUB_REPOSITORY" --name Code-SDR-V2-completion-route --dir baseline
+          cp baseline/Code-SDR-V2.kicad_pcb hardware/v2/build/finish-sweep/Code-SDR-V2.kicad_pcb
+          cp baseline/build/drc-complete.json hardware/v2/build/finish-sweep/drc-before.json
+          docker pull kicad/kicad:9.0.9-full
+      - name: Remove disconnected pours and close DRC-legal local gaps
+        run: |
+          cat > hardware/v2/build/finish-sweep/finish_sweep.py <<'PY'
+          from __future__ import annotations
+          import json, math, re, shutil, subprocess
+          from collections import Counter
+          from pathlib import Path
+          import pcbnew
+
+          root = Path('hardware/v2/build/finish-sweep')
+          board_path = root / 'Code-SDR-V2.kicad_pcb'
+          accepted_path = root / 'accepted.kicad_pcb'
+          drc_path = root / 'drc-current.json'
+
+          def run_drc(board_file: Path, output: Path) -> dict:
+              subprocess.run([
+                  'kicad-cli','pcb','drc','--format','json','--severity-all',
+                  '--all-track-errors','--schematic-parity','--units','mm',
+                  '-o',str(output),str(board_file)
+              ], check=False, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+              return json.loads(output.read_text())
+
+          def entry_net(entry: dict) -> str:
+              text = ' '.join(i.get('description','') for i in entry.get('items',[]))
+              m = re.search(r'\[([^\]]+)\]', text)
+              return m.group(1) if m else ''
+
+          def metrics(report: dict) -> dict:
+              by_net = Counter(entry_net(e) for e in report.get('unconnected_items',[]))
+              nonlib = sum(1 for v in report.get('violations',[]) if v.get('type') != 'lib_footprint_issues')
+              return {
+                  'opens': len(report.get('unconnected_items',[])),
+                  'signal_opens': sum(v for k,v in by_net.items() if k not in {'GND','CHASSIS_GND'}),
+                  'nonlibrary_violations': nonlib,
+                  'by_net': dict(by_net),
+              }
+
+          def add_track(board, net_name, a, b, width, layer=pcbnew.F_Cu):
+              if math.dist(a,b) < 1e-5:
+                  return
+              t = pcbnew.PCB_TRACK(board)
+              t.SetStart(pcbnew.VECTOR2I_MM(*a))
+              t.SetEnd(pcbnew.VECTOR2I_MM(*b))
+              t.SetWidth(pcbnew.FromMM(width))
+              t.SetLayer(layer)
+              t.SetNet(board.GetNetsByName()[net_name])
+              board.Add(t)
+
+          def add_via(board, net_name, p):
+              v = pcbnew.PCB_VIA(board)
+              v.SetPosition(pcbnew.VECTOR2I_MM(*p))
+              v.SetWidth(pcbnew.FromMM(0.45))
+              v.SetDrill(pcbnew.FromMM(0.20))
+              v.SetLayerPair(pcbnew.F_Cu, pcbnew.In2_Cu)
+              v.SetNet(board.GetNetsByName()[net_name])
+              board.Add(v)
+
+          def width_for(net: str) -> float:
+              if net.startswith(('RF_HC','RF_HD')) or net in {'LMX_LO_HIGH_N_RAW','LMX_LO_HIGH_P_RAW','LO_HIGH_P','LO_HIGH_N_TERM'}:
+                  return 0.30
+              if net.startswith(('RF_','LO_','LMX_LO','PE4312','IF_')):
+                  return 0.25
+              if net.startswith(('ADC_','RGMII','REF_100M')):
+                  return 0.10
+              if net.startswith('+') or net.startswith('FPGA_VCC'):
+                  return 0.15
+              return 0.10
+
+          def candidate_paths(a, b):
+              ax,ay=a; bx,by=b; dx=bx-ax; dy=by-ay
+              paths=[[a,b],[a,(bx,ay),b],[a,(ax,by),b]]
+              if abs(dx)>1e-6 and abs(dy)>1e-6:
+                  s=min(abs(dx),abs(dy))
+                  paths.append([a,(ax+math.copysign(s,dx),ay+math.copysign(s,dy)),b])
+              length=max(math.hypot(dx,dy),1e-6)
+              nx,ny=-dy/length,dx/length
+              for off in (0.5,-0.5,1.0,-1.0,1.5,-1.5,2.0,-2.0):
+                  q1=(ax+dx*0.35+nx*off,ay+dy*0.35+ny*off)
+                  q2=(ax+dx*0.65+nx*off,ay+dy*0.65+ny*off)
+                  paths.append([a,q1,q2,b])
+              unique=[]; seen=set()
+              for p in paths:
+                  key=tuple((round(x,4),round(y,4)) for x,y in p)
+                  if key not in seen:
+                      seen.add(key); unique.append(p)
+              return unique
+
+          board = pcbnew.LoadBoard(str(board_path))
+          removed=[]
+          for zone in list(board.Zones()):
+              if zone.GetNetname() == 'GND' and zone.GetLayer() in (pcbnew.F_Cu, pcbnew.B_Cu):
+                  removed.append(board.GetLayerName(zone.GetLayer()))
+                  board.Remove(zone)
+
+          chassis=[(45.1,101.2375),(47.0,101.2375),(49.0,101.2375),(50.9,101.2375)]
+          for a,b in zip(chassis,chassis[1:]):
+              add_track(board,'CHASSIS_GND',a,b,0.50,pcbnew.F_Cu)
+          add_via(board,'CHASSIS_GND',chassis[0])
+          add_track(board,'CHASSIS_GND',chassis[0],(45.5,98.5375),0.50,pcbnew.In2_Cu)
+          pcbnew.ZONE_FILLER(board).Fill(board.Zones())
+          pcbnew.SaveBoard(str(accepted_path),board)
+
+          report=run_drc(accepted_path,drc_path)
+          current=metrics(report)
+          accepted=[{'kind':'plane_cleanup','removed_outer_gnd_zones':removed,'metrics':current}]
+
+          entries=[]
+          for e in report.get('unconnected_items',[]):
+              net=entry_net(e); items=e.get('items',[])
+              if net in {'','GND','CHASSIS_GND'} or len(items)!=2:
+                  continue
+              a=(float(items[0]['pos']['x']),float(items[0]['pos']['y']))
+              b=(float(items[1]['pos']['x']),float(items[1]['pos']['y']))
+              distance=math.dist(a,b)
+              if distance <= 8.1:
+                  entries.append((distance,net,a,b))
+          entries.sort()
+
+          attempted=set()
+          for distance,net,a,b in entries:
+              key=(net,round(a[0],3),round(a[1],3),round(b[0],3),round(b[1],3))
+              if key in attempted:
+                  continue
+              attempted.add(key)
+              old_target=current['by_net'].get(net,0)
+              if old_target == 0:
+                  continue
+              for index,path in enumerate(candidate_paths(a,b)):
+                  candidate=root/'candidate.kicad_pcb'
+                  candidate_drc=root/'candidate-drc.json'
+                  bobj=pcbnew.LoadBoard(str(accepted_path))
+                  for p1,p2 in zip(path,path[1:]):
+                      add_track(bobj,net,p1,p2,width_for(net),pcbnew.F_Cu)
+                  pcbnew.SaveBoard(str(candidate),bobj)
+                  candidate_report=run_drc(candidate,candidate_drc)
+                  candidate_metrics=metrics(candidate_report)
+                  new_target=candidate_metrics['by_net'].get(net,0)
+                  if (candidate_metrics['opens'] < current['opens'] and
+                      new_target < old_target and
+                      candidate_metrics['nonlibrary_violations'] <= current['nonlibrary_violations']):
+                      shutil.copy2(candidate,accepted_path)
+                      shutil.copy2(candidate_drc,drc_path)
+                      current=candidate_metrics
+                      accepted.append({'kind':'track','net':net,'distance_mm':round(distance,4),'candidate':index,'path':path,'metrics':current})
+                      break
+
+          shutil.copy2(accepted_path,board_path)
+          final_report=run_drc(board_path,root/'drc-finish-sweep.json')
+          final_metrics=metrics(final_report)
+          (root/'accepted-patches.json').write_text(json.dumps(accepted,indent=2)+'\n')
+          before=metrics(json.loads((root/'drc-before.json').read_text()))
+          (root/'finish-sweep-summary.json').write_text(json.dumps({'before':before,'after':final_metrics,'accepted_patch_count':len(accepted)-1},indent=2)+'\n')
+          print(json.dumps(final_metrics,indent=2))
+          PY
+          docker run --rm --user 0:0 -v "$GITHUB_WORKSPACE:/work" -w /work --entrypoint /bin/bash kicad/kicad:9.0.9-full -lc 'python3 hardware/v2/build/finish-sweep/finish_sweep.py'
+      - name: Upload finish sweep
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: Code-SDR-V2-finish-sweep
+          path: hardware/v2/build/finish-sweep
+          retention-days: 2
+          if-no-files-found: warn
