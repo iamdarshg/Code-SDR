@@ -24,6 +24,7 @@ jobs:
       - name: Export signal-only DSN
         run: |
           mkdir -p hardware/v2/build
+          printf '{"components": {}}\n' > hardware/v2/build/schematic_paths.json
           docker run --rm --user 0:0 -v "$GITHUB_WORKSPACE:/work" -w /work --entrypoint /bin/bash kicad/kicad:9.0.9-full -lc 'python3 hardware/v2/tools/export_route_checkpoint.py'
           ! grep -q '^    (net GND' hardware/v2/build/Code-SDR-V2.dsn
       - name: Run one routing pass
@@ -33,9 +34,8 @@ jobs:
       - name: Import, refill, and measure
         run: |
           cat > hardware/v2/build/import_diagnostic.py <<'PY'
-          import json
-          from pathlib import Path
           import pcbnew
+          from pathlib import Path
           p=Path('hardware/v2/Code-SDR-V2.kicad_pcb')
           b=pcbnew.LoadBoard(str(p))
           if not pcbnew.ImportSpecctraSES(b,'hardware/v2/build/Code-SDR-V2-routed.ses'):
