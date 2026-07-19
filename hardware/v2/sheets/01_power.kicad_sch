@@ -1758,7 +1758,7 @@
 				(justify left)
 			)
 		)
-		(property "Footprint" "Inductor_SMD:L_0805_2012Metric_Pad1.15x1.40mm_HandSolder"
+		(property "Footprint" "CodeSDR:Inductor_0805_HandSolder"
 			(at 398.272 90.17 90)
 			(effects
 				(font
@@ -2047,7 +2047,7 @@
 				(justify left)
 			)
 		)
-		(property "Footprint" "Inductor_SMD:L_0805_2012Metric_Pad1.15x1.40mm_HandSolder"
+		(property "Footprint" "CodeSDR:Inductor_0805_HandSolder"
 			(at 69.85 142.24 0.0000)
 			(effects
 				(font
@@ -2546,7 +2546,7 @@
 				(justify left)
 			)
 		)
-		(property "Footprint" "Inductor_SMD:L_0805_2012Metric_Pad1.15x1.40mm_HandSolder"
+		(property "Footprint" "CodeSDR:Inductor_0805_HandSolder"
 			(at 69.85 194.31 0.0000)
 			(effects
 				(font
