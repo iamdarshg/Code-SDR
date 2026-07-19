@@ -1,0 +1,195 @@
+name: V2 route continuation tournament
+
+on:
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+  actions: read
+
+env:
+  ROUTE_BRANCH: agent/v2-route-continuations
+  SOURCE_RUN_ID: '29691653824'
+  SOURCE_ARTIFACT: Code-SDR-V2-route-five-pass
+
+jobs:
+  continue-route:
+    if: github.head_ref == 'agent/v2-route-continuations'
+    name: continue-${{ matrix.name }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 95
+    strategy:
+      fail-fast: false
+      max-parallel: 3
+      matrix:
+        include:
+          - name: current-global-random
+            algorithm: freerouting-router
+            passes: 24
+            threads: 2
+            update: global
+            items: random
+            hybrid: ''
+            ripup: 35
+            via: 10
+            unrouted: 150000
+            clearance: 50000
+          - name: current-hybrid-priority
+            algorithm: freerouting-router
+            passes: 28
+            threads: 4
+            update: hybrid
+            items: prioritized
+            hybrid: '1:2'
+            ripup: 75
+            via: 6
+            unrouted: 220000
+            clearance: 70000
+          - name: v19-aggressive
+            algorithm: freerouting-router-v19
+            passes: 30
+            threads: 2
+            update: hybrid
+            items: prioritized
+            hybrid: '1:1'
+            ripup: 120
+            via: 5
+            unrouted: 300000
+            clearance: 90000
+    env:
+      GH_TOKEN: ${{ github.token }}
+    steps:
+      - name: Check out clean V2 source
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ env.ROUTE_BRANCH }}
+          fetch-depth: 0
+      - name: Use Java 25
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '25'
+      - name: Recover five-pass session
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p recovered hardware/v2/build/${{ matrix.name }}
+          gh run download "$SOURCE_RUN_ID" --repo "$GITHUB_REPOSITORY" \
+            --name "$SOURCE_ARTIFACT" --dir recovered
+          session=$(find recovered -type f -name 'Code-SDR-V2-routed.ses' -print -quit)
+          test -n "$session"
+          cp "$session" hardware/v2/build/${{ matrix.name }}/input-five-pass.ses
+          curl -fL --retry 4 --retry-delay 5 -o "$RUNNER_TEMP/freerouting.jar" \
+            https://github.com/freerouting/freerouting/releases/download/v2.2.4/freerouting-2.2.4.jar
+          docker pull kicad/kicad:9.0.9-full
+      - name: Continue hard-tail routing
+        shell: bash
+        run: |
+          set -euo pipefail
+          dir=hardware/v2/build/${{ matrix.name }}
+          extra=()
+          if [[ -n '${{ matrix.hybrid }}' ]]; then extra+=( -hr '${{ matrix.hybrid }}' ); fi
+          timeout --signal=TERM --kill-after=2m 78m \
+            java -Xmx5600m -jar "$RUNNER_TEMP/freerouting.jar" \
+            -de "$dir/input-five-pass.ses" -do "$dir/continued.ses" \
+            -mp '${{ matrix.passes }}' -mt '${{ matrix.threads }}' -oit 0 \
+            -us '${{ matrix.update }}' -is '${{ matrix.items }}' "${extra[@]}" \
+            -da -dct 1 --gui.enabled=false \
+            --router.algorithm='${{ matrix.algorithm }}' \
+            --router.automatic_neckdown=true \
+            --router.scoring.unroutedNetPenalty='${{ matrix.unrouted }}' \
+            --router.scoring.clearanceViolationPenalty='${{ matrix.clearance }}' \
+            --router.scoring.startRipupCosts='${{ matrix.ripup }}' \
+            --router.scoring.viaCosts='${{ matrix.via }}' \
+            2>&1 | tee "$dir/freerouting.log"
+          test -s "$dir/continued.ses"
+      - name: Import and score continuation
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          dir=hardware/v2/build/${{ matrix.name }}
+          test -s "$dir/continued.ses" || exit 0
+          printf '{"components": {}}\n' > hardware/v2/build/schematic_paths.json
+          cat > "$dir/import.py" <<PY
+          from pathlib import Path
+          import pcbnew
+          src=Path('hardware/v2/Code-SDR-V2.kicad_pcb')
+          out=Path('$dir/Code-SDR-V2-${{ matrix.name }}.kicad_pcb')
+          b=pcbnew.LoadBoard(str(src))
+          if not pcbnew.ImportSpecctraSES(b, '$dir/continued.ses'):
+              raise SystemExit('SES import failed')
+          for z in b.Zones():
+              z.SetPadConnection(pcbnew.ZONE_CONNECTION_FULL)
+          pcbnew.ZONE_FILLER(b).Fill(b.Zones())
+          pcbnew.SaveBoard(str(out), b)
+          print('tracks', len(list(b.GetTracks())))
+          PY
+          docker run --rm --user 0:0 -v "$GITHUB_WORKSPACE:/work" -w /work \
+            --entrypoint /bin/bash kicad/kicad:9.0.9-full -lc \
+            "python3 '$dir/import.py'; kicad-cli pcb drc --format json --severity-all --all-track-errors --schematic-parity --units mm -o '$dir/drc.json' '$dir/Code-SDR-V2-${{ matrix.name }}.kicad_pcb' || true"
+          MATRIX_NAME='${{ matrix.name }}' ALGORITHM='${{ matrix.algorithm }}' python3 - <<'PY'
+          import json, os, re
+          from pathlib import Path
+          name=os.environ['MATRIX_NAME']; d=Path('hardware/v2/build')/name
+          report=json.loads((d/'drc.json').read_text())
+          log=(d/'freerouting.log').read_text(errors='replace')
+          passes=[]
+          for m in re.finditer(r'pass #(\d+).*?\((\d+) unrouted and (\d+) violations\)', log):
+              passes.append({'pass':int(m.group(1)),'router_unrouted':int(m.group(2)),'router_violations':int(m.group(3))})
+          summary={
+            'name':name,
+            'algorithm':os.environ['ALGORITHM'],
+            'violations':len(report.get('violations',[])),
+            'unconnected_items':len(report.get('unconnected_items',[])),
+            'schematic_parity':len(report.get('schematic_parity',[])),
+            'last_router_pass':passes[-1] if passes else None,
+            'all_passes':passes,
+          }
+          (d/'summary.json').write_text(json.dumps(summary,indent=2)+'\n')
+          print(json.dumps(summary,indent=2))
+          PY
+      - name: Upload continuation
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: v2-continuation-${{ matrix.name }}
+          path: hardware/v2/build/${{ matrix.name }}/
+          retention-days: 2
+          if-no-files-found: warn
+
+  leaderboard:
+    if: always()
+    needs: continue-route
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: v2-continuation-*
+          path: candidates
+      - name: Rank continuations
+        run: |
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+          rows=[]
+          for p in Path('candidates').rglob('summary.json'):
+              try: rows.append(json.loads(p.read_text()))
+              except Exception: pass
+          rows.sort(key=lambda x:(x['schematic_parity'],x['unconnected_items'],x['violations']))
+          Path('leaderboard.json').write_text(json.dumps(rows,indent=2)+'\n')
+          lines=['# V2 continuation leaderboard','', '| Rank | Candidate | Router opens | KiCad opens | Violations | Parity |','|---:|---|---:|---:|---:|---:|']
+          for i,r in enumerate(rows,1):
+              rp=r.get('last_router_pass') or {}
+              lines.append(f"| {i} | {r['name']} | {rp.get('router_unrouted','n/a')} | {r['unconnected_items']} | {r['violations']} | {r['schematic_parity']} |")
+          Path('leaderboard.md').write_text('\n'.join(lines)+'\n')
+          print('\n'.join(lines))
+          PY
+      - uses: actions/upload-artifact@v4
+        with:
+          name: v2-continuation-leaderboard
+          path: |
+            leaderboard.json
+            leaderboard.md
+          retention-days: 2
