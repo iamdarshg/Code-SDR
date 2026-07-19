@@ -33,6 +33,7 @@ jobs:
         shell: bash
         run: |
           mkdir -p hardware/v2/build
+          sed -i 's|python3 hardware/v2/tools/generate_pcb.py|python3 hardware/v2/tools/generate_pcb_ci.py|' hardware/v2/tools/route_ci.sh
           set +e
           bash hardware/v2/tools/route_ci.sh > hardware/v2/build/route-run.log 2>&1
           code=$?
