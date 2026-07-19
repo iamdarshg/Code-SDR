@@ -1,0 +1,56 @@
+name: Hardware V2 release gate
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'hardware/v2/**'
+      - '.github/workflows/hardware-v2-release-gate.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  validate-v2:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+      - name: Validate CAD and manufacturing exports
+        run: |
+          set -euo pipefail
+          mkdir -p hardware/v2/build/release-gate/gerbers
+          docker pull kicad/kicad:9.0.9-full
+          docker run --rm --user 0:0 \
+            -v "$GITHUB_WORKSPACE:/work" -w /work \
+            --entrypoint /bin/bash kicad/kicad:9.0.9-full -lc '
+              set -euo pipefail
+              kicad-cli sch erc --format json --severity-all --exit-code-violations \
+                -o hardware/v2/build/release-gate/erc.json \
+                hardware/v2/Code-SDR-V2.kicad_sch
+              kicad-cli pcb drc --format json --severity-all --all-track-errors \
+                --schematic-parity --exit-code-violations --units mm \
+                -o hardware/v2/build/release-gate/drc.json \
+                hardware/v2/Code-SDR-V2.kicad_pcb
+              test -s hardware/v2/build/ROUTE_STATISTICS.csv
+              python3 hardware/v2/tools/validate_route.py \
+                > hardware/v2/build/release-gate/validate-route.log
+              kicad-cli pcb export gerbers \
+                -l "F.Cu,In1.Cu,In2.Cu,B.Cu,F.Paste,F.SilkS,B.SilkS,F.Mask,B.Mask,Edge.Cuts" \
+                --subtract-soldermask --precision 6 \
+                -o hardware/v2/build/release-gate/gerbers \
+                hardware/v2/Code-SDR-V2.kicad_pcb
+              kicad-cli pcb export drill --format excellon --excellon-units mm \
+                --excellon-separate-th --generate-map --map-format pdf \
+                -o hardware/v2/build/release-gate/gerbers \
+                hardware/v2/Code-SDR-V2.kicad_pcb
+            '
+      - name: Upload validation evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: Code-SDR-V2-release-gate
+          path: hardware/v2/build/release-gate
+          retention-days: 14
+          if-no-files-found: error
