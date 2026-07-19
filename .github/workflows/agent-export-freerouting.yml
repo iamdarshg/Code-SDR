@@ -15,17 +15,17 @@ jobs:
         with:
           distribution: temurin
           java-version: '25'
-      - name: Build Java 25 Freerouting runtime
+          java-package: jre
+      - name: Package Java 25 Freerouting runtime
         run: |
           set -euo pipefail
           curl -fL --retry 4 --retry-delay 5 -o freerouting-2.2.4.jar https://github.com/freerouting/freerouting/releases/download/v2.2.4/freerouting-2.2.4.jar
           sha256sum freerouting-2.2.4.jar > freerouting-2.2.4.sha256
           real_java_home="$(dirname "$(dirname "$(readlink -f "$JAVA_HOME/bin/java")")")"
-          echo "Resolved Java home: $real_java_home"
-          test -d "$real_java_home/jmods"
-          "$real_java_home/bin/jlink" --module-path "$real_java_home/jmods" --add-modules ALL-MODULE-PATH --output java25-runtime --strip-debug --no-header-files --no-man-pages
-          java25-runtime/bin/java -jar freerouting-2.2.4.jar --help >/dev/null
-          tar -czf java25-runtime.tar.gz java25-runtime
+          echo "Resolved Java runtime: $real_java_home"
+          "$real_java_home/bin/java" -jar freerouting-2.2.4.jar --help >/dev/null
+          tar -C "$(dirname "$real_java_home")" -czf java25-runtime.tar.gz "$(basename "$real_java_home")"
+          test "$(stat -c %s java25-runtime.tar.gz)" -gt 10000000
           sha256sum java25-runtime.tar.gz > java25-runtime.sha256
       - uses: actions/upload-artifact@v4
         with:
