@@ -49,6 +49,19 @@ def main() -> None:
     ]
     all_tracks = list(board.GetTracks())
     pads = [pad for footprint in board.GetFootprints() for pad in footprint.Pads()]
+
+    # Direct GND-to-pour connections are intentional on this RF board.  They
+    # provide the lowest-inductance return for RF ICs, exposed pads, SMA ground
+    # tabs and local bypass capacitors, and avoid hundreds of impossible tiny
+    # thermal spokes around fine-pitch parts.  The uninterrupted In1 plane is
+    # still the primary reference; F.Cu/B.Cu pours and stitching vias reinforce
+    # it rather than replace it.
+    solid_ground_pads = 0
+    for pad in pads:
+        if pad.GetNetCode() == gnd.GetNetCode():
+            pad.SetZoneConnection(pcbnew.ZONE_CONNECTION_FULL)
+            solid_ground_pads += 1
+
     accepted: list[pcbnew.VECTOR2I] = []
     width_mm = 160.0
     height_mm = 100.0
@@ -114,12 +127,14 @@ def main() -> None:
                 all_tracks.append(via)
                 accepted.append(point)
 
-    # Refill all copper after adding stitching vias so the saved manufacturing
-    # board contains current F.Cu/B.Cu pours and the solid In1 ground plane.
+    # Refill all copper after changing pad connections and adding stitching vias
+    # so the saved manufacturing board contains current F.Cu/B.Cu pours and the
+    # solid In1 ground plane.
     pcbnew.ZONE_FILLER(board).Fill(board.Zones())
     pcbnew.SaveBoard(str(BOARD_PATH), board)
     print(
-        f"Added {len(accepted)} GND fence vias beside "
+        f"Solid-connected {solid_ground_pads} GND pads and added "
+        f"{len(accepted)} GND fence vias beside "
         f"{len(critical_tracks)} critical RF segments"
     )
 
