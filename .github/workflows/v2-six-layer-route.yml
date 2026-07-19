@@ -1,0 +1,216 @@
+name: V2 six-layer routability trial
+
+on:
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+
+env:
+  ROUTE_BRANCH: agent/v2-six-layer-route
+
+jobs:
+  route:
+    if: github.head_ref == 'agent/v2-six-layer-route'
+    name: six-layer-${{ matrix.name }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 95
+    strategy:
+      fail-fast: false
+      max-parallel: 2
+      matrix:
+        include:
+          - name: current-geometry
+            algorithm: freerouting-router
+            rf50: 350
+            ifdiff: 200
+            digital: 150
+            power: 600
+            default: 150
+            passes: 18
+            update: global
+            items: random
+          - name: dense-geometry
+            algorithm: freerouting-router-v19
+            rf50: 350
+            ifdiff: 150
+            digital: 100
+            power: 250
+            default: 100
+            passes: 24
+            update: hybrid
+            items: prioritized
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ env.ROUTE_BRANCH }}
+          fetch-depth: 0
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '25'
+      - name: Prepare tools
+        shell: bash
+        run: |
+          set -euo pipefail
+          docker pull kicad/kicad:9.0.9-full
+          curl -fL --retry 4 --retry-delay 5 -o "$RUNNER_TEMP/freerouting.jar" \
+            https://github.com/freerouting/freerouting/releases/download/v2.2.4/freerouting-2.2.4.jar
+          mkdir -p hardware/v2/build/${{ matrix.name }}
+          printf '{"components": {}}\n' > hardware/v2/build/schematic_paths.json
+      - name: Convert V2 to six-layer trial and export DSN
+        shell: bash
+        env:
+          NAME: ${{ matrix.name }}
+          RF50: ${{ matrix.rf50 }}
+          IFDIFF: ${{ matrix.ifdiff }}
+          DIGITAL: ${{ matrix.digital }}
+          POWER: ${{ matrix.power }}
+          DEFAULT_W: ${{ matrix.default }}
+        run: |
+          cat > hardware/v2/build/${{ matrix.name }}/make_six_layer.py <<'PY'
+          from __future__ import annotations
+          import os,re,sys
+          from collections import defaultdict
+          from pathlib import Path
+          import pcbnew
+
+          root=Path('hardware/v2'); build=root/'build'/os.environ['NAME']; board_path=root/'Code-SDR-V2.kicad_pcb'; raw=build/'raw.dsn'; out=build/'input.dsn'
+          sys.path.insert(0,str(root/'tools'))
+          from generate_pcb import all_nets,router_class_for_net
+
+          b=pcbnew.LoadBoard(str(board_path)); b.SetCopperLayerCount(6)
+          gnd=b.FindNet('GND')
+          zone=pcbnew.ZONE(b); zone.SetLayer(pcbnew.In4_Cu); zone.SetNet(gnd); zone.SetPadConnection(pcbnew.ZONE_CONNECTION_FULL); zone.SetLocalClearance(pcbnew.FromMM(0.15)); zone.SetMinThickness(pcbnew.FromMM(0.12))
+          poly=zone.Outline(); poly.NewOutline()
+          for x,y in ((0.25,0.25),(159.75,0.25),(159.75,99.75),(0.25,99.75)): poly.Append(pcbnew.FromMM(x),pcbnew.FromMM(y))
+          b.Add(zone); pcbnew.SaveBoard(str(board_path),b)
+          if not pcbnew.ExportSpecctraDSN(b,str(raw)): raise SystemExit('DSN export failed')
+          s=raw.read_text()
+
+          def remove_net(source,name):
+              marker=f'    (net {name}\n'; start=source.find(marker)
+              if start<0: raise RuntimeError(f'net {name} missing')
+              depth=0
+              for i in range(start,len(source)):
+                  if source[i]=='(': depth+=1
+                  elif source[i]==')':
+                      depth-=1
+                      if depth==0:
+                          end=i+1
+                          if end<len(source) and source[end]=='\n':end+=1
+                          return source[:start]+source[end:]
+              raise RuntimeError('unbalanced net')
+
+          for layer in ('In1.Cu','In4.Cu'):
+              old=f'    (layer {layer}\n      (type signal)\n'; new=f'    (layer {layer}\n      (type power)\n'
+              if old not in s: raise RuntimeError(f'{layer} declaration missing')
+              s=s.replace(old,new,1)
+          s=remove_net(s,'GND')
+          via_match=re.search(r'Via\[0-5\]_[^\s\)]+',s)
+          if not via_match: raise RuntimeError('six-layer via padstack missing')
+          via=via_match.group(0)
+          grouped=defaultdict(list)
+          for n in all_nets():
+              if n!='GND':grouped[router_class_for_net(n)].append(n)
+          widths={'RF_CRITICAL':350,'RF_50':int(os.environ['RF50']),'IF_DIFF':int(os.environ['IFDIFF']),'DIGITAL_HS':int(os.environ['DIGITAL']),'POWER':int(os.environ['POWER']),'DEFAULT':int(os.environ['DEFAULT_W'])}
+          clear={'RF_CRITICAL':180,'RF_50':180,'IF_DIFF':150,'DIGITAL_HS':120,'POWER':150,'DEFAULT':100}
+          layers={'RF_CRITICAL':('F.Cu',),'RF_50':('F.Cu','In2.Cu','In3.Cu','B.Cu'),'IF_DIFF':('F.Cu','In2.Cu','In3.Cu','B.Cu'),'DIGITAL_HS':('F.Cu','In2.Cu','In3.Cu','B.Cu'),'POWER':('F.Cu','In2.Cu','In3.Cu','B.Cu'),'DEFAULT':('F.Cu','In2.Cu','In3.Cu','B.Cu')}
+          def klass(name):
+              lines=[f'    (class {name}']
+              nets=sorted(grouped[name])
+              for i in range(0,len(nets),8):lines.append('      '+' '.join(nets[i:i+8]))
+              lines += ['      (circuit',f'        (use_via {via})','        (use_layer '+' '.join(layers[name])+')','      )','      (rule',f'        (width {widths[name]})',f'        (clearance {clear[name]})','      )','    )']
+              return '\n'.join(lines)+'\n'
+          class_text=''.join(klass(n) for n in ('RF_CRITICAL','RF_50','IF_DIFF','DIGITAL_HS','POWER','DEFAULT'))
+          start=s.find('    (class kicad_default '); end=s.find('  )\n  (wiring',start)
+          if start<0 or end<0: raise RuntimeError('default class scope missing')
+          s=s[:start]+class_text+s[end:]
+          out.write_text(s)
+          print({'board_layers':b.GetCopperLayerCount(),'via':via,'widths':widths,'output':str(out)})
+          PY
+          docker run --rm --user 0:0 -v "$GITHUB_WORKSPACE:/work" -w /work --entrypoint /bin/bash kicad/kicad:9.0.9-full -lc \
+            "NAME='$NAME' RF50='$RF50' IFDIFF='$IFDIFF' DIGITAL='$DIGITAL' POWER='$POWER' DEFAULT_W='$DEFAULT_W' python3 hardware/v2/build/$NAME/make_six_layer.py"
+      - name: Route six-layer candidate
+        shell: bash
+        run: |
+          set -euo pipefail
+          extra=()
+          if [[ '${{ matrix.update }}' == hybrid ]]; then extra+=( -hr 1:2 ); fi
+          timeout --signal=TERM --kill-after=2m 78m \
+            java -Xmx5600m -jar "$RUNNER_TEMP/freerouting.jar" \
+            -de hardware/v2/build/${{ matrix.name }}/input.dsn \
+            -do hardware/v2/build/${{ matrix.name }}/routed.ses \
+            -mp '${{ matrix.passes }}' -mt 2 -oit 0 -us '${{ matrix.update }}' -is '${{ matrix.items }}' "${extra[@]}" \
+            -da -dct 1 --gui.enabled=false --router.algorithm='${{ matrix.algorithm }}' --router.automatic_neckdown=true \
+            --router.scoring.startRipupCosts=55 --router.scoring.viaCosts=6 \
+            2>&1 | tee hardware/v2/build/${{ matrix.name }}/freerouting.log
+          test -s hardware/v2/build/${{ matrix.name }}/routed.ses
+      - name: Import and score six-layer candidate
+        if: always()
+        shell: bash
+        env:
+          NAME: ${{ matrix.name }}
+        run: |
+          set -euo pipefail
+          dir=hardware/v2/build/$NAME; test -s "$dir/routed.ses" || exit 0
+          cat > "$dir/import.py" <<PY
+          from pathlib import Path
+          import pcbnew
+          src=Path('hardware/v2/Code-SDR-V2.kicad_pcb'); out=Path('$dir/Code-SDR-V2-six-layer-$NAME.kicad_pcb')
+          b=pcbnew.LoadBoard(str(src))
+          if not pcbnew.ImportSpecctraSES(b,'$dir/routed.ses'):raise SystemExit('SES import failed')
+          for z in b.Zones():z.SetPadConnection(pcbnew.ZONE_CONNECTION_FULL)
+          pcbnew.ZONE_FILLER(b).Fill(b.Zones(),True);pcbnew.SaveBoard(str(out),b)
+          PY
+          docker run --rm --user 0:0 -v "$GITHUB_WORKSPACE:/work" -w /work --entrypoint /bin/bash kicad/kicad:9.0.9-full -lc \
+            "python3 '$dir/import.py'; kicad-cli pcb drc --format json --severity-all --all-track-errors --schematic-parity --units mm -o '$dir/drc.json' '$dir/Code-SDR-V2-six-layer-$NAME.kicad_pcb' || true"
+          python3 - <<'PY'
+          import json,os,re
+          from pathlib import Path
+          d=Path('hardware/v2/build')/os.environ['NAME'];r=json.loads((d/'drc.json').read_text());log=(d/'freerouting.log').read_text(errors='replace')
+          ps=[{'pass':int(a),'router_unrouted':int(b),'router_violations':int(c)} for a,b,c in re.findall(r'pass #(\d+).*?\((\d+) unrouted and (\d+) violations\)',log)]
+          s={'name':os.environ['NAME'],'layers':6,'unconnected_items':len(r.get('unconnected_items',[])),'violations':len(r.get('violations',[])),'parity':len(r.get('schematic_parity',[])),'last_router_pass':ps[-1] if ps else None,'all_passes':ps}
+          (d/'summary.json').write_text(json.dumps(s,indent=2)+'\n');print(json.dumps(s,indent=2))
+          PY
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: v2-six-layer-${{ matrix.name }}
+          path: hardware/v2/build/${{ matrix.name }}/
+          if-no-files-found: warn
+          retention-days: 2
+
+  leaderboard:
+    if: always()
+    needs: route
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: v2-six-layer-*
+          path: candidates
+      - name: Rank six-layer trials
+        run: |
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+          rows=[]
+          for p in Path('candidates').rglob('summary.json'):
+              try:rows.append(json.loads(p.read_text()))
+              except Exception:pass
+          rows.sort(key=lambda x:(x['parity'],x['unconnected_items'],x['violations']))
+          Path('leaderboard.json').write_text(json.dumps(rows,indent=2)+'\n')
+          lines=['# Six-layer V2 trial','', '| Rank | Candidate | Router opens | KiCad opens | Violations | Parity |','|---:|---|---:|---:|---:|---:|']
+          for i,r in enumerate(rows,1):
+              rp=r.get('last_router_pass') or {};lines.append(f"| {i} | {r['name']} | {rp.get('router_unrouted','n/a')} | {r['unconnected_items']} | {r['violations']} | {r['parity']} |")
+          Path('leaderboard.md').write_text('\n'.join(lines)+'\n');print('\n'.join(lines))
+          PY
+      - uses: actions/upload-artifact@v4
+        with:
+          name: v2-six-layer-leaderboard
+          path: |
+            leaderboard.json
+            leaderboard.md
+          retention-days: 2
