@@ -4,8 +4,7 @@ on:
   pull_request:
     branches: [main]
     paths:
-      - hardware/v2/**
-      - hardware/redesign/**
+      - hardware/v2/.route-trigger
       - .github/workflows/pcb-route-pr.yml
 
 permissions:
