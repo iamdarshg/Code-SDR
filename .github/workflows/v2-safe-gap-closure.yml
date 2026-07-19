@@ -1,0 +1,320 @@
+name: V2 DRC-filtered short-gap closure
+
+on:
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+  actions: read
+
+env:
+  GH_TOKEN: ${{ github.token }}
+  SOURCE_RUN_ID: '29691653824'
+  SOURCE_ARTIFACT: Code-SDR-V2-route-five-pass
+
+jobs:
+  close-gaps:
+    if: github.head_ref == 'agent/v2-safe-gap-closure'
+    name: gap-${{ matrix.name }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 35
+    strategy:
+      fail-fast: false
+      max-parallel: 3
+      matrix:
+        include:
+          - name: 0p8mm
+            max_gap: '0.8'
+          - name: 1p5mm
+            max_gap: '1.5'
+          - name: 3p0mm
+            max_gap: '3.0'
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: agent/v2-safe-gap-closure
+      - name: Recover five-pass route
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p recovered hardware/v2/build/${{ matrix.name }}
+          gh run download "$SOURCE_RUN_ID" --repo "$GITHUB_REPOSITORY" --name "$SOURCE_ARTIFACT" --dir recovered
+          board=$(find recovered -type f -name 'Code-SDR-V2.kicad_pcb' -print -quit)
+          drc=$(find recovered -type f -name 'drc-diagnostic.json' -print -quit)
+          test -n "$board"; test -n "$drc"
+          cp "$board" hardware/v2/Code-SDR-V2.kicad_pcb
+          cp "$drc" hardware/v2/build/${{ matrix.name }}/drc-before.json
+          docker pull kicad/kicad:9.0.9-full
+      - name: Add short same-layer candidate closures
+        shell: bash
+        env:
+          NAME: ${{ matrix.name }}
+          MAX_GAP: ${{ matrix.max_gap }}
+        run: |
+          cat > hardware/v2/build/${{ matrix.name }}/add_gap_candidates.py <<'PY'
+          from __future__ import annotations
+
+          import json
+          import math
+          import os
+          import re
+          import sys
+          from pathlib import Path
+
+          import pcbnew
+
+          ROOT = Path('hardware/v2')
+          BUILD = ROOT / 'build' / os.environ['NAME']
+          BOARD = ROOT / 'Code-SDR-V2.kicad_pcb'
+          DRC = BUILD / 'drc-before.json'
+          MAX_GAP = float(os.environ['MAX_GAP'])
+          sys.path.insert(0, str(ROOT / 'tools'))
+          from generate_pcb import router_class_for_net
+
+          b = pcbnew.LoadBoard(str(BOARD))
+
+          def uid(item):
+              value = getattr(item, 'm_Uuid', None)
+              if value is not None:
+                  try:
+                      return value.AsString()
+                  except Exception:
+                      return str(value)
+              try:
+                  return item.GetUuid().AsString()
+              except Exception:
+                  return str(item.GetUuid())
+
+          items = {}
+          for fp in b.GetFootprints():
+              for pad in fp.Pads():
+                  items[uid(pad)] = pad
+          for track in b.GetTracks():
+              items[uid(track)] = track
+
+          def xy(point):
+              return pcbnew.ToMM(point.x), pcbnew.ToMM(point.y)
+
+          def point(x, y):
+              return pcbnew.VECTOR2I(pcbnew.FromMM(x), pcbnew.FromMM(y))
+
+          def project(p, a, c):
+              px, py = xy(p); ax, ay = xy(a); bx, by = xy(c)
+              dx, dy = bx-ax, by-ay
+              if dx == 0 and dy == 0:
+                  return a
+              t = max(0.0, min(1.0, ((px-ax)*dx + (py-ay)*dy)/(dx*dx+dy*dy)))
+              return point(ax+t*dx, ay+t*dy)
+
+          def position(item):
+              if isinstance(item, pcbnew.PAD) or isinstance(item, pcbnew.PCB_VIA):
+                  return item.GetPosition()
+              return item.GetStart()
+
+          def closest_pair(a, c):
+              # Pad/via to straight track.
+              a_track = isinstance(a, pcbnew.PCB_TRACK) and not isinstance(a, pcbnew.PCB_VIA)
+              c_track = isinstance(c, pcbnew.PCB_TRACK) and not isinstance(c, pcbnew.PCB_VIA)
+              if a_track and not c_track:
+                  q = position(c)
+                  return project(q, a.GetStart(), a.GetEnd()), q
+              if c_track and not a_track:
+                  p = position(a)
+                  return p, project(p, c.GetStart(), c.GetEnd())
+              if not a_track and not c_track:
+                  return position(a), position(c)
+              # Track-to-track: endpoints and endpoint projections cover the
+              # minimum for straight 2-D segments.
+              candidates = []
+              for p in (a.GetStart(), a.GetEnd()):
+                  candidates.append((p, project(p, c.GetStart(), c.GetEnd())))
+              for q in (c.GetStart(), c.GetEnd()):
+                  candidates.append((project(q, a.GetStart(), a.GetEnd()), q))
+              return min(candidates, key=lambda pair: math.dist(xy(pair[0]), xy(pair[1])))
+
+          def copper_layers(item):
+              if isinstance(item, pcbnew.PAD):
+                  return [layer for layer in (pcbnew.F_Cu, pcbnew.In2_Cu, pcbnew.B_Cu) if item.IsOnLayer(layer)]
+              if isinstance(item, pcbnew.PCB_VIA):
+                  return [pcbnew.F_Cu, pcbnew.In2_Cu, pcbnew.B_Cu]
+              return [item.GetLayer()]
+
+          report = json.loads(DRC.read_text())
+          candidates = []
+          seen = set()
+          skip_nets = {'GND', 'CHASSIS_GND'}
+          for issue in report.get('unconnected_items', []):
+              refs = [entry for entry in issue.get('items', []) if entry.get('uuid') in items]
+              if len(refs) != 2:
+                  continue
+              ia, ic = items[refs[0]['uuid']], items[refs[1]['uuid']]
+              net_a, net_c = ia.GetNetname(), ic.GetNetname()
+              if not net_a or net_a != net_c or net_a in skip_nets:
+                  continue
+              route_class = router_class_for_net(net_a)
+              if route_class == 'RF_CRITICAL':
+                  continue
+              shared = [layer for layer in copper_layers(ia) if layer in copper_layers(ic)]
+              if not shared:
+                  continue
+              p, q = closest_pair(ia, ic)
+              gap = math.dist(xy(p), xy(q))
+              if gap <= 1e-5 or gap > MAX_GAP:
+                  continue
+              layer = shared[0]
+              key = (net_a, layer, p.x, p.y, q.x, q.y)
+              reverse = (net_a, layer, q.x, q.y, p.x, p.y)
+              if key in seen or reverse in seen:
+                  continue
+              seen.add(key)
+              width = {
+                  'RF_50': 0.20,
+                  'IF_DIFF': 0.15,
+                  'DIGITAL_HS': 0.10,
+                  'POWER': 0.20,
+                  'DEFAULT': 0.10,
+              }[route_class]
+              track = pcbnew.PCB_TRACK(b)
+              track.SetStart(p)
+              track.SetEnd(q)
+              track.SetLayer(layer)
+              track.SetWidth(pcbnew.FromMM(width))
+              track.SetNet(b.FindNet(net_a))
+              b.Add(track)
+              candidates.append({
+                  'uuid': uid(track),
+                  'net': net_a,
+                  'route_class': route_class,
+                  'layer': b.GetLayerName(layer),
+                  'gap_mm': gap,
+                  'width_mm': width,
+                  'start': xy(p),
+                  'end': xy(q),
+              })
+
+          pcbnew.SaveBoard(str(BOARD), b)
+          (BUILD/'candidates.json').write_text(json.dumps(candidates, indent=2)+'\n')
+          print({'candidate_count': len(candidates), 'max_gap_mm': MAX_GAP})
+          PY
+          docker run --rm --user 0:0 -v "$GITHUB_WORKSPACE:/work" -w /work --entrypoint /bin/bash kicad/kicad:9.0.9-full -lc \
+            "NAME='$NAME' MAX_GAP='$MAX_GAP' python3 hardware/v2/build/$NAME/add_gap_candidates.py; kicad-cli pcb drc --format json --severity-all --all-track-errors --schematic-parity --units mm -o hardware/v2/build/$NAME/drc-candidates.json hardware/v2/Code-SDR-V2.kicad_pcb || true"
+      - name: Remove every candidate implicated by DRC
+        shell: bash
+        env:
+          NAME: ${{ matrix.name }}
+        run: |
+          cat > hardware/v2/build/${{ matrix.name }}/filter_candidates.py <<'PY'
+          from __future__ import annotations
+
+          import json
+          import os
+          from pathlib import Path
+          import pcbnew
+
+          ROOT=Path('hardware/v2')
+          BUILD=ROOT/'build'/os.environ['NAME']
+          BOARD=ROOT/'Code-SDR-V2.kicad_pcb'
+          candidate_list=json.loads((BUILD/'candidates.json').read_text())
+          candidates={entry['uuid']:entry for entry in candidate_list}
+          report=json.loads((BUILD/'drc-candidates.json').read_text())
+          bad=set()
+          for issue in report.get('violations', []):
+              for item in issue.get('items', []):
+                  if item.get('uuid') in candidates:
+                      bad.add(item['uuid'])
+          # A candidate that still appears in the unconnected graph did not
+          # close its intended gap and is removed as well.
+          for issue in report.get('unconnected_items', []):
+              for item in issue.get('items', []):
+                  if item.get('uuid') in candidates:
+                      bad.add(item['uuid'])
+
+          b=pcbnew.LoadBoard(str(BOARD))
+          def uid(item):
+              value=getattr(item,'m_Uuid',None)
+              if value is not None:
+                  try:return value.AsString()
+                  except Exception:return str(value)
+              try:return item.GetUuid().AsString()
+              except Exception:return str(item.GetUuid())
+          removed=[]
+          for track in list(b.GetTracks()):
+              key=uid(track)
+              if key in bad:
+                  removed.append(candidates[key])
+                  b.Remove(track)
+          kept=[entry for key,entry in candidates.items() if key not in bad]
+          pcbnew.SaveBoard(str(BOARD),b)
+          (BUILD/'filter-result.json').write_text(json.dumps({'kept':kept,'removed':removed},indent=2)+'\n')
+          print({'kept':len(kept),'removed':len(removed)})
+          PY
+          docker run --rm --user 0:0 -v "$GITHUB_WORKSPACE:/work" -w /work --entrypoint /bin/bash kicad/kicad:9.0.9-full -lc \
+            "NAME='$NAME' python3 hardware/v2/build/$NAME/filter_candidates.py; kicad-cli pcb drc --format json --severity-all --all-track-errors --schematic-parity --units mm -o hardware/v2/build/$NAME/drc-final.json hardware/v2/Code-SDR-V2.kicad_pcb || true"
+      - name: Score filtered board
+        shell: bash
+        env:
+          NAME: ${{ matrix.name }}
+        run: |
+          python3 - <<'PY'
+          import json,os,re
+          from collections import Counter
+          from pathlib import Path
+          name=os.environ['NAME']; d=Path('hardware/v2/build')/name
+          before=json.loads((d/'drc-before.json').read_text()); after=json.loads((d/'drc-final.json').read_text()); f=json.loads((d/'filter-result.json').read_text())
+          nets=Counter()
+          for issue in after.get('unconnected_items',[]):
+              names=set()
+              for item in issue.get('items',[]): names.update(re.findall(r'\[([^\]]+)\]',item.get('description','')))
+              for n in names:nets[n]+=1
+          summary={
+            'name':name,
+            'before':{'unconnected_items':len(before.get('unconnected_items',[])),'violations':len(before.get('violations',[])),'parity':len(before.get('schematic_parity',[]))},
+            'after':{'unconnected_items':len(after.get('unconnected_items',[])),'violations':len(after.get('violations',[])),'parity':len(after.get('schematic_parity',[]))},
+            'candidates_kept':len(f['kept']),
+            'candidates_removed':len(f['removed']),
+            'kept':f['kept'],
+            'remaining_by_net':dict(nets.most_common()),
+          }
+          (d/'summary.json').write_text(json.dumps(summary,indent=2)+'\n'); print(json.dumps(summary,indent=2))
+          PY
+      - uses: actions/upload-artifact@v4
+        with:
+          name: v2-safe-gap-${{ matrix.name }}
+          path: |
+            hardware/v2/Code-SDR-V2.kicad_pcb
+            hardware/v2/build/${{ matrix.name }}/
+          retention-days: 2
+
+  leaderboard:
+    if: always()
+    needs: close-gaps
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: v2-safe-gap-*
+          path: candidates
+      - name: Rank safe closures
+        run: |
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+          rows=[]
+          for p in Path('candidates').rglob('summary.json'):
+              try:rows.append(json.loads(p.read_text()))
+              except Exception:pass
+          rows.sort(key=lambda x:(x['after']['parity'],x['after']['violations'],x['after']['unconnected_items']))
+          Path('leaderboard.json').write_text(json.dumps(rows,indent=2)+'\n')
+          lines=['# DRC-filtered gap closure','', '| Rank | Candidate | Kept | Opens | Violations | Parity |','|---:|---|---:|---:|---:|---:|']
+          for i,r in enumerate(rows,1):
+              a=r['after']; lines.append(f"| {i} | {r['name']} | {r['candidates_kept']} | {a['unconnected_items']} | {a['violations']} | {a['parity']} |")
+          Path('leaderboard.md').write_text('\n'.join(lines)+'\n'); print('\n'.join(lines))
+          PY
+      - uses: actions/upload-artifact@v4
+        with:
+          name: v2-safe-gap-leaderboard
+          path: |
+            leaderboard.json
+            leaderboard.md
+          retention-days: 2
