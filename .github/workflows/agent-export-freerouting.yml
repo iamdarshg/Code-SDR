@@ -1,0 +1,24 @@
+name: Export Freerouting tool
+
+on:
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  export:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download Freerouting 2.2.4
+        run: |
+          curl -fL --retry 4 --retry-delay 5 -o freerouting-2.2.4.jar https://github.com/freerouting/freerouting/releases/download/v2.2.4/freerouting-2.2.4.jar
+          sha256sum freerouting-2.2.4.jar > freerouting-2.2.4.sha256
+      - uses: actions/upload-artifact@v4
+        with:
+          name: freerouting-2.2.4-tool
+          path: |
+            freerouting-2.2.4.jar
+            freerouting-2.2.4.sha256
+          retention-days: 1
