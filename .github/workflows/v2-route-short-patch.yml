@@ -1,0 +1,137 @@
+name: V2 deterministic short-gap patch
+
+on:
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+  actions: read
+
+jobs:
+  patch:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    env:
+      GH_TOKEN: ${{ github.token }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Recover five-pass board
+        run: |
+          gh api /repos/${GITHUB_REPOSITORY}/actions/artifacts/8443389602/zip > route5.zip
+          mkdir route5
+          unzip -q route5.zip -d route5
+          find route5 -maxdepth 3 -type f -print
+          cp route5/Code-SDR-V2.kicad_pcb hardware/v2/Code-SDR-V2.kicad_pcb
+          cp route5/build/drc-diagnostic.json hardware/v2/build/drc-before-patch.json
+      - name: Patch short disconnected components
+        run: |
+          docker pull kicad/kicad:9.0.9-full
+          cat > hardware/v2/build/patch_short_gaps.py <<'PY'
+          import json, math, re
+          from pathlib import Path
+          import pcbnew
+
+          root=Path('hardware/v2')
+          board=pcbnew.LoadBoard(str(root/'Code-SDR-V2.kicad_pcb'))
+          drc=json.loads((root/'build/drc-before-patch.json').read_text())
+          nets=board.GetNetsByName()
+          layer_ids={'F.Cu':pcbnew.F_Cu,'B.Cu':pcbnew.B_Cu,'In2.Cu':pcbnew.In2_Cu}
+
+          def net_class(name):
+              if name.startswith(('RF_HA','RF_HB','RF_HC','RF_HD','RF_HIGH')) or name in {'LTC_RF_IN','LTC_LO_IN','LO_HIGH_P','LO_HIGH_N_TERM','LMX_LO_HIGH_P_RAW','LMX_LO_HIGH_N_RAW'}:
+                  return 'RF_CRITICAL'
+              if name.startswith(('RF_','LO_','LMX_LO','ADF_LO2','LTC_','IF_HIGH','IF_LOW','IF_SELECTED','IF_BAW','GRF2013_RFIN','GRF2013_RFOUT','IF_GAIN','PE4312','IF_DSA','LT_INPUT','LT_IN')):
+                  return 'RF_50'
+              if name.startswith(('IF2','AD8351_IN','AD8351_OUT','ADC_VIN')):
+                  return 'IF_DIFF'
+              if name.startswith(('RGMII','ADC_D','ADC_CLK','REF_100M')):
+                  return 'DIGITAL_HS'
+              if name.startswith(('+','VIN_','SW_')) or name in {'VIN_5V','VIN_FUSED','RP_CORE','PHY_AVDDH_3V3','PHY_AVDDL_1V2','PHY_PLL_1V2'} or name.startswith('FPGA_VCC') or name in {'FPGA_PLL_1V2','FPGA_AUX_2V5'}:
+                  return 'POWER'
+              return 'DEFAULT'
+
+          widths={'RF_CRITICAL':0.35,'RF_50':0.35,'IF_DIFF':0.20,'DIGITAL_HS':0.15,'POWER':0.60,'DEFAULT':0.15}
+
+          def pos(item):
+              p=item.get('pos',{})
+              return float(p['x']),float(p['y'])
+
+          def layer(item):
+              m=re.search(r' on (F\.Cu|B\.Cu|In2\.Cu)',item['description'])
+              return m.group(1) if m else 'F.Cu'
+
+          def add_track(net_name,a,b,width,lay='F.Cu'):
+              if math.dist(a,b)<1e-4: return
+              t=pcbnew.PCB_TRACK(board)
+              t.SetStart(pcbnew.VECTOR2I_MM(*a)); t.SetEnd(pcbnew.VECTOR2I_MM(*b))
+              t.SetWidth(pcbnew.FromMM(width)); t.SetLayer(layer_ids[lay]); t.SetNet(nets[net_name])
+              board.Add(t)
+
+          def add_via(net_name,p):
+              v=pcbnew.PCB_VIA(board)
+              v.SetPosition(pcbnew.VECTOR2I_MM(*p)); v.SetWidth(pcbnew.FromMM(0.45)); v.SetDrill(pcbnew.FromMM(0.20))
+              v.SetLayerPair(pcbnew.F_Cu,pcbnew.B_Cu); v.SetNet(nets[net_name]); board.Add(v)
+
+          patched=[]
+          for entry in drc.get('unconnected_items',[]):
+              items=entry.get('items',[])
+              if len(items)!=2: continue
+              text=' '.join(i['description'] for i in items)
+              m=re.search(r'\[([^\]]+)\]',text)
+              if not m: continue
+              name=m.group(1)
+              if name in {'GND','CHASSIS_GND'} or name not in nets: continue
+              a,b=pos(items[0]),pos(items[1]); d=math.dist(a,b)
+              if d>5.6: continue
+              cls=net_class(name); width=widths[cls]
+              la,lb=layer(items[0]),layer(items[1])
+              # Critical microwave routes must remain entirely on F.Cu without vias.
+              if cls=='RF_CRITICAL' and (la!='F.Cu' or lb!='F.Cu'):
+                  continue
+              if la!='F.Cu': add_via(name,a)
+              if lb!='F.Cu': add_via(name,b)
+              # Two-segment orthogonal dogleg avoids accidental zero-length or diagonal parser edge cases.
+              mid=(b[0],a[1])
+              add_track(name,a,mid,width,'F.Cu'); add_track(name,mid,b,width,'F.Cu')
+              patched.append((name,d,la,lb))
+
+          # Remove all disconnected F.Cu ground islands while preserving connected copper.
+          island_constants={n:getattr(pcbnew,n) for n in dir(pcbnew) if 'ISLAND_REMOVAL' in n}
+          print('island constants',island_constants)
+          for zone in board.Zones():
+              if zone.GetNetname()=='GND' and board.GetLayerName(zone.GetLayer())=='F.Cu':
+                  if hasattr(zone,'SetIslandRemovalMode'):
+                      mode=island_constants.get('ISLAND_REMOVAL_MODE_ALWAYS',1)
+                      zone.SetIslandRemovalMode(mode)
+                  if hasattr(zone,'SetMinIslandArea'):
+                      zone.SetMinIslandArea(0)
+          pcbnew.ZONE_FILLER(board).Fill(board.Zones())
+          pcbnew.SaveBoard(str(root/'Code-SDR-V2.kicad_pcb'),board)
+          (root/'build/short-patches.json').write_text(json.dumps(patched,indent=2)+'\n')
+          print('patched',len(patched))
+          PY
+          docker run --rm --user 0:0 -v "$GITHUB_WORKSPACE:/work" -w /work --entrypoint /bin/bash kicad/kicad:9.0.9-full -lc '
+            python3 hardware/v2/build/patch_short_gaps.py
+            kicad-cli pcb drc --format json --severity-all --all-track-errors --schematic-parity --units mm -o hardware/v2/build/drc-short-patch.json hardware/v2/Code-SDR-V2.kicad_pcb || true
+          '
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+          d=json.loads(Path('hardware/v2/build/drc-short-patch.json').read_text())
+          s={k:len(d.get(k,[])) for k in ('violations','unconnected_items','schematic_parity')}
+          Path('hardware/v2/build/short-patch-summary.json').write_text(json.dumps(s,indent=2)+'\n')
+          print(s)
+          PY
+      - name: Upload patched board
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: Code-SDR-V2-short-patch
+          path: |
+            hardware/v2/Code-SDR-V2.kicad_pcb
+            hardware/v2/build/drc-short-patch.json
+            hardware/v2/build/short-patch-summary.json
+            hardware/v2/build/short-patches.json
+          retention-days: 1
+          if-no-files-found: warn
