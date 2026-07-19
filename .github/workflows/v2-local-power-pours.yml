@@ -1,0 +1,176 @@
+name: V2 local power-cluster pours
+
+on:
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+  actions: read
+
+env:
+  GH_TOKEN: ${{ github.token }}
+  SOURCE_RUN_ID: '29691653824'
+  SOURCE_ARTIFACT: Code-SDR-V2-route-five-pass
+
+jobs:
+  pour:
+    if: github.head_ref == 'agent/v2-local-power-pours'
+    name: power-pours-${{ matrix.name }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    strategy:
+      fail-fast: false
+      max-parallel: 3
+      matrix:
+        include:
+          - name: margin0p25
+            margin: '0.25'
+          - name: margin0p50
+            margin: '0.50'
+          - name: margin0p80
+            margin: '0.80'
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: agent/v2-local-power-pours
+      - name: Recover routed checkpoint
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p recovered hardware/v2/build/${{ matrix.name }}
+          gh run download "$SOURCE_RUN_ID" --repo "$GITHUB_REPOSITORY" --name "$SOURCE_ARTIFACT" --dir recovered
+          board=$(find recovered -type f -name 'Code-SDR-V2.kicad_pcb' -print -quit)
+          drc=$(find recovered -type f -name 'drc-diagnostic.json' -print -quit)
+          test -n "$board"; test -n "$drc"
+          cp "$board" hardware/v2/Code-SDR-V2.kicad_pcb
+          cp "$drc" hardware/v2/build/${{ matrix.name }}/drc-before.json
+          docker pull kicad/kicad:9.0.9-full
+      - name: Add local same-net power pours
+        shell: bash
+        env:
+          NAME: ${{ matrix.name }}
+          MARGIN: ${{ matrix.margin }}
+        run: |
+          cat > hardware/v2/build/${{ matrix.name }}/add_power_pours.py <<'PY'
+          from __future__ import annotations
+
+          import json
+          import os
+          import sys
+          from collections import defaultdict
+          from pathlib import Path
+
+          import pcbnew
+
+          ROOT=Path('hardware/v2')
+          BUILD=ROOT/'build'/os.environ['NAME']
+          BOARD=ROOT/'Code-SDR-V2.kicad_pcb'
+          MARGIN=float(os.environ['MARGIN'])
+          sys.path.insert(0,str(ROOT/'tools'))
+          from generate_pcb import router_class_for_net
+
+          b=pcbnew.LoadBoard(str(BOARD))
+          created=[]
+          for fp in b.GetFootprints():
+              grouped=defaultdict(list)
+              for pad in fp.Pads():
+                  net=pad.GetNetname()
+                  if net and router_class_for_net(net)=='POWER' and pad.IsOnLayer(pcbnew.F_Cu):
+                      grouped[net].append(pad)
+              for net,pads in grouped.items():
+                  if len(pads)<2:
+                      continue
+                  boxes=[p.GetBoundingBox() for p in pads]
+                  minx=min(box.GetX() for box in boxes)-pcbnew.FromMM(MARGIN)
+                  miny=min(box.GetY() for box in boxes)-pcbnew.FromMM(MARGIN)
+                  maxx=max(box.GetRight() for box in boxes)+pcbnew.FromMM(MARGIN)
+                  maxy=max(box.GetBottom() for box in boxes)+pcbnew.FromMM(MARGIN)
+                  # Skip implausibly large clusters; those need routed feeders,
+                  # not a broad copper sheet through unrelated circuitry.
+                  if pcbnew.ToMM(maxx-minx)>12.0 or pcbnew.ToMM(maxy-miny)>12.0:
+                      continue
+                  zone=pcbnew.ZONE(b)
+                  zone.SetLayer(pcbnew.F_Cu)
+                  zone.SetNet(b.FindNet(net))
+                  zone.SetPadConnection(pcbnew.ZONE_CONNECTION_FULL)
+                  zone.SetLocalClearance(pcbnew.FromMM(0.10))
+                  zone.SetMinThickness(pcbnew.FromMM(0.10))
+                  outline=zone.Outline(); outline.NewOutline()
+                  for x,y in ((minx,miny),(maxx,miny),(maxx,maxy),(minx,maxy)):
+                      outline.Append(x,y)
+                  b.Add(zone)
+                  created.append({
+                      'reference':fp.GetReference(),
+                      'net':net,
+                      'pads':[p.GetNumber() for p in pads],
+                      'margin_mm':MARGIN,
+                      'width_mm':pcbnew.ToMM(maxx-minx),
+                      'height_mm':pcbnew.ToMM(maxy-miny),
+                  })
+          pcbnew.ZONE_FILLER(b).Fill(b.Zones(),True)
+          pcbnew.SaveBoard(str(BOARD),b)
+          (BUILD/'power-pours.json').write_text(json.dumps(created,indent=2)+'\n')
+          print({'created_power_zones':len(created),'margin_mm':MARGIN})
+          PY
+          docker run --rm --user 0:0 -v "$GITHUB_WORKSPACE:/work" -w /work --entrypoint /bin/bash kicad/kicad:9.0.9-full -lc \
+            "NAME='$NAME' MARGIN='$MARGIN' python3 hardware/v2/build/$NAME/add_power_pours.py; kicad-cli pcb drc --format json --severity-all --all-track-errors --schematic-parity --units mm -o hardware/v2/build/$NAME/drc-after.json hardware/v2/Code-SDR-V2.kicad_pcb || true"
+      - name: Score pours
+        shell: bash
+        env:
+          NAME: ${{ matrix.name }}
+        run: |
+          python3 - <<'PY'
+          import json,os,re
+          from collections import Counter
+          from pathlib import Path
+          name=os.environ['NAME']; d=Path('hardware/v2/build')/name
+          before=json.loads((d/'drc-before.json').read_text()); after=json.loads((d/'drc-after.json').read_text()); zones=json.loads((d/'power-pours.json').read_text())
+          nets=Counter()
+          for issue in after.get('unconnected_items',[]):
+              names=set()
+              for item in issue.get('items',[]):names.update(re.findall(r'\[([^\]]+)\]',item.get('description','')))
+              for n in names:nets[n]+=1
+          s={'name':name,'zones_created':len(zones),'before':{'opens':len(before.get('unconnected_items',[])),'violations':len(before.get('violations',[])),'parity':len(before.get('schematic_parity',[]))},'after':{'opens':len(after.get('unconnected_items',[])),'violations':len(after.get('violations',[])),'parity':len(after.get('schematic_parity',[]))},'remaining_by_net':dict(nets.most_common()),'zones':zones}
+          (d/'summary.json').write_text(json.dumps(s,indent=2)+'\n'); print(json.dumps(s,indent=2))
+          PY
+      - uses: actions/upload-artifact@v4
+        with:
+          name: v2-power-pours-${{ matrix.name }}
+          path: |
+            hardware/v2/Code-SDR-V2.kicad_pcb
+            hardware/v2/build/${{ matrix.name }}/
+          retention-days: 2
+
+  leaderboard:
+    if: always()
+    needs: pour
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: v2-power-pours-*
+          path: candidates
+      - name: Rank pours
+        run: |
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+          rows=[]
+          for p in Path('candidates').rglob('summary.json'):
+              try:rows.append(json.loads(p.read_text()))
+              except Exception:pass
+          rows.sort(key=lambda x:(x['after']['parity'],x['after']['violations'],x['after']['opens']))
+          Path('leaderboard.json').write_text(json.dumps(rows,indent=2)+'\n')
+          lines=['# Local power-pour candidates','', '| Rank | Candidate | Zones | Opens | Violations | Parity |','|---:|---|---:|---:|---:|---:|']
+          for i,r in enumerate(rows,1):
+              a=r['after'];lines.append(f"| {i} | {r['name']} | {r['zones_created']} | {a['opens']} | {a['violations']} | {a['parity']} |")
+          Path('leaderboard.md').write_text('\n'.join(lines)+'\n');print('\n'.join(lines))
+          PY
+      - uses: actions/upload-artifact@v4
+        with:
+          name: v2-power-pours-leaderboard
+          path: |
+            leaderboard.json
+            leaderboard.md
+          retention-days: 2
