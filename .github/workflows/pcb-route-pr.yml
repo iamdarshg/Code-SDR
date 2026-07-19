@@ -27,6 +27,12 @@ jobs:
           ref: agent/route-v1-v2
           fetch-depth: 0
 
+      - name: Use Java 25 for Freerouting
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '25'
+
       - name: Run deterministic routing pipeline
         id: pipeline
         continue-on-error: true
@@ -35,6 +41,7 @@ jobs:
           mkdir -p hardware/v2/build
           sed -i '/generate_symbols.py/d;/generate_footprints.py/d;/generate_schematic.py/d;/generate_pcb.py/d' hardware/v2/tools/route_ci.sh
           sed -i 's/sch erc --format json --severity-all/sch erc --format json --severity-error/g' hardware/v2/tools/route_ci.sh
+          sed -i 's/ openjdk-21-jre-headless//' hardware/v2/tools/route_ci.sh
           set +e
           bash hardware/v2/tools/route_ci.sh > hardware/v2/build/route-run.log 2>&1
           code=$?
