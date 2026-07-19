@@ -12,17 +12,22 @@ jobs:
   complete:
     runs-on: ubuntu-24.04
     timeout-minutes: 180
+    env:
+      GH_TOKEN: ${{ github.token }}
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-java@v4
         with:
           distribution: temurin
           java-version: '25'
-      - name: Prepare KiCad, Freerouting, and checkpoint
+      - name: Prepare KiCad, Freerouting, baseline, and checkpoint
         run: |
           set -euo pipefail
-          mkdir -p hardware/v2/build
+          mkdir -p baseline hardware/v2/build
+          gh run download 29689598311 --repo "$GITHUB_REPOSITORY" --name Code-SDR-V2-route-five-pass --dir baseline
+          test -s baseline/build/Code-SDR-V2.dsn
           base64 -d hardware/v2/build/power-only-all.ses.gz.b64 | gzip -d > hardware/v2/build/power-only-all.ses
+          sed -i '1s/"power-only-all"/"Code-SDR-V2"/; 2s/"power-only-all"/"Code-SDR-V2"/' hardware/v2/build/power-only-all.ses
           test -s hardware/v2/build/power-only-all.ses
           docker pull kicad/kicad:9.0.9-full
           curl -fL --retry 4 --retry-delay 5 -o "$RUNNER_TEMP/freerouting.jar" https://github.com/freerouting/freerouting/releases/download/v2.2.4/freerouting-2.2.4.jar
@@ -35,22 +40,27 @@ jobs:
           board=pcbnew.LoadBoard(str(board_path))
           if not pcbnew.ImportSpecctraSES(board,'hardware/v2/build/power-only-all.ses'):
               raise SystemExit('power checkpoint SES import failed')
+          tracks=sum(1 for _ in board.GetTracks())
+          print('imported power tracks/vias:',tracks)
+          if tracks < 20:
+              raise SystemExit('power checkpoint imported no usable copper')
           pcbnew.ZONE_FILLER(board).Fill(board.Zones())
           pcbnew.SaveBoard(str(board_path),board)
-          out='hardware/v2/build/Code-SDR-V2-after-power.dsn'
-          pcbnew.ExportSpecctraDSN(board,out)
-          if not Path(out).is_file() or Path(out).stat().st_size < 10000:
+          out=Path('hardware/v2/build/Code-SDR-V2-after-power.dsn')
+          pcbnew.ExportSpecctraDSN(board,str(out))
+          if not out.is_file() or out.stat().st_size < 10000:
               raise SystemExit('full checkpoint DSN export failed')
           PY
           docker run --rm --user 0:0 -v "$GITHUB_WORKSPACE:/work" -w /work --entrypoint /bin/bash kicad/kicad:9.0.9-full -lc 'python3 hardware/v2/build/import_power_checkpoint.py'
           sudo chown -R "$USER:$USER" hardware/v2/build hardware/v2/Code-SDR-V2.kicad_pcb
-      - name: Tune remaining-route rules
+      - name: Restore classes and tune remaining-route rules
         run: |
           python3 - <<'PY'
           from pathlib import Path
           import re
           p=Path('hardware/v2/build/Code-SDR-V2-after-power.dsn')
           s=p.read_text().replace('Via[0-3]_600:300_um','Via[0-3]_450:200_um')
+          base=Path('baseline/build/Code-SDR-V2.dsn').read_text().replace('Via[0-3]_600:300_um','Via[0-3]_450:200_um')
 
           def block_end(text,start):
               depth=0; quoted=False; escaped=False
@@ -68,6 +78,17 @@ jobs:
                           if depth==0: return i+1
               raise RuntimeError('unbalanced DSN block')
 
+          # KiCad re-exports one kicad_default class. Restore the validated routing classes.
+          b0=base.index('    (class RF_CRITICAL\n')
+          b1=base.index('  )\n  (wiring',b0)
+          classes=base[b0:b1]
+          classes=re.sub(r'(?<!\S)GND(?!\S)','',classes)
+          n0=s.index('  (network\n')
+          c0=s.index('    (class ',n0)
+          c1=s.index('  )\n  (wiring',c0)
+          s=s[:c0]+classes+s[c1:]
+
+          # GND is handled by the continuous copper planes, not by the signal router.
           for pattern in ('    (net GND\n','    (net "GND"\n'):
               while True:
                   a=s.find(pattern)
@@ -83,14 +104,15 @@ jobs:
               z=re.sub(r'\(clearance \d+\)',f'(clearance {clearance})',z,count=1)
               s=s[:a]+z+s[b:]
 
+          # Preserve RF_CRITICAL unchanged: 0.35 mm, F.Cu-only, no signal vias.
           tune('RF_50','IF_DIFF',300,150)
           tune('IF_DIFF','DIGITAL_HS',180,120)
           tune('DIGITAL_HS','POWER',130,100)
-          tune('POWER','DEFAULT',150,90)
+          tune('POWER','DEFAULT',200,100)
           a=s.index('    (class DEFAULT\n')
           tail=s[a:]
           tail=re.sub(r'\(width \d+\)','(width 120)',tail,count=1)
-          tail=re.sub(r'\(clearance \d+\)','(clearance 90)',tail,count=1)
+          tail=re.sub(r'\(clearance \d+\)','(clearance 100)',tail,count=1)
           s=s[:a]+tail
 
           spans=[]; pos=0
@@ -108,8 +130,9 @@ jobs:
               if len(set(pts))<2: drops.append((a,b))
           for a,b in reversed(drops): s=s[:a]+s[b:]
           p.write_text(s)
-          print('dropped zero-length wires:',len(drops))
+          print('restored class blocks; dropped zero-length wires:',len(drops))
           PY
+          grep -A10 '    (class RF_CRITICAL' hardware/v2/build/Code-SDR-V2-after-power.dsn | head -14
           grep -A8 '    (class POWER' hardware/v2/build/Code-SDR-V2-after-power.dsn
       - name: Route remaining connections
         run: |
