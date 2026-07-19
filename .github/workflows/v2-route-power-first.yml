@@ -1,0 +1,213 @@
+name: V2 power-first two-stage route
+
+on:
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+  actions: read
+
+jobs:
+  power-first:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 220
+    env:
+      GH_TOKEN: ${{ github.token }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '25'
+      - name: Recover baseline and tools
+        run: |
+          set -euo pipefail
+          mkdir -p baseline hardware/v2/build
+          gh run download 29689598311 --repo "$GITHUB_REPOSITORY" --name Code-SDR-V2-route-five-pass --dir baseline
+          cp baseline/Code-SDR-V2.kicad_pcb hardware/v2/Code-SDR-V2.kicad_pcb
+          cp baseline/build/Code-SDR-V2.dsn hardware/v2/build/Code-SDR-V2-all.dsn
+          curl -fL --retry 4 --retry-delay 5 -o "$RUNNER_TEMP/freerouting.jar" https://github.com/freerouting/freerouting/releases/download/v2.2.4/freerouting-2.2.4.jar
+          docker pull kicad/kicad:9.0.9-full
+      - name: Build and route power-only stage
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          import re
+          power={'+1V2_CORE','+2V5_AUX','+3V3_ANA','+3V3_DIG','+5V_RF','FPGA_AUX_2V5','FPGA_PLL_1V2','FPGA_VCCIO0_3V3','FPGA_VCCIO1_3V3','FPGA_VCCIO2_3V3','FPGA_VCC_1V2','PHY_AVDDH_3V3','PHY_AVDDL_1V2','PHY_PLL_1V2','RP_CORE','SW_1V2','SW_3V3','VIN_5V','VIN_FUSED'}
+          s=Path('hardware/v2/build/Code-SDR-V2-all.dsn').read_text()
+          def spans(text, token):
+              out=[]; pos=0
+              while True:
+                  a=text.find(token,pos)
+                  if a<0: break
+                  d=0; q=False; esc=False; b=None
+                  for i in range(a,len(text)):
+                      c=text[i]
+                      if q:
+                          if esc: esc=False
+                          elif c=='\\': esc=True
+                          elif c=='"': q=False
+                      else:
+                          if c=='"': q=True
+                          elif c=='(': d+=1
+                          elif c==')':
+                              d-=1
+                              if d==0: b=i+1; break
+                  if b is None: raise RuntimeError('unbalanced DSN')
+                  out.append((a,b,text[a:b])); pos=b
+              return out
+          removals=[]
+          for a,b,blk in spans(s,'    (net '):
+              m=re.match(r'\s*\(net\s+("[^"]+"|[^\s()]+)',blk)
+              if not m: continue
+              name=m.group(1).strip('"')
+              if name not in power: removals.append((a,b))
+          for a,b in reversed(removals): s=s[:a]+s[b:]
+          a=s.index('    (class POWER\n'); b=s.index('    (class DEFAULT',a)
+          blk=s[a:b]
+          blk=re.sub(r'\(use_layer F\.Cu In2\.Cu B\.Cu\)','(use_layer In2.Cu)',blk,count=1)
+          blk=re.sub(r'\(width \d+\)','(width 150)',blk,count=1)
+          blk=re.sub(r'\(clearance \d+\)','(clearance 90)',blk,count=1)
+          s=s[:a]+blk+s[b:]
+          Path('hardware/v2/build/Code-SDR-V2-power-only.dsn').write_text(s)
+          print('removed',len(removals),'non-power nets')
+          PY
+          timeout --signal=TERM --kill-after=2m 70m \
+            java -Xmx5600m -jar "$RUNNER_TEMP/freerouting.jar" \
+            -de hardware/v2/build/Code-SDR-V2-power-only.dsn \
+            -do hardware/v2/build/Code-SDR-V2-power-only.ses \
+            -mp 8 -mt 0 -da -dct 1 --gui.enabled=false \
+            2>&1 | tee hardware/v2/build/freerouting-power-only.log
+          test -s hardware/v2/build/Code-SDR-V2-power-only.ses
+      - name: Import power stage and export routed checkpoint
+        run: |
+          cat > hardware/v2/build/import_power_export.py <<'PY'
+          from pathlib import Path
+          import pcbnew
+          p=Path('hardware/v2/Code-SDR-V2.kicad_pcb')
+          b=pcbnew.LoadBoard(str(p))
+          if not pcbnew.ImportSpecctraSES(b,'hardware/v2/build/Code-SDR-V2-power-only.ses'):
+              raise SystemExit('power SES import failed')
+          pcbnew.ZONE_FILLER(b).Fill(b.Zones())
+          pcbnew.SaveBoard(str(p),b)
+          if not pcbnew.ExportSpecctraDSN(b,'hardware/v2/build/Code-SDR-V2-after-power.dsn'):
+              raise SystemExit('checkpoint DSN export failed')
+          PY
+          docker run --rm --user 0:0 -v "$GITHUB_WORKSPACE:/work" -w /work --entrypoint /bin/bash kicad/kicad:9.0.9-full -lc 'python3 hardware/v2/build/import_power_export.py'
+          sudo chown -R "$USER:$USER" hardware/v2/build hardware/v2/Code-SDR-V2.kicad_pcb
+      - name: Tune and route remaining nets
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          import re
+          p=Path('hardware/v2/build/Code-SDR-V2-after-power.dsn')
+          s=p.read_text()
+          s=s.replace('Via[0-3]_600:300_um','Via[0-3]_450:200_um')
+          # Remove GND from the autorouter; its three copper planes remain in the board.
+          def remove_block(text, start):
+              d=0; q=False; esc=False
+              for i in range(start,len(text)):
+                  c=text[i]
+                  if q:
+                      if esc: esc=False
+                      elif c=='\\': esc=True
+                      elif c=='"': q=False
+                  else:
+                      if c=='"': q=True
+                      elif c=='(': d+=1
+                      elif c==')':
+                          d-=1
+                          if d==0: return text[:start]+text[i+1:]
+              raise RuntimeError('unbalanced block')
+          for pat in ['    (net GND\n','    (net "GND"\n']:
+              while (a:=s.find(pat))>=0: s=remove_block(s,a)
+          start=s.index('    (class RF_CRITICAL\n'); end=s.index('    (class RF_50\n',start)
+          blk=s[start:end]
+          controls=['RF_HA_ENABLE','RF_HB_ENABLE','RF_HC_ENABLE','RF_HD_ENABLE','RF_HD2_ENABLE']
+          mid=['RF_HA_IN','RF_HA_LNA_IN','RF_HA_LNA_OUT','RF_HA_LNA_OUT_RAW','RF_HB_IN','RF_HB_LNA_IN','RF_HB_LNA_OUT','RF_HB_LNA_OUT_RAW']
+          for n in controls+mid: blk=re.sub(r'(?<!\S)'+re.escape(n)+r'(?!\S)','',blk)
+          midblk='''    (class RF_MID\n      '''+' '.join(mid)+'''\n      (circuit\n        (use_via "Via[0-3]_450:200_um")\n        (use_layer F.Cu)\n      )\n      (rule\n        (width 240)\n        (clearance 120)\n      )\n    )\n'''
+          s=s[:start]+blk+midblk+s[end:]
+          def tune(name,next_name,w,c):
+              global s
+              a=s.index(f'    (class {name}\n'); b=s.index(f'    (class {next_name}',a)
+              z=s[a:b]; z=re.sub(r'\(width \d+\)',f'(width {w})',z,count=1); z=re.sub(r'\(clearance \d+\)',f'(clearance {c})',z,count=1); s=s[:a]+z+s[b:]
+          tune('RF_50','IF_DIFF',280,130)
+          tune('IF_DIFF','DIGITAL_HS',160,100)
+          tune('DIGITAL_HS','POWER',110,90)
+          tune('POWER','DEFAULT',150,90)
+          a=s.index('    (class DEFAULT\n'); tail=s[a:]
+          tail=re.sub(r'\(width \d+\)','(width 100)',tail,count=1); tail=re.sub(r'\(clearance \d+\)','(clearance 85)',tail,count=1); s=s[:a]+tail
+          # Drop zero-length exported wires, which trigger a Freerouting 2.2.4 null-corner bug.
+          def wire_spans(text):
+              out=[]; pos=0
+              while True:
+                  a=text.find('    (wire\n',pos)
+                  if a<0: break
+                  d=0
+                  for i in range(a,len(text)):
+                      if text[i]=='(': d+=1
+                      elif text[i]==')':
+                          d-=1
+                          if d==0: out.append((a,i+1,text[a:i+1])); pos=i+1; break
+                  else: raise RuntimeError('unbalanced wire')
+              return out
+          drops=[]
+          for a,b,w in wire_spans(s):
+              m=re.search(r'\(path\s+\S+\s+\d+\s+([^)]*)\)',w)
+              if not m: continue
+              vals=[float(x) for x in m.group(1).split()]
+              pts=list(zip(vals[0::2],vals[1::2]))
+              if len(set(pts))<2: drops.append((a,b))
+          for a,b in reversed(drops): s=s[:a]+s[b:]
+          p.write_text(s)
+          print('dropped zero-length wires',len(drops))
+          PY
+          timeout --signal=TERM --kill-after=2m 125m \
+            java -Xmx5600m -jar "$RUNNER_TEMP/freerouting.jar" \
+            -de hardware/v2/build/Code-SDR-V2-after-power.dsn \
+            -do hardware/v2/build/Code-SDR-V2-power-first-final.ses \
+            -mp 16 -mt 0 -da -dct 1 --gui.enabled=false \
+            2>&1 | tee hardware/v2/build/freerouting-power-first-final.log
+          test -s hardware/v2/build/Code-SDR-V2-power-first-final.ses
+      - name: Import and measure final candidate
+        run: |
+          cat > hardware/v2/build/import_final.py <<'PY'
+          import pcbnew
+          p='hardware/v2/Code-SDR-V2.kicad_pcb'
+          b=pcbnew.LoadBoard(p)
+          if not pcbnew.ImportSpecctraSES(b,'hardware/v2/build/Code-SDR-V2-power-first-final.ses'):
+              raise SystemExit('final SES import failed')
+          for z in b.Zones(): z.SetPadConnection(pcbnew.ZONE_CONNECTION_FULL)
+          pcbnew.ZONE_FILLER(b).Fill(b.Zones())
+          pcbnew.SaveBoard(p,b)
+          PY
+          docker run --rm --user 0:0 -v "$GITHUB_WORKSPACE:/work" -w /work --entrypoint /bin/bash kicad/kicad:9.0.9-full -lc '
+            python3 hardware/v2/build/import_final.py
+            kicad-cli pcb drc --format json --severity-all --all-track-errors --schematic-parity --units mm -o hardware/v2/build/drc-power-first.json hardware/v2/Code-SDR-V2.kicad_pcb || true
+          '
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+          d=json.loads(Path('hardware/v2/build/drc-power-first.json').read_text())
+          s={k:len(d.get(k,[])) for k in ('violations','unconnected_items','schematic_parity')}
+          Path('hardware/v2/build/power-first-summary.json').write_text(json.dumps(s,indent=2)+'\n')
+          print(s)
+          PY
+      - name: Upload two-stage candidate
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: Code-SDR-V2-power-first
+          path: |
+            hardware/v2/Code-SDR-V2.kicad_pcb
+            hardware/v2/build/Code-SDR-V2-power-only.ses
+            hardware/v2/build/Code-SDR-V2-after-power.dsn
+            hardware/v2/build/Code-SDR-V2-power-first-final.ses
+            hardware/v2/build/freerouting-power-only.log
+            hardware/v2/build/freerouting-power-first-final.log
+            hardware/v2/build/drc-power-first.json
+            hardware/v2/build/power-first-summary.json
+          retention-days: 1
+          if-no-files-found: warn
