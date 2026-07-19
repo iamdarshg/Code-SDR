@@ -1,0 +1,90 @@
+name: V2 alternate completion route
+
+on:
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  route-v19:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 150
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '25'
+      - name: Prepare routing tools
+        run: |
+          docker pull kicad/kicad:9.0.9-full
+          curl -fL --retry 4 --retry-delay 5 -o "$RUNNER_TEMP/freerouting.jar" https://github.com/freerouting/freerouting/releases/download/v2.2.4/freerouting-2.2.4.jar
+      - name: Export corrected DSN
+        run: |
+          mkdir -p hardware/v2/build
+          printf '{"components": {}}\n' > hardware/v2/build/schematic_paths.json
+          sed -i 's/Via\[0-3\]_600:300_um/Via[0-3]_450:200_um/' hardware/v2/tools/generate_pcb.py
+          docker run --rm --user 0:0 -v "$GITHUB_WORKSPACE:/work" -w /work --entrypoint /bin/bash kicad/kicad:9.0.9-full -lc 'python3 hardware/v2/tools/export_route_checkpoint.py'
+          ! grep -q '^    (net GND' hardware/v2/build/Code-SDR-V2.dsn
+          ! grep -q 'Via\[0-3\]_600:300_um' hardware/v2/build/Code-SDR-V2.dsn
+      - name: Route with alternate engine and completion scoring
+        run: |
+          timeout --signal=TERM --kill-after=2m 130m \
+            java -Xmx5600m -jar "$RUNNER_TEMP/freerouting.jar" \
+            -de hardware/v2/build/Code-SDR-V2.dsn \
+            -do hardware/v2/build/Code-SDR-V2-v19-routed.ses \
+            -mp 18 -mt 0 -da -dct 1 --gui.enabled=false \
+            --router.algorithm=freerouting-router-v19 \
+            --router.scoring.unroutedNetPenalty=50000 \
+            --router.scoring.clearanceViolationPenalty=20000 \
+            --router.scoring.startRipupCosts=20 \
+            --router.scoring.viaCosts=20 \
+            2>&1 | tee hardware/v2/build/freerouting-v19.log
+          test -s hardware/v2/build/Code-SDR-V2-v19-routed.ses
+      - name: Import and validate
+        run: |
+          cat > hardware/v2/build/import_v19.py <<'PY'
+          from pathlib import Path
+          import pcbnew
+          p=Path('hardware/v2/Code-SDR-V2.kicad_pcb')
+          b=pcbnew.LoadBoard(str(p))
+          if not pcbnew.ImportSpecctraSES(b,'hardware/v2/build/Code-SDR-V2-v19-routed.ses'):
+              raise SystemExit('SES import failed')
+          for zone in b.Zones():
+              zone.SetPadConnection(pcbnew.ZONE_CONNECTION_FULL)
+          pcbnew.ZONE_FILLER(b).Fill(b.Zones())
+          pcbnew.SaveBoard(str(p),b)
+          print('tracks',len(list(b.GetTracks())))
+          PY
+          docker run --rm --user 0:0 -v "$GITHUB_WORKSPACE:/work" -w /work --entrypoint /bin/bash kicad/kicad:9.0.9-full -lc '
+            python3 hardware/v2/build/import_v19.py
+            python3 hardware/v2/tools/add_rf_via_fences.py
+            kicad-cli pcb drc --format json --severity-all --all-track-errors --schematic-parity --units mm -o hardware/v2/build/drc-v19.json hardware/v2/Code-SDR-V2.kicad_pcb || true
+            python3 hardware/v2/tools/validate_route.py > hardware/v2/build/validate-v19.log 2>&1 || true
+          '
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+          d=json.loads(Path('hardware/v2/build/drc-v19.json').read_text())
+          s={k:len(d.get(k,[])) for k in ('violations','unconnected_items','schematic_parity')}
+          Path('hardware/v2/build/v19-summary.json').write_text(json.dumps(s,indent=2)+'\n')
+          print(s)
+          PY
+      - name: Upload alternate route
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: Code-SDR-V2-route-v19
+          path: |
+            hardware/v2/Code-SDR-V2.kicad_pcb
+            hardware/v2/build/Code-SDR-V2.dsn
+            hardware/v2/build/Code-SDR-V2-v19-routed.ses
+            hardware/v2/build/freerouting-v19.log
+            hardware/v2/build/drc-v19.json
+            hardware/v2/build/v19-summary.json
+            hardware/v2/build/validate-v19.log
+            hardware/v2/build/ROUTE_STATISTICS.csv
+          retention-days: 1
+          if-no-files-found: warn
