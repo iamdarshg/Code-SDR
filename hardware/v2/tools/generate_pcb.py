@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import json
 import math
+import os
 from collections import defaultdict
 from pathlib import Path
 
@@ -12,7 +13,24 @@ import pcbnew
 from design_model import ROOT, SHEETS, all_nets, by_sheet, components
 
 
-SYSTEM_FOOTPRINTS = Path(r"C:\Program Files\KiCad\9.0\share\kicad\footprints")
+def _system_footprint_root() -> Path:
+    """Resolve KiCad 9 system footprints on Windows, Linux, or CI."""
+    candidates: list[Path] = []
+    configured = os.environ.get("KICAD9_FOOTPRINT_DIR")
+    if configured:
+        candidates.append(Path(configured))
+    candidates.extend((
+        Path("/usr/share/kicad/footprints"),
+        Path("/usr/share/kicad/9.0/footprints"),
+        Path(r"C:\Program Files\KiCad\9.0\share\kicad\footprints"),
+    ))
+    for candidate in candidates:
+        if candidate.is_dir():
+            return candidate
+    return candidates[0]
+
+
+SYSTEM_FOOTPRINTS = _system_footprint_root()
 BOARD_PATH = ROOT / "Code-SDR-V2.kicad_pcb"
 DSN_PATH = ROOT / "build" / "Code-SDR-V2.dsn"
 PROJECT_PATH = ROOT / "Code-SDR-V2.kicad_pro"
@@ -57,7 +75,11 @@ MANUAL_PLACEMENT = {
     "J63": (110.0, 0.0, 270.0),
 }
 FOOTPRINT_CACHE: dict[str, pcbnew.FOOTPRINT] = {}
-PATH_MAP = json.loads(SCHEMATIC_PATHS.read_text(encoding="utf-8"))["components"]
+PATH_MAP = (
+    json.loads(SCHEMATIC_PATHS.read_text(encoding="utf-8"))["components"]
+    if SCHEMATIC_PATHS.exists()
+    else {}
+)
 
 
 # RF placement is derived from the same logical coordinates as the schematic,
@@ -187,6 +209,11 @@ def prepare_footprint(item, net_items: dict[str, pcbnew.NETINFO_ITEM]) -> pcbnew
     footprint.SetValue(item.value)
     library, name = item.footprint.split(":", 1)
     footprint.SetFPID(pcbnew.LIB_ID(library, name))
+    if item.ref not in PATH_MAP:
+        raise RuntimeError(
+            f"Missing schematic UUID mapping for {item.ref}; run "
+            "tools/generate_schematic.py before regenerating the PCB"
+        )
     footprint.SetPath(pcbnew.KIID_PATH(PATH_MAP[item.ref]["path"]))
     footprint.SetSheetname(item.sheet)
     footprint.SetSheetfile(f"sheets/{item.sheet}.kicad_sch")
@@ -329,6 +356,9 @@ def add_ground_zone(board: pcbnew.BOARD, net: pcbnew.NETINFO_ITEM, layer: int, m
     zone = pcbnew.ZONE(board)
     zone.SetLayer(layer)
     zone.SetNet(net)
+    # Solid ground connections minimize inductance and avoid thermal starvation
+    # in the RF/high-speed return path.
+    zone.SetPadConnection(pcbnew.ZONE_CONNECTION_FULL)
     zone.SetLocalClearance(pcbnew.FromMM(0.15))
     zone.SetMinThickness(pcbnew.FromMM(0.12))
     polygon = zone.Outline()
@@ -500,7 +530,7 @@ def _format_dsn_class(
         lines.append("      " + " ".join(nets[index:index + 8]))
     lines.extend([
         "      (circuit",
-        '        (use_via "Via[0-3]_600:300_um")',
+        '        (use_via "Via[0-3]_450:200_um")',
         "        (use_layer " + " ".join(layers) + ")",
         "      )",
         "      (rule",

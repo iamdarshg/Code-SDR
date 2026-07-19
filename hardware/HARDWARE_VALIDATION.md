@@ -17,16 +17,20 @@ VNA, phase-noise, noise-figure, blocker and thermal tests.
 
 ## Reproducible V1 audit
 
-The latest `main` at the start of this redesign was commit `7d617d1`. The
-legacy design produced:
+The redesign began from commit `7d617d1`. A fresh KiCad 9.0.9 audit of the
+legacy project produced:
 
 | V1 check | Result |
 |---|---:|
-| Schematic ERC violations | 94 |
+| Schematic ERC findings | 521 |
 | PCB DRC violations | 656 |
 | Unconnected PCB items | 499 |
 | Schematic/PCB parity findings | 10 |
 | Fitted references | 285 |
+
+The ERC total includes 449 library-symbol consistency findings; even when those
+are separated, the remaining connectivity and power findings still prevent
+fabrication. The older 94-count audit used a narrower reporting configuration.
 
 The failures included invalid CrossLink and KSZ9031 rails, a nonfunctional
 RP2040 implementation, incorrect ADC DNC/reference/clock connections,
@@ -37,7 +41,7 @@ not value-tuning issues.
 
 `hardware/validate_hardware.ps1` preserves the V1 audit. No other branch or
 open PR contained a corrected receiver, rail tree or PCB that could be safely
-reused; the other branch/PR work was RTL/software. Open PR #28 changes only
+reused; the other branch/PR work was RTL/software. Closed, unmerged PR #28 changes only
 the Ethernet/UDP and processing RTL. It contains no voltage, schematic,
 footprint or PCB correction and still requires a V2-specific 100 MHz/RGMII
 port before it can be loaded on this board.

@@ -28,17 +28,23 @@ def main() -> None:
     # hierarchy.  Refresh every footprint's current schematic UUID path after
     # route import so parity remains exact without regenerating the PCB and
     # discarding the route.
-    path_map = json.loads(SCHEMATIC_PATHS.read_text(encoding="utf-8"))["components"]
-    missing: list[str] = []
-    for footprint in board.GetFootprints():
-        reference = footprint.GetReference()
-        if reference not in path_map:
-            missing.append(reference)
-            continue
-        footprint.SetPath(pcbnew.KIID_PATH(path_map[reference]["path"]))
-    if missing:
-        raise RuntimeError(
-            "No schematic UUID path for PCB footprints: " + ", ".join(sorted(missing))
+    if SCHEMATIC_PATHS.exists():
+        path_map = json.loads(SCHEMATIC_PATHS.read_text(encoding="utf-8"))["components"]
+        missing: list[str] = []
+        for footprint in board.GetFootprints():
+            reference = footprint.GetReference()
+            if reference not in path_map:
+                missing.append(reference)
+                continue
+            footprint.SetPath(pcbnew.KIID_PATH(path_map[reference]["path"]))
+        if missing:
+            raise RuntimeError(
+                "No schematic UUID path for PCB footprints: " + ", ".join(sorted(missing))
+            )
+    else:
+        print(
+            "schematic_paths.json is absent; preserving the hierarchy paths "
+            "already stored in the PCB"
         )
     pcbnew.SaveBoard(str(BOARD_PATH), board)
 
