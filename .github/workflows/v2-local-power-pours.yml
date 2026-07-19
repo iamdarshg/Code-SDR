@@ -54,68 +54,44 @@ jobs:
         run: |
           cat > hardware/v2/build/${{ matrix.name }}/add_power_pours.py <<'PY'
           from __future__ import annotations
-
-          import json
-          import os
-          import sys
+          import json,os,sys
           from collections import defaultdict
           from pathlib import Path
-
           import pcbnew
-
-          ROOT=Path('hardware/v2')
-          BUILD=ROOT/'build'/os.environ['NAME']
-          BOARD=ROOT/'Code-SDR-V2.kicad_pcb'
-          MARGIN=float(os.environ['MARGIN'])
+          ROOT=Path('hardware/v2'); BUILD=ROOT/'build'/os.environ['NAME']; BOARD=ROOT/'Code-SDR-V2.kicad_pcb'; MARGIN=float(os.environ['MARGIN'])
           sys.path.insert(0,str(ROOT/'tools'))
           from generate_pcb import router_class_for_net
-
-          b=pcbnew.LoadBoard(str(BOARD))
-          created=[]
+          b=pcbnew.LoadBoard(str(BOARD)); created=[]
           for fp in b.GetFootprints():
               grouped=defaultdict(list)
               for pad in fp.Pads():
                   net=pad.GetNetname()
-                  if net and router_class_for_net(net)=='POWER' and pad.IsOnLayer(pcbnew.F_Cu):
-                      grouped[net].append(pad)
+                  if net and router_class_for_net(net)=='POWER' and pad.IsOnLayer(pcbnew.F_Cu): grouped[net].append(pad)
               for net,pads in grouped.items():
-                  if len(pads)<2:
-                      continue
+                  if len(pads)<2: continue
                   boxes=[p.GetBoundingBox() for p in pads]
-                  minx=min(box.GetX() for box in boxes)-pcbnew.FromMM(MARGIN)
-                  miny=min(box.GetY() for box in boxes)-pcbnew.FromMM(MARGIN)
-                  maxx=max(box.GetRight() for box in boxes)+pcbnew.FromMM(MARGIN)
-                  maxy=max(box.GetBottom() for box in boxes)+pcbnew.FromMM(MARGIN)
-                  # Skip implausibly large clusters; those need routed feeders,
-                  # not a broad copper sheet through unrelated circuitry.
-                  if pcbnew.ToMM(maxx-minx)>12.0 or pcbnew.ToMM(maxy-miny)>12.0:
-                      continue
-                  zone=pcbnew.ZONE(b)
-                  zone.SetLayer(pcbnew.F_Cu)
-                  zone.SetNet(b.FindNet(net))
-                  zone.SetPadConnection(pcbnew.ZONE_CONNECTION_FULL)
-                  zone.SetLocalClearance(pcbnew.FromMM(0.10))
-                  zone.SetMinThickness(pcbnew.FromMM(0.10))
+                  minx=min(box.GetX() for box in boxes)-pcbnew.FromMM(MARGIN); miny=min(box.GetY() for box in boxes)-pcbnew.FromMM(MARGIN)
+                  maxx=max(box.GetRight() for box in boxes)+pcbnew.FromMM(MARGIN); maxy=max(box.GetBottom() for box in boxes)+pcbnew.FromMM(MARGIN)
+                  if pcbnew.ToMM(maxx-minx)>12.0 or pcbnew.ToMM(maxy-miny)>12.0: continue
+                  zone=pcbnew.ZONE(b); zone.SetLayer(pcbnew.F_Cu); zone.SetNet(b.FindNet(net)); zone.SetPadConnection(pcbnew.ZONE_CONNECTION_FULL)
+                  zone.SetLocalClearance(pcbnew.FromMM(0.10)); zone.SetMinThickness(pcbnew.FromMM(0.10))
                   outline=zone.Outline(); outline.NewOutline()
-                  for x,y in ((minx,miny),(maxx,miny),(maxx,maxy),(minx,maxy)):
-                      outline.Append(x,y)
+                  for x,y in ((minx,miny),(maxx,miny),(maxx,maxy),(minx,maxy)): outline.Append(x,y)
                   b.Add(zone)
-                  created.append({
-                      'reference':fp.GetReference(),
-                      'net':net,
-                      'pads':[p.GetNumber() for p in pads],
-                      'margin_mm':MARGIN,
-                      'width_mm':pcbnew.ToMM(maxx-minx),
-                      'height_mm':pcbnew.ToMM(maxy-miny),
-                  })
-          pcbnew.ZONE_FILLER(b).Fill(b.Zones(),True)
-          pcbnew.SaveBoard(str(BOARD),b)
-          (BUILD/'power-pours.json').write_text(json.dumps(created,indent=2)+'\n')
-          print({'created_power_zones':len(created),'margin_mm':MARGIN})
+                  created.append({'reference':fp.GetReference(),'net':net,'pads':[p.GetNumber() for p in pads],'margin_mm':MARGIN,'width_mm':pcbnew.ToMM(maxx-minx),'height_mm':pcbnew.ToMM(maxy-miny)})
+          pcbnew.ZONE_FILLER(b).Fill(b.Zones(),True); pcbnew.SaveBoard(str(BOARD),b)
+          (BUILD/'power-pours.json').write_text(json.dumps(created,indent=2)+'\n'); print({'created_power_zones':len(created),'margin_mm':MARGIN})
           PY
+          set +e
           docker run --rm --user 0:0 -v "$GITHUB_WORKSPACE:/work" -w /work --entrypoint /bin/bash kicad/kicad:9.0.9-full -lc \
-            "NAME='$NAME' MARGIN='$MARGIN' python3 hardware/v2/build/$NAME/add_power_pours.py; kicad-cli pcb drc --format json --severity-all --all-track-errors --schematic-parity --units mm -o hardware/v2/build/$NAME/drc-after.json hardware/v2/Code-SDR-V2.kicad_pcb || true"
+            "NAME='$NAME' MARGIN='$MARGIN' python3 hardware/v2/build/$NAME/add_power_pours.py; kicad-cli pcb drc --format json --severity-all --all-track-errors --schematic-parity --units mm -o hardware/v2/build/$NAME/drc-after.json hardware/v2/Code-SDR-V2.kicad_pcb" \
+            > hardware/v2/build/$NAME/pour-and-drc.log 2>&1
+          code=$?
+          echo "$code" > hardware/v2/build/$NAME/drc-exit.txt
+          tail -100 hardware/v2/build/$NAME/pour-and-drc.log
+          exit 0
       - name: Score pours
+        if: always()
         shell: bash
         env:
           NAME: ${{ matrix.name }}
@@ -125,16 +101,21 @@ jobs:
           from collections import Counter
           from pathlib import Path
           name=os.environ['NAME']; d=Path('hardware/v2/build')/name
-          before=json.loads((d/'drc-before.json').read_text()); after=json.loads((d/'drc-after.json').read_text()); zones=json.loads((d/'power-pours.json').read_text())
-          nets=Counter()
-          for issue in after.get('unconnected_items',[]):
-              names=set()
-              for item in issue.get('items',[]):names.update(re.findall(r'\[([^\]]+)\]',item.get('description','')))
-              for n in names:nets[n]+=1
-          s={'name':name,'zones_created':len(zones),'before':{'opens':len(before.get('unconnected_items',[])),'violations':len(before.get('violations',[])),'parity':len(before.get('schematic_parity',[]))},'after':{'opens':len(after.get('unconnected_items',[])),'violations':len(after.get('violations',[])),'parity':len(after.get('schematic_parity',[]))},'remaining_by_net':dict(nets.most_common()),'zones':zones}
+          before=json.loads((d/'drc-before.json').read_text())
+          zones=json.loads((d/'power-pours.json').read_text()) if (d/'power-pours.json').exists() else []
+          if not (d/'drc-after.json').exists():
+              s={'name':name,'zones_created':len(zones),'error':'drc-after.json missing','log_tail':(d/'pour-and-drc.log').read_text(errors='replace')[-4000:]}
+          else:
+              after=json.loads((d/'drc-after.json').read_text()); nets=Counter()
+              for issue in after.get('unconnected_items',[]):
+                  names=set()
+                  for item in issue.get('items',[]):names.update(re.findall(r'\[([^\]]+)\]',item.get('description','')))
+                  for n in names:nets[n]+=1
+              s={'name':name,'zones_created':len(zones),'before':{'opens':len(before.get('unconnected_items',[])),'violations':len(before.get('violations',[])),'parity':len(before.get('schematic_parity',[]))},'after':{'opens':len(after.get('unconnected_items',[])),'violations':len(after.get('violations',[])),'parity':len(after.get('schematic_parity',[]))},'remaining_by_net':dict(nets.most_common()),'zones':zones}
           (d/'summary.json').write_text(json.dumps(s,indent=2)+'\n'); print(json.dumps(s,indent=2))
           PY
       - uses: actions/upload-artifact@v4
+        if: always()
         with:
           name: v2-power-pours-${{ matrix.name }}
           path: |
@@ -160,10 +141,10 @@ jobs:
           for p in Path('candidates').rglob('summary.json'):
               try:rows.append(json.loads(p.read_text()))
               except Exception:pass
-          rows.sort(key=lambda x:(x['after']['parity'],x['after']['violations'],x['after']['opens']))
+          valid=[r for r in rows if 'after' in r]; valid.sort(key=lambda x:(x['after']['parity'],x['after']['violations'],x['after']['opens']))
           Path('leaderboard.json').write_text(json.dumps(rows,indent=2)+'\n')
           lines=['# Local power-pour candidates','', '| Rank | Candidate | Zones | Opens | Violations | Parity |','|---:|---|---:|---:|---:|---:|']
-          for i,r in enumerate(rows,1):
+          for i,r in enumerate(valid,1):
               a=r['after'];lines.append(f"| {i} | {r['name']} | {r['zones_created']} | {a['opens']} | {a['violations']} | {a['parity']} |")
           Path('leaderboard.md').write_text('\n'.join(lines)+'\n');print('\n'.join(lines))
           PY
