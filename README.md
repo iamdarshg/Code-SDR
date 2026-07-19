@@ -2,9 +2,17 @@
 
 [![License](https://img.shields.io/badge/license-Open%20Source-blue.svg)](LICENSE)
 [![Version](https://img.shields.io/badge/version-2.0-green.svg)](CHANGELOG.md)
-[![Status](https://img.shields.io/badge/status-Production%20Ready-success.svg)](#)
+[![Status](https://img.shields.io/badge/hardware-V2%20engineering%20validation-orange.svg)](hardware/HARDWARE_VALIDATION.md)
 
 A high-performance, FPGA-accelerated Software Defined Radio (SDR) system with real-time signal processing capabilities, supporting both legacy dsPIC33-based and modern FPGA architectures.
+
+> **Hardware status:** `Wideband-Test-V1` is unsafe to fabricate. The corrected
+> modular receiver/control design is [`hardware/v2`](hardware/v2) and the
+> evidence-backed audit is
+> [`hardware/HARDWARE_VALIDATION.md`](hardware/HARDWARE_VALIDATION.md). V2 uses
+> a 100 MSPS ADC/RGMII interface and remains separate from any ESC. Older
+> 105 MSPS/GMII passages below describe legacy RTL and must not be used as V2
+> pin or clock constraints.
 
 ## 🚀 Quick Start
 
@@ -124,7 +132,7 @@ gmii_col             I/O    Output     GMII collision detect
 
 ## 📁 Project Structure
 
-### Complete software package structure for the 1 MHz - 10 GHz Wideband SDR
+### Complete software package structure for the 100 MHz - 10 GHz Wideband SDR
 
 Created: November 2025
 Version: 1.0.0
@@ -314,6 +322,8 @@ Code-SDR/
 ├── hardware/               # Hardware designs and components
 │   ├── Wideband-Test-V1.kicad_* # PCB design files
 │   ├── Wideband-Test-V1-backups/ # PCB backups
+│   ├── HARDWARE_VALIDATION.md # V1 audit and cost-first V2 architecture
+│   ├── redesign/           # Frequency, cost, and power budgets
 │   └── ...                 # Component libraries
 ├── extio_plugin/           # Windows plugin (80%)
 ├── gr-wideband_sdr/         # GNU Radio module (85%)
@@ -1205,8 +1215,8 @@ For 105 MSPS, 10-bit samples:
 #### Power Supply Requirements
 ```
 Supply Rail    Voltage  Current  Tolerance  Purpose
-VCCINT         1.1V     2.5A     ±5%        Core logic
-VCCAUX         1.8V     0.5A     ±5%        Auxiliary
+VCCINT         1.2V     1.0A     ±5%        FPGA/PHY core
+VCCAUX         2.5V     0.5A     ±5%        FPGA auxiliary
 VCCO_3V3       3.3V     1.0A     ±5%        I/O banks
 VCCO_2V5       2.5V     0.3A     ±5%        GMII I/O
 ```
@@ -1430,7 +1440,7 @@ This integration specification provides the comprehensive framework for successf
 
 Moved from PROJECT_STRUCTURE.txt on November 25, 2025
 
-Complete software package structure for the 1 MHz - 10 GHz Wideband SDR
+Complete software package structure for the 100 MHz - 10 GHz Wideband SDR
 
 Created: November 2025
 Version: 1.0.0

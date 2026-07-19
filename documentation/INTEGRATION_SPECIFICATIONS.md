@@ -1,7 +1,13 @@
 # FPGA Processing Pipeline - Integration Specifications
 
 ## Overview
-This document provides comprehensive integration specifications for the LIF-MD6000-6UMG64I FPGA processing pipeline, including hardware interfaces, software integration, and system-level specifications.
+This document defines the V2 `LIF-MD6000-6JMG80I` hardware interface. Legacy
+processing-pipeline material below it is retained only as implementation
+background.
+
+> V2 hardware uses `LIF-MD6000-6JMG80I`, a shared 100 MHz ADC/reference
+> clock, and RGMII. Legacy UMG64/105 MHz/GMII names and constraints are not
+> valid for the V2 PCB.
 
 ## Hardware Integration
 
@@ -9,20 +15,22 @@ This document provides comprehensive integration specifications for the LIF-MD60
 
 #### System Clocks
 ```
-Pin Name              Bank  Direction  Description
-clk_100m             I/O    Input      Primary 100 MHz system clock
-clk_105m_adc         I/O    Input      105 MHz ADC sampling clock
-clk_125m_eth         I/O    Input      125 MHz Ethernet GMII clock
-rst_n               I/O    Input      System reset (active low)
+Signal / ball           Direction  Description
+ADC_CLK / D9            Input      Shared AD9215/FPGA 100 MHz sampling clock
+RGMII_RXC_FPGA / K6     Input      PHY receive clock
+RGMII_TXC_FPGA / J7     Output     PHY transmit clock through 33 ohm damping
+FPGA_RESET_N / H2       Input      CRESET_B, active low
 ```
 
 #### ADC Interface (AD9215BCPZ-105)
 ```
-Pin Name              Bank  Direction  Description
-adc_data[9:0]        I/O    Input      10-bit parallel ADC data
-adc_valid            I/O    Input      ADC data valid flag
-adc_ovr             I/O    Input      ADC overflow flag
+Signal                  Direction  Description
+ADC_D[9:0]              Input      10-bit parallel data, sampled on ADC_CLK
+ADC_OR                  Input      AD9215 out-of-range indication
 ```
+
+The AD9215 has no `adc_valid` output. Gateware must treat each ADC clock edge
+as a sample and use `ADC_OR` only as an overload indicator.
 
 #### SPI Interface (RP2040)
 ```
@@ -33,19 +41,17 @@ spi_cs_n             I/O    Input      SPI chip select (active low)
 spi_miso             I/O    Output     SPI master in, slave out
 ```
 
-#### Ethernet GMII Interface (KSZ9031RNXCC)
+#### Ethernet RGMII Interface (KSZ9031RNX)
 ```
 Pin Name              Bank  Direction  Description
-gmii_tx_d[7:0]       I/O    Output     GMII transmit data
-gmii_tx_en           I/O    Output     GMII transmit enable
-gmii_tx_er           I/O    Output     GMII transmit error
-gmii_tx_clk          I/O    Output     GMII transmit clock
-gmii_rx_d[7:0]       I/O    Input      GMII receive data
-gmii_rx_dv           I/O    Input      GMII receive data valid
-gmii_rx_er           I/O    Input      GMII receive error
-gmii_rx_clk          I/O    Input      GMII receive clock
-gmii_crs             I/O    Output     GMII carrier sense
-gmii_col             I/O    Output     GMII collision detect
+rgmii_txd[3:0]       I/O    Output     DDR transmit data
+rgmii_tx_en          I/O    Output     DDR transmit enable/control
+rgmii_txc            I/O    Output     125 MHz transmit clock at 1 Gb/s
+rgmii_rxd[3:0]       I/O    Input      DDR receive data
+rgmii_rx_dv          I/O    Input      DDR receive data/control
+rgmii_rxc            I/O    Input      PHY receive clock
+mdc                  I/O    Output     PHY management clock
+mdio                 I/O    Bidirectional PHY management data
 ```
 
 #### Status and Control Outputs
@@ -61,20 +67,17 @@ packet_counter[31:0]  I/O    Output     Packet transmission counter
 
 #### Primary Clock Tree
 ```
-External Oscillator → FPGA Clock Buffer → Global Clock Distribution
-     100 MHz                                    ↓
-                                              ↓
-                                              ↓
-                                       Processing Domain (100 MHz)
-                                       ADC Domain (105 MHz)
-                                       Ethernet Domain (125 MHz)
+SiT8209 100 MHz -> CDCLVC1104 -> AD9215 and FPGA ADC capture
+                                -> LMX2592 reference
+                                -> ADF4360-1 reference
+KSZ9031 RGMII RXC/TXC domains -> FPGA RGMII DDR interface
 ```
 
 #### Clock Constraints
 ```
 - All clocks must be driven from low-jitter sources
 - Clock skew must be < 100 ps across all clock domains
-- Clock-to-clock phase relationships must be deterministic
+- ADC data/clock and each RGMII DDR domain must meet device timing
 - Clock dividers/multipliers must maintain < 1% accuracy
 ```
 
@@ -165,11 +168,11 @@ Bandwidth Limit Setting:
 
 Effective Data Rate = Full Rate × Bandwidth_Limit / 100
 
-For 105 MSPS, 10-bit samples:
-- Raw rate: 1050 Mbps
-- With 80% limit: 840 Mbps
-- UDP overhead: ~50 Mbps
-- Net available: ~790 Mbps
+For 100 MSPS, 10-bit samples:
+- Raw ADC rate: 1000 Mbps before framing
+- Raw full-rate samples do not fit within GbE payload capacity
+- FPGA must filter and resample/decimate (for example 80 MSPS)
+- 80 MSPS x 10 bit is 800 Mbps before packet overhead
 ```
 
 ## System Integration
@@ -178,21 +181,24 @@ For 105 MSPS, 10-bit samples:
 
 #### Power Supply Requirements
 ```
-Supply Rail    Voltage  Current  Tolerance  Purpose
-VCCINT         1.1V     2.5A     ±5%        Core logic
-VCCAUX         1.8V     0.5A     ±5%        Auxiliary
-VCCO_3V3       3.3V     1.0A     ±5%        I/O banks
-VCCO_2V5       2.5V     0.3A     ±5%        GMII I/O
+Supply Rail    Voltage  Capacity  Tolerance  Purpose
++1V2_CORE      1.2V     2.0A      +/-5%      FPGA core/GPLL and PHY core
++2V5_AUX       2.5V     0.5A      +/-5%      FPGA auxiliary
++3V3_DIG       3.3V     2.0A      +/-5%      FPGA I/O, RP2040 and PHY I/O
 ```
+
+Each used FPGA supply group is fed through its own ferrite/filter island as
+specified in `hardware/redesign/POWER_TREE.csv`. The unused D-PHY analog/PLL
+groups are intentionally unpowered.
 
 #### Power Sequencing
 ```
-1. Power on VCCINT and VCCAUX (simultaneously)
-2. Wait 10ms for voltage stabilization
-3. Enable VCCO rails
-4. Enable external components (ADC, Ethernet PHY)
-5. Release FPGA reset
-6. Initialize software communication
+1. Start +3V3_DIG/VCCIO before or together with +1V2_CORE and +2V5_AUX.
+2. Require every rail to rise monotonically and settle within +/-5%.
+3. Keep `FPGA_RESET_N` low until the rails and configuration controller are
+   ready.
+4. Release `FPGA_RESET_N`, perform slave-SPI configuration, then require
+   `FPGA_CDONE` high.
 ```
 
 ### Thermal Management
@@ -218,8 +224,8 @@ Supply Voltage  -5%        +5%        Nominal
 #### Layout Guidelines
 ```
 - Minimum 4-layer PCB with dedicated ground plane
-- Separate analog and digital ground planes
-- Star-ground connection at FPGA
+- One uninterrupted In1 ground plane under RF and high-speed signals
+- Partition return currents physically; do not split the signal reference plane
 - Decoupling capacitors: 0.1µF + 10µF per supply rail
 - Clock traces: 50Ω impedance, length matched
 - Differential pairs: 100Ω impedance, length matched
@@ -239,7 +245,7 @@ Supply Voltage  -5%        +5%        Nominal
 
 #### Processing Pipeline
 ```
-ADC Sample Rate:          105 MSPS
+ADC Sample Rate:          100 MSPS
 Processing Latency:       < 10 µs
 FFT Processing Time:      < 100 µs (1024-point)
 Ethernet Throughput:      950 Mbps (theoretical)
@@ -248,10 +254,10 @@ Actual Throughput:        750 Mbps (with overhead)
 
 #### Direct Streaming Mode
 ```
-Raw ADC Rate:             1050 Mbps
-UDP Overhead:             100 Mbps
-Max Net Rate:             950 Mbps
-Limited Rate (80%):       760 Mbps
+Raw ADC Rate:             1000 Mbps
+Example resampled rate:   800 Mbps at 80 MSPS x 10 bit
+Packet rate:              Must include Ethernet/IP/UDP overhead
+Direct full-rate mode:    Not supported over 1 GbE
 Packet Loss Target:       < 0.01%
 ```
 

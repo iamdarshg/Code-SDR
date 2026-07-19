@@ -15,3 +15,9 @@ fft_ddc_performance_report.json
 *.vcd
 *.vvp
 *.egg-info/
+/tmp/
+/hardware/validation-output/
+/hardware/v2/build/
+/hardware/v2/release/*
+!/hardware/v2/release/Code-SDR-V2-final.zip
+*.kicad_prl
