@@ -15,6 +15,7 @@ BOARD = PROJECT / 'Code-SDR-V2.kicad_pcb'
 ACCEPTED = ROOT / 'accepted.kicad_pcb'
 CURRENT_DRC = ROOT / 'drc-current.json'
 CANDIDATE_DRC = ROOT / 'candidate-drc.json'
+TARGET_SIGNAL_OPENS = 16
 
 ROOT.mkdir(parents=True, exist_ok=True)
 
@@ -196,7 +197,7 @@ def geometric_paths(a, b):
         paths.append([a, (ax + math.copysign(step, dx), ay + math.copysign(step, dy)), b])
     length = max(math.hypot(dx, dy), 1e-6)
     nx, ny = -dy / length, dx / length
-    for offset in (0.5, -0.5, 1.0, -1.0, 1.5, -1.5, 2.0, -2.0, 3.0, -3.0, 4.0, -4.0):
+    for offset in (1.0, -1.0):
         q1 = (ax + dx * 0.30 + nx * offset, ay + dy * 0.30 + ny * offset)
         q2 = (ax + dx * 0.70 + nx * offset, ay + dy * 0.70 + ny * offset)
         paths.append([a, q1, q2, b])
@@ -213,9 +214,8 @@ def candidate_variants(net, a, b):
     for path in geometric_paths(a, b):
         yield 'F.Cu', path, False
     if not critical_rf(net):
-        for layer in ('In2.Cu', 'B.Cu'):
-            for path in geometric_paths(a, b):
-                yield layer, path, True
+        for path in geometric_paths(a, b):
+            yield 'In2.Cu', path, True
 
 
 def evaluate(label: str, candidate_text: str, current_score: dict, target_net: str | None = None):
@@ -240,7 +240,6 @@ def evaluate(label: str, candidate_text: str, current_score: dict, target_net: s
     return better, score
 
 
-# Work only from the artifact board; never regenerate or refill it here.
 board_text = BOARD.read_text()
 board_text = board_text.replace(
     'Inductor_SMD:L_0805_2012Metric_Pad1.15x1.40mm_HandSolder',
@@ -283,6 +282,9 @@ print('SHORT_GAP_COUNT', len(entries), flush=True)
 
 attempted = set()
 for distance, net, a, b in entries:
+    if current['signal_opens'] <= TARGET_SIGNAL_OPENS:
+        print('TARGET_REACHED', current['signal_opens'], flush=True)
+        break
     key = (net, round(a[0], 3), round(a[1], 3), round(b[0], 3), round(b[1], 3))
     if key in attempted or current['by_net'].get(net, 0) == 0:
         continue
