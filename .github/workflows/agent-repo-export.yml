@@ -1,0 +1,38 @@
+name: Agent repository export
+
+on:
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  export:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out latest main
+        uses: actions/checkout@v4
+        with:
+          ref: main
+          path: main-tree
+          fetch-depth: 0
+      - name: Check out recovered hardware branch
+        uses: actions/checkout@v4
+        with:
+          ref: codex/hardware-validation-redesign
+          path: hardware-tree
+          fetch-depth: 0
+      - name: Package tracked trees
+        run: |
+          tar -C main-tree -czf Code-SDR-main.tar.gz --exclude=.git .
+          tar -C hardware-tree -czf Code-SDR-hardware.tar.gz --exclude=.git .
+      - name: Upload repository archives
+        uses: actions/upload-artifact@v4
+        with:
+          name: Code-SDR-recovery-trees
+          path: |
+            Code-SDR-main.tar.gz
+            Code-SDR-hardware.tar.gz
+          if-no-files-found: error
+          retention-days: 1
