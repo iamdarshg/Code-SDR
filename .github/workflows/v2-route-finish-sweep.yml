@@ -26,10 +26,14 @@ jobs:
           set -euo pipefail
           mkdir -p baseline hardware/v2/build/finish-sweep
           gh run download 29694149006 --repo "$GITHUB_REPOSITORY" --name Code-SDR-V2-completion-route --dir baseline
-          cp baseline/Code-SDR-V2.kicad_pcb hardware/v2/build/finish-sweep/Code-SDR-V2.kicad_pcb
+          cp baseline/Code-SDR-V2.kicad_pcb hardware/v2/Code-SDR-V2.kicad_pcb
+          if test -f baseline/build/ROUTE_STATISTICS.csv; then
+            cp baseline/build/ROUTE_STATISTICS.csv hardware/v2/build/ROUTE_STATISTICS.csv
+          fi
           docker pull kicad/kicad:9.0.9-full
       - name: Run reversible DRC-scored finish sweep
         run: |
+          set -euo pipefail
           cat > hardware/v2/build/finish-sweep/finish_sweep.py <<'PY'
           from __future__ import annotations
           import json, math, re, shutil, subprocess
@@ -37,11 +41,11 @@ jobs:
           from pathlib import Path
           import pcbnew
 
-          root = Path('hardware/v2/build/finish-sweep')
-          board_path = root / 'Code-SDR-V2.kicad_pcb'
+          project = Path('hardware/v2')
+          root = project / 'build' / 'finish-sweep'
+          board_path = project / 'Code-SDR-V2.kicad_pcb'
           accepted_path = root / 'accepted.kicad_pcb'
           drc_path = root / 'drc-current.json'
-          candidate_path = root / 'candidate.kicad_pcb'
           candidate_drc = root / 'candidate-drc.json'
 
           # Reconcile the routed artifact with the project-local footprint now on main.
@@ -52,12 +56,14 @@ jobs:
           )
           board_path.write_text(text)
 
-          def run_drc(board_file: Path, output: Path) -> dict:
+          def run_drc(output: Path) -> dict:
               subprocess.run([
                   'kicad-cli','pcb','drc','--format','json','--severity-all',
                   '--all-track-errors','--schematic-parity','--units','mm',
-                  '-o',str(output),str(board_file)
-              ], check=False, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+                  '-o',str(output),str(board_path)
+              ], check=False)
+              if not output.is_file():
+                  raise RuntimeError(f'DRC did not create {output}')
               return json.loads(output.read_text())
 
           def entry_net(entry: dict) -> str:
@@ -68,8 +74,8 @@ jobs:
           def metrics(report: dict) -> dict:
               by_net = Counter(entry_net(e) for e in report.get('unconnected_items',[]))
               nonlibrary = sum(
-                  1 for v in report.get('violations',[])
-                  if v.get('type') != 'lib_footprint_issues'
+                  1 for violation in report.get('violations',[])
+                  if violation.get('type') != 'lib_footprint_issues'
               )
               return {
                   'opens': len(report.get('unconnected_items',[])),
@@ -79,8 +85,8 @@ jobs:
                   ),
                   'nonlibrary_violations': nonlibrary,
                   'library_violations': sum(
-                      1 for v in report.get('violations',[])
-                      if v.get('type') == 'lib_footprint_issues'
+                      1 for violation in report.get('violations',[])
+                      if violation.get('type') == 'lib_footprint_issues'
                   ),
                   'parity': len(report.get('schematic_parity',[])),
                   'by_net': dict(by_net),
@@ -158,38 +164,42 @@ jobs:
                   for path in geometric_paths(a,b):
                       yield ('In2.Cu', path, True)
 
-          baseline_report = run_drc(board_path, root/'drc-baseline.json')
+          baseline_report = run_drc(root/'drc-baseline.json')
           current = metrics(baseline_report)
+          print('BASELINE',json.dumps(current,sort_keys=True),flush=True)
           shutil.copy2(board_path, accepted_path)
           shutil.copy2(root/'drc-baseline.json', drc_path)
           accepted = [{'kind':'baseline','metrics':current}]
           rejected = []
 
           def accept_if_better(label, mutate):
-              nonlocal_current = metrics(json.loads(drc_path.read_text()))
+              current_score = metrics(json.loads(drc_path.read_text()))
               board = pcbnew.LoadBoard(str(accepted_path))
               details = mutate(board)
               pcbnew.ZONE_FILLER(board).Fill(board.Zones())
-              pcbnew.SaveBoard(str(candidate_path),board)
-              report = run_drc(candidate_path,candidate_drc)
+              pcbnew.SaveBoard(str(board_path),board)
+              report = run_drc(candidate_drc)
               score = metrics(report)
               better = (
-                  score['nonlibrary_violations'] <= nonlocal_current['nonlibrary_violations'] and
-                  score['signal_opens'] <= nonlocal_current['signal_opens'] and
-                  score['parity'] <= nonlocal_current['parity'] and
+                  score['nonlibrary_violations'] <= current_score['nonlibrary_violations'] and
+                  score['signal_opens'] <= current_score['signal_opens'] and
+                  score['parity'] <= current_score['parity'] and
                   (
-                      score['opens'] < nonlocal_current['opens'] or
-                      score['nonlibrary_violations'] < nonlocal_current['nonlibrary_violations'] or
-                      score['parity'] < nonlocal_current['parity']
+                      score['opens'] < current_score['opens'] or
+                      score['nonlibrary_violations'] < current_score['nonlibrary_violations'] or
+                      score['parity'] < current_score['parity']
                   )
               )
+              print(label,'ACCEPT' if better else 'REJECT',json.dumps(score,sort_keys=True),flush=True)
+              record={'kind':label,'details':details,'metrics':score}
               if better:
-                  shutil.copy2(candidate_path,accepted_path)
+                  shutil.copy2(board_path,accepted_path)
                   shutil.copy2(candidate_drc,drc_path)
-                  accepted.append({'kind':label,'details':details,'metrics':score})
+                  accepted.append(record)
                   return True, score
-              rejected.append({'kind':label,'details':details,'metrics':score})
-              return False, nonlocal_current
+              shutil.copy2(accepted_path,board_path)
+              rejected.append(record)
+              return False, current_score
 
           def fix_clock(board):
               targets = [
@@ -199,7 +209,7 @@ jobs:
               ]
               removed=[]
               for item in list(board.GetTracks()):
-                  if not isinstance(item, pcbnew.PCB_TRACK) or item.GetNetname() != 'REF_100M_ADC':
+                  if item.GetNetname() != 'REF_100M_ADC' or not hasattr(item,'GetStart'):
                       continue
                   start,end=point_mm(item.GetStart()),point_mm(item.GetEnd())
                   for a,b in targets:
@@ -245,6 +255,7 @@ jobs:
               if distance <= 13.6:
                   entries.append((distance,net,a,b))
           entries.sort()
+          print('SHORT_GAP_COUNT',len(entries),flush=True)
 
           attempted=set()
           for distance,net,a,b in entries:
@@ -257,20 +268,22 @@ jobs:
                   continue
               for index,(layer_name,path,use_vias) in enumerate(candidate_variants(net,a,b)):
                   layer=pcbnew.F_Cu if layer_name=='F.Cu' else pcbnew.In2_Cu
-                  def mutate(board, net=net, path=path, use_vias=use_vias, layer=layer):
+                  def mutate(board, net=net, path=path, use_vias=use_vias, layer=layer,
+                             distance=distance,index=index,layer_name=layer_name):
                       if use_vias:
                           add_via(board,net,path[0]); add_via(board,net,path[-1])
                       for p1,p2 in zip(path,path[1:]):
                           add_track(board,net,p1,p2,width_for(net),layer)
                       return {'net':net,'distance_mm':round(distance,4),'variant':index,
                               'layer':layer_name,'vias':use_vias,'path':path}
-                  improved, score = accept_if_better(f'close_{net}', mutate)
+                  improved, score = accept_if_better(f'close_{net}_{index}', mutate)
                   if improved and score['by_net'].get(net,0) < old_target:
                       break
 
           shutil.copy2(accepted_path,board_path)
-          final_report=run_drc(board_path,root/'drc-finish-sweep.json')
+          final_report=run_drc(root/'drc-finish-sweep.json')
           final_metrics=metrics(final_report)
+          shutil.copy2(board_path,root/'Code-SDR-V2.kicad_pcb')
           (root/'accepted-patches.json').write_text(json.dumps(accepted,indent=2)+'\n')
           (root/'rejected-patches.json').write_text(json.dumps(rejected,indent=2)+'\n')
           (root/'finish-sweep-summary.json').write_text(json.dumps({
@@ -279,10 +292,11 @@ jobs:
               'accepted_patch_count':len(accepted)-1,
               'rejected_patch_count':len(rejected),
           },indent=2)+'\n')
-          print(json.dumps(final_metrics,indent=2))
+          print('FINAL',json.dumps(final_metrics,sort_keys=True),flush=True)
           PY
           docker run --rm --user 0:0 -v "$GITHUB_WORKSPACE:/work" -w /work --entrypoint /bin/bash kicad/kicad:9.0.9-full -lc '
-            python3 hardware/v2/build/finish-sweep/finish_sweep.py
+            set -euo pipefail
+            python3 hardware/v2/build/finish-sweep/finish_sweep.py 2>&1 | tee hardware/v2/build/finish-sweep/finish-sweep.log
             python3 hardware/v2/tools/validate_route.py > hardware/v2/build/finish-sweep/validate-route.log 2>&1 || true
           '
       - name: Upload finish sweep
