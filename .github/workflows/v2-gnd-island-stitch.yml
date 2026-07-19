@@ -1,0 +1,141 @@
+name: V2 targeted GND island stitching
+
+on:
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+  actions: read
+
+env:
+  GH_TOKEN: ${{ github.token }}
+  SOURCE_RUN_ID: '29691653824'
+  SOURCE_ARTIFACT: Code-SDR-V2-route-five-pass
+
+jobs:
+  stitch:
+    if: github.head_ref == 'agent/v2-gnd-island-stitch'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: agent/v2-gnd-island-stitch
+      - name: Recover routed checkpoint and DRC
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p recovered hardware/v2/build
+          gh run download "$SOURCE_RUN_ID" --repo "$GITHUB_REPOSITORY" --name "$SOURCE_ARTIFACT" --dir recovered
+          board=$(find recovered -type f -name 'Code-SDR-V2.kicad_pcb' -print -quit)
+          drc=$(find recovered -type f -name 'drc-diagnostic.json' -print -quit)
+          test -n "$board"; test -n "$drc"
+          cp "$board" hardware/v2/Code-SDR-V2.kicad_pcb
+          cp "$drc" hardware/v2/build/drc-before.json
+          docker pull kicad/kicad:9.0.9-full
+      - name: Stitch isolated GND zone islands
+        shell: bash
+        run: |
+          cat > hardware/v2/build/stitch_gnd_islands.py <<'PY'
+          from __future__ import annotations
+          import json, math, re
+          from pathlib import Path
+          import pcbnew
+
+          root=Path('hardware/v2')
+          board_path=root/'Code-SDR-V2.kicad_pcb'
+          drc_path=root/'build/drc-before.json'
+          b=pcbnew.LoadBoard(str(board_path))
+          gnd=b.FindNet('GND')
+          if gnd is None: raise SystemExit('GND net missing')
+
+          points=[]
+          d=json.loads(drc_path.read_text())
+          for issue in d.get('unconnected_items',[]):
+              zone_items=[i for i in issue.get('items',[]) if i.get('description','').startswith('Zone [GND]')]
+              if not zone_items: continue
+              for i in zone_items:
+                  p=i.get('pos')
+                  if p: points.append((float(p['x']),float(p['y'])))
+          unique=[]
+          for p in points:
+              if not any(math.hypot(p[0]-q[0],p[1]-q[1])<0.20 for q in unique): unique.append(p)
+
+          existing=list(b.GetTracks())
+          pads=[p for fp in b.GetFootprints() for p in fp.Pads()]
+          added=[]
+          offsets=[(0,0),(0.35,0),(-0.35,0),(0,0.35),(0,-0.35),(0.5,0.5),(-0.5,0.5),(0.5,-0.5),(-0.5,-0.5)]
+
+          def segdist(px,py,a,c):
+              ax,ay=pcbnew.ToMM(a.x),pcbnew.ToMM(a.y); bx,by=pcbnew.ToMM(c.x),pcbnew.ToMM(c.y)
+              dx,dy=bx-ax,by-ay
+              if dx==dy==0:return math.hypot(px-ax,py-ay)
+              t=max(0,min(1,((px-ax)*dx+(py-ay)*dy)/(dx*dx+dy*dy)))
+              return math.hypot(px-(ax+t*dx),py-(ay+t*dy))
+
+          def clear(x,y):
+              pt=pcbnew.VECTOR2I(pcbnew.FromMM(x),pcbnew.FromMM(y))
+              if not (0.4<x<159.6 and 0.4<y<99.6): return False
+              for p in pads:
+                  box=p.GetBoundingBox(); box.Inflate(pcbnew.FromMM(0.38))
+                  if box.Contains(pt): return False
+              for t in existing:
+                  if isinstance(t,pcbnew.PCB_VIA):
+                      q=t.GetPosition(); req=0.225+pcbnew.ToMM(t.GetWidth())/2+0.10
+                      if math.hypot(x-pcbnew.ToMM(q.x),y-pcbnew.ToMM(q.y))<req:return False
+                  else:
+                      req=0.225+pcbnew.ToMM(t.GetWidth())/2+0.10
+                      if segdist(x,y,t.GetStart(),t.GetEnd())<req:return False
+              return True
+
+          for x0,y0 in unique:
+              for dx,dy in offsets:
+                  x,y=x0+dx,y0+dy
+                  if not clear(x,y): continue
+                  v=pcbnew.PCB_VIA(b); v.SetPosition(pcbnew.VECTOR2I(pcbnew.FromMM(x),pcbnew.FromMM(y)))
+                  v.SetWidth(pcbnew.FromMM(0.45)); v.SetDrill(pcbnew.FromMM(0.20)); v.SetLayerPair(pcbnew.F_Cu,pcbnew.B_Cu); v.SetNet(gnd)
+                  b.Add(v); existing.append(v); added.append((x,y)); break
+
+          for fp in b.GetFootprints():
+              for p in fp.Pads():
+                  if p.GetNetname()=='GND': p.SetZoneConnection(pcbnew.ZONE_CONNECTION_FULL)
+          for z in b.Zones():
+              if z.GetNetname()=='GND': z.SetPadConnection(pcbnew.ZONE_CONNECTION_FULL)
+          pcbnew.ZONE_FILLER(b).Fill(b.Zones())
+          pcbnew.SaveBoard(str(board_path),b)
+          (root/'build/gnd-stitch-points.json').write_text(json.dumps({'reported_points':unique,'added':added},indent=2)+'\n')
+          print({'reported_islands':len(unique),'vias_added':len(added)})
+          PY
+          docker run --rm --user 0:0 -v "$GITHUB_WORKSPACE:/work" -w /work --entrypoint /bin/bash kicad/kicad:9.0.9-full -lc '
+            python3 hardware/v2/build/stitch_gnd_islands.py
+            kicad-cli pcb drc --format json --severity-all --all-track-errors --schematic-parity --units mm -o hardware/v2/build/drc-after.json hardware/v2/Code-SDR-V2.kicad_pcb || true
+          '
+      - name: Compare DRC
+        shell: bash
+        run: |
+          python3 - <<'PY'
+          import json,re
+          from collections import Counter
+          from pathlib import Path
+          def stats(path):
+              d=json.loads(Path(path).read_text()); nets=Counter()
+              for u in d.get('unconnected_items',[]):
+                  names=set()
+                  for item in u.get('items',[]): names.update(re.findall(r'\[([^\]]+)\]',item.get('description','')))
+                  for n in names:nets[n]+=1
+              return {'violations':len(d.get('violations',[])),'unconnected_items':len(d.get('unconnected_items',[])),'parity':len(d.get('schematic_parity',[])),'gnd_unconnected':nets.get('GND',0),'by_net':dict(nets.most_common())}
+          out={'before':stats('hardware/v2/build/drc-before.json'),'after':stats('hardware/v2/build/drc-after.json')}
+          Path('hardware/v2/build/gnd-stitch-summary.json').write_text(json.dumps(out,indent=2)+'\n')
+          print(json.dumps(out,indent=2))
+          PY
+      - uses: actions/upload-artifact@v4
+        with:
+          name: v2-targeted-gnd-stitch
+          path: |
+            hardware/v2/Code-SDR-V2.kicad_pcb
+            hardware/v2/build/drc-before.json
+            hardware/v2/build/drc-after.json
+            hardware/v2/build/gnd-stitch-points.json
+            hardware/v2/build/gnd-stitch-summary.json
+          retention-days: 2
