@@ -1,0 +1,85 @@
+name: V2 joint RF baseline validation
+
+on:
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+  actions: read
+
+jobs:
+  validate-joint-rf:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    env:
+      GH_TOKEN: ${{ github.token }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Recover joint RF session
+        run: |
+          set -euo pipefail
+          mkdir -p hardware/v2/build/rf-joint/session hardware/v2/build/rf-joint
+          gh run download 29696800912 --repo "$GITHUB_REPOSITORY" \
+            --name Code-SDR-V2-signal-rf --dir hardware/v2/build/rf-joint/session
+          find hardware/v2/build/rf-joint/session -type f -print
+          test -s hardware/v2/build/rf-joint/session/group-rf.ses
+          docker pull kicad/kicad:9.0.9-full
+      - name: Import joint RF route and run DRC
+        run: |
+          cat > hardware/v2/build/rf-joint/import_joint.py <<'PY'
+          from pathlib import Path
+          import pcbnew
+          board_path = Path('hardware/v2/Code-SDR-V2.kicad_pcb')
+          board = pcbnew.LoadBoard(str(board_path))
+          for item in list(board.GetTracks()):
+              board.Remove(item)
+          ses = 'hardware/v2/build/rf-joint/session/group-rf.ses'
+          if not pcbnew.ImportSpecctraSES(board, ses):
+              raise SystemExit('joint RF SES import failed')
+          pcbnew.ZONE_FILLER(board).Fill(board.Zones())
+          pcbnew.SaveBoard(str(board_path), board)
+          PY
+          docker run --rm --user 0:0 -v "$GITHUB_WORKSPACE:/work" -w /work \
+            --entrypoint /bin/bash kicad/kicad:9.0.9-full -lc '
+              python3 hardware/v2/build/rf-joint/import_joint.py
+              kicad-cli pcb drc --format json --severity-all --all-track-errors \
+                --schematic-parity --units mm \
+                -o hardware/v2/build/rf-joint/drc.json hardware/v2/Code-SDR-V2.kicad_pcb || true
+            '
+          sudo chown -R "$USER:$USER" hardware/v2/build/rf-joint hardware/v2/Code-SDR-V2.kicad_pcb
+      - name: Summarize RF baseline
+        run: |
+          python3 - <<'PY'
+          import json, re
+          from pathlib import Path
+          root = Path('hardware/v2')
+          target = set(json.loads((root / 'rf50_routes.json').read_text())['nets'])
+          drc = json.loads((root / 'build/rf-joint/drc.json').read_text())
+          def mentions(entry):
+              text = json.dumps(entry, sort_keys=True)
+              return any((f'[{n}]' in text) or (f'"{n}"' in text) for n in target)
+          opens = [x for x in drc.get('unconnected_items', []) if mentions(x)]
+          violations = [x for x in drc.get('violations', []) if mentions(x)]
+          summary = {
+              'rf_unconnected_count': len(opens),
+              'rf_violation_count': len(violations),
+              'all_unconnected_count': len(drc.get('unconnected_items', [])),
+              'all_violation_count': len(drc.get('violations', [])),
+              'schematic_parity_count': len(drc.get('schematic_parity', [])),
+              'rf_unconnected': opens,
+              'rf_violations': violations,
+          }
+          (root / 'build/rf-joint/summary.json').write_text(json.dumps(summary, indent=2) + '\n')
+          print(json.dumps({k:v for k,v in summary.items() if k not in ('rf_unconnected','rf_violations')}, indent=2))
+          PY
+      - name: Upload joint RF baseline
+        uses: actions/upload-artifact@v4
+        with:
+          name: Code-SDR-V2-rf-joint-baseline
+          path: |
+            hardware/v2/Code-SDR-V2.kicad_pcb
+            hardware/v2/build/rf-joint/drc.json
+            hardware/v2/build/rf-joint/summary.json
+            hardware/v2/build/rf-joint/session/group-rf.ses
+          retention-days: 3
