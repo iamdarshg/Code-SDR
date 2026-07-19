@@ -1,4 +1,4 @@
-name: V2 route diagnostic
+name: V2 corrected multi-pass route
 
 on:
   pull_request:
@@ -10,7 +10,7 @@ permissions:
 jobs:
   diagnose:
     runs-on: ubuntu-latest
-    timeout-minutes: 45
+    timeout-minutes: 210
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-java@v4
@@ -21,7 +21,7 @@ jobs:
         run: |
           docker pull kicad/kicad:9.0.9-full
           curl -fL --retry 4 -o "$RUNNER_TEMP/freerouting.jar" https://github.com/freerouting/freerouting/releases/download/v2.2.4/freerouting-2.2.4.jar
-      - name: Export signal-only DSN
+      - name: Export corrected signal-only DSN
         run: |
           mkdir -p hardware/v2/build
           printf '{"components": {}}\n' > hardware/v2/build/schematic_paths.json
@@ -29,9 +29,9 @@ jobs:
           docker run --rm --user 0:0 -v "$GITHUB_WORKSPACE:/work" -w /work --entrypoint /bin/bash kicad/kicad:9.0.9-full -lc 'python3 hardware/v2/tools/export_route_checkpoint.py'
           ! grep -q '^    (net GND' hardware/v2/build/Code-SDR-V2.dsn
           ! grep -q 'Via\[0-3\]_600:300_um' hardware/v2/build/Code-SDR-V2.dsn
-      - name: Run one routing pass
+      - name: Run corrected multi-pass route
         run: |
-          timeout --signal=TERM --kill-after=1m 30m java -Xmx5600m -jar "$RUNNER_TEMP/freerouting.jar" -de hardware/v2/build/Code-SDR-V2.dsn -do hardware/v2/build/Code-SDR-V2-routed.ses -mp 1 -mt 0 -da -dct 1 --gui.enabled=false 2>&1 | tee hardware/v2/build/freerouting-diagnostic.log
+          timeout --signal=TERM --kill-after=2m 190m java -Xmx5600m -jar "$RUNNER_TEMP/freerouting.jar" -de hardware/v2/build/Code-SDR-V2.dsn -do hardware/v2/build/Code-SDR-V2-routed.ses -mp 20 -mt 0 -da -dct 1 --gui.enabled=false 2>&1 | tee hardware/v2/build/freerouting-diagnostic.log
           test -s hardware/v2/build/Code-SDR-V2-routed.ses
       - name: Import, refill, and measure
         run: |
@@ -42,6 +42,8 @@ jobs:
           b=pcbnew.LoadBoard(str(p))
           if not pcbnew.ImportSpecctraSES(b,'hardware/v2/build/Code-SDR-V2-routed.ses'):
               raise SystemExit('SES import failed')
+          for zone in b.Zones():
+              zone.SetPadConnection(pcbnew.ZONE_CONNECTION_FULL)
           pcbnew.ZONE_FILLER(b).Fill(b.Zones())
           pcbnew.SaveBoard(str(p),b)
           print('tracks',len(list(b.GetTracks())))
@@ -60,7 +62,7 @@ jobs:
           Path('hardware/v2/build/diagnostic-summary.json').write_text(json.dumps(s,indent=2)+'\n')
           print(s)
           PY
-      - name: Upload diagnostic
+      - name: Upload corrected route
         if: always()
         uses: actions/upload-artifact@v4
         with:
