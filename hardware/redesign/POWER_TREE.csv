@@ -1,0 +1,15 @@
+rail,nominal_voltage_v,design_capacity_a,source,principal_loads,operating_constraint
+VIN_FUSED,5.0,2.5,protected regulated J1 input,all regulators and +5V_RF,USB is data/control only
++5V_RF,5.0,1.0,VIN_FUSED,ADL5801 two GRF2013 stages AD8351,ferrite/local bypass partitions
++3V3_DIG,3.3,2.0,TLV62569 buck,RP2040 flash PHY IO and filtered FPGA IO-bank islands,digital region with solid In1 return
++1V2_CORE,1.2,2.0,TLV62569 buck,filtered CrossLink core/GPLL islands and KSZ9031 core,unused CrossLink DPHY analog/PLL supplies intentionally unpowered
+FPGA_VCC_1V2,1.2,0.5,+1V2_CORE through 120 ohm at 100 MHz ferrite,CrossLink VCC balls E4 and E6,10 uF bulk and one 100 nF at each VCC ball
+FPGA_PLL_1V2,1.2,0.1,+1V2_CORE through 220 ohm at 100 MHz ferrite,CrossLink VCCGPLL ball G6,1 uF plus 100 nF local bypassing
+FPGA_VCCIO0_3V3,3.3,0.2,+3V3_DIG through 120 ohm at 100 MHz ferrite,CrossLink configuration bank VCCIO0,2.2 uF plus 100 nF local bypassing
+FPGA_VCCIO1_3V3,3.3,0.3,+3V3_DIG through 120 ohm at 100 MHz ferrite,CrossLink RGMII/logic bank VCCIO1,2.2 uF bulk and one 100 nF at each VCCIO1 ball
+FPGA_VCCIO2_3V3,3.3,0.3,+3V3_DIG through 120 ohm at 100 MHz ferrite,CrossLink ADC/logic bank VCCIO2,2.2 uF bulk and one 100 nF at each VCCIO2 ball
+PHY_AVDDH_3V3,3.3,0.2,+3V3_DIG through 120 ohm at 100 MHz ferrite,KSZ9031 pins 1 and 12,10 uF bulk and one 100 nF at each AVDDH pin
+PHY_AVDDL_1V2,1.2,0.2,+1V2_CORE through 120 ohm at 100 MHz ferrite,KSZ9031 pins 4 and 9,10 uF bulk and one 100 nF at each AVDDL pin
+PHY_PLL_1V2,1.2,0.1,+1V2_CORE through 600 ohm at 100 MHz ferrite,KSZ9031 AVDDL_PLL pin 44,10 uF plus 100 nF and 10 nF local bypassing
++2V5_AUX,2.5,0.5,TLV75525 LDO,filtered FPGA_AUX_2V5 island,120 ohm at 100 MHz ferrite plus 1 uF at CrossLink VCCAUX
++3V3_ANA,3.3,1.0,TLV76733 low-noise LDO,LMX2592 ADF4360 LTC5548 selected LNAs AD9215 clocks RF controls,enable only the selected RF path and use exposed-pad thermal copper
