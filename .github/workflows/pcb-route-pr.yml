@@ -1,0 +1,69 @@
+name: Route Code-SDR V2 PR
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - hardware/v2/**
+      - hardware/redesign/**
+      - .github/workflows/pcb-route-pr.yml
+
+permissions:
+  contents: write
+
+concurrency:
+  group: code-sdr-v2-routing
+  cancel-in-progress: true
+
+jobs:
+  route:
+    if: github.head_ref == 'agent/route-v1-v2'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 150
+    steps:
+      - name: Check out routing branch
+        uses: actions/checkout@v4
+        with:
+          ref: agent/route-v1-v2
+          fetch-depth: 0
+
+      - name: Run deterministic routing pipeline
+        shell: bash
+        run: bash hardware/v2/tools/route_ci.sh
+
+      - name: Upload routed checkpoint
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: Code-SDR-V2-route-checkpoint
+          path: |
+            hardware/v2/Code-SDR-V2.kicad_pcb
+            hardware/v2/ROUTE_STATUS.md
+            hardware/v2/build/*.json
+            hardware/v2/build/*.log
+            hardware/v2/build/*.csv
+            hardware/v2/build/*.ses
+            hardware/v2/release/Code-SDR-V2-final.zip
+          if-no-files-found: warn
+          retention-days: 2
+
+      - name: Commit routed checkpoint
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add hardware/v2/Code-SDR-V2.kicad_pcb hardware/v2/ROUTE_STATUS.md
+          if [[ -f hardware/v2/release/Code-SDR-V2-final.zip ]]; then
+            git add -f hardware/v2/release/Code-SDR-V2-final.zip
+          fi
+          if git diff --cached --quiet; then
+            echo 'No route changes to commit.'
+          elif [[ "$(cat hardware/v2/build/route-ok)" == 1 ]]; then
+            git commit -m 'feat(hardware): route and validate Code-SDR V2 [skip ci]'
+            git push origin HEAD:agent/route-v1-v2
+          else
+            git commit -m 'wip(hardware): checkpoint V2 autoroute [skip ci]'
+            git push origin HEAD:agent/route-v1-v2
+            exit 1
+          fi
