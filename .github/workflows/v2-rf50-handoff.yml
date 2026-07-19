@@ -26,39 +26,21 @@ jobs:
           board_path = root / 'Code-SDR-V2.kicad_pcb'
           routes = json.loads((root / 'rf50_routes.json').read_text())['nets']
           routes.update(json.loads((root / 'rf50_group_overrides.json').read_text()))
+          routes.update(json.loads((root / 'rf50_manual_overrides.json').read_text()))
 
-          # Correct the manually completed connector/switch escapes against the
-          # actual rotated KiCad pad positions.
-          for x, name, side in ((20.0, 'RF_HA_IN', -1.0), (50.0, 'RF_HB_IN', -1.0),
-                                (80.0, 'RF_HC_IN', 1.0), (110.0, 'RF_HD_IN', 1.0)):
-              route = routes[name]
-              route['paths'] = [p for p in route['paths']
-                                if min(point[1] for point in p['points']) > 1.72]
-              dx = 0.65 * side
-              route['paths'].append({'layer': 'F.Cu', 'width': 0.35,
-                                     'points': [[x, -1.72], [x + dx, 3.8],
-                                                [x + dx, 5.5], [x, 5.5]]})
+          # RF_LOW_IN uses a rotated edge-launch pad; replace the obsolete
+          # intermediate connector segment with its actual pad-to-filter escape.
           low = routes['RF_LOW_IN']
           low['paths'] = [p for p in low['paths']
                           if not any(abs(point[0] - 5.6) < 1e-6 for point in p['points'])]
           low['paths'].append({'layer': 'F.Cu', 'width': 0.35,
                                'points': [[-1.72, 44.0], [4.25, 44.0]]})
-          routes['IF_SELECTED'] = {
-              'vias': [{'x': 72.0, 'y': 35.0, 'diameter': 0.45, 'drill': 0.2},
-                       {'x': 76.5, 'y': 35.0, 'diameter': 0.45, 'drill': 0.2}],
-              'paths': [{'layer': 'F.Cu', 'width': 0.15,
-                         'points': [[72.0, 34.35], [72.0, 35.0]]},
-                        {'layer': 'B.Cu', 'width': 0.35,
-                         'points': [[72.0, 35.0], [76.5, 35.0]]},
-                        {'layer': 'F.Cu', 'width': 0.15,
-                         'points': [[76.5, 35.0], [77.105, 34.0]]}],
-              'source': 'manual'}
 
           board = pcbnew.LoadBoard(str(board_path))
           nets = board.GetNetsByName()
           layers = {'F.Cu': pcbnew.F_Cu, 'In2.Cu': pcbnew.In2_Cu, 'B.Cu': pcbnew.B_Cu}
 
-          # This handoff intentionally keeps only controlled-impedance RF copper.
+          # Intentionally retain only the RF/LO/IF handoff copper.
           for item in list(board.GetTracks()):
               board.Remove(item)
 
@@ -71,8 +53,6 @@ jobs:
               total = 0.0
               for path in route.get('paths', []):
                   width = float(path['width'])
-                  # Preserve the routed geometry width. Final impedance must be verified
-                  # against the chosen fabrication stackup before manufacturing.
                   points = path['points']
                   for a, b in zip(points, points[1:]):
                       if math.dist(a, b) < 1e-6:
@@ -100,20 +80,22 @@ jobs:
 
           pcbnew.ZONE_FILLER(board).Fill(board.Zones())
           pcbnew.SaveBoard(str(board_path), board)
-          out = {'net_count': len(routes), 'length_mm': lengths, 'vias': vias_by_net}
-          (root / 'build/rf50/route_inventory.json').write_text(json.dumps(out, indent=2) + '\n')
+          inventory = {'net_count': len(routes), 'length_mm': lengths, 'vias': vias_by_net}
+          (root / 'build/rf50/route_inventory.json').write_text(
+              json.dumps(inventory, indent=2) + '\n')
           PY
           docker run --rm --user 0:0 -v "$GITHUB_WORKSPACE:/work" -w /work \
             --entrypoint /bin/bash kicad/kicad:9.0.9-full -lc '
               python3 hardware/v2/build/rf50/apply_rf_routes.py
-              kicad-cli pcb drc --format json --severity-all --all-track-errors --schematic-parity --units mm \
+              kicad-cli pcb drc --format json --severity-all --all-track-errors \
+                --schematic-parity --units mm \
                 -o hardware/v2/build/rf50/drc.json hardware/v2/Code-SDR-V2.kicad_pcb || true
             '
           sudo chown -R "$USER:$USER" hardware/v2/build/rf50 hardware/v2/Code-SDR-V2.kicad_pcb
       - name: Summarize RF validation
         run: |
           python3 - <<'PY'
-          import json, re
+          import json
           from pathlib import Path
           root = Path('hardware/v2')
           route_data = json.loads((root / 'rf50_routes.json').read_text())
@@ -128,9 +110,10 @@ jobs:
           rf_unconnected = [x for x in drc.get('unconnected_items', []) if mentions_target(x)]
           rf_violations = [x for x in drc.get('violations', []) if mentions_target(x)]
           missing_length = sorted(n for n, length in inv['length_mm'].items() if length <= 0)
-          critical = sorted(n for n in target if n.startswith(('RF_HA','RF_HB','RF_HC','RF_HD','RF_HIGH')) or n in {
-              'LMX_LO_HIGH_N_RAW','LMX_LO_HIGH_P_RAW','LO_HIGH_N_TERM','LO_HIGH_P','LTC_LO_IN','LTC_RF_IN'
-          })
+          critical = sorted(n for n in target if n.startswith(
+              ('RF_HA', 'RF_HB', 'RF_HC', 'RF_HD', 'RF_HIGH')) or n in {
+              'LMX_LO_HIGH_N_RAW', 'LMX_LO_HIGH_P_RAW', 'LO_HIGH_N_TERM',
+              'LO_HIGH_P', 'LTC_LO_IN', 'LTC_RF_IN'})
           critical_vias = {n: inv['vias'][n] for n in critical if inv['vias'][n]}
           summary = {
               'target_net_count': len(target),
@@ -146,7 +129,8 @@ jobs:
               'rf_violations': rf_violations,
           }
           (root / 'build/rf50/summary.json').write_text(json.dumps(summary, indent=2) + '\n')
-          print(json.dumps({k:v for k,v in summary.items() if k not in ('rf_unconnected','rf_violations')}, indent=2))
+          print(json.dumps({k: v for k, v in summary.items()
+                            if k not in ('rf_unconnected', 'rf_violations')}, indent=2))
           PY
       - name: Upload RF-only handoff
         uses: actions/upload-artifact@v4
@@ -155,6 +139,8 @@ jobs:
           path: |
             hardware/v2/Code-SDR-V2.kicad_pcb
             hardware/v2/rf50_routes.json
+            hardware/v2/rf50_group_overrides.json
+            hardware/v2/rf50_manual_overrides.json
             hardware/v2/build/rf50/drc.json
             hardware/v2/build/rf50/summary.json
             hardware/v2/build/rf50/route_inventory.json
