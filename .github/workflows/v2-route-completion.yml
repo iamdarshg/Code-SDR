@@ -6,29 +6,33 @@ on:
 
 permissions:
   contents: read
+  actions: read
 
 jobs:
   complete:
     runs-on: ubuntu-24.04
     timeout-minutes: 180
+    env:
+      GH_TOKEN: ${{ github.token }}
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-java@v4
         with:
           distribution: temurin
           java-version: '25'
-      - name: Prepare tools
+      - name: Recover validated routing baseline and tools
         run: |
+          set -euo pipefail
+          mkdir -p baseline hardware/v2/build
+          gh run download 29689598311 --repo "$GITHUB_REPOSITORY" --name Code-SDR-V2-route-five-pass --dir baseline
+          cp baseline/build/Code-SDR-V2.dsn hardware/v2/build/Code-SDR-V2.dsn
           docker pull kicad/kicad:9.0.9-full
           curl -fL --retry 4 --retry-delay 5 -o "$RUNNER_TEMP/freerouting.jar" https://github.com/freerouting/freerouting/releases/download/v2.2.4/freerouting-2.2.4.jar
-      - name: Export and tune fine-pitch routing rules
+      - name: Tune manufacturable fine-pitch routing rules
         run: |
-          mkdir -p hardware/v2/build
-          printf '{"components": {}}\n' > hardware/v2/build/schematic_paths.json
-          sed -i 's/Via\[0-3\]_600:300_um/Via[0-3]_450:200_um/' hardware/v2/tools/generate_pcb.py
-          docker run --rm --user 0:0 -v "$GITHUB_WORKSPACE:/work" -w /work --entrypoint /bin/bash kicad/kicad:9.0.9-full -lc 'python3 hardware/v2/tools/export_route_checkpoint.py'
           python3 - <<'PY'
           from pathlib import Path
+          import re
           p=Path('hardware/v2/build/Code-SDR-V2.dsn')
           s=p.read_text()
           def tune(name,next_name,width,clearance):
@@ -36,22 +40,18 @@ jobs:
               a=s.index(f'    (class {name}\n')
               b=s.index(f'    (class {next_name}',a)
               block=s[a:b]
-              import re
-              block=re.sub(r'\(width \d+\)',f'(width {width})',block,1)
-              block=re.sub(r'\(clearance \d+\)',f'(clearance {clearance})',block,1)
+              block=re.sub(r'\(width \d+\)',f'(width {width})',block,count=1)
+              block=re.sub(r'\(clearance \d+\)',f'(clearance {clearance})',block,count=1)
               s=s[:a]+block+s[b:]
-          # Keep RF_CRITICAL untouched: 0.35 mm, F.Cu-only, no signal vias.
           tune('RF_50','IF_DIFF',300,150)
           tune('IF_DIFF','DIGITAL_HS',180,120)
           tune('DIGITAL_HS','POWER',130,100)
           tune('POWER','DEFAULT',200,100)
-          # DEFAULT already uses 0.15/0.10; narrow only for dense control escapes.
           a=s.index('    (class DEFAULT\n')
-          block=s[a:]
-          block=block.replace('(width 150)','(width 120)',1)
-          s=s[:a]+block
+          s=s[:a]+s[a:].replace('(width 150)','(width 120)',1)
           p.write_text(s)
           PY
+          grep -A12 '    (class POWER' hardware/v2/build/Code-SDR-V2.dsn
           ! grep -q '^    (net GND' hardware/v2/build/Code-SDR-V2.dsn
           ! grep -q 'Via\[0-3\]_600:300_um' hardware/v2/build/Code-SDR-V2.dsn
       - name: Route to completion
@@ -65,6 +65,7 @@ jobs:
           test -s hardware/v2/build/Code-SDR-V2-complete.ses
       - name: Import, refill, and validate
         run: |
+          cp baseline/Code-SDR-V2.kicad_pcb hardware/v2/Code-SDR-V2.kicad_pcb
           cat > hardware/v2/build/import_complete.py <<'PY'
           from pathlib import Path
           import pcbnew
