@@ -33,8 +33,7 @@ jobs:
         shell: bash
         run: |
           mkdir -p hardware/v2/build
-          sed -i 's|python3 hardware/v2/tools/generate_pcb.py|python3 hardware/v2/tools/generate_pcb_ci.py|' hardware/v2/tools/route_ci.sh
-          sed -i 's|install -y kicad$|install -y kicad kicad-footprints kicad-symbols|' hardware/v2/tools/route_ci.sh
+          sed -i '/generate_symbols.py/d;/generate_footprints.py/d;/generate_schematic.py/d;/generate_pcb.py/d' hardware/v2/tools/route_ci.sh
           set +e
           bash hardware/v2/tools/route_ci.sh > hardware/v2/build/route-run.log 2>&1
           code=$?
