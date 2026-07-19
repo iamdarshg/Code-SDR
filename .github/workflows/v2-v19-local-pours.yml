@@ -1,0 +1,98 @@
+name: V2 v19 local power-cluster postprocess
+
+on:
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+  actions: read
+
+env:
+  GH_TOKEN: ${{ github.token }}
+  SOURCE_RUN_ID: '29691653825'
+  SOURCE_ARTIFACT: Code-SDR-V2-route-v19
+
+jobs:
+  pour:
+    if: github.head_ref == 'agent/v2-v19-local-pours'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: agent/v2-v19-local-pours
+      - name: Recover v19 candidate
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p recovered hardware/v2/build
+          gh run download "$SOURCE_RUN_ID" --repo "$GITHUB_REPOSITORY" --name "$SOURCE_ARTIFACT" --dir recovered
+          board=$(find recovered -type f -name 'Code-SDR-V2.kicad_pcb' -print -quit)
+          drc=$(find recovered -type f -name 'drc-v19.json' -print -quit)
+          test -n "$board"; test -n "$drc"
+          cp "$board" hardware/v2/Code-SDR-V2.kicad_pcb
+          cp "$drc" hardware/v2/build/drc-before.json
+          docker pull kicad/kicad:9.0.9-full
+      - name: Add priority local power pours
+        shell: bash
+        run: |
+          cat > hardware/v2/build/add_v19_power_pours.py <<'PY'
+          from __future__ import annotations
+          import json,sys
+          from collections import defaultdict
+          from pathlib import Path
+          import pcbnew
+          root=Path('hardware/v2'); p=root/'Code-SDR-V2.kicad_pcb'; sys.path.insert(0,str(root/'tools'))
+          from generate_pcb import router_class_for_net
+          b=pcbnew.LoadBoard(str(p)); created=[]
+          for fp in b.GetFootprints():
+              grouped=defaultdict(list)
+              for pad in fp.Pads():
+                  net=pad.GetNetname()
+                  if net and router_class_for_net(net)=='POWER': grouped[net].append(pad)
+              for net,pads in grouped.items():
+                  if len(pads)<2:continue
+                  boxes=[pad.GetBoundingBox() for pad in pads]
+                  margin=pcbnew.FromMM(0.40)
+                  minx=min(x.GetX() for x in boxes)-margin;miny=min(x.GetY() for x in boxes)-margin
+                  maxx=max(x.GetRight() for x in boxes)+margin;maxy=max(x.GetBottom() for x in boxes)+margin
+                  if pcbnew.ToMM(maxx-minx)>12 or pcbnew.ToMM(maxy-miny)>12:continue
+                  z=pcbnew.ZONE(b);z.SetLayer(pcbnew.F_Cu);z.SetNet(b.FindNet(net));z.SetAssignedPriority(10);z.SetPadConnection(pcbnew.ZONE_CONNECTION_FULL);z.SetLocalClearance(pcbnew.FromMM(0.10));z.SetMinThickness(pcbnew.FromMM(0.10))
+                  o=z.Outline();o.NewOutline()
+                  for x,y in ((minx,miny),(maxx,miny),(maxx,maxy),(minx,maxy)):o.Append(x,y)
+                  b.Add(z);created.append({'reference':fp.GetReference(),'net':net,'pads':[x.GetNumber() for x in pads],'width_mm':pcbnew.ToMM(maxx-minx),'height_mm':pcbnew.ToMM(maxy-miny)})
+          pcbnew.ZONE_FILLER(b).Fill(b.Zones(),True);pcbnew.SaveBoard(str(p),b)
+          Path('hardware/v2/build/v19-power-pours.json').write_text(json.dumps(created,indent=2)+'\n');print({'created':len(created)})
+          PY
+          docker run --rm --user 0:0 -v "$GITHUB_WORKSPACE:/work" -w /work --entrypoint /bin/bash kicad/kicad:9.0.9-full -lc '
+            python3 hardware/v2/build/add_v19_power_pours.py
+            kicad-cli pcb drc --format json --severity-all --all-track-errors --schematic-parity --units mm -o hardware/v2/build/drc-after.json hardware/v2/Code-SDR-V2.kicad_pcb || true
+          '
+      - name: Score postprocess
+        shell: bash
+        run: |
+          python3 - <<'PY'
+          import json,re
+          from collections import Counter
+          from pathlib import Path
+          def score(path):
+              d=json.loads(Path(path).read_text());c=Counter()
+              for issue in d.get('unconnected_items',[]):
+                  ns=set()
+                  for item in issue.get('items',[]):ns.update(re.findall(r'\[([^\]]+)\]',item.get('description','')))
+                  for n in ns:c[n]+=1
+              return {'opens':len(d.get('unconnected_items',[])),'violations':len(d.get('violations',[])),'parity':len(d.get('schematic_parity',[])),'by_net':dict(c.most_common())}
+          out={'before':score('hardware/v2/build/drc-before.json'),'after':score('hardware/v2/build/drc-after.json'),'zones':json.loads(Path('hardware/v2/build/v19-power-pours.json').read_text())}
+          Path('hardware/v2/build/v19-power-pour-summary.json').write_text(json.dumps(out,indent=2)+'\n');print(json.dumps(out,indent=2))
+          PY
+      - uses: actions/upload-artifact@v4
+        with:
+          name: v2-v19-local-power-pours
+          path: |
+            hardware/v2/Code-SDR-V2.kicad_pcb
+            hardware/v2/build/drc-before.json
+            hardware/v2/build/drc-after.json
+            hardware/v2/build/v19-power-pours.json
+            hardware/v2/build/v19-power-pour-summary.json
+          retention-days: 2
