@@ -25,8 +25,10 @@ jobs:
         run: |
           mkdir -p hardware/v2/build
           printf '{"components": {}}\n' > hardware/v2/build/schematic_paths.json
+          sed -i 's/Via\[0-3\]_600:300_um/Via[0-3]_450:200_um/' hardware/v2/tools/generate_pcb.py
           docker run --rm --user 0:0 -v "$GITHUB_WORKSPACE:/work" -w /work --entrypoint /bin/bash kicad/kicad:9.0.9-full -lc 'python3 hardware/v2/tools/export_route_checkpoint.py'
           ! grep -q '^    (net GND' hardware/v2/build/Code-SDR-V2.dsn
+          ! grep -q 'Via\[0-3\]_600:300_um' hardware/v2/build/Code-SDR-V2.dsn
       - name: Run one routing pass
         run: |
           timeout --signal=TERM --kill-after=1m 30m java -Xmx5600m -jar "$RUNNER_TEMP/freerouting.jar" -de hardware/v2/build/Code-SDR-V2.dsn -do hardware/v2/build/Code-SDR-V2-routed.ses -mp 1 -mt 0 -da -dct 1 --gui.enabled=false 2>&1 | tee hardware/v2/build/freerouting-diagnostic.log
