@@ -1,0 +1,14 @@
+(version 1)
+
+# The five Molex edge-launch SMA footprints intentionally extend their copper
+# lands 0.82 mm across Edge.Cuts so the connector clamps onto the board edge.
+# This is the manufacturer's/KiCad-library geometry, not accidental copper.
+(rule "Edge-launch SMA lands"
+    (condition "A.memberOfFootprint('J50') || A.memberOfFootprint('J60') || A.memberOfFootprint('J61') || A.memberOfFootprint('J62') || A.memberOfFootprint('J63') || B.memberOfFootprint('J50') || B.memberOfFootprint('J60') || B.memberOfFootprint('J61') || B.memberOfFootprint('J62') || B.memberOfFootprint('J63')")
+    (constraint edge_clearance (min -0.85mm)))
+
+# Connector body/silk is also designed to cross the outline at the mated edge.
+(rule "Edge connector silk"
+    (severity ignore)
+    (condition "A.memberOfFootprint('J10') && B.Layer == 'Edge.Cuts'")
+    (constraint silk_clearance))

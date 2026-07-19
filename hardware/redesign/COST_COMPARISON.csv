@@ -1,0 +1,200 @@
+board,sheet,references,value,footprint,quantity,unit_usd,extended_usd,basis,source
+V1,legacy flat schematic,AE1-AE3,Antenna_Chip,Connector_Coaxial:SMA_Molex_73251-2200_Horizontal,3,3.50000,10.50000,"authorized 1,000-unit SMA tier",https://www.digikey.com/
+V1,legacy flat schematic,"C1,C2,C4-C7,C9,C12,C13,C26-C28,C31-C35,C48,C49,C51,C58-C61,C64,C66-C69,C72,C73,C77,C79,C82,C84,C87,C95-C97,C103,C108,C111,C112,C114-C117,C129,C130,C134,C135,C138,C141,C143,C146,C147,C150,C151,C155,C156,C163-C166,C169",0.1uF,Capacitor_SMD:C_0603_1608Metric,65,0.01000,0.65000,commodity passive allowance,https://www.digikey.com/
+V1,legacy flat schematic,"C3,C8,C14",1uF,Capacitor_SMD:C_0805_2012Metric,3,0.02500,0.07500,commodity passive allowance,https://www.digikey.com/
+V1,legacy flat schematic,"C10,C11,C15,C29,C44,C45,C52,C74,C83,C90,C104,C110,C113,C125,C126,C137,C139,C140,C142,C144,C145,C148,C153,C154,C157,C171-C174",10uF,Capacitor_SMD:C_0603_1608Metric,29,0.07500,2.17500,commodity passive allowance,https://www.digikey.com/
+V1,legacy flat schematic,"C16-C21,C36,C50,C56,C71,C88,C89,C93,C98-C102,C120,C131,C136,C149,C161",100pF,Capacitor_SMD:C_0603_1608Metric,23,0.01200,0.27600,commodity passive allowance,https://www.digikey.com/
+V1,legacy flat schematic,C22,5.6nF,Capacitor_SMD:C_0402_1005Metric,1,0.01000,0.01000,commodity passive allowance,https://www.digikey.com/
+V1,legacy flat schematic,"C23,C91",51nF,Capacitor_SMD:C_1206_3216Metric,2,0.01000,0.02000,commodity passive allowance,https://www.digikey.com/
+V1,legacy flat schematic,"C24,C25",6.8nF,Capacitor_SMD:C_0402_1005Metric,2,0.01000,0.02000,commodity passive allowance,https://www.digikey.com/
+V1,legacy flat schematic,"C30,C42,C43,C53,C62,C75,C76,C78,C85,C105,C107,C158,C167",22uF,Capacitor_SMD:C_1206_3216Metric,13,0.14000,1.82000,commodity passive allowance,https://www.digikey.com/
+V1,legacy flat schematic,"C37-C41,C46,C47,C54,C55,C57,C63,C65,C70,C86,C92,C94,C106,C109,C118,C119,C127,C128,C132,C133,C152,C159,C160,C162,C168,C170",1nF,Capacitor_SMD:C_0402_1005Metric,30,0.01000,0.30000,commodity passive allowance,https://www.digikey.com/
+V1,legacy flat schematic,"C80,C81",100pF,Capacitor_SMD:C_0402_1005Metric,2,0.01200,0.02400,commodity passive allowance,https://www.digikey.com/
+V1,legacy flat schematic,C121-C124,30pF,Capacitor_SMD:C_0603_1608Metric,4,0.01200,0.04800,commodity passive allowance,https://www.digikey.com/
+V1,legacy flat schematic,IC1,LMX2592RHAT,Package_DFN_QFN:VQFN-40-1EP_6x6mm_P0.5mm_EP3.5x3.5mm_ThermalVias,1,34.90000,34.90000,authorized 250-unit tier,https://www.digikey.com/
+V1,legacy flat schematic,"IC2,IC5,IC6",BU7205HFV-TR,Package_TO_SOT_SMD:HVSOF5,3,1.48180,4.44540,"authorized 1,000-unit tier",https://www.digikey.com/
+V1,legacy flat schematic,IC3,GRF3042,OptoDevice:Renesas_DFN-6_1.5x1.6mm_P0.5mm,1,2.19000,2.19000,"authorized 1,000-unit tier",https://www.mouser.com/
+V1,legacy flat schematic,IC4,OPA2673IRGVR,Package_DFN_QFN:QFN-16-1EP_4x4mm_P0.65mm_EP2.1x2.1mm_ThermalVias,1,1.79000,1.79000,"authorized 1,000-unit tier",https://www.digikey.com/
+V1,legacy flat schematic,IC7,LIF-MD6000-6UMG64I,LIF-MD6000-6UMG64I:BGA64C40P8X8_350X350X100,1,10.43000,10.43000,authorized 980-unit tier,https://www.digikey.com/
+V1,legacy flat schematic,J1,RJ45,Connector_RJ:RJ45_Amphenol_54602-x08_Horizontal,1,0.85000,0.85000,volume connector allowance,https://www.digikey.com/
+V1,legacy flat schematic,J2,Conn_01x02_Pin,Connector:JWT_A3963_1x02_P3.96mm_Vertical,1,0.20000,0.20000,volume connector allowance,https://www.digikey.com/
+V1,legacy flat schematic,J3,Conn_01x04_Pin,Connector_Molex:Molex_Micro-Fit_3.0_43045-0412_2x02_P3.00mm_Vertical,1,0.45000,0.45000,volume connector allowance,https://www.digikey.com/
+V1,legacy flat schematic,J4-J6,Conn_01x04_Pin,Connector_PinHeader_2.54mm:PinHeader_1x04_P2.54mm_Vertical,3,0.12000,0.36000,volume connector allowance,https://www.digikey.com/
+V1,legacy flat schematic,J8,USB_B_Micro,Connector_USB:USB_Micro-B_Amphenol_10118193-0001LF_Horizontal,1,0.32000,0.32000,"authorized 1,000-unit connector allowance",https://www.digikey.com/
+V1,legacy flat schematic,L1,200nH,Inductor_SMD:L_0402_1005Metric,1,0.07000,0.07000,commodity inductor/ferrite allowance,https://www.digikey.com/
+V1,legacy flat schematic,"L3,L4",2.2nH,Inductor_SMD:L_0603_1608Metric,2,0.07000,0.14000,commodity inductor/ferrite allowance,https://www.digikey.com/
+V1,legacy flat schematic,Q1-Q6,MMBFJ113,Package_DFN_QFN:Diodes_DFN1006-3,6,0.10000,0.60000,"authorized 1,000-unit tier",https://www.digikey.com/
+V1,legacy flat schematic,"Q7,Q12-Q16",BFP840ESD,Package_TO_SOT_SMD:SOT-343_SC-70-4,6,0.28000,1.68000,"authorized 1,000-unit tier",https://www.digikey.com/
+V1,legacy flat schematic,"R1-R6,R18,R19,R22,R25,R26,R30,R45-R47",50,Resistor_SMD:R_0201_0603Metric,15,0.00900,0.13500,commodity 1% resistor allowance,https://www.digikey.com/
+V1,legacy flat schematic,"R7,R50",18,Resistor_SMD:R_0805_2012Metric,2,0.00600,0.01200,commodity 1% resistor allowance,https://www.digikey.com/
+V1,legacy flat schematic,"R8,R44",1.5,Resistor_SMD:R_0603_1608Metric,2,0.00600,0.01200,commodity 1% resistor allowance,https://www.digikey.com/
+V1,legacy flat schematic,R9,3.32,Resistor_SMD:R_0603_1608Metric,1,0.00600,0.00600,commodity 1% resistor allowance,https://www.digikey.com/
+V1,legacy flat schematic,"R10,R11,R13,R14,R23,R24,R29,R35,R37,R38,R48,R49,R52-R56",0,Resistor_SMD:R_0603_1608Metric,17,0.00600,0.10200,commodity 1% resistor allowance,https://www.digikey.com/
+V1,legacy flat schematic,"R12,R15-R17,R20,R21,R27,R28,R31-R34,R36,R41,R42,R51",1k,Resistor_SMD:R_0805_2012Metric,16,0.00600,0.09600,commodity 1% resistor allowance,https://www.digikey.com/
+V1,legacy flat schematic,"R39,R40,R43",27.4,Resistor_SMD:R_0402_1005Metric,3,0.00600,0.01800,commodity 1% resistor allowance,https://www.digikey.com/
+V1,legacy flat schematic,T1,CX2041NLT,Filter:Filter_SAW-6_3.8x3.8mm,1,2.20000,2.20000,authorized-volume allowance,https://www.digikey.com/
+V1,legacy flat schematic,TP1,PWDN_N,Connector_PinHeader_2.54mm:PinHeader_1x01_P2.54mm_Vertical,1,0.04000,0.04000,test-point allowance,https://www.digikey.com/
+V1,legacy flat schematic,TP2,PWDN_P,Connector_PinHeader_2.54mm:PinHeader_1x01_P2.54mm_Vertical,1,0.04000,0.04000,test-point allowance,https://www.digikey.com/
+V1,legacy flat schematic,TR1-TR3,TRANSF2,MABA-011108:MABA011108,3,8.64780,25.94340,"authorized 2,000-unit package",https://www.digikey.com/
+V1,legacy flat schematic,U1,AD9215BCPZ-105,Package_CSP:LFCSP-32-1EP_5x5mm_P0.5mm_EP3.6x3.6mm_ThermalVias,1,8.46000,8.46000,manufacturer starting price,https://www.analog.com/en/parametricsearch/11313
+V1,legacy flat schematic,"U2,U4",BGA614H6327XTSA1,Package_TO_SOT_SMD:SOT-343_SC-70-4,2,0.92800,1.85600,"authorized 1,000-unit tier",https://www.digikey.com/
+V1,legacy flat schematic,U3,LD1117V-3V3,Package_TO_SOT_THT:TO-220-3_Vertical,1,0.24000,0.24000,"authorized 1,000-unit tier",https://www.digikey.com/
+V1,legacy flat schematic,U5,AP7381-50SA-7,Package_TO_SOT_SMD:SOT-23,1,0.08000,0.08000,"authorized 1,000-unit tier",https://www.digikey.com/
+V1,legacy flat schematic,U6,KSZ9031RNXCA,Package_DFN_QFN:QFN-48-1EP_7x7mm_P0.5mm_EP5.15x5.15mm_ThermalVias,1,3.42000,3.42000,authorized 260-unit tier,https://www.digikey.com/
+V1,legacy flat schematic,U7,RP2040,Package_DFN_QFN:QFN-56-1EP_7x7mm_P0.4mm_EP3.2x3.2mm_ThermalVias,1,0.70000,0.70000,"authorized 1,000-unit tier",https://www.digikey.com/
+V1,legacy flat schematic,U8,8M-Q,Package_SO:SOIC-8_5.3x5.3mm_P1.27mm,1,0.30000,0.30000,comparable serial-flash allowance,https://www.digikey.com/
+V1,legacy flat schematic,U9-U14,BGS12WN6E6327,Package_LGA:Infineon_PG-TSNP-6-10_0.7x1.1mm_0.7x1.1mm_P0.4mm,6,0.13800,0.82800,"authorized 1,000-unit tier",https://www.digikey.com/
+V1,legacy flat schematic,Y1,Crystal_GND24,Crystal:Crystal_SMD_2520-4Pin_2.5x2.0mm,1,0.20000,0.20000,commodity crystal allowance,https://www.digikey.com/
+V1,legacy flat schematic,Y2,12M,Crystal:Crystal_SMD_HC49-SD,1,0.20000,0.20000,commodity crystal allowance,https://www.digikey.com/
+V1,legacy flat schematic,Y3,25M,Crystal:Crystal_SMD_HC49-SD,1,0.20000,0.20000,commodity crystal allowance,https://www.digikey.com/
+V2,01_power,R5,0,Resistor_SMD:R_0603_1608Metric,1,0.00600,0.00600,commodity 1% resistor allowance,https://www.digikey.com/
+V2,01_power,"R2,R3,R4",100k_1%,Resistor_SMD:R_0402_1005Metric,3,0.00600,0.01800,commodity 1% resistor allowance,https://www.digikey.com/
+V2,01_power,"C5,C8",100nF,Capacitor_SMD:C_0402_1005Metric,2,0.01000,0.02000,commodity passive allowance,https://www.digikey.com/
+V2,01_power,"C3,C6",10uF,Capacitor_SMD:C_0805_2012Metric,2,0.07500,0.15000,commodity passive allowance,https://www.digikey.com/
+V2,01_power,C9,1uF,Capacitor_SMD:C_0603_1608Metric,1,0.02500,0.02500,commodity passive allowance,https://www.digikey.com/
+V2,01_power,C10,2.2uF,Capacitor_SMD:C_0603_1608Metric,1,0.03500,0.03500,commodity passive allowance,https://www.digikey.com/
+V2,01_power,"L1,L2",2.2uH_2.5A,Inductor_SMD:L_0805_2012Metric_Pad1.15x1.40mm_HandSolder,2,0.18000,0.36000,commodity inductor/ferrite allowance,https://www.digikey.com/
+V2,01_power,F1,2.5A_PTC,Fuse:Fuse_1812_4532Metric,1,0.18000,0.18000,"authorized 1,000-unit tier",https://www.digikey.com/
+V2,01_power,"C1,C2,C4,C7",22uF,Capacitor_SMD:C_0805_2012Metric,4,0.14000,0.56000,commodity passive allowance,https://www.digikey.com/
+V2,01_power,"C11,C12",4.7uF,Capacitor_SMD:C_0805_2012Metric,2,0.03500,0.07000,commodity passive allowance,https://www.digikey.com/
+V2,01_power,R1,453k_1%,Resistor_SMD:R_0402_1005Metric,1,0.00600,0.00600,commodity 1% resistor allowance,https://www.digikey.com/
+V2,01_power,J1,5V_INPUT_ONLY,"TerminalBlock_Phoenix:TerminalBlock_Phoenix_MKDS-1,5-2_1x02_P5.00mm_Horizontal",1,0.62000,0.62000,volume terminal-block allowance,https://www.digikey.com/
+V2,01_power,FB1,600R@100MHz_2A,Inductor_SMD:L_0805_2012Metric_Pad1.15x1.40mm_HandSolder,1,0.07000,0.07000,commodity inductor/ferrite allowance,https://www.digikey.com/
+V2,01_power,D1,SMAJ5.0A,Diode_SMD:D_SMA,1,0.17000,0.17000,manufacturer public 500-unit tier,https://estore.st.com/en/products/protections-and-emi-filters/transient-voltage-suppressors-tvs/smaj5-0a.html
+V2,01_power,"U1,U2",TLV62569DBVR,Package_TO_SOT_SMD:SOT-23-5,2,0.37000,0.74000,"authorized 1,000-unit tier",https://www.digikey.com/
+V2,01_power,U3,TLV75525PDBVR,Package_TO_SOT_SMD:SOT-23-5,1,0.19000,0.19000,"authorized 1,000-unit tier",https://www.digikey.com/
+V2,01_power,U4,TLV76733DRVR,Package_SON:WSON-6-1EP_2x2mm_P0.65mm_EP1x1.6mm_ThermalVias,1,0.46000,0.46000,"authorized 1,000-unit tier",https://www.digikey.com/
+V2,02_controller,"R22,R23",100k,Resistor_SMD:R_0402_1005Metric,2,0.00600,0.01200,commodity 1% resistor allowance,https://www.digikey.com/
+V2,02_controller,"C23,C24,C25,C26,C27,C28,C306,C307,C308,C309,C174",100nF,Capacitor_SMD:C_0402_1005Metric,11,0.01000,0.11000,commodity passive allowance,https://www.digikey.com/
+V2,02_controller,"C20,C21",15pF_C0G,Capacitor_SMD:C_0402_1005Metric,2,0.01200,0.02400,commodity passive allowance,https://www.digikey.com/
+V2,02_controller,C22,1uF,Capacitor_SMD:C_0603_1608Metric,1,0.02500,0.02500,commodity passive allowance,https://www.digikey.com/
+V2,02_controller,"R20,R21",27R,Resistor_SMD:R_0402_1005Metric,2,0.00600,0.01200,commodity 1% resistor allowance,https://www.digikey.com/
+V2,02_controller,R149,33R,Resistor_SMD:R_0402_1005Metric,1,0.00600,0.00600,commodity 1% resistor allowance,https://www.digikey.com/
+V2,02_controller,Y10,ABM8-272-T3_12MHz,Crystal:Crystal_SMD_3225-4Pin_3.2x2.5mm,1,0.18000,0.18000,"authorized 1,000-unit tier",https://www.digikey.com/
+V2,02_controller,SW1,BOOTSEL,Button_Switch_SMD:SW_SPST_TL3342,1,0.12000,0.12000,"authorized 1,000-unit switch allowance",https://www.digikey.com/
+V2,02_controller,J11,Cortex_SWD_10pin,Connector_PinHeader_1.27mm:PinHeader_2x05_P1.27mm_Vertical,1,0.24000,0.24000,volume connector allowance,https://www.digikey.com/
+V2,02_controller,SW2,RESET,Button_Switch_SMD:SW_SPST_TL3342,1,0.12000,0.12000,"authorized 1,000-unit switch allowance",https://www.digikey.com/
+V2,02_controller,U10,RP2040,Package_DFN_QFN:QFN-56-1EP_7x7mm_P0.4mm_EP3.2x3.2mm_ThermalVias,1,0.70000,0.70000,"authorized 1,000-unit tier",https://www.digikey.com/
+V2,02_controller,U12,USBLC6-2SC6,Package_TO_SOT_SMD:SOT-23-6,1,0.13000,0.13000,"authorized 1,000-unit tier",https://www.digikey.com/
+V2,02_controller,J10,USB_B_Micro,Connector_USB:USB_Micro-B_Molex-105017-0001,1,0.32000,0.32000,"authorized 1,000-unit connector allowance",https://www.digikey.com/
+V2,02_controller,U11,W25Q16JVSSIQ,Package_SO:SOIC-8_3.9x4.9mm_P1.27mm,1,0.20000,0.20000,"authorized 1,000-unit tier",https://www.digikey.com/
+V2,03_fpga_adc,R32,0R,Resistor_SMD:R_0402_1005Metric,1,0.00600,0.00600,commodity 1% resistor allowance,https://www.digikey.com/
+V2,03_fpga_adc,R91,1.00k_1%,Resistor_SMD:R_0402_1005Metric,1,0.00600,0.00600,commodity 1% resistor allowance,https://www.digikey.com/
+V2,03_fpga_adc,"C311,C312,C314,C316,C318,C319,C321,C322,C40,C42,C44,C46,C47,C48",100nF,Capacitor_SMD:C_0402_1005Metric,14,0.01000,0.14000,commodity passive allowance,https://www.digikey.com/
+V2,03_fpga_adc,R147,10k,Resistor_SMD:R_0402_1005Metric,1,0.00600,0.00600,commodity 1% resistor allowance,https://www.digikey.com/
+V2,03_fpga_adc,C156,10nF,Capacitor_SMD:C_0402_1005Metric,1,0.01000,0.01000,commodity passive allowance,https://www.digikey.com/
+V2,03_fpga_adc,"C310,C41,C43,C45,C159,C154,C155",10uF,Capacitor_SMD:C_0805_2012Metric,7,0.07500,0.52500,commodity passive allowance,https://www.digikey.com/
+V2,03_fpga_adc,"FB33,FB35,FB36,FB37,FB38",120R@100MHz,Inductor_SMD:L_0402_1005Metric,5,0.07000,0.35000,commodity inductor/ferrite allowance,https://www.digikey.com/
+V2,03_fpga_adc,"C313,C323",1uF,Capacitor_SMD:C_0402_1005Metric,2,0.02500,0.05000,commodity passive allowance,https://www.digikey.com/
+V2,03_fpga_adc,R90,2.00k_1%,Resistor_SMD:R_0402_1005Metric,1,0.00600,0.00600,commodity 1% resistor allowance,https://www.digikey.com/
+V2,03_fpga_adc,"C315,C317,C320",2.2uF,Capacitor_SMD:C_0402_1005Metric,3,0.03500,0.10500,commodity passive allowance,https://www.digikey.com/
+V2,03_fpga_adc,FB34,220R@100MHz,Inductor_SMD:L_0402_1005Metric,1,0.07000,0.07000,commodity inductor/ferrite allowance,https://www.digikey.com/
+V2,03_fpga_adc,"R120,R121,R122,R123,R124,R125,R31",33R,Resistor_SMD:R_0402_1005Metric,7,0.00600,0.04200,commodity 1% resistor allowance,https://www.digikey.com/
+V2,03_fpga_adc,"R30,R33,R148",4.7k,Resistor_SMD:R_0402_1005Metric,3,0.00600,0.01800,commodity 1% resistor allowance,https://www.digikey.com/
+V2,03_fpga_adc,U21,AD9215BCPZ-105,Package_CSP:LFCSP-32-1EP_5x5mm_P0.5mm_EP3.6x3.6mm_ThermalVias,1,8.46000,8.46000,manufacturer starting price,https://www.analog.com/en/parametricsearch/11313
+V2,03_fpga_adc,U20,LIF-MD6000-6JMG80I,CodeSDR:LIF-MD6000-6JMG80I,1,13.07000,13.07000,authorized 100-unit tier,https://www.digikey.com/
+V2,04_ethernet,"C295,C296,C298,C299,C302,C303,C304,C305,C150,C151,C152,C153,C50,C51,C52,C53,C54,C55",100nF,Capacitor_SMD:C_0402_1005Metric,18,0.01000,0.18000,commodity passive allowance,https://www.digikey.com/
+V2,04_ethernet,"R41,R141,R142",10k,Resistor_SMD:R_0402_1005Metric,3,0.00600,0.01800,commodity 1% resistor allowance,https://www.digikey.com/
+V2,04_ethernet,C301,10nF,Capacitor_SMD:C_0402_1005Metric,1,0.01000,0.01000,commodity passive allowance,https://www.digikey.com/
+V2,04_ethernet,"C297,C300,C56,C57,C58",10uF,Capacitor_SMD:C_0805_2012Metric,5,0.07500,0.37500,commodity passive allowance,https://www.digikey.com/
+V2,04_ethernet,R40,12.1k_1%,Resistor_SMD:R_0402_1005Metric,1,0.00600,0.00600,commodity 1% resistor allowance,https://www.digikey.com/
+V2,04_ethernet,"FB31,FB32",120R@100MHz,Inductor_SMD:L_0603_1608Metric_Pad1.05x0.95mm_HandSolder,2,0.07000,0.14000,commodity inductor/ferrite allowance,https://www.digikey.com/
+V2,04_ethernet,"R132,R133",2.2k,Resistor_SMD:R_0402_1005Metric,2,0.00600,0.01200,commodity 1% resistor allowance,https://www.digikey.com/
+V2,04_ethernet,"R42,R43",330R,Resistor_SMD:R_0402_1005Metric,2,0.00600,0.01200,commodity 1% resistor allowance,https://www.digikey.com/
+V2,04_ethernet,"R126,R127,R128,R129,R130,R131",33R,Resistor_SMD:R_0402_1005Metric,6,0.00600,0.03600,commodity 1% resistor allowance,https://www.digikey.com/
+V2,04_ethernet,"C157,C158",33pF_C0G,Capacitor_SMD:C_0402_1005Metric,2,0.01200,0.02400,commodity passive allowance,https://www.digikey.com/
+V2,04_ethernet,"R134,R135,R136,R137,R138,R139,R140",4.7k,Resistor_SMD:R_0402_1005Metric,7,0.00600,0.04200,commodity 1% resistor allowance,https://www.digikey.com/
+V2,04_ethernet,FB30,600R@100MHz,Inductor_SMD:L_0603_1608Metric_Pad1.05x0.95mm_HandSolder,1,0.07000,0.07000,commodity inductor/ferrite allowance,https://www.digikey.com/
+V2,04_ethernet,Y30,ECS-250-20-33-TR_25MHz,Crystal:Crystal_SMD_3225-4Pin_3.2x2.5mm,1,0.61500,0.61500,"authorized 1,000-unit tier",https://www.digikey.com/
+V2,04_ethernet,J30,JK0654219NL,Connector_RJ:RJ45_Pulse_JK0654219NL_Horizontal,1,2.96500,2.96500,"authorized 1,000-unit tier",https://www.digikey.com/
+V2,04_ethernet,U30,KSZ9031RNXCA,Package_DFN_QFN:QFN-48-1EP_7x7mm_P0.5mm_EP3.5x3.5mm_ThermalVias,1,3.42000,3.42000,authorized 260-unit tier,https://www.digikey.com/
+V2,05_reference_lo,"C60,C270,C200,C272,C69,C273,C274,C275,C276,C277,C278,C71,C76,C77,C78",100nF,Capacitor_SMD:C_0402_1005Metric,15,0.01000,0.15000,commodity passive allowance,https://www.digikey.com/
+V2,05_reference_lo,"C201,C202,C203,C204,C206,C207",100pF_C0G,Capacitor_SMD:C_0201_0603Metric,6,0.01800,0.10800,commodity passive allowance,https://www.digikey.com/
+V2,05_reference_lo,R143,10k,Resistor_SMD:R_0402_1005Metric,1,0.00600,0.00600,commodity 1% resistor allowance,https://www.digikey.com/
+V2,05_reference_lo,C72,10nF,Capacitor_SMD:C_0402_1005Metric,1,0.01000,0.01000,commodity passive allowance,https://www.digikey.com/
+V2,05_reference_lo,"C61,C62,C65,C66,C67,C279,C280,C281,C73",10uF,Capacitor_SMD:C_0805_2012Metric,9,0.07500,0.67500,commodity passive allowance,https://www.digikey.com/
+V2,05_reference_lo,C205,15nF_C0G,Capacitor_SMD:C_0402_1005Metric,1,0.01200,0.01200,commodity passive allowance,https://www.digikey.com/
+V2,05_reference_lo,C74,1nF_C0G,Capacitor_SMD:C_0402_1005Metric,1,0.01200,0.01200,commodity passive allowance,https://www.digikey.com/
+V2,05_reference_lo,"C271,C63,C64,C68",1uF,Capacitor_SMD:C_0603_1608Metric,4,0.02500,0.10000,commodity passive allowance,https://www.digikey.com/
+V2,05_reference_lo,C75,3.3nF_C0G,Capacitor_SMD:C_0402_1005Metric,1,0.01200,0.01200,commodity passive allowance,https://www.digikey.com/
+V2,05_reference_lo,"R50,R51",33R,Resistor_SMD:R_0402_1005Metric,2,0.00600,0.01200,commodity 1% resistor allowance,https://www.digikey.com/
+V2,05_reference_lo,R58,4.7k_1%,Resistor_SMD:R_0402_1005Metric,1,0.00600,0.00600,commodity 1% resistor allowance,https://www.digikey.com/
+V2,05_reference_lo,C70,4.7nF_C0G,Capacitor_SMD:C_0402_1005Metric,1,0.01200,0.01200,commodity passive allowance,https://www.digikey.com/
+V2,05_reference_lo,R92,50R,Resistor_SMD:R_0201_0603Metric,1,0.00900,0.00900,commodity 1% resistor allowance,https://www.digikey.com/
+V2,05_reference_lo,"R52,R53,R54,R55",50R,Resistor_SMD:R_0402_1005Metric,4,0.00600,0.02400,commodity 1% resistor allowance,https://www.digikey.com/
+V2,05_reference_lo,"R93,R94,R95",51R,Resistor_SMD:R_0402_1005Metric,3,0.00600,0.01800,commodity 1% resistor allowance,https://www.digikey.com/
+V2,05_reference_lo,R59,620R_1%,Resistor_SMD:R_0402_1005Metric,1,0.00600,0.00600,commodity 1% resistor allowance,https://www.digikey.com/
+V2,05_reference_lo,R56,68R_1%,Resistor_SMD:R_0402_1005Metric,1,0.00600,0.00600,commodity 1% resistor allowance,https://www.digikey.com/
+V2,05_reference_lo,U41,ADF4360-1BCPZ,Package_CSP:LFCSP-24-1EP_4x4mm_P0.5mm_EP2.5x2.5mm_ThermalVias,1,4.78000,4.78000,"manufacturer 1,000-unit price",https://www.analog.com/en/parametricsearch/11313
+V2,05_reference_lo,U42,CDCLVC1104PWR,Package_SO:TSSOP-8_3x3mm_P0.65mm,1,3.22000,3.22000,authorized 100-unit tier,https://www.mouser.com/
+V2,05_reference_lo,U40,LMX2592RHAT,Package_DFN_QFN:Texas_RHA0040B_VQFN-40-1EP_6x6mm_P0.5mm_EP4.15x4.15mm_ThermalVias,1,34.90000,34.90000,authorized 250-unit tier,https://www.digikey.com/
+V2,05_reference_lo,Y40,SiT8209AC-23-33E-100.000000X,Oscillator:Oscillator_SMD_SiT_PQFN-4Pin_3.2x2.5mm,1,2.29000,2.29000,"authorized 1,000-unit tier",https://www.digikey.com/
+V2,06_rf_low,C209,0.2pF_C0G,Capacitor_SMD:C_0201_0603Metric,1,0.01800,0.01800,commodity passive allowance,https://www.digikey.com/
+V2,06_rf_low,R60,0R,Resistor_SMD:R_0402_1005Metric,1,0.00600,0.00600,commodity 1% resistor allowance,https://www.digikey.com/
+V2,06_rf_low,R61,1.5k_1%,Resistor_SMD:R_0402_1005Metric,1,0.00600,0.00600,commodity 1% resistor allowance,https://www.digikey.com/
+V2,06_rf_low,"C81,C214,C82,C283",100nF,Capacitor_SMD:C_0402_1005Metric,4,0.01000,0.04000,commodity passive allowance,https://www.digikey.com/
+V2,06_rf_low,"C208,C210",100pF_C0G,Capacitor_SMD:C_0201_0603Metric,2,0.01800,0.03600,commodity passive allowance,https://www.digikey.com/
+V2,06_rf_low,"C80,C213,C282",100pF_C0G,Capacitor_SMD:C_0402_1005Metric,3,0.01200,0.03600,commodity passive allowance,https://www.digikey.com/
+V2,06_rf_low,C83,10uF,Capacitor_SMD:C_0805_2012Metric,1,0.07500,0.07500,commodity passive allowance,https://www.digikey.com/
+V2,06_rf_low,"C211,C212",1nF_C0G,Capacitor_SMD:C_0402_1005Metric,2,0.01200,0.02400,commodity passive allowance,https://www.digikey.com/
+V2,06_rf_low,L80,220nH,Inductor_SMD:L_0603_1608Metric_Pad1.05x0.95mm_HandSolder,1,0.07000,0.07000,commodity inductor/ferrite allowance,https://www.digikey.com/
+V2,06_rf_low,T50,2450BL15B0200001E,CodeSDR:Johanson_0805_6P_Balun,1,0.28000,0.28000,authorized-volume allowance,https://www.johansontechnology.com/products/integrated-passives/baluns/2450bl15b0200001e/
+V2,06_rf_low,U51,ADL5801ACPZ-R7,Package_CSP:LFCSP-24-1EP_4x4mm_P0.5mm_EP2.5x2.5mm_ThermalVias,1,7.28000,7.28000,"manufacturer 1,000-unit price",https://www.analog.com/en/parametricsearch/11313
+V2,06_rf_low,U50,GRF4001,CodeSDR:GRF_DFN6_1.5x1.5mm,1,1.36000,1.36000,"authorized 2,500-unit reel tier",https://www.mouser.com/
+V2,06_rf_low,FL50,LFCN-2500+,CodeSDR:MiniCircuits_FV1206,1,1.86660,1.86660,"authorized 1,000-unit tier",https://www.digikey.com/
+V2,06_rf_low,D50,PESD1V0R1BCSF,CodeSDR:SOD962-2_DSN0603,1,0.11000,0.11000,"authorized 1,000-unit tier",https://www.digikey.com/
+V2,06_rf_low,J50,RF_LOW_0.1_2.5GHz,Connector_Coaxial:SMA_Molex_73251-1153_EdgeMount_Horizontal,1,2.28000,2.28000,"authorized 3,200-unit tier",https://www.digikey.com/
+V2,07_rf_high,"C219,C2112,C292",0.2pF_C0G,Capacitor_SMD:C_0201_0603Metric,3,0.01800,0.05400,commodity passive allowance,https://www.digikey.com/
+V2,07_rf_high,C2111,0.3pF_C0G,Capacitor_SMD:C_0201_0603Metric,1,0.01800,0.01800,commodity passive allowance,https://www.digikey.com/
+V2,07_rf_high,"C218,C291",0.5pF_C0G,Capacitor_SMD:C_0201_0603Metric,2,0.01800,0.03600,commodity passive allowance,https://www.digikey.com/
+V2,07_rf_high,C216,0.6pF_C0G,Capacitor_SMD:C_0201_0603Metric,1,0.01800,0.01800,commodity passive allowance,https://www.digikey.com/
+V2,07_rf_high,C217,0.8pF_C0G,Capacitor_SMD:C_0201_0603Metric,1,0.01800,0.01800,commodity passive allowance,https://www.digikey.com/
+V2,07_rf_high,"R100,R105,R106,R107,R111",0R,Resistor_SMD:R_0201_0603Metric,5,0.00900,0.04500,commodity 1% resistor allowance,https://www.digikey.com/
+V2,07_rf_high,"C2211,C294",1.0pF_C0G,Capacitor_SMD:C_0201_0603Metric,2,0.01800,0.03600,commodity passive allowance,https://www.digikey.com/
+V2,07_rf_high,R101,1.5k,Resistor_SMD:R_0201_0603Metric,1,0.00900,0.00900,commodity 1% resistor allowance,https://www.digikey.com/
+V2,07_rf_high,"R144,R145",100k,Resistor_SMD:R_0402_1005Metric,2,0.00600,0.01200,commodity 1% resistor allowance,https://www.digikey.com/
+V2,07_rf_high,"C224,C225,C226,C227,C293,C260,C93",100nF,Capacitor_SMD:C_0402_1005Metric,7,0.01000,0.07000,commodity passive allowance,https://www.digikey.com/
+V2,07_rf_high,"C215,C223,C232,C233",100pF_C0G,Capacitor_SMD:C_0201_0603Metric,4,0.01800,0.07200,commodity passive allowance,https://www.digikey.com/
+V2,07_rf_high,"C261,C94",10uF,Capacitor_SMD:C_0805_2012Metric,2,0.07500,0.15000,commodity passive allowance,https://www.digikey.com/
+V2,07_rf_high,C2210,2.2pF_C0G,Capacitor_SMD:C_0201_0603Metric,1,0.01800,0.01800,commodity passive allowance,https://www.digikey.com/
+V2,07_rf_high,"R103,R112",2.9k,Resistor_SMD:R_0201_0603Metric,2,0.00900,0.01800,commodity 1% resistor allowance,https://www.digikey.com/
+V2,07_rf_high,R102,200R,Resistor_SMD:R_0201_0603Metric,1,0.00900,0.00900,commodity 1% resistor allowance,https://www.digikey.com/
+V2,07_rf_high,L83,220nH,Inductor_SMD:L_0603_1608Metric_Pad1.05x0.95mm_HandSolder,1,0.07000,0.07000,commodity inductor/ferrite allowance,https://www.digikey.com/
+V2,07_rf_high,C2110,22pF_C0G,Capacitor_SMD:C_0201_0603Metric,1,0.01800,0.01800,commodity passive allowance,https://www.digikey.com/
+V2,07_rf_high,"U61,U62,U66,U67",GRF2101,CodeSDR:GRF_DFN6_1.5x1.5mm,4,1.14000,4.56000,"authorized 1,000-unit tier",https://www.mouser.com/
+V2,07_rf_high,U60,GRF4001,CodeSDR:GRF_DFN6_1.5x1.5mm,1,1.36000,1.36000,"authorized 2,500-unit reel tier",https://www.mouser.com/
+V2,07_rf_high,U63,LTC5548IUDB,CodeSDR:DFN-12-1EP_3x2mm_P0.5mm,1,13.51000,13.51000,"manufacturer 1,000-unit price",https://www.analog.com/en/parametricsearch/11313
+V2,07_rf_high,"D60,D61,D62,D63",PESD1V0R1BCSF,CodeSDR:SOD962-2_DSN0603,4,0.11000,0.44000,"authorized 1,000-unit tier",https://www.digikey.com/
+V2,07_rf_high,U64,QPC6144TR13,CodeSDR:QPC6144_LGA24_4x4mm,1,6.00000,6.00000,budgetary quote variable; verify before release,https://www.qorvo.com/products/p/QPC6144
+V2,07_rf_high,J60,RF_HIGH_2.3_4.2GHz,Connector_Coaxial:SMA_Molex_73251-1153_EdgeMount_Horizontal,1,2.28000,2.28000,"authorized 3,200-unit tier",https://www.digikey.com/
+V2,07_rf_high,J61,RF_HIGH_4.2_6.8GHz,Connector_Coaxial:SMA_Molex_73251-1153_EdgeMount_Horizontal,1,2.28000,2.28000,"authorized 3,200-unit tier",https://www.digikey.com/
+V2,07_rf_high,J62,RF_HIGH_6.8_9.2GHz,Connector_Coaxial:SMA_Molex_73251-1153_EdgeMount_Horizontal,1,2.28000,2.28000,"authorized 3,200-unit tier",https://www.digikey.com/
+V2,07_rf_high,J63,RF_HIGH_8.0_10GHz,Connector_Coaxial:SMA_Molex_73251-1153_EdgeMount_Horizontal,1,2.28000,2.28000,"authorized 3,200-unit tier",https://www.digikey.com/
+V2,07_rf_high,T60,TC1-1-13M+,Transformer_SMD:Transformer_MiniCircuits_AT224-1A,1,1.19000,1.19000,"manufacturer 1,000-unit tier",https://www.minicircuits.com/WebStore/dashboard.html?model=TC1-1-13M%2B
+V2,08_if_chain,C246,1.0pF_C0G,Capacitor_SMD:C_0201_0603Metric,1,0.01800,0.01800,commodity passive allowance,https://www.digikey.com/
+V2,08_if_chain,"R79,R80",100R_1%,Resistor_SMD:R_0402_1005Metric,2,0.00600,0.01200,commodity 1% resistor allowance,https://www.digikey.com/
+V2,08_if_chain,R146,100k,Resistor_SMD:R_0402_1005Metric,1,0.00600,0.00600,commodity 1% resistor allowance,https://www.digikey.com/
+V2,08_if_chain,"C100,C101,C284,C254,C255,C256,C105",100nF,Capacitor_SMD:C_0402_1005Metric,7,0.01000,0.07000,commodity passive allowance,https://www.digikey.com/
+V2,08_if_chain,"C234,C235,C236,C237,C238,C245",100pF_C0G,Capacitor_SMD:C_0201_0603Metric,6,0.01800,0.10800,commodity passive allowance,https://www.digikey.com/
+V2,08_if_chain,"C262,C268",100pF_C0G,Capacitor_SMD:C_0402_1005Metric,2,0.01200,0.02400,commodity passive allowance,https://www.digikey.com/
+V2,08_if_chain,"R77,R78,R75,R76",10k_1%,Resistor_SMD:R_0402_1005Metric,4,0.00600,0.02400,commodity 1% resistor allowance,https://www.digikey.com/
+V2,08_if_chain,C106,10uF,Capacitor_SMD:C_0805_2012Metric,1,0.07500,0.07500,commodity passive allowance,https://www.digikey.com/
+V2,08_if_chain,"C264,C266",110pF_C0G,Capacitor_SMD:C_0402_1005Metric,2,0.01200,0.02400,commodity passive allowance,https://www.digikey.com/
+V2,08_if_chain,C102,1nF_C0G,Capacitor_SMD:C_0402_1005Metric,1,0.01200,0.01200,commodity passive allowance,https://www.digikey.com/
+V2,08_if_chain,C247,1uF,Capacitor_SMD:C_0603_1608Metric,1,0.02500,0.02500,commodity passive allowance,https://www.digikey.com/
+V2,08_if_chain,"L85,L86",2.2uH,Inductor_SMD:L_0603_1608Metric_Pad1.05x0.95mm_HandSolder,2,0.07000,0.14000,commodity inductor/ferrite allowance,https://www.digikey.com/
+V2,08_if_chain,"L87,L88,L95,L96",200nH,Inductor_SMD:L_0603_1608Metric_Pad1.05x0.95mm_HandSolder,4,0.07000,0.28000,commodity inductor/ferrite allowance,https://www.digikey.com/
+V2,08_if_chain,T70,2450BL15B0100001E,CodeSDR:Johanson_0805_6P_Balun,1,0.24000,0.24000,authorized-volume allowance,https://www.digikey.com/
+V2,08_if_chain,"R73,R74",25R_1%,Resistor_SMD:R_0402_1005Metric,2,0.00600,0.01200,commodity 1% resistor allowance,https://www.digikey.com/
+V2,08_if_chain,R71,3.0R_1%,Resistor_SMD:R_0402_1005Metric,1,0.00600,0.00600,commodity 1% resistor allowance,https://www.digikey.com/
+V2,08_if_chain,R72,33R_1%,Resistor_SMD:R_0402_1005Metric,1,0.00600,0.00600,commodity 1% resistor allowance,https://www.digikey.com/
+V2,08_if_chain,"L84,L97",33nH,Inductor_SMD:L_0402_1005Metric_Pad0.77x0.64mm_HandSolder,2,0.07000,0.14000,commodity inductor/ferrite allowance,https://www.digikey.com/
+V2,08_if_chain,"L89,L90,L93,L94",360nH,Inductor_SMD:L_0603_1608Metric_Pad1.05x0.95mm_HandSolder,4,0.07000,0.28000,commodity inductor/ferrite allowance,https://www.digikey.com/
+V2,08_if_chain,"L91,L92",390nH,Inductor_SMD:L_0603_1608Metric_Pad1.05x0.95mm_HandSolder,2,0.07000,0.14000,commodity inductor/ferrite allowance,https://www.digikey.com/
+V2,08_if_chain,"R70,R81",499R_1%,Resistor_SMD:R_0402_1005Metric,2,0.00600,0.01200,commodity 1% resistor allowance,https://www.digikey.com/
+V2,08_if_chain,U74,AD8351ARMZ,Package_SO:MSOP-10_3x3mm_P0.5mm,1,4.37000,4.37000,"manufacturer 1,000-unit price",https://www.analog.com/en/parametricsearch/11313
+V2,08_if_chain,U70,BGS12WN6E6327,CodeSDR:Infineon_TSNP6_1.1x0.7mm,1,0.13800,0.13800,"authorized 1,000-unit tier",https://www.digikey.com/
+V2,08_if_chain,"U71,U75",GRF2013,CodeSDR:GRF_DFN6_1.5x1.5mm,2,1.34000,2.68000,"authorized 1,000-unit tier",https://www.mouser.com/
+V2,08_if_chain,U73,LT5560EDD,Package_DFN_QFN:DFN-8-1EP_3x3mm_P0.5mm_EP1.65x2.38mm_ThermalVias,1,2.28000,2.28000,"manufacturer 1,000-unit price",https://www.analog.com/en/parametricsearch/11313
+V2,08_if_chain,U72,PE4312C-Z,Package_DFN_QFN:QFN-20-1EP_4x4mm_P0.5mm_EP2.6x2.6mm_ThermalVias,1,2.61000,2.61000,"authorized 1,000-unit tier",https://www.mouser.com/
+V2,08_if_chain,FL70,QPQ1909TR13,CodeSDR:QPQ1909_1.4x1.2mm,1,0.79374,0.79374,"authorized 1,000-unit tier",https://www.mouser.com/

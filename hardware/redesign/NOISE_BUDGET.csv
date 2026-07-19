@@ -1,0 +1,71 @@
+path,order,stage,component,gain_db,noise_figure_db,cumulative_gain_db,cumulative_nf_db,source_note
+LOW_0.1_2.5,1,protection and 2.5 GHz LPF,PESD1V0R1BCSF + LFCN-2500+,-1.000,1.000,-1.000,1.000,loss budget
+LOW_0.1_2.5,2,low-band LNA,GRF4001,15.400,0.750,14.400,1.750,manufacturer representative
+LOW_0.1_2.5,3,first mixer,ADL5801,-6.100,10.600,8.300,2.734,manufacturer 2500 MHz worst-band typical
+LOW_0.1_2.5,4,mixer output balun,2450BL15B0200001E,-1.000,1.000,7.300,2.822,loss budget
+LOW_0.1_2.5,5,IF selector,BGS12WN6,-0.700,0.700,6.600,2.895,loss budget
+LOW_0.1_2.5,6,2436 MHz BAW,QPQ1909,-1.200,1.200,5.400,3.048,worst useful-band loss budget
+LOW_0.1_2.5,7,IF gain 1,GRF2013,18.500,1.300,23.900,3.259,manufacturer typical
+LOW_0.1_2.5,8,"digital attenuation, minimum",PE4312C-Z,-1.700,1.700,22.200,3.263,loss budget
+LOW_0.1_2.5,9,IF gain 2,GRF2013,18.500,1.300,40.700,3.267,manufacturer typical
+LOW_0.1_2.5,10,second-mixer balun,2450BL15B0100001E,-1.000,1.000,39.700,3.267,loss budget
+LOW_0.1_2.5,11,second mixer,LT5560,2.000,11.000,41.700,3.270,conservative at 2436 MHz
+LOW_0.1_2.5,12,46.5 MHz anti-alias LPF,9-pole LC,-0.500,0.500,41.200,3.270,finite-Q allowance
+LOW_0.1_2.5,13,ADC driver,AD8351,21.000,6.000,62.200,3.270,R72=33 ohm gain setting
+HIGH_A_2.3_4.2,1,input protection/match,port match,-0.700,0.700,-0.700,0.700,loss budget
+HIGH_A_2.3_4.2,2,2.3-4.2 GHz LNA,GRF2101,17.000,1.000,16.300,1.700,manufacturer custom-tune data
+HIGH_A_2.3_4.2,3,post-LNA RF selector,QPC6144,-1.700,1.700,14.600,1.733,loss budget
+HIGH_A_2.3_4.2,4,first mixer,LTC5548,-7.500,7.500,7.100,2.177,conservative conversion-loss estimate
+HIGH_A_2.3_4.2,5,IF balun,TC1-1-13M+,-1.700,1.700,5.400,2.416,manufacturer typical near 2.5 GHz plus rounding
+HIGH_A_2.3_4.2,6,IF selector,BGS12WN6,-0.700,0.700,4.700,2.539,loss budget
+HIGH_A_2.3_4.2,7,2436 MHz BAW,QPQ1909,-1.200,1.200,3.500,2.793,worst useful-band loss budget
+HIGH_A_2.3_4.2,8,IF gain 1,GRF2013,18.500,1.300,22.000,3.135,manufacturer typical
+HIGH_A_2.3_4.2,9,"digital attenuation, minimum",PE4312C-Z,-1.700,1.700,20.300,3.141,loss budget
+HIGH_A_2.3_4.2,10,IF gain 2,GRF2013,18.500,1.300,38.800,3.148,manufacturer typical
+HIGH_A_2.3_4.2,11,second-mixer balun,2450BL15B0100001E,-1.000,1.000,37.800,3.148,loss budget
+HIGH_A_2.3_4.2,12,second mixer,LT5560,2.000,11.000,39.800,3.152,conservative at 2436 MHz
+HIGH_A_2.3_4.2,13,46.5 MHz anti-alias LPF,9-pole LC,-0.500,0.500,39.300,3.152,finite-Q allowance
+HIGH_A_2.3_4.2,14,ADC driver,AD8351,21.000,6.000,60.300,3.153,R72=33 ohm gain setting
+HIGH_B_4.2_6.8,1,input protection/match,port match,-0.700,0.700,-0.700,0.700,loss budget
+HIGH_B_4.2_6.8,2,4.2-6.8 GHz LNA,GRF2101,14.900,1.200,14.200,1.900,manufacturer custom-tune data
+HIGH_B_4.2_6.8,3,post-LNA RF selector,QPC6144,-1.700,1.700,12.500,1.951,loss budget
+HIGH_B_4.2_6.8,4,first mixer,LTC5548,-7.500,7.500,5.000,2.617,conservative conversion-loss estimate
+HIGH_B_4.2_6.8,5,IF balun,TC1-1-13M+,-1.700,1.700,3.300,2.963,manufacturer typical near 2.5 GHz plus rounding
+HIGH_B_4.2_6.8,6,IF selector,BGS12WN6,-0.700,0.700,2.600,3.139,loss budget
+HIGH_B_4.2_6.8,7,2436 MHz BAW,QPQ1909,-1.200,1.200,1.400,3.493,worst useful-band loss budget
+HIGH_B_4.2_6.8,8,IF gain 1,GRF2013,18.500,1.300,19.900,3.959,manufacturer typical
+HIGH_B_4.2_6.8,9,"digital attenuation, minimum",PE4312C-Z,-1.700,1.700,18.200,3.967,loss budget
+HIGH_B_4.2_6.8,10,IF gain 2,GRF2013,18.500,1.300,36.700,3.976,manufacturer typical
+HIGH_B_4.2_6.8,11,second-mixer balun,2450BL15B0100001E,-1.000,1.000,35.700,3.976,loss budget
+HIGH_B_4.2_6.8,12,second mixer,LT5560,2.000,11.000,37.700,3.982,conservative at 2436 MHz
+HIGH_B_4.2_6.8,13,46.5 MHz anti-alias LPF,9-pole LC,-0.500,0.500,37.200,3.982,finite-Q allowance
+HIGH_B_4.2_6.8,14,ADC driver,AD8351,21.000,6.000,58.200,3.983,R72=33 ohm gain setting
+HIGH_C_6.8_9.2,1,input protection/match,port match,-0.700,0.700,-0.700,0.700,loss budget
+HIGH_C_6.8_9.2,2,6.8-9.2 GHz LNA,GRF2101,15.000,1.340,14.300,2.040,manufacturer custom-tune data
+HIGH_C_6.8_9.2,3,post-LNA RF selector,QPC6144,-1.700,1.700,12.600,2.088,loss budget
+HIGH_C_6.8_9.2,4,first mixer,LTC5548,-7.500,7.500,5.100,2.722,conservative conversion-loss estimate
+HIGH_C_6.8_9.2,5,IF balun,TC1-1-13M+,-1.700,1.700,3.400,3.052,manufacturer typical near 2.5 GHz plus rounding
+HIGH_C_6.8_9.2,6,IF selector,BGS12WN6,-0.700,0.700,2.700,3.221,loss budget
+HIGH_C_6.8_9.2,7,2436 MHz BAW,QPQ1909,-1.200,1.200,1.500,3.561,worst useful-band loss budget
+HIGH_C_6.8_9.2,8,IF gain 1,GRF2013,18.500,1.300,20.000,4.010,manufacturer typical
+HIGH_C_6.8_9.2,9,"digital attenuation, minimum",PE4312C-Z,-1.700,1.700,18.300,4.018,loss budget
+HIGH_C_6.8_9.2,10,IF gain 2,GRF2013,18.500,1.300,36.800,4.027,manufacturer typical
+HIGH_C_6.8_9.2,11,second-mixer balun,2450BL15B0100001E,-1.000,1.000,35.800,4.027,loss budget
+HIGH_C_6.8_9.2,12,second mixer,LT5560,2.000,11.000,37.800,4.032,conservative at 2436 MHz
+HIGH_C_6.8_9.2,13,46.5 MHz anti-alias LPF,9-pole LC,-0.500,0.500,37.300,4.032,finite-Q allowance
+HIGH_C_6.8_9.2,14,ADC driver,AD8351,21.000,6.000,58.300,4.033,R72=33 ohm gain setting
+HIGH_D_8.0_10,1,input protection/match,port match,-0.700,0.700,-0.700,0.700,loss budget
+HIGH_D_8.0_10,2,8.0-10 GHz LNA,GRF2101,12.300,1.470,11.600,2.170,manufacturer custom-tune data
+HIGH_D_8.0_10,3,8.0-10 GHz LNA 2,GRF2101,12.300,1.470,23.900,2.243,second manufacturer-tuned stage
+HIGH_D_8.0_10,4,post-LNA RF selector,QPC6144,-1.700,1.700,22.200,2.248,loss budget
+HIGH_D_8.0_10,5,first mixer,LTC5548,-7.500,7.500,14.700,2.319,conservative conversion-loss estimate
+HIGH_D_8.0_10,6,IF balun,TC1-1-13M+,-1.700,1.700,13.000,2.361,manufacturer typical near 2.5 GHz plus rounding
+HIGH_D_8.0_10,7,IF selector,BGS12WN6,-0.700,0.700,12.300,2.383,loss budget
+HIGH_D_8.0_10,8,2436 MHz BAW,QPQ1909,-1.200,1.200,11.100,2.429,worst useful-band loss budget
+HIGH_D_8.0_10,9,IF gain 1,GRF2013,18.500,1.300,29.600,2.496,manufacturer typical
+HIGH_D_8.0_10,10,"digital attenuation, minimum",PE4312C-Z,-1.700,1.700,27.900,2.497,loss budget
+HIGH_D_8.0_10,11,IF gain 2,GRF2013,18.500,1.300,46.400,2.499,manufacturer typical
+HIGH_D_8.0_10,12,second-mixer balun,2450BL15B0100001E,-1.000,1.000,45.400,2.499,loss budget
+HIGH_D_8.0_10,13,second mixer,LT5560,2.000,11.000,47.400,2.500,conservative at 2436 MHz
+HIGH_D_8.0_10,14,46.5 MHz anti-alias LPF,9-pole LC,-0.500,0.500,46.900,2.500,finite-Q allowance
+HIGH_D_8.0_10,15,ADC driver,AD8351,21.000,6.000,67.900,2.500,R72=33 ohm gain setting

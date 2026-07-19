@@ -1,0 +1,7 @@
+path,rf_min_mhz,rf_max_mhz,first_if_mhz,first_lo_mode,first_lo_min_mhz,first_lo_max_mhz,image_expression,first_mixer,rf_preselector,second_lo_mhz,second_if_mhz,useful_bw_mhz
+LOW,100,2500,2436.25,high-side,2536.25,4936.25,RF+4872.5,ADL5801,2.5 GHz LPF,2410,26.25,40
+HIGH_A,2300,4200,2436.25,high-side,4736.25,6636.25,RF+4872.5,LTC5548,band-matched A LNA plus optional external filter,2410,26.25,40
+HIGH_B,4200,6800,2436.25,high-side,6636.25,9236.25,RF+4872.5,LTC5548,band-matched B LNA plus optional external filter,2410,26.25,40
+HIGH_C_HIGH_SIDE,6800,7350,2436.25,high-side,9236.25,9786.25,RF+4872.5,LTC5548,band-matched C LNA plus optional external filter,2410,26.25,40
+HIGH_C_LOW_SIDE,7150,9200,2436.25,low-side,4713.75,6763.75,RF-4872.5,LTC5548,band-matched C LNA plus optional external filter,2410,26.25,40
+HIGH_D,8000,10000,2436.25,low-side,5563.75,7563.75,RF-4872.5,LTC5548,band-matched D LNA plus optional external filter,2410,26.25,40

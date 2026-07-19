@@ -1,0 +1,437 @@
+(kicad_sch
+	(version 20250114)
+	(generator "eeschema")
+	(generator_version "9.0")
+	(uuid "b04744a4-fe39-4740-81de-d5e094f9e157")
+	(paper "A3")
+	(title_block
+		(title "Code-SDR V2 - 100 MHz to 10 GHz Cost-First Receiver")
+		(rev "2.0")
+		(company "Code-SDR")
+		(comment 1 "Modular reference design; controlled RF stackup and bench VNA validation required.")
+		(comment 2 "Control/SDR board only. ESC remains a separate external board.")
+	)
+	(lib_symbols)
+	(text "01_power: Power entry and low-noise rails"
+		(exclude_from_sim no)
+		(at 75 43 0.0000)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+		)
+		(uuid "2cd63795-a93f-4307-b0d0-911c3ae4fddf")
+	)
+	(text "02_controller: RP2040 control, flash, USB and debug"
+		(exclude_from_sim no)
+		(at 195 43 0.0000)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+		)
+		(uuid "687219a1-e57a-4030-99b9-135bd57c8681")
+	)
+	(text "03_fpga_adc: CrossLink FPGA, AD9215 and shared 100 MHz sampling clock"
+		(exclude_from_sim no)
+		(at 75 88 0.0000)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+		)
+		(uuid "1cd379d6-7598-4e7d-9024-42715e8133a9")
+	)
+	(text "04_ethernet: KSZ9031 RGMII and integrated-magnetics RJ45"
+		(exclude_from_sim no)
+		(at 195 88 0.0000)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+		)
+		(uuid "7b6b2ea6-04d8-4e58-88e8-302ad829d414")
+	)
+	(text "05_reference_lo: 100 MHz reference, LMX2592 and fixed 2.410 GHz LO"
+		(exclude_from_sim no)
+		(at 75 133 0.0000)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+		)
+		(uuid "f6115611-94ea-4073-8627-aab7c59c5e5a")
+	)
+	(text "06_rf_low: 100 MHz to 2.5 GHz low-band front end"
+		(exclude_from_sim no)
+		(at 195 133 0.0000)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+		)
+		(uuid "df7295f6-66aa-448b-8972-de54f1f29966")
+	)
+	(text "07_rf_high: 2.3 GHz to 10 GHz four-port high-band front end"
+		(exclude_from_sim no)
+		(at 75 178 0.0000)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+		)
+		(uuid "8a6f9835-60b4-4eb3-b501-3e4f21da2717")
+	)
+	(text "08_if_chain: 2.43625 GHz IF, DSA, second mixer and ADC driver"
+		(exclude_from_sim no)
+		(at 195 178 0.0000)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+		)
+		(uuid "7494a8c4-7f6d-4c8d-aef7-9b9f31cb90e1")
+	)
+	(sheet
+		(at 25 25)
+		(size 100 30)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(fields_autoplaced yes)
+		(stroke
+			(width 0.1524)
+			(type solid)
+		)
+		(fill
+			(color 0 0 0 0.0000)
+		)
+		(uuid "785ee55e-b178-417a-913c-2c5178fcea56")
+		(property "Sheetname" "Power entry and low-noise rails"
+			(at 25 24.2884 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left bottom)
+			)
+		)
+		(property "Sheetfile" "sheets/01_power.kicad_sch"
+			(at 25 55.5846 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left top)
+			)
+		)
+		(instances
+			(project None
+				(path "/b04744a4-fe39-4740-81de-d5e094f9e157"
+					(page "2")
+				)
+			)
+		)
+	)
+	(sheet
+		(at 145 25)
+		(size 100 30)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(fields_autoplaced yes)
+		(stroke
+			(width 0.1524)
+			(type solid)
+		)
+		(fill
+			(color 0 0 0 0.0000)
+		)
+		(uuid "7e81e054-bf24-46f6-919f-d12f5f0aa95a")
+		(property "Sheetname" "RP2040 control, flash, USB and debug"
+			(at 145 24.2884 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left bottom)
+			)
+		)
+		(property "Sheetfile" "sheets/02_controller.kicad_sch"
+			(at 145 55.5846 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left top)
+			)
+		)
+		(instances
+			(project None
+				(path "/b04744a4-fe39-4740-81de-d5e094f9e157"
+					(page "3")
+				)
+			)
+		)
+	)
+	(sheet
+		(at 25 70)
+		(size 100 30)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(fields_autoplaced yes)
+		(stroke
+			(width 0.1524)
+			(type solid)
+		)
+		(fill
+			(color 0 0 0 0.0000)
+		)
+		(uuid "71360475-bb64-40cc-b330-25b166968584")
+		(property "Sheetname" "CrossLink FPGA, AD9215 and shared 100 MHz sampling clock"
+			(at 25 69.2884 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left bottom)
+			)
+		)
+		(property "Sheetfile" "sheets/03_fpga_adc.kicad_sch"
+			(at 25 100.5846 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left top)
+			)
+		)
+		(instances
+			(project None
+				(path "/b04744a4-fe39-4740-81de-d5e094f9e157"
+					(page "4")
+				)
+			)
+		)
+	)
+	(sheet
+		(at 145 70)
+		(size 100 30)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(fields_autoplaced yes)
+		(stroke
+			(width 0.1524)
+			(type solid)
+		)
+		(fill
+			(color 0 0 0 0.0000)
+		)
+		(uuid "33c0ebef-5700-4272-b910-27049c7dd939")
+		(property "Sheetname" "KSZ9031 RGMII and integrated-magnetics RJ45"
+			(at 145 69.2884 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left bottom)
+			)
+		)
+		(property "Sheetfile" "sheets/04_ethernet.kicad_sch"
+			(at 145 100.5846 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left top)
+			)
+		)
+		(instances
+			(project None
+				(path "/b04744a4-fe39-4740-81de-d5e094f9e157"
+					(page "5")
+				)
+			)
+		)
+	)
+	(sheet
+		(at 25 115)
+		(size 100 30)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(fields_autoplaced yes)
+		(stroke
+			(width 0.1524)
+			(type solid)
+		)
+		(fill
+			(color 0 0 0 0.0000)
+		)
+		(uuid "9a37ff5a-0b61-4e4c-bd9a-14ccc376e131")
+		(property "Sheetname" "100 MHz reference, LMX2592 and fixed 2.410 GHz LO"
+			(at 25 114.2884 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left bottom)
+			)
+		)
+		(property "Sheetfile" "sheets/05_reference_lo.kicad_sch"
+			(at 25 145.5846 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left top)
+			)
+		)
+		(instances
+			(project None
+				(path "/b04744a4-fe39-4740-81de-d5e094f9e157"
+					(page "6")
+				)
+			)
+		)
+	)
+	(sheet
+		(at 145 115)
+		(size 100 30)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(fields_autoplaced yes)
+		(stroke
+			(width 0.1524)
+			(type solid)
+		)
+		(fill
+			(color 0 0 0 0.0000)
+		)
+		(uuid "9f4cb928-74e2-4548-bd64-90561ef0b956")
+		(property "Sheetname" "100 MHz to 2.5 GHz low-band front end"
+			(at 145 114.2884 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left bottom)
+			)
+		)
+		(property "Sheetfile" "sheets/06_rf_low.kicad_sch"
+			(at 145 145.5846 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left top)
+			)
+		)
+		(instances
+			(project None
+				(path "/b04744a4-fe39-4740-81de-d5e094f9e157"
+					(page "7")
+				)
+			)
+		)
+	)
+	(sheet
+		(at 25 160)
+		(size 100 30)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(fields_autoplaced yes)
+		(stroke
+			(width 0.1524)
+			(type solid)
+		)
+		(fill
+			(color 0 0 0 0.0000)
+		)
+		(uuid "04d9fde5-a5d7-4580-9575-937060eadc46")
+		(property "Sheetname" "2.3 GHz to 10 GHz four-port high-band front end"
+			(at 25 159.2884 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left bottom)
+			)
+		)
+		(property "Sheetfile" "sheets/07_rf_high.kicad_sch"
+			(at 25 190.5846 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left top)
+			)
+		)
+		(instances
+			(project None
+				(path "/b04744a4-fe39-4740-81de-d5e094f9e157"
+					(page "8")
+				)
+			)
+		)
+	)
+	(sheet
+		(at 145 160)
+		(size 100 30)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(fields_autoplaced yes)
+		(stroke
+			(width 0.1524)
+			(type solid)
+		)
+		(fill
+			(color 0 0 0 0.0000)
+		)
+		(uuid "0af245b7-f158-46df-9233-8f0fa5c7b37a")
+		(property "Sheetname" "2.43625 GHz IF, DSA, second mixer and ADC driver"
+			(at 145 159.2884 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left bottom)
+			)
+		)
+		(property "Sheetfile" "sheets/08_if_chain.kicad_sch"
+			(at 145 190.5846 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left top)
+			)
+		)
+		(instances
+			(project None
+				(path "/b04744a4-fe39-4740-81de-d5e094f9e157"
+					(page "9")
+				)
+			)
+		)
+	)
+	(sheet_instances
+		(path "/"
+			(page "1")
+		)
+	)
+	(embedded_fonts no)
+)

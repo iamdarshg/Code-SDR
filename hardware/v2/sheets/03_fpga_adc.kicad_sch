@@ -1,0 +1,9595 @@
+(kicad_sch
+	(version 20250114)
+	(generator "eeschema")
+	(generator_version "9.0")
+	(uuid "c84277fc-9258-4676-bd87-d4f84a5fd7bd")
+	(paper "A1")
+	(title_block
+		(title "03 - CrossLink FPGA, AD9215 and shared 100 MHz sampling clock")
+		(rev "2.0")
+		(company "Code-SDR")
+		(comment 1 "Every IC pad is named; DNC/NC pins are explicitly marked.")
+		(comment 2 "Net labels are global only where signals cross sheet boundaries.")
+	)
+	(lib_symbols
+		(symbol "CodeSDR:LIF-MD6000-6JMG80I"
+			(exclude_from_sim no)
+			(in_bom yes)
+			(on_board yes)
+			(property "Reference" "U"
+				(at 0 55.88 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "Value" "LIF-MD6000-6JMG80I"
+				(at 0 -55.88 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "Footprint" "CodeSDR:LIF-MD6000-6JMG80I"
+				(at 0 0 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					) hide
+				)
+			)
+			(property "Datasheet" "https://www.latticesemi.com/view_document?document_id=51662"
+				(at 0 0 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					) hide
+				)
+			)
+			(property "Description" "0.65 mm pitch CrossLink package; enough I/O for ADC plus RGMII without HDI-only 0.4 mm UMG64"
+				(at 0 0 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					) hide
+				)
+			)
+			(symbol "LIF-MD6000-6JMG80I_0_1"
+				(rectangle
+					(start -17.78 53.34)
+					(end 17.78 -53.34)
+					(stroke
+						(width 0.254)
+						(type default)
+					)
+					(fill
+						(type background)
+					)
+				)
+			)
+			(symbol "LIF-MD6000-6JMG80I_1_1"
+				(pin passive line
+					(at -22.86 50.8 0)
+					(length 5.08)
+					(name "DPHY_N_1"
+						(effects
+							(font
+								(size 1 1)
+							)
+						)
+					)
+					(number "A1"
+						(effects
+							(font
+								(size 1 1)
+							)
+						)
+					)
+				)
+				(pin passive line
+					(at -22.86 48.26 0)
+					(length 5.08)
+					(name "DPHY_N_2"
+						(effects
+							(font
+								(size 1 1)
+							)
+						)
+					)
+					(number "A2"
+						(effects
+							(font
+								(size 1 1)
+							)
+						)
+					)
+				)
+				(pin passive line
+					(at -22.86 45.72 0)
+					(length 5.08)
+					(name "DPHY_N_3"
+						(effects
+							(font
+								(size 1 1)
+							)
+						)
+					)
+					(number "A3"
+						(effects
+							(font
+								(size 1 1)
+							)
+						)
+					)
+				)
+				(pin passive line
+					(at -22.86 43.18 0)
+					(length 5.08)
+					(name "DPHY_N_4"
+						(effects
+							(font
+								(size 1 1)
+							)
+						)
+					)
+					(number "A4"
+						(effects
+							(font
+								(size 1 1)
+							)
+						)
+					)
+				)
+				(pin passive line
+					(at -22.86 40.64 0)
+					(length 5.08)
+					(name "DPHY_N_5"
+						(effects
+							(font
+								(size 1 1)
+							)
+						)
+					)
+					(number "A5"
+						(effects
+							(font
+								(size 1 1)
+							)
+						)
+					)
+				)
+				(pin passive line
+					(at -22.86 38.1 0)
+					(length 5.08)
+					(name "DPHY_N_6"
+						(effects
+							(font
+								(size 1 1)
+							)
+						)
+					)
+					(number "A6"
+						(effects
+							(font
+								(size 1 1)
+							)
+						)
+					)
+				)
+				(pin passive line
+					(at -22.86 35.56 0)
+					(length 5.08)
+					(name "DPHY_N_7"
+						(effects
+							(font
+								(size 1 1)
+							)
+						)
+					)
+					(number "A7"
+						(effects
+							(font
+								(size 1 1)
+							)
+						)
+					)
+				)
+				(pin passive line
+					(at -22.86 33.02 0)
+					(length 5.08)
+					(name "DPHY_N_8"
+						(effects
+							(font
+								(size 1 1)
+							)
+						)
+					)
+					(number "A8"
+						(effects
+							(font
+								(size 1 1)
+							)
+						)
+					)
+				)
+				(pin passive line
+					(at -22.86 30.48 0)
+					(length 5.08)
+					(name "DPHY_N_9"
+						(effects
+							(font
+								(size 1 1)
+							)
+						)
+					)
+					(number "A9"
+						(effects
+							(font
+								(size 1 1)
+							)
+						)
+					)
+				)
+				(pin passive line
+					(at -22.86 27.94 0)
+					(length 5.08)
+					(name "DPHY_N_10"
+						(effects
+							(font
+								(size 1 1)
+							)
+						)
+					)
+					(number "A10"
+						(effects
+							(font
+								(size 1 1)
+							)
+						)
+					)
+				)
+				(pin passive line
+					(at -22.86 25.4 0)
+					(length 5.08)
+					(name "DPHY_P_1"
+						(effects
+							(font
+								(size 1 1)
+							)
+						)
+					)
+					(number "B1"
+						(effects
+							(font
+								(size 1 1)
+							)
+						)
+					)
+				)
+				(pin passive line
+					(at -22.86 22.86 0)
+					(length 5.08)
+					(name "DPHY_P_2"
+						(effects
+							(font
+								(size 1 1)
+							)
+						)
+					)
+					(number "B2"
+						(effects
+							(font
+								(size 1 1)
+							)
+						)
+					)
+				)
+				(pin passive line
+					(at -22.86 20.32 0)
+					(length 5.08)
+					(name "DPHY_P_3"
+						(effects
+							(font
+								(size 1 1)
+							)
+						)
+					)
+					(number "B3"
+						(effects
+							(font
+								(size 1 1)
+							)
+						)
+					)
+				)
+				(pin passive line
+					(at -22.86 17.78 0)
+					(length 5.08)
+					(name "DPHY_P_4"
+						(effects
+							(font
+								(size 1 1)
+							)
+						)
+					)
+					(number "B4"
+						(effects
+							(font
+								(size 1 1)
+							)
+						)
+					)
+				)
+				(pin passive line
+					(at -22.86 15.24 0)
+					(length 5.08)
+					(name "DPHY_P_5"
+						(effects
+							(font
+								(size 1 1)
+							)
+						)
+					)
+					(number "B5"
+						(effects
+							(font
+								(size 1 1)
+							)
+						)
+					)
+				)
+				(pin passive line
+					(at -22.86 12.7 0)
+					(length 5.08)
+					(name "DPHY_P_6"
+						(effects
+							(font
+								(size 1 1)
+							)
+						)
+					)
+					(number "B6"
+						(effects
+							(font
+								(size 1 1)
+							)
+						)
+					)
+				)
+				(pin passive line
+					(at -22.86 10.16 0)
+					(length 5.08)
+					(name "DPHY_P_7"
+						(effects
+							(font
+								(size 1 1)
+							)
+						)
+					)
+					(number "B7"
+						(effects
+							(font
+								(size 1 1)
+							)
+						)
+					)
+				)
+				(pin passive line
+					(at -22.86 7.62 0)
+					(length 5.08)
+					(name "DPHY_P_8"
+						(effects
+							(font
+								(size 1 1)
+							)
+						)
+					)
+					(number "B8"
+						(effects
+							(font
+								(size 1 1)
+							)
+						)
+					)
+				)
+				(pin passive line
+					(at -22.86 5.08 0)
+					(length 5.08)
+					(name "DPHY_P_9"
+						(effects
+							(font
+								(size 1 1)
+							)
+						)
+					)
+					(number "B9"
+						(effects
+							(font
+								(size 1 1)
+							)
+						)
+					)
+				)
+				(pin passive line
+					(at -22.86 2.54 0)
+					(length 5.08)
+					(name "DPHY_P_10"
+						(effects
+							(font
+								(size 1 1)
+							)
+						)
+					)
+					(number "B10"
+						(effects
+							(font
+								(size 1 1)
+							)
+						)
+					)
+				)
+				(pin passive line
+					(at -22.86 0.0000 0)
+					(length 5.08)
+					(name "GND"
+						(effects
+							(font
+								(size 1 1)
+							)
+						)
+					)
+					(number "C1"
+						(effects
+							(font
+								(size 1 1)
+							)
+						)
+					)
+				)
+				(pin passive line
+					(at -22.86 -2.54 0)
+					(length 5.08)
+					(name "GNDA_DPHY1"
+						(effects
+							(font
+								(size 1 1)
+							)
+						)
+					)
+					(number "C2"
+						(effects
+							(font
+								(size 1 1)
+							)
+						)
+					)
+				)
+				(pin passive line
+					(at -22.86 -5.08 0)
+					(length 5.08)
+					(name "GNDA_DPHY0"
+						(effects
+							(font
+								(size 1 1)
+							)
+						)
+					)
+					(number "C9"
+						(effects
+							(font
+								(size 1 1)
+							)
+						)
+					)
+				)
+				(pin passive line
+					(at -22.86 -7.62 0)
+					(length 5.08)
+					(name "GND"
+						(effects
+							(font
+								(size 1 1)
+							)
+						)
+					)
+					(number "C10"
+						(effects
+							(font
+								(size 1 1)
+							)
+						)
+					)
+				)
+				(pin passive line
+					(at -22.86 -10.16 0)
+					(length 5.08)
+					(name "PB48"
+						(effects
+							(font
+								(size 1 1)
+							)
+						)
+					)
+					(number "D1"
+						(effects
+							(font
+								(size 1 1)
+							)
+						)
+					)
+				)
+				(pin passive line
+					(at -22.86 -12.7 0)
+					(length 5.08)
+					(name "VCCPLL_DPHY1"
+						(effects
+							(font
+								(size 1 1)
+							)
+						)
+					)
+					(number "D2"
+						(effects
+							(font
+								(size 1 1)
+							)
+						)
+					)
+				)
+				(pin passive line
+					(at -22.86 -15.24 0)
+					(length 5.08)
+					(name "VCCA_DPHY1"
+						(effects
+							(font
+								(size 1 1)
+							)
+						)
+					)
+					(number "D4"
+						(effects
+							(font
+								(size 1 1)
+							)
+						)
+					)
+				)
+				(pin passive line
+					(at -22.86 -17.78 0)
+					(length 5.08)
+					(name "VCCAUX"
+						(effects
+							(font
+								(size 1 1)
+							)
+						)
+					)
+					(number "D5"
+						(effects
+							(font
+								(size 1 1)
+							)
+						)
+					)
+				)
+				(pin passive line
+					(at -22.86 -20.32 0)
+					(length 5.08)
+					(name "GNDPLL_DPHY"
+						(effects
+							(font
+								(size 1 1)
+							)
+						)
+					)
+					(number "D6"
+						(effects
+							(font
+								(size 1 1)
+							)
+						)
+					)
+				)
+				(pin passive line
+					(at -22.86 -22.86 0)
+					(length 5.08)
+					(name "VCCPLL_DPHY0"
+						(effects
+							(font
+								(size 1 1)
+							)
+						)
+					)
+					(number "D7"
+						(effects
+							(font
+								(size 1 1)
+							)
+						)
+					)
+				)
+				(pin passive line
+					(at -22.86 -25.4 0)
+					(length 5.08)
+					(name "PB16A"
+						(effects
+							(font
+								(size 1 1)
+							)
+						)
+					)
+					(number "D9"
+						(effects
+							(font
+								(size 1 1)
+							)
+						)
+					)
+				)
+				(pin passive line
+					(at -22.86 -27.94 0)
+					(length 5.08)
+					(name "PB16B"
+						(effects
+							(font
+								(size 1 1)
+							)
+						)
+					)
+					(number "D10"
+						(effects
+							(font
+								(size 1 1)
+							)
+						)
+					)
+				)
+				(pin passive line
+					(at -22.86 -30.48 0)
+					(length 5.08)
+					(name "PB34A"
+						(effects
+							(font
+								(size 1 1)
+							)
+						)
+					)
+					(number "E1"
+						(effects
+							(font
+								(size 1 1)
+							)
+						)
+					)
+				)
+				(pin passive line
+					(at -22.86 -33.02 0)
+					(length 5.08)
+					(name "PB34B"
+						(effects
+							(font
+								(size 1 1)
+							)
+						)
+					)
+					(number "E2"
+						(effects
+							(font
+								(size 1 1)
+							)
+						)
+					)
+				)
+				(pin passive line
+					(at -22.86 -35.56 0)
+					(length 5.08)
+					(name "VCC"
+						(effects
+							(font
+								(size 1 1)
+							)
+						)
+					)
+					(number "E4"
+						(effects
+							(font
+								(size 1 1)
+							)
+						)
+					)
+				)
+				(pin passive line
+					(at -22.86 -38.1 0)
+					(length 5.08)
+					(name "GND"
+						(effects
+							(font
+								(size 1 1)
+							)
+						)
+					)
+					(number "E5"
+						(effects
+							(font
+								(size 1 1)
+							)
+						)
+					)
+				)
+				(pin passive line
+					(at -22.86 -40.64 0)
+					(length 5.08)
+					(name "VCC"
+						(effects
+							(font
+								(size 1 1)
+							)
+						)
+					)
+					(number "E6"
+						(effects
+							(font
+								(size 1 1)
+							)
+						)
+					)
+				)
+				(pin passive line
+					(at -22.86 -43.18 0)
+					(length 5.08)
+					(name "VCCA_DPHY0"
+						(effects
+							(font
+								(size 1 1)
+							)
+						)
+					)
+					(number "E7"
+						(effects
+							(font
+								(size 1 1)
+							)
+						)
+					)
+				)
+				(pin passive line
+					(at -22.86 -45.72 0)
+					(length 5.08)
+					(name "PB12A"
+						(effects
+							(font
+								(size 1 1)
+							)
+						)
+					)
+					(number "E9"
+						(effects
+							(font
+								(size 1 1)
+							)
+						)
+					)
+				)
+				(pin passive line
+					(at -22.86 -48.26 0)
+					(length 5.08)
+					(name "PB12B"
+						(effects
+							(font
+								(size 1 1)
+							)
+						)
+					)
+					(number "E10"
+						(effects
+							(font
+								(size 1 1)
+							)
+						)
+					)
+				)
+				(pin passive line
+					(at 22.86 50.8 180)
+					(length 5.08)
+					(name "PB38A"
+						(effects
+							(font
+								(size 1 1)
+							)
+						)
+					)
+					(number "F1"
+						(effects
+							(font
+								(size 1 1)
+							)
+						)
+					)
+				)
+				(pin passive line
+					(at 22.86 48.26 180)
+					(length 5.08)
+					(name "PB38B"
+						(effects
+							(font
+								(size 1 1)
+							)
+						)
+					)
+					(number "F2"
+						(effects
+							(font
+								(size 1 1)
+							)
+						)
+					)
+				)
+				(pin passive line
+					(at 22.86 45.72 180)
+					(length 5.08)
+					(name "VCCIO0"
+						(effects
+							(font
+								(size 1 1)
+							)
+						)
+					)
+					(number "F4"
+						(effects
+							(font
+								(size 1 1)
+							)
+						)
+					)
+				)
+				(pin passive line
+					(at 22.86 43.18 180)
+					(length 5.08)
+					(name "VCCIO1"
+						(effects
+							(font
+								(size 1 1)
+							)
+						)
+					)
+					(number "F5"
+						(effects
+							(font
+								(size 1 1)
+							)
+						)
+					)
+				)
+				(pin passive line
+					(at 22.86 40.64 180)
+					(length 5.08)
+					(name "VCCIO2"
+						(effects
+							(font
+								(size 1 1)
+							)
+						)
+					)
+					(number "F6"
+						(effects
+							(font
+								(size 1 1)
+							)
+						)
+					)
+				)
+				(pin passive line
+					(at 22.86 38.1 180)
+					(length 5.08)
+					(name "VCCIO2"
+						(effects
+							(font
+								(size 1 1)
+							)
+						)
+					)
+					(number "F7"
+						(effects
+							(font
+								(size 1 1)
+							)
+						)
+					)
+				)
+				(pin passive line
+					(at 22.86 35.56 180)
+					(length 5.08)
+					(name "PB6A"
+						(effects
+							(font
+								(size 1 1)
+							)
+						)
+					)
+					(number "F9"
+						(effects
+							(font
+								(size 1 1)
+							)
+						)
+					)
+				)
+				(pin passive line
+					(at 22.86 33.02 180)
+					(length 5.08)
+					(name "PB6B"
+						(effects
+							(font
+								(size 1 1)
+							)
+						)
+					)
+					(number "F10"
+						(effects
+							(font
+								(size 1 1)
+							)
+						)
+					)
+				)
+				(pin passive line
+					(at 22.86 30.48 180)
+					(length 5.08)
+					(name "PB50"
+						(effects
+							(font
+								(size 1 1)
+							)
+						)
+					)
+					(number "G1"
+						(effects
+							(font
+								(size 1 1)
+							)
+						)
+					)
+				)
+				(pin passive line
+					(at 22.86 27.94 180)
+					(length 5.08)
+					(name "GND"
+						(effects
+							(font
+								(size 1 1)
+							)
+						)
+					)
+					(number "G2"
+						(effects
+							(font
+								(size 1 1)
+							)
+						)
+					)
+				)
+				(pin passive line
+					(at 22.86 25.4 180)
+					(length 5.08)
+					(name "VCCIO1"
+						(effects
+							(font
+								(size 1 1)
+							)
+						)
+					)
+					(number "G4"
+						(effects
+							(font
+								(size 1 1)
+							)
+						)
+					)
+				)
+				(pin passive line
+					(at 22.86 22.86 180)
+					(length 5.08)
+					(name "GND"
+						(effects
+							(font
+								(size 1 1)
+							)
+						)
+					)
+					(number "G5"
+						(effects
+							(font
+								(size 1 1)
+							)
+						)
+					)
+				)
+				(pin passive line
+					(at 22.86 20.32 180)
+					(length 5.08)
+					(name "VCCGPLL"
+						(effects
+							(font
+								(size 1 1)
+							)
+						)
+					)
+					(number "G6"
+						(effects
+							(font
+								(size 1 1)
+							)
+						)
+					)
+				)
+				(pin passive line
+					(at 22.86 17.78 180)
+					(length 5.08)
+					(name "GNDGPLL"
+						(effects
+							(font
+								(size 1 1)
+							)
+						)
+					)
+					(number "G7"
+						(effects
+							(font
+								(size 1 1)
+							)
+						)
+					)
+				)
+				(pin passive line
+					(at 22.86 15.24 180)
+					(length 5.08)
+					(name "PB2A"
+						(effects
+							(font
+								(size 1 1)
+							)
+						)
+					)
+					(number "G9"
+						(effects
+							(font
+								(size 1 1)
+							)
+						)
+					)
+				)
+				(pin passive line
+					(at 22.86 12.7 180)
+					(length 5.08)
+					(name "PB2B"
+						(effects
+							(font
+								(size 1 1)
+							)
+						)
+					)
+					(number "G10"
+						(effects
+							(font
+								(size 1 1)
+							)
+						)
+					)
+				)
+				(pin passive line
+					(at 22.86 10.16 180)
+					(length 5.08)
+					(name "PB52"
+						(effects
+							(font
+								(size 1 1)
+							)
+						)
+					)
+					(number "H1"
+						(effects
+							(font
+								(size 1 1)
+							)
+						)
+					)
+				)
+				(pin passive line
+					(at 22.86 7.62 180)
+					(length 5.08)
+					(name "CRESET_B"
+						(effects
+							(font
+								(size 1 1)
+							)
+						)
+					)
+					(number "H2"
+						(effects
+							(font
+								(size 1 1)
+							)
+						)
+					)
+				)
+				(pin passive line
+					(at 22.86 5.08 180)
+					(length 5.08)
+					(name "PB2D"
+						(effects
+							(font
+								(size 1 1)
+							)
+						)
+					)
+					(number "H9"
+						(effects
+							(font
+								(size 1 1)
+							)
+						)
+					)
+				)
+				(pin passive line
+					(at 22.86 2.54 180)
+					(length 5.08)
+					(name "PB2C"
+						(effects
+							(font
+								(size 1 1)
+							)
+						)
+					)
+					(number "H10"
+						(effects
+							(font
+								(size 1 1)
+							)
+						)
+					)
+				)
+				(pin passive line
+					(at 22.86 0.0000 180)
+					(length 5.08)
+					(name "PB53"
+						(effects
+							(font
+								(size 1 1)
+							)
+						)
+					)
+					(number "J1"
+						(effects
+							(font
+								(size 1 1)
+							)
+						)
+					)
+				)
+				(pin passive line
+					(at 22.86 -2.54 180)
+					(length 5.08)
+					(name "PB49"
+						(effects
+							(font
+								(size 1 1)
+							)
+						)
+					)
+					(number "J2"
+						(effects
+							(font
+								(size 1 1)
+							)
+						)
+					)
+				)
+				(pin passive line
+					(at 22.86 -5.08 180)
+					(length 5.08)
+					(name "PB43D"
+						(effects
+							(font
+								(size 1 1)
+							)
+						)
+					)
+					(number "J3"
+						(effects
+							(font
+								(size 1 1)
+							)
+						)
+					)
+				)
+				(pin passive line
+					(at 22.86 -7.62 180)
+					(length 5.08)
+					(name "PB38D"
+						(effects
+							(font
+								(size 1 1)
+							)
+						)
+					)
+					(number "J4"
+						(effects
+							(font
+								(size 1 1)
+							)
+						)
+					)
+				)
+				(pin passive line
+					(at 22.86 -10.16 180)
+					(length 5.08)
+					(name "PB34D"
+						(effects
+							(font
+								(size 1 1)
+							)
+						)
+					)
+					(number "J5"
+						(effects
+							(font
+								(size 1 1)
+							)
+						)
+					)
+				)
+				(pin passive line
+					(at 22.86 -12.7 180)
+					(length 5.08)
+					(name "PB29D"
+						(effects
+							(font
+								(size 1 1)
+							)
+						)
+					)
+					(number "J6"
+						(effects
+							(font
+								(size 1 1)
+							)
+						)
+					)
+				)
+				(pin passive line
+					(at 22.86 -15.24 180)
+					(length 5.08)
+					(name "PB29A"
+						(effects
+							(font
+								(size 1 1)
+							)
+						)
+					)
+					(number "J7"
+						(effects
+							(font
+								(size 1 1)
+							)
+						)
+					)
+				)
+				(pin passive line
+					(at 22.86 -17.78 180)
+					(length 5.08)
+					(name "PB16D"
+						(effects
+							(font
+								(size 1 1)
+							)
+						)
+					)
+					(number "J8"
+						(effects
+							(font
+								(size 1 1)
+							)
+						)
+					)
+				)
+				(pin passive line
+					(at 22.86 -20.32 180)
+					(length 5.08)
+					(name "PB6D"
+						(effects
+							(font
+								(size 1 1)
+							)
+						)
+					)
+					(number "J9"
+						(effects
+							(font
+								(size 1 1)
+							)
+						)
+					)
+				)
+				(pin passive line
+					(at 22.86 -22.86 180)
+					(length 5.08)
+					(name "PB6C"
+						(effects
+							(font
+								(size 1 1)
+							)
+						)
+					)
+					(number "J10"
+						(effects
+							(font
+								(size 1 1)
+							)
+						)
+					)
+				)
+				(pin passive line
+					(at 22.86 -25.4 180)
+					(length 5.08)
+					(name "PB51"
+						(effects
+							(font
+								(size 1 1)
+							)
+						)
+					)
+					(number "K1"
+						(effects
+							(font
+								(size 1 1)
+							)
+						)
+					)
+				)
+				(pin passive line
+					(at 22.86 -27.94 180)
+					(length 5.08)
+					(name "PB47"
+						(effects
+							(font
+								(size 1 1)
+							)
+						)
+					)
+					(number "K2"
+						(effects
+							(font
+								(size 1 1)
+							)
+						)
+					)
+				)
+				(pin passive line
+					(at 22.86 -30.48 180)
+					(length 5.08)
+					(name "PB43C"
+						(effects
+							(font
+								(size 1 1)
+							)
+						)
+					)
+					(number "K3"
+						(effects
+							(font
+								(size 1 1)
+							)
+						)
+					)
+				)
+				(pin passive line
+					(at 22.86 -33.02 180)
+					(length 5.08)
+					(name "PB38C"
+						(effects
+							(font
+								(size 1 1)
+							)
+						)
+					)
+					(number "K4"
+						(effects
+							(font
+								(size 1 1)
+							)
+						)
+					)
+				)
+				(pin passive line
+					(at 22.86 -35.56 180)
+					(length 5.08)
+					(name "PB34C"
+						(effects
+							(font
+								(size 1 1)
+							)
+						)
+					)
+					(number "K5"
+						(effects
+							(font
+								(size 1 1)
+							)
+						)
+					)
+				)
+				(pin passive line
+					(at 22.86 -38.1 180)
+					(length 5.08)
+					(name "PB29C"
+						(effects
+							(font
+								(size 1 1)
+							)
+						)
+					)
+					(number "K6"
+						(effects
+							(font
+								(size 1 1)
+							)
+						)
+					)
+				)
+				(pin passive line
+					(at 22.86 -40.64 180)
+					(length 5.08)
+					(name "PB29B"
+						(effects
+							(font
+								(size 1 1)
+							)
+						)
+					)
+					(number "K7"
+						(effects
+							(font
+								(size 1 1)
+							)
+						)
+					)
+				)
+				(pin passive line
+					(at 22.86 -43.18 180)
+					(length 5.08)
+					(name "PB16C"
+						(effects
+							(font
+								(size 1 1)
+							)
+						)
+					)
+					(number "K8"
+						(effects
+							(font
+								(size 1 1)
+							)
+						)
+					)
+				)
+				(pin passive line
+					(at 22.86 -45.72 180)
+					(length 5.08)
+					(name "PB12D"
+						(effects
+							(font
+								(size 1 1)
+							)
+						)
+					)
+					(number "K9"
+						(effects
+							(font
+								(size 1 1)
+							)
+						)
+					)
+				)
+				(pin passive line
+					(at 22.86 -48.26 180)
+					(length 5.08)
+					(name "PB12C"
+						(effects
+							(font
+								(size 1 1)
+							)
+						)
+					)
+					(number "K10"
+						(effects
+							(font
+								(size 1 1)
+							)
+						)
+					)
+				)
+			)
+		)
+		(symbol "Device:R_Small"
+			(pin_numbers
+				(hide yes)
+			)
+			(pin_names
+				(offset 0.254)
+				(hide yes)
+			)
+			(exclude_from_sim no)
+			(in_bom yes)
+			(on_board yes)
+			(property "Reference" "R"
+				(at 0 0 90)
+				(effects
+					(font
+						(size 1.016 1.016)
+					)
+				)
+			)
+			(property "Value" "R_Small"
+				(at 1.778 0 90)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "Footprint" ""
+				(at 0 0 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(hide yes)
+				)
+			)
+			(property "Datasheet" "~"
+				(at 0 0 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(hide yes)
+				)
+			)
+			(property "Description" "Resistor, small symbol"
+				(at 0 0 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(hide yes)
+				)
+			)
+			(property "ki_keywords" "R resistor"
+				(at 0 0 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(hide yes)
+				)
+			)
+			(property "ki_fp_filters" "R_*"
+				(at 0 0 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(hide yes)
+				)
+			)
+			(symbol "R_Small_0_1"
+				(rectangle
+					(start -0.762 1.778)
+					(end 0.762 -1.778)
+					(stroke
+						(width 0.2032)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+			)
+			(symbol "R_Small_1_1"
+				(pin passive line
+					(at 0 2.54 270)
+					(length 0.762)
+					(name "~"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "1"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin passive line
+					(at 0 -2.54 90)
+					(length 0.762)
+					(name "~"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "2"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+			)
+			(embedded_fonts no)
+		)
+		(symbol "Device:FerriteBead"
+			(pin_numbers
+				(hide yes)
+			)
+			(pin_names
+				(offset 0)
+			)
+			(exclude_from_sim no)
+			(in_bom yes)
+			(on_board yes)
+			(property "Reference" "FB"
+				(at -3.81 0.635 90)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "Value" "FerriteBead"
+				(at 3.81 0 90)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "Footprint" ""
+				(at -1.778 0 90)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(hide yes)
+				)
+			)
+			(property "Datasheet" "~"
+				(at 0 0 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(hide yes)
+				)
+			)
+			(property "Description" "Ferrite bead"
+				(at 0 0 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(hide yes)
+				)
+			)
+			(property "ki_keywords" "L ferrite bead inductor filter"
+				(at 0 0 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(hide yes)
+				)
+			)
+			(property "ki_fp_filters" "Inductor_* L_* *Ferrite*"
+				(at 0 0 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(hide yes)
+				)
+			)
+			(symbol "FerriteBead_0_1"
+				(polyline
+					(pts
+						(xy -2.7686 0.4064) (xy -1.7018 2.2606) (xy 2.7686 -0.3048) (xy 1.6764 -2.159) (xy -2.7686 0.4064)
+					)
+					(stroke
+						(width 0)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(polyline
+					(pts
+						(xy 0 1.27) (xy 0 1.2954)
+					)
+					(stroke
+						(width 0)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(polyline
+					(pts
+						(xy 0 -1.27) (xy 0 -1.2192)
+					)
+					(stroke
+						(width 0)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+			)
+			(symbol "FerriteBead_1_1"
+				(pin passive line
+					(at 0 3.81 270)
+					(length 2.54)
+					(name "~"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "1"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin passive line
+					(at 0 -3.81 90)
+					(length 2.54)
+					(name "~"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "2"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+			)
+			(embedded_fonts no)
+		)
+		(symbol "Device:C_Small"
+			(pin_numbers
+				(hide yes)
+			)
+			(pin_names
+				(offset 0.254)
+				(hide yes)
+			)
+			(exclude_from_sim no)
+			(in_bom yes)
+			(on_board yes)
+			(property "Reference" "C"
+				(at 0.254 1.778 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(justify left)
+				)
+			)
+			(property "Value" "C_Small"
+				(at 0.254 -2.032 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(justify left)
+				)
+			)
+			(property "Footprint" ""
+				(at 0 0 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(hide yes)
+				)
+			)
+			(property "Datasheet" "~"
+				(at 0 0 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(hide yes)
+				)
+			)
+			(property "Description" "Unpolarized capacitor, small symbol"
+				(at 0 0 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(hide yes)
+				)
+			)
+			(property "ki_keywords" "capacitor cap"
+				(at 0 0 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(hide yes)
+				)
+			)
+			(property "ki_fp_filters" "C_*"
+				(at 0 0 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(hide yes)
+				)
+			)
+			(symbol "C_Small_0_1"
+				(polyline
+					(pts
+						(xy -1.524 0.508) (xy 1.524 0.508)
+					)
+					(stroke
+						(width 0.3048)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(polyline
+					(pts
+						(xy -1.524 -0.508) (xy 1.524 -0.508)
+					)
+					(stroke
+						(width 0.3302)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+			)
+			(symbol "C_Small_1_1"
+				(pin passive line
+					(at 0 2.54 270)
+					(length 2.032)
+					(name "~"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "1"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin passive line
+					(at 0 -2.54 90)
+					(length 2.032)
+					(name "~"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "2"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+			)
+			(embedded_fonts no)
+		)
+		(symbol "CodeSDR:AD9215BCPZ-105"
+			(exclude_from_sim no)
+			(in_bom yes)
+			(on_board yes)
+			(property "Reference" "U"
+				(at 0 26.67 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "Value" "AD9215BCPZ-105"
+				(at 0 -26.67 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "Footprint" "Package_CSP:LFCSP-32-1EP_5x5mm_P0.5mm_EP3.6x3.6mm_ThermalVias"
+				(at 0 0 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					) hide
+				)
+			)
+			(property "Datasheet" "https://www.analog.com/media/en/technical-documentation/data-sheets/ad9215.pdf"
+				(at 0 0 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					) hide
+				)
+			)
+			(property "Description" "10-bit ADC operated at 100 MSPS (105 MSPS maximum); DNC pins intentionally floating"
+				(at 0 0 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					) hide
+				)
+			)
+			(symbol "AD9215BCPZ-105_0_1"
+				(rectangle
+					(start -17.78 24.13)
+					(end 17.78 -24.13)
+					(stroke
+						(width 0.254)
+						(type default)
+					)
+					(fill
+						(type background)
+					)
+				)
+			)
+			(symbol "AD9215BCPZ-105_1_1"
+				(pin passive line
+					(at -22.86 21.59 0)
+					(length 5.08)
+					(name "DNC"
+						(effects
+							(font
+								(size 1 1)
+							)
+						)
+					)
+					(number "1"
+						(effects
+							(font
+								(size 1 1)
+							)
+						)
+					)
+				)
+				(pin passive line
+					(at -22.86 19.05 0)
+					(length 5.08)
+					(name "CLK"
+						(effects
+							(font
+								(size 1 1)
+							)
+						)
+					)
+					(number "2"
+						(effects
+							(font
+								(size 1 1)
+							)
+						)
+					)
+				)
+				(pin passive line
+					(at -22.86 16.51 0)
+					(length 5.08)
+					(name "DNC"
+						(effects
+							(font
+								(size 1 1)
+							)
+						)
+					)
+					(number "3"
+						(effects
+							(font
+								(size 1 1)
+							)
+						)
+					)
+				)
+				(pin passive line
+					(at -22.86 13.97 0)
+					(length 5.08)
+					(name "PDWN"
+						(effects
+							(font
+								(size 1 1)
+							)
+						)
+					)
+					(number "4"
+						(effects
+							(font
+								(size 1 1)
+							)
+						)
+					)
+				)
+				(pin passive line
+					(at -22.86 11.43 0)
+					(length 5.08)
+					(name "DNC"
+						(effects
+							(font
+								(size 1 1)
+							)
+						)
+					)
+					(number "5"
+						(effects
+							(font
+								(size 1 1)
+							)
+						)
+					)
+				)
+				(pin passive line
+					(at -22.86 8.89 0)
+					(length 5.08)
+					(name "DNC"
+						(effects
+							(font
+								(size 1 1)
+							)
+						)
+					)
+					(number "6"
+						(effects
+							(font
+								(size 1 1)
+							)
+						)
+					)
+				)
+				(pin passive line
+					(at -22.86 6.35 0)
+					(length 5.08)
+					(name "DNC"
+						(effects
+							(font
+								(size 1 1)
+							)
+						)
+					)
+					(number "7"
+						(effects
+							(font
+								(size 1 1)
+							)
+						)
+					)
+				)
+				(pin passive line
+					(at -22.86 3.81 0)
+					(length 5.08)
+					(name "DNC"
+						(effects
+							(font
+								(size 1 1)
+							)
+						)
+					)
+					(number "8"
+						(effects
+							(font
+								(size 1 1)
+							)
+						)
+					)
+				)
+				(pin passive line
+					(at -22.86 1.27 0)
+					(length 5.08)
+					(name "D0"
+						(effects
+							(font
+								(size 1 1)
+							)
+						)
+					)
+					(number "9"
+						(effects
+							(font
+								(size 1 1)
+							)
+						)
+					)
+				)
+				(pin passive line
+					(at -22.86 -1.27 0)
+					(length 5.08)
+					(name "D1"
+						(effects
+							(font
+								(size 1 1)
+							)
+						)
+					)
+					(number "10"
+						(effects
+							(font
+								(size 1 1)
+							)
+						)
+					)
+				)
+				(pin passive line
+					(at -22.86 -3.81 0)
+					(length 5.08)
+					(name "D2"
+						(effects
+							(font
+								(size 1 1)
+							)
+						)
+					)
+					(number "11"
+						(effects
+							(font
+								(size 1 1)
+							)
+						)
+					)
+				)
+				(pin passive line
+					(at -22.86 -6.35 0)
+					(length 5.08)
+					(name "D3"
+						(effects
+							(font
+								(size 1 1)
+							)
+						)
+					)
+					(number "12"
+						(effects
+							(font
+								(size 1 1)
+							)
+						)
+					)
+				)
+				(pin passive line
+					(at -22.86 -8.89 0)
+					(length 5.08)
+					(name "D4"
+						(effects
+							(font
+								(size 1 1)
+							)
+						)
+					)
+					(number "13"
+						(effects
+							(font
+								(size 1 1)
+							)
+						)
+					)
+				)
+				(pin passive line
+					(at -22.86 -11.43 0)
+					(length 5.08)
+					(name "D5"
+						(effects
+							(font
+								(size 1 1)
+							)
+						)
+					)
+					(number "14"
+						(effects
+							(font
+								(size 1 1)
+							)
+						)
+					)
+				)
+				(pin passive line
+					(at -22.86 -13.97 0)
+					(length 5.08)
+					(name "DRGND"
+						(effects
+							(font
+								(size 1 1)
+							)
+						)
+					)
+					(number "15"
+						(effects
+							(font
+								(size 1 1)
+							)
+						)
+					)
+				)
+				(pin passive line
+					(at -22.86 -16.51 0)
+					(length 5.08)
+					(name "DRVDD"
+						(effects
+							(font
+								(size 1 1)
+							)
+						)
+					)
+					(number "16"
+						(effects
+							(font
+								(size 1 1)
+							)
+						)
+					)
+				)
+				(pin passive line
+					(at -22.86 -19.05 0)
+					(length 5.08)
+					(name "D6"
+						(effects
+							(font
+								(size 1 1)
+							)
+						)
+					)
+					(number "17"
+						(effects
+							(font
+								(size 1 1)
+							)
+						)
+					)
+				)
+				(pin passive line
+					(at 22.86 21.59 180)
+					(length 5.08)
+					(name "D7"
+						(effects
+							(font
+								(size 1 1)
+							)
+						)
+					)
+					(number "18"
+						(effects
+							(font
+								(size 1 1)
+							)
+						)
+					)
+				)
+				(pin passive line
+					(at 22.86 19.05 180)
+					(length 5.08)
+					(name "D8"
+						(effects
+							(font
+								(size 1 1)
+							)
+						)
+					)
+					(number "19"
+						(effects
+							(font
+								(size 1 1)
+							)
+						)
+					)
+				)
+				(pin passive line
+					(at 22.86 16.51 180)
+					(length 5.08)
+					(name "D9"
+						(effects
+							(font
+								(size 1 1)
+							)
+						)
+					)
+					(number "20"
+						(effects
+							(font
+								(size 1 1)
+							)
+						)
+					)
+				)
+				(pin passive line
+					(at 22.86 13.97 180)
+					(length 5.08)
+					(name "OR"
+						(effects
+							(font
+								(size 1 1)
+							)
+						)
+					)
+					(number "21"
+						(effects
+							(font
+								(size 1 1)
+							)
+						)
+					)
+				)
+				(pin passive line
+					(at 22.86 11.43 180)
+					(length 5.08)
+					(name "MODE"
+						(effects
+							(font
+								(size 1 1)
+							)
+						)
+					)
+					(number "22"
+						(effects
+							(font
+								(size 1 1)
+							)
+						)
+					)
+				)
+				(pin passive line
+					(at 22.86 8.89 180)
+					(length 5.08)
+					(name "SENSE"
+						(effects
+							(font
+								(size 1 1)
+							)
+						)
+					)
+					(number "23"
+						(effects
+							(font
+								(size 1 1)
+							)
+						)
+					)
+				)
+				(pin passive line
+					(at 22.86 6.35 180)
+					(length 5.08)
+					(name "VREF"
+						(effects
+							(font
+								(size 1 1)
+							)
+						)
+					)
+					(number "24"
+						(effects
+							(font
+								(size 1 1)
+							)
+						)
+					)
+				)
+				(pin passive line
+					(at 22.86 3.81 180)
+					(length 5.08)
+					(name "REFB"
+						(effects
+							(font
+								(size 1 1)
+							)
+						)
+					)
+					(number "25"
+						(effects
+							(font
+								(size 1 1)
+							)
+						)
+					)
+				)
+				(pin passive line
+					(at 22.86 1.27 180)
+					(length 5.08)
+					(name "REFT"
+						(effects
+							(font
+								(size 1 1)
+							)
+						)
+					)
+					(number "26"
+						(effects
+							(font
+								(size 1 1)
+							)
+						)
+					)
+				)
+				(pin passive line
+					(at 22.86 -1.27 180)
+					(length 5.08)
+					(name "AVDD"
+						(effects
+							(font
+								(size 1 1)
+							)
+						)
+					)
+					(number "27"
+						(effects
+							(font
+								(size 1 1)
+							)
+						)
+					)
+				)
+				(pin passive line
+					(at 22.86 -3.81 180)
+					(length 5.08)
+					(name "AGND"
+						(effects
+							(font
+								(size 1 1)
+							)
+						)
+					)
+					(number "28"
+						(effects
+							(font
+								(size 1 1)
+							)
+						)
+					)
+				)
+				(pin passive line
+					(at 22.86 -6.35 180)
+					(length 5.08)
+					(name "VIN+"
+						(effects
+							(font
+								(size 1 1)
+							)
+						)
+					)
+					(number "29"
+						(effects
+							(font
+								(size 1 1)
+							)
+						)
+					)
+				)
+				(pin passive line
+					(at 22.86 -8.89 180)
+					(length 5.08)
+					(name "VIN-"
+						(effects
+							(font
+								(size 1 1)
+							)
+						)
+					)
+					(number "30"
+						(effects
+							(font
+								(size 1 1)
+							)
+						)
+					)
+				)
+				(pin passive line
+					(at 22.86 -11.43 180)
+					(length 5.08)
+					(name "AGND"
+						(effects
+							(font
+								(size 1 1)
+							)
+						)
+					)
+					(number "31"
+						(effects
+							(font
+								(size 1 1)
+							)
+						)
+					)
+				)
+				(pin passive line
+					(at 22.86 -13.97 180)
+					(length 5.08)
+					(name "AVDD"
+						(effects
+							(font
+								(size 1 1)
+							)
+						)
+					)
+					(number "32"
+						(effects
+							(font
+								(size 1 1)
+							)
+						)
+					)
+				)
+				(pin passive line
+					(at 22.86 -16.51 180)
+					(length 5.08)
+					(name "EP"
+						(effects
+							(font
+								(size 1 1)
+							)
+						)
+					)
+					(number "33"
+						(effects
+							(font
+								(size 1 1)
+							)
+						)
+					)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "CodeSDR:LIF-MD6000-6JMG80I")
+		(at 69.85 90.17 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(fields_autoplaced no)
+		(uuid "727f243a-5cb8-41e7-90ee-603ce29da256")
+		(property "Reference" "U20"
+			(at 69.85 146.05 0.0000)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Value" "LIF-MD6000-6JMG80I"
+			(at 69.85 34.29 0.0000)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Footprint" "CodeSDR:LIF-MD6000-6JMG80I"
+			(at 69.85 90.17 0.0000)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" "https://www.latticesemi.com/view_document?document_id=51662"
+			(at 69.85 90.17 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" "0.65 mm pitch CrossLink package; enough I/O for ADC plus RGMII without HDI-only 0.4 mm UMG64"
+			(at 69.85 90.17 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "A1"
+			(uuid "f6af432c-e856-496e-b996-e1153557e864")
+		)
+		(pin "A2"
+			(uuid "833ccb69-26be-4883-9dcd-4a2934d67b40")
+		)
+		(pin "A3"
+			(uuid "c907c87f-1709-4c6b-a71d-8a8c01f7d635")
+		)
+		(pin "A4"
+			(uuid "530fed19-89d8-4869-bfb4-bb5ee26e0c0f")
+		)
+		(pin "A5"
+			(uuid "c633aa21-e49e-4007-b7b4-b804fb912b7a")
+		)
+		(pin "A6"
+			(uuid "6171ee94-84bf-4efe-810d-8e38b431e3c2")
+		)
+		(pin "A7"
+			(uuid "0e2de2e2-24eb-4eac-a2cb-37d17e13b4d0")
+		)
+		(pin "A8"
+			(uuid "70b8be9f-9fc8-442b-a799-cab057312c7f")
+		)
+		(pin "A9"
+			(uuid "5678e87f-7b2c-402b-ab29-9c0ddca3ba43")
+		)
+		(pin "A10"
+			(uuid "cdebaabb-1cfe-4c51-8d37-9c87a731cb5c")
+		)
+		(pin "B1"
+			(uuid "38b6b93f-1508-40dd-9395-c99eb83ffc5b")
+		)
+		(pin "B2"
+			(uuid "3b19c7ee-1e51-4829-a247-243a8494fc81")
+		)
+		(pin "B3"
+			(uuid "556eb98d-30f7-465f-a404-e5fea29c229f")
+		)
+		(pin "B4"
+			(uuid "32626c33-9d68-411d-ab92-5a9845a659be")
+		)
+		(pin "B5"
+			(uuid "ee1e76ff-efb5-4f20-bcc5-14c8efcbb7ae")
+		)
+		(pin "B6"
+			(uuid "34523a3b-ae1d-4210-a131-1031b7179c7b")
+		)
+		(pin "B7"
+			(uuid "38cec2f7-562b-4d4f-a6d3-ac369b8fbf7f")
+		)
+		(pin "B8"
+			(uuid "68504a5d-9144-42cc-9367-ff5989d1ebe4")
+		)
+		(pin "B9"
+			(uuid "c5e6ded7-3bf7-45cf-a725-e3f4be582926")
+		)
+		(pin "B10"
+			(uuid "9129a08d-ec5f-46d3-8216-6430d2eb4a01")
+		)
+		(pin "C1"
+			(uuid "dcb30409-2f1c-4ee4-918c-21d82c15919a")
+		)
+		(pin "C2"
+			(uuid "b825cbee-dc02-4980-811f-d5ab631d18e9")
+		)
+		(pin "C9"
+			(uuid "e682cef4-344b-4845-a251-c0265edc609b")
+		)
+		(pin "C10"
+			(uuid "14b0f171-0ac1-4405-b23f-5e90b54ad178")
+		)
+		(pin "D1"
+			(uuid "3a6a5fa2-eca1-4f2d-8c08-ce89494d1cc7")
+		)
+		(pin "D2"
+			(uuid "a5d2f1aa-1034-49d7-b5b7-20d7cb577f2b")
+		)
+		(pin "D4"
+			(uuid "61568959-25c9-4cb1-a2ae-0436fd17410e")
+		)
+		(pin "D5"
+			(uuid "ac03bd7c-2529-48e3-a544-e0f719f21291")
+		)
+		(pin "D6"
+			(uuid "37a99ed2-9cdf-423c-8d0d-aaf20bc57581")
+		)
+		(pin "D7"
+			(uuid "21b4e136-c82b-41aa-a3c0-e7165bd300d6")
+		)
+		(pin "D9"
+			(uuid "a2d1ac63-648e-427a-95d4-d7e7a1dd8c74")
+		)
+		(pin "D10"
+			(uuid "af5e70e0-aff4-4593-a9da-46a97b95eca4")
+		)
+		(pin "E1"
+			(uuid "4b156f57-1cf3-4fde-8acc-5d6c655da135")
+		)
+		(pin "E2"
+			(uuid "b08e93d7-fd3f-4e70-9ac4-f717b98c88a3")
+		)
+		(pin "E4"
+			(uuid "11024d6a-14c8-4805-b32e-176155b4f6aa")
+		)
+		(pin "E5"
+			(uuid "b5b1c882-eb88-4ce4-8207-233f2c58f77b")
+		)
+		(pin "E6"
+			(uuid "ae1a9d83-5583-4f48-89f6-e434722789a3")
+		)
+		(pin "E7"
+			(uuid "09293461-18c8-4733-9c0e-cb1d306fddd6")
+		)
+		(pin "E9"
+			(uuid "e55f131d-5a37-4a4d-a3c8-6af66f783d7b")
+		)
+		(pin "E10"
+			(uuid "7a1eced6-0790-4d55-bfe4-92ec4647dbe5")
+		)
+		(pin "F1"
+			(uuid "8c305f3c-4ff8-4646-ac99-bc94015a6e79")
+		)
+		(pin "F2"
+			(uuid "6953a1b4-c5a4-4c34-8b54-51791989f60e")
+		)
+		(pin "F4"
+			(uuid "4957ef70-ef11-4a42-a50c-ae0b0777e912")
+		)
+		(pin "F5"
+			(uuid "f1e2a2ae-64c0-44ad-81e0-fe9e6152ae40")
+		)
+		(pin "F6"
+			(uuid "bd1e9632-e4f0-47a2-ab13-8f9eddbd103f")
+		)
+		(pin "F7"
+			(uuid "cc908187-117a-4600-8241-c9ef9cc5fb29")
+		)
+		(pin "F9"
+			(uuid "91156a78-1bc8-4d82-ba6e-31887a9485bd")
+		)
+		(pin "F10"
+			(uuid "4db0c006-e141-4921-8435-ac66a449d49c")
+		)
+		(pin "G1"
+			(uuid "ebd53a8d-f41e-4cc5-b581-baf567b123cd")
+		)
+		(pin "G2"
+			(uuid "aabf1a87-0318-4e01-b992-02f3a5fab8e1")
+		)
+		(pin "G4"
+			(uuid "b04a9dd2-b5db-4ff3-a5c3-3810d0082d31")
+		)
+		(pin "G5"
+			(uuid "8dda8e4b-3db2-44cd-9a69-9872faa5a127")
+		)
+		(pin "G6"
+			(uuid "8eaca3ff-6523-4474-bcbf-1fa45ea70d1c")
+		)
+		(pin "G7"
+			(uuid "83fd7f94-0141-4733-b2c3-7759a3918136")
+		)
+		(pin "G9"
+			(uuid "9fb8e9ad-ed85-4c5a-9409-7ea300bba263")
+		)
+		(pin "G10"
+			(uuid "30b07f91-f737-4256-91c6-ee721c1e4687")
+		)
+		(pin "H1"
+			(uuid "5dc18982-8573-4345-91da-5aea6f8348d8")
+		)
+		(pin "H2"
+			(uuid "db967e13-40ca-4296-80b6-9e137c4c5e1e")
+		)
+		(pin "H9"
+			(uuid "ab5c7a82-274f-4e38-af96-f08225f5489e")
+		)
+		(pin "H10"
+			(uuid "b22be307-21e3-44a4-a30a-2b74053de34f")
+		)
+		(pin "J1"
+			(uuid "b1138f3a-d710-48c2-aff8-07c67379aa7f")
+		)
+		(pin "J2"
+			(uuid "87446b8d-aaf4-4357-80a4-156633d31bf2")
+		)
+		(pin "J3"
+			(uuid "327789ee-2ec5-4d68-b6be-ea8946ae7eb6")
+		)
+		(pin "J4"
+			(uuid "6a1bb76e-3ae8-42e5-b008-1ceade66551e")
+		)
+		(pin "J5"
+			(uuid "012c3863-5dcc-4ecc-90bd-24c618d48e46")
+		)
+		(pin "J6"
+			(uuid "820a41ee-9475-4835-9714-9868f2420508")
+		)
+		(pin "J7"
+			(uuid "62724cb3-721a-4575-af28-1c995fb1c193")
+		)
+		(pin "J8"
+			(uuid "4bebcc87-e50e-4264-9ff5-6d3810371222")
+		)
+		(pin "J9"
+			(uuid "35403ae6-03e3-44ad-93da-be880daa3168")
+		)
+		(pin "J10"
+			(uuid "842a98a2-2228-4fd0-9966-699c81ed2b6c")
+		)
+		(pin "K1"
+			(uuid "857278f2-c4e8-47f1-b535-61a2c91b2e25")
+		)
+		(pin "K2"
+			(uuid "d8dff559-2389-4b03-82b6-36b08b295156")
+		)
+		(pin "K3"
+			(uuid "ca63ad5a-d5fa-46b5-9b48-2b585373b830")
+		)
+		(pin "K4"
+			(uuid "3273a391-1763-4faf-a254-09056e07a729")
+		)
+		(pin "K5"
+			(uuid "cbbff3ea-c80f-4cfd-9c7b-84328f003a3a")
+		)
+		(pin "K6"
+			(uuid "0cb564ad-5598-4120-99fa-b448cdf08759")
+		)
+		(pin "K7"
+			(uuid "7aa0cb93-f2b3-4b40-b6fe-d1235f0884c9")
+		)
+		(pin "K8"
+			(uuid "98937c7e-c61b-40b0-a2a6-16bb83a527b6")
+		)
+		(pin "K9"
+			(uuid "ba002e8e-46b0-4fc5-9676-983007180ba8")
+		)
+		(pin "K10"
+			(uuid "704e0420-5160-417f-8539-cd09cb92053e")
+		)
+		(instances
+			(project "03_fpga_adc"
+				(path "/c84277fc-9258-4676-bd87-d4f84a5fd7bd"
+					(reference "U20")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Device:R_Small")
+		(at 180.34 90.17 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(fields_autoplaced no)
+		(uuid "1777c592-5b44-477f-a5b2-73baa2ab4cba")
+		(property "Reference" "R30"
+			(at 180.34 90.17 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Value" "4.7k"
+			(at 182.118 90.17 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Footprint" "Resistor_SMD:R_0402_1005Metric"
+			(at 180.34 90.17 0.0000)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" ""
+			(at 180.34 90.17 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" ""
+			(at 180.34 90.17 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "265cb04d-acfb-42db-b548-45d83ff94233")
+		)
+		(pin "2"
+			(uuid "fc7651c6-a2bd-4ba0-a02b-d6bf9cc42344")
+		)
+		(instances
+			(project "03_fpga_adc"
+				(path "/c84277fc-9258-4676-bd87-d4f84a5fd7bd"
+					(reference "R30")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Device:R_Small")
+		(at 289.56 90.17 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(fields_autoplaced no)
+		(uuid "72c14a32-c27f-4d28-81f5-74d57d88488a")
+		(property "Reference" "R33"
+			(at 289.56 90.17 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Value" "4.7k"
+			(at 291.338 90.17 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Footprint" "Resistor_SMD:R_0402_1005Metric"
+			(at 289.56 90.17 0.0000)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" ""
+			(at 289.56 90.17 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" ""
+			(at 289.56 90.17 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "a8ec31bb-280b-4aec-b748-c0a999a776ef")
+		)
+		(pin "2"
+			(uuid "9b98a44f-4495-419c-aee5-5521db89d99b")
+		)
+		(instances
+			(project "03_fpga_adc"
+				(path "/c84277fc-9258-4676-bd87-d4f84a5fd7bd"
+					(reference "R33")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Device:R_Small")
+		(at 400.05 90.17 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(fields_autoplaced no)
+		(uuid "c3401f09-b0ac-4306-92bb-8ab750a18124")
+		(property "Reference" "R148"
+			(at 400.05 90.17 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Value" "4.7k"
+			(at 401.828 90.17 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Footprint" "Resistor_SMD:R_0402_1005Metric"
+			(at 400.05 90.17 0.0000)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" ""
+			(at 400.05 90.17 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" ""
+			(at 400.05 90.17 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "7e5c4b91-b1d2-4389-867a-1d3cb3b90d20")
+		)
+		(pin "2"
+			(uuid "754b1bff-1928-46a6-b6d9-19777a0bc67b")
+		)
+		(instances
+			(project "03_fpga_adc"
+				(path "/c84277fc-9258-4676-bd87-d4f84a5fd7bd"
+					(reference "R148")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Device:FerriteBead")
+		(at 510.54 90.17 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(fields_autoplaced no)
+		(uuid "10fdbe80-2f4e-46b7-9ad2-2b47430eeaca")
+		(property "Reference" "FB33"
+			(at 506.73 90.805 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Value" "120R@100MHz"
+			(at 514.35 90.17 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Footprint" "Inductor_SMD:L_0402_1005Metric"
+			(at 508.762 90.17 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" ""
+			(at 510.54 90.17 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" ""
+			(at 510.54 90.17 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "68fc9c98-97f4-4f53-8736-4684d277457f")
+		)
+		(pin "2"
+			(uuid "15a31b47-fe89-49d7-9f8f-59491c4d3034")
+		)
+		(instances
+			(project "03_fpga_adc"
+				(path "/c84277fc-9258-4676-bd87-d4f84a5fd7bd"
+					(reference "FB33")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Device:FerriteBead")
+		(at 619.76 90.17 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(fields_autoplaced no)
+		(uuid "cc76bac9-e545-4087-87e2-ff92f016b0b9")
+		(property "Reference" "FB34"
+			(at 615.95 90.805 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Value" "220R@100MHz"
+			(at 623.57 90.17 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Footprint" "Inductor_SMD:L_0402_1005Metric"
+			(at 617.982 90.17 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" ""
+			(at 619.76 90.17 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" ""
+			(at 619.76 90.17 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "f1fca3a4-4632-45ce-b307-1b88069d2503")
+		)
+		(pin "2"
+			(uuid "89f943c1-13a2-4b24-8240-a0b6db279353")
+		)
+		(instances
+			(project "03_fpga_adc"
+				(path "/c84277fc-9258-4676-bd87-d4f84a5fd7bd"
+					(reference "FB34")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Device:FerriteBead")
+		(at 730.25 90.17 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(fields_autoplaced no)
+		(uuid "3b616d5b-a450-40dd-846a-8c9bfa1f0ddf")
+		(property "Reference" "FB35"
+			(at 726.44 90.805 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Value" "120R@100MHz"
+			(at 734.06 90.17 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Footprint" "Inductor_SMD:L_0402_1005Metric"
+			(at 728.472 90.17 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" ""
+			(at 730.25 90.17 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" ""
+			(at 730.25 90.17 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "2549b262-8c28-45a4-bdeb-04da45cae312")
+		)
+		(pin "2"
+			(uuid "213482d9-3ead-4853-815a-ba667a43ddb3")
+		)
+		(instances
+			(project "03_fpga_adc"
+				(path "/c84277fc-9258-4676-bd87-d4f84a5fd7bd"
+					(reference "FB35")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Device:FerriteBead")
+		(at 69.85 142.24 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(fields_autoplaced no)
+		(uuid "987c5e4a-5274-4ad9-95fd-00c896020a10")
+		(property "Reference" "FB36"
+			(at 66.04 142.875 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Value" "120R@100MHz"
+			(at 73.66 142.24 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Footprint" "Inductor_SMD:L_0402_1005Metric"
+			(at 68.072 142.24 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" ""
+			(at 69.85 142.24 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" ""
+			(at 69.85 142.24 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "8c4cbd50-721d-4770-907a-6dfa3181f75c")
+		)
+		(pin "2"
+			(uuid "c911494d-4ef9-46e3-946a-51c5ab615b0a")
+		)
+		(instances
+			(project "03_fpga_adc"
+				(path "/c84277fc-9258-4676-bd87-d4f84a5fd7bd"
+					(reference "FB36")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Device:FerriteBead")
+		(at 180.34 142.24 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(fields_autoplaced no)
+		(uuid "5d4d8291-23ae-4080-b8f1-e3cff27fad3d")
+		(property "Reference" "FB37"
+			(at 176.53 142.875 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Value" "120R@100MHz"
+			(at 184.15 142.24 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Footprint" "Inductor_SMD:L_0402_1005Metric"
+			(at 178.562 142.24 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" ""
+			(at 180.34 142.24 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" ""
+			(at 180.34 142.24 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "98e90e87-ac33-4ef8-b727-a322ab190617")
+		)
+		(pin "2"
+			(uuid "e2293de0-55a8-4831-88d9-a6dd3b54e48f")
+		)
+		(instances
+			(project "03_fpga_adc"
+				(path "/c84277fc-9258-4676-bd87-d4f84a5fd7bd"
+					(reference "FB37")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Device:FerriteBead")
+		(at 289.56 142.24 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(fields_autoplaced no)
+		(uuid "8a6d6a6d-a6cd-4c06-8d51-857179138881")
+		(property "Reference" "FB38"
+			(at 285.75 142.875 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Value" "120R@100MHz"
+			(at 293.37 142.24 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Footprint" "Inductor_SMD:L_0402_1005Metric"
+			(at 287.782 142.24 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" ""
+			(at 289.56 142.24 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" ""
+			(at 289.56 142.24 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "681ad6ff-6c0c-441b-bf6b-7eb2d434400c")
+		)
+		(pin "2"
+			(uuid "fad03b85-c82e-4a30-8c11-eb726667454b")
+		)
+		(instances
+			(project "03_fpga_adc"
+				(path "/c84277fc-9258-4676-bd87-d4f84a5fd7bd"
+					(reference "FB38")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Device:C_Small")
+		(at 400.05 142.24 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(fields_autoplaced no)
+		(uuid "002b77b3-6d1e-4ac4-b90e-9b68a204d8d5")
+		(property "Reference" "C310"
+			(at 400.304 144.018 0.0000)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Value" "10uF"
+			(at 400.304 140.208 0.0000)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Footprint" "Capacitor_SMD:C_0805_2012Metric"
+			(at 400.05 142.24 0.0000)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" ""
+			(at 400.05 142.24 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" "FPGA_VCC_1V2 local bypass"
+			(at 400.05 142.24 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "277a38ce-ea2b-4a91-b6b6-30325e9e73ee")
+		)
+		(pin "2"
+			(uuid "ca28a472-192c-42a8-8c57-db4883267a4b")
+		)
+		(instances
+			(project "03_fpga_adc"
+				(path "/c84277fc-9258-4676-bd87-d4f84a5fd7bd"
+					(reference "C310")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Device:C_Small")
+		(at 510.54 142.24 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(fields_autoplaced no)
+		(uuid "d3a0611d-e6a2-4a2f-8872-381078cfbe21")
+		(property "Reference" "C311"
+			(at 510.794 144.018 0.0000)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Value" "100nF"
+			(at 510.794 140.208 0.0000)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Footprint" "Capacitor_SMD:C_0402_1005Metric"
+			(at 510.54 142.24 0.0000)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" ""
+			(at 510.54 142.24 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" "FPGA_VCC_1V2 local bypass"
+			(at 510.54 142.24 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "d24bc4fc-178a-4635-a78f-09c6d73eae8f")
+		)
+		(pin "2"
+			(uuid "70a8e314-98cb-446f-95e7-283a59f62950")
+		)
+		(instances
+			(project "03_fpga_adc"
+				(path "/c84277fc-9258-4676-bd87-d4f84a5fd7bd"
+					(reference "C311")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Device:C_Small")
+		(at 619.76 142.24 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(fields_autoplaced no)
+		(uuid "d3f7936c-66db-40a0-a4e0-638de7f7e441")
+		(property "Reference" "C312"
+			(at 620.014 144.018 0.0000)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Value" "100nF"
+			(at 620.014 140.208 0.0000)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Footprint" "Capacitor_SMD:C_0402_1005Metric"
+			(at 619.76 142.24 0.0000)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" ""
+			(at 619.76 142.24 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" "FPGA_VCC_1V2 local bypass"
+			(at 619.76 142.24 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "9c560e62-c53d-49f2-93a7-0fbac723bdf3")
+		)
+		(pin "2"
+			(uuid "edf23fa3-221e-4965-ae2c-5cd345e1f765")
+		)
+		(instances
+			(project "03_fpga_adc"
+				(path "/c84277fc-9258-4676-bd87-d4f84a5fd7bd"
+					(reference "C312")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Device:C_Small")
+		(at 730.25 142.24 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(fields_autoplaced no)
+		(uuid "3a3c7160-01c9-4e8e-b165-3761c9858142")
+		(property "Reference" "C313"
+			(at 730.504 144.018 0.0000)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Value" "1uF"
+			(at 730.504 140.208 0.0000)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Footprint" "Capacitor_SMD:C_0402_1005Metric"
+			(at 730.25 142.24 0.0000)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" ""
+			(at 730.25 142.24 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" "FPGA_PLL_1V2 local bypass"
+			(at 730.25 142.24 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "ddc75cb7-04e2-4c0e-bf9e-0ca988194945")
+		)
+		(pin "2"
+			(uuid "b4c3670f-3e69-402b-8a2b-6fbbad4c9fd4")
+		)
+		(instances
+			(project "03_fpga_adc"
+				(path "/c84277fc-9258-4676-bd87-d4f84a5fd7bd"
+					(reference "C313")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Device:C_Small")
+		(at 69.85 194.31 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(fields_autoplaced no)
+		(uuid "ccd21695-2eb9-4cb1-8cc5-a1793871ab97")
+		(property "Reference" "C314"
+			(at 70.104 196.088 0.0000)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Value" "100nF"
+			(at 70.104 192.278 0.0000)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Footprint" "Capacitor_SMD:C_0402_1005Metric"
+			(at 69.85 194.31 0.0000)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" ""
+			(at 69.85 194.31 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" "FPGA_PLL_1V2 local bypass"
+			(at 69.85 194.31 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "cb67aeaf-86b8-4a06-bab9-039e90ba1751")
+		)
+		(pin "2"
+			(uuid "c82b5b6a-0102-4632-b4a9-bfc94719ddf0")
+		)
+		(instances
+			(project "03_fpga_adc"
+				(path "/c84277fc-9258-4676-bd87-d4f84a5fd7bd"
+					(reference "C314")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Device:C_Small")
+		(at 180.34 194.31 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(fields_autoplaced no)
+		(uuid "04ac665b-f1a0-4e92-ac4b-9cfcda29a2b8")
+		(property "Reference" "C315"
+			(at 180.594 196.088 0.0000)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Value" "2.2uF"
+			(at 180.594 192.278 0.0000)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Footprint" "Capacitor_SMD:C_0402_1005Metric"
+			(at 180.34 194.31 0.0000)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" ""
+			(at 180.34 194.31 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" "FPGA_VCCIO0_3V3 local bypass"
+			(at 180.34 194.31 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "a027d97c-ad67-450b-bff6-85f17493416e")
+		)
+		(pin "2"
+			(uuid "a4e36baf-1584-4505-b884-debc21317f2b")
+		)
+		(instances
+			(project "03_fpga_adc"
+				(path "/c84277fc-9258-4676-bd87-d4f84a5fd7bd"
+					(reference "C315")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Device:C_Small")
+		(at 289.56 194.31 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(fields_autoplaced no)
+		(uuid "b945f8b5-c4be-42d7-a5b6-fce6730f9cda")
+		(property "Reference" "C316"
+			(at 289.814 196.088 0.0000)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Value" "100nF"
+			(at 289.814 192.278 0.0000)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Footprint" "Capacitor_SMD:C_0402_1005Metric"
+			(at 289.56 194.31 0.0000)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" ""
+			(at 289.56 194.31 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" "FPGA_VCCIO0_3V3 local bypass"
+			(at 289.56 194.31 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "99ce7cb8-09e7-45c3-9153-a8b2feaf4f6f")
+		)
+		(pin "2"
+			(uuid "d916d892-2e3b-4bc8-89fe-be075f0da2e8")
+		)
+		(instances
+			(project "03_fpga_adc"
+				(path "/c84277fc-9258-4676-bd87-d4f84a5fd7bd"
+					(reference "C316")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Device:C_Small")
+		(at 400.05 194.31 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(fields_autoplaced no)
+		(uuid "30552834-e7f2-462d-9614-fa69bb68dc56")
+		(property "Reference" "C317"
+			(at 400.304 196.088 0.0000)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Value" "2.2uF"
+			(at 400.304 192.278 0.0000)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Footprint" "Capacitor_SMD:C_0402_1005Metric"
+			(at 400.05 194.31 0.0000)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" ""
+			(at 400.05 194.31 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" "FPGA_VCCIO1_3V3 local bypass"
+			(at 400.05 194.31 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "0617c660-4ab8-4793-94f7-de1c9adaad5d")
+		)
+		(pin "2"
+			(uuid "282a8dfc-3c5d-455d-a484-9bdd53199ce6")
+		)
+		(instances
+			(project "03_fpga_adc"
+				(path "/c84277fc-9258-4676-bd87-d4f84a5fd7bd"
+					(reference "C317")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Device:C_Small")
+		(at 510.54 194.31 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(fields_autoplaced no)
+		(uuid "c4608975-9e91-48a3-824b-8614f532f779")
+		(property "Reference" "C318"
+			(at 510.794 196.088 0.0000)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Value" "100nF"
+			(at 510.794 192.278 0.0000)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Footprint" "Capacitor_SMD:C_0402_1005Metric"
+			(at 510.54 194.31 0.0000)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" ""
+			(at 510.54 194.31 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" "FPGA_VCCIO1_3V3 local bypass"
+			(at 510.54 194.31 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "426fafc2-2d83-4a13-a964-782c1bdf8162")
+		)
+		(pin "2"
+			(uuid "c2a8f1d6-1360-4128-9053-f70f8be7ee39")
+		)
+		(instances
+			(project "03_fpga_adc"
+				(path "/c84277fc-9258-4676-bd87-d4f84a5fd7bd"
+					(reference "C318")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Device:C_Small")
+		(at 619.76 194.31 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(fields_autoplaced no)
+		(uuid "5b3423a5-58fa-4cd8-bae9-e0b4717a5a41")
+		(property "Reference" "C319"
+			(at 620.014 196.088 0.0000)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Value" "100nF"
+			(at 620.014 192.278 0.0000)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Footprint" "Capacitor_SMD:C_0402_1005Metric"
+			(at 619.76 194.31 0.0000)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" ""
+			(at 619.76 194.31 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" "FPGA_VCCIO1_3V3 local bypass"
+			(at 619.76 194.31 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "4b390fc7-a682-417e-87ba-f2a5115fd3e8")
+		)
+		(pin "2"
+			(uuid "8be0cfae-443a-4e6f-adb6-6f685940d316")
+		)
+		(instances
+			(project "03_fpga_adc"
+				(path "/c84277fc-9258-4676-bd87-d4f84a5fd7bd"
+					(reference "C319")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Device:C_Small")
+		(at 730.25 194.31 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(fields_autoplaced no)
+		(uuid "604b3303-863d-49e4-96eb-860c9009e177")
+		(property "Reference" "C320"
+			(at 730.504 196.088 0.0000)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Value" "2.2uF"
+			(at 730.504 192.278 0.0000)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Footprint" "Capacitor_SMD:C_0402_1005Metric"
+			(at 730.25 194.31 0.0000)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" ""
+			(at 730.25 194.31 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" "FPGA_VCCIO2_3V3 local bypass"
+			(at 730.25 194.31 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "c00d4df4-e356-4a6f-b8a5-9354a1403f00")
+		)
+		(pin "2"
+			(uuid "737e75f2-0526-4a32-9b2a-1bcef4e30a4d")
+		)
+		(instances
+			(project "03_fpga_adc"
+				(path "/c84277fc-9258-4676-bd87-d4f84a5fd7bd"
+					(reference "C320")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Device:C_Small")
+		(at 69.85 246.38 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(fields_autoplaced no)
+		(uuid "0af124e6-78ea-4778-aa00-18b1b5de9eb8")
+		(property "Reference" "C321"
+			(at 70.104 248.158 0.0000)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Value" "100nF"
+			(at 70.104 244.348 0.0000)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Footprint" "Capacitor_SMD:C_0402_1005Metric"
+			(at 69.85 246.38 0.0000)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" ""
+			(at 69.85 246.38 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" "FPGA_VCCIO2_3V3 local bypass"
+			(at 69.85 246.38 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "6d74dad5-d1d1-4a63-9aee-f4113e130853")
+		)
+		(pin "2"
+			(uuid "a76cc7a0-a03c-443f-8bfe-2b2cb2b008a7")
+		)
+		(instances
+			(project "03_fpga_adc"
+				(path "/c84277fc-9258-4676-bd87-d4f84a5fd7bd"
+					(reference "C321")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Device:C_Small")
+		(at 180.34 246.38 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(fields_autoplaced no)
+		(uuid "d5c720b4-7031-4284-b78c-e9f5f07c0c3d")
+		(property "Reference" "C322"
+			(at 180.594 248.158 0.0000)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Value" "100nF"
+			(at 180.594 244.348 0.0000)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Footprint" "Capacitor_SMD:C_0402_1005Metric"
+			(at 180.34 246.38 0.0000)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" ""
+			(at 180.34 246.38 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" "FPGA_VCCIO2_3V3 local bypass"
+			(at 180.34 246.38 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "e31701b0-bfd1-4876-8f91-786b76f92cf8")
+		)
+		(pin "2"
+			(uuid "b29330be-42b9-4340-9710-239dfd7be7c7")
+		)
+		(instances
+			(project "03_fpga_adc"
+				(path "/c84277fc-9258-4676-bd87-d4f84a5fd7bd"
+					(reference "C322")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Device:C_Small")
+		(at 289.56 246.38 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(fields_autoplaced no)
+		(uuid "7b8b4715-5d31-42b2-8774-a27afce2a4dd")
+		(property "Reference" "C323"
+			(at 289.814 248.158 0.0000)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Value" "1uF"
+			(at 289.814 244.348 0.0000)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Footprint" "Capacitor_SMD:C_0402_1005Metric"
+			(at 289.56 246.38 0.0000)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" ""
+			(at 289.56 246.38 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" "FPGA_AUX_2V5 local bypass"
+			(at 289.56 246.38 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "6e4a35c9-670c-40cf-aad1-6413c45ba600")
+		)
+		(pin "2"
+			(uuid "01354cfb-fb84-47eb-9a4c-ab4a0ca6c4e2")
+		)
+		(instances
+			(project "03_fpga_adc"
+				(path "/c84277fc-9258-4676-bd87-d4f84a5fd7bd"
+					(reference "C323")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Device:R_Small")
+		(at 400.05 246.38 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(fields_autoplaced no)
+		(uuid "f13e6aba-99d8-40a4-8396-224306e324cd")
+		(property "Reference" "R120"
+			(at 400.05 246.38 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Value" "33R"
+			(at 401.828 246.38 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Footprint" "Resistor_SMD:R_0402_1005Metric"
+			(at 400.05 246.38 0.0000)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" ""
+			(at 400.05 246.38 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" ""
+			(at 400.05 246.38 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "a7bd43cc-55fe-4c02-ac26-994b1e8d3e95")
+		)
+		(pin "2"
+			(uuid "4577eb10-381c-4d1c-85e8-2db80e330442")
+		)
+		(instances
+			(project "03_fpga_adc"
+				(path "/c84277fc-9258-4676-bd87-d4f84a5fd7bd"
+					(reference "R120")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Device:R_Small")
+		(at 510.54 246.38 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(fields_autoplaced no)
+		(uuid "b8502acb-3615-432c-9f73-41e3cfee7f06")
+		(property "Reference" "R121"
+			(at 510.54 246.38 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Value" "33R"
+			(at 512.318 246.38 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Footprint" "Resistor_SMD:R_0402_1005Metric"
+			(at 510.54 246.38 0.0000)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" ""
+			(at 510.54 246.38 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" ""
+			(at 510.54 246.38 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "7db3c992-3a75-475f-9b11-f050d7d41f54")
+		)
+		(pin "2"
+			(uuid "18819cd5-039a-4299-a85c-70676c2ab9c7")
+		)
+		(instances
+			(project "03_fpga_adc"
+				(path "/c84277fc-9258-4676-bd87-d4f84a5fd7bd"
+					(reference "R121")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Device:R_Small")
+		(at 619.76 246.38 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(fields_autoplaced no)
+		(uuid "e2206692-2141-47ed-9711-ccf0e708f587")
+		(property "Reference" "R122"
+			(at 619.76 246.38 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Value" "33R"
+			(at 621.538 246.38 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Footprint" "Resistor_SMD:R_0402_1005Metric"
+			(at 619.76 246.38 0.0000)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" ""
+			(at 619.76 246.38 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" ""
+			(at 619.76 246.38 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "6b488b95-08ce-4cee-a28b-4e7411a13079")
+		)
+		(pin "2"
+			(uuid "e9204c04-bec7-4c5f-8f41-39074ce64415")
+		)
+		(instances
+			(project "03_fpga_adc"
+				(path "/c84277fc-9258-4676-bd87-d4f84a5fd7bd"
+					(reference "R122")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Device:R_Small")
+		(at 730.25 246.38 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(fields_autoplaced no)
+		(uuid "4b17b2cf-c42b-425d-8d45-1c56e26c5045")
+		(property "Reference" "R123"
+			(at 730.25 246.38 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Value" "33R"
+			(at 732.028 246.38 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Footprint" "Resistor_SMD:R_0402_1005Metric"
+			(at 730.25 246.38 0.0000)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" ""
+			(at 730.25 246.38 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" ""
+			(at 730.25 246.38 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "ab0f1fa0-ea73-4ab7-bdf7-e2fbb2915e83")
+		)
+		(pin "2"
+			(uuid "e08ead19-6e37-43d6-9a5b-dc8039fa1f9f")
+		)
+		(instances
+			(project "03_fpga_adc"
+				(path "/c84277fc-9258-4676-bd87-d4f84a5fd7bd"
+					(reference "R123")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Device:R_Small")
+		(at 69.85 298.45 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(fields_autoplaced no)
+		(uuid "c8e3107a-13f5-4487-8fda-66e0c11aaa42")
+		(property "Reference" "R124"
+			(at 69.85 298.45 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Value" "33R"
+			(at 71.628 298.45 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Footprint" "Resistor_SMD:R_0402_1005Metric"
+			(at 69.85 298.45 0.0000)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" ""
+			(at 69.85 298.45 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" ""
+			(at 69.85 298.45 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "0fa7afd2-98ee-4ffd-b4c3-2714d7d4936a")
+		)
+		(pin "2"
+			(uuid "88703673-9a21-4a4e-9da5-3a689eb8cbf0")
+		)
+		(instances
+			(project "03_fpga_adc"
+				(path "/c84277fc-9258-4676-bd87-d4f84a5fd7bd"
+					(reference "R124")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Device:R_Small")
+		(at 180.34 298.45 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(fields_autoplaced no)
+		(uuid "8031e785-9bb7-4c68-af3b-ef463635a9b8")
+		(property "Reference" "R125"
+			(at 180.34 298.45 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Value" "33R"
+			(at 182.118 298.45 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Footprint" "Resistor_SMD:R_0402_1005Metric"
+			(at 180.34 298.45 0.0000)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" ""
+			(at 180.34 298.45 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" ""
+			(at 180.34 298.45 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "10f0b32c-743c-4874-aec2-333156cb2a7f")
+		)
+		(pin "2"
+			(uuid "2f6e238f-7b47-4ca9-99b2-3e9e641470c6")
+		)
+		(instances
+			(project "03_fpga_adc"
+				(path "/c84277fc-9258-4676-bd87-d4f84a5fd7bd"
+					(reference "R125")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "CodeSDR:AD9215BCPZ-105")
+		(at 289.56 298.45 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(fields_autoplaced no)
+		(uuid "22b6852c-2e59-4101-b688-0f6f390ccf19")
+		(property "Reference" "U21"
+			(at 289.56 325.12 0.0000)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Value" "AD9215BCPZ-105"
+			(at 289.56 271.78 0.0000)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Footprint" "Package_CSP:LFCSP-32-1EP_5x5mm_P0.5mm_EP3.6x3.6mm_ThermalVias"
+			(at 289.56 298.45 0.0000)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" "https://www.analog.com/media/en/technical-documentation/data-sheets/ad9215.pdf"
+			(at 289.56 298.45 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" "10-bit ADC operated at 100 MSPS (105 MSPS maximum); DNC pins intentionally floating"
+			(at 289.56 298.45 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "69d144b2-d209-46ba-9173-2630eda58ce5")
+		)
+		(pin "2"
+			(uuid "dd774dca-0e75-4e7b-9582-d09145c1fd26")
+		)
+		(pin "3"
+			(uuid "eeed2973-ac5a-4c9b-9314-59d75b770cde")
+		)
+		(pin "4"
+			(uuid "5cd3c3ad-2aad-41ca-ae65-8145b1bfaccc")
+		)
+		(pin "5"
+			(uuid "50c6a927-7dad-4532-b902-b3e7e9f9cbf7")
+		)
+		(pin "6"
+			(uuid "b05518ed-bb42-4340-be50-566113ab8815")
+		)
+		(pin "7"
+			(uuid "9193fcc1-e88f-4cbe-80ec-36f7e538f92b")
+		)
+		(pin "8"
+			(uuid "5606e2fd-0189-47fd-ba0a-ac49191ac5c4")
+		)
+		(pin "9"
+			(uuid "fd7bbfed-51f3-4922-9b90-fb19af0c9ad5")
+		)
+		(pin "10"
+			(uuid "328fda90-6c6f-4c6f-90c4-fbe3431b85ff")
+		)
+		(pin "11"
+			(uuid "abb548cc-f1b8-4fe0-b299-82ad1d739880")
+		)
+		(pin "12"
+			(uuid "74a0ec22-979c-4f97-8182-51c770a14df5")
+		)
+		(pin "13"
+			(uuid "2c93cc2f-24ff-4880-b2b6-bcbef48656dc")
+		)
+		(pin "14"
+			(uuid "d7fc865c-948d-4a44-9aa9-ab4700be7140")
+		)
+		(pin "15"
+			(uuid "27bc39dd-2025-4290-bbd1-13c755bf0b81")
+		)
+		(pin "16"
+			(uuid "5e15ad3d-5bff-4d74-881c-897e1dd8c22c")
+		)
+		(pin "17"
+			(uuid "2adcc69d-51e9-44ac-91ef-86cca67e0052")
+		)
+		(pin "18"
+			(uuid "b37f2907-9cc7-4aed-8757-fb406f396246")
+		)
+		(pin "19"
+			(uuid "45b42b97-2824-436f-ba8c-fc274f605eb5")
+		)
+		(pin "20"
+			(uuid "e502ccf9-11d7-44ec-8cce-084e8d2a2e46")
+		)
+		(pin "21"
+			(uuid "d8116882-47c8-41d6-8a75-ff08d63d4e46")
+		)
+		(pin "22"
+			(uuid "ce1ff31b-35a4-4220-a3dd-3ebebeb2be5b")
+		)
+		(pin "23"
+			(uuid "aa21e592-0042-4a0a-be80-eae285d3cbba")
+		)
+		(pin "24"
+			(uuid "2d0a5bf4-e58e-4389-b4b9-3900307c1094")
+		)
+		(pin "25"
+			(uuid "bfaaa536-92c5-4d70-ab1a-7b9f0d560eab")
+		)
+		(pin "26"
+			(uuid "71d2726f-ae0d-48e0-877f-1416a4c3434e")
+		)
+		(pin "27"
+			(uuid "a53a99ac-eece-48bb-85a9-6617ff57ebf1")
+		)
+		(pin "28"
+			(uuid "682641f7-d9af-4c21-a1ad-0d44a00dbece")
+		)
+		(pin "29"
+			(uuid "0f9d35bf-76fc-4014-94dc-4e7b533f39ce")
+		)
+		(pin "30"
+			(uuid "51757522-937b-4141-ad43-61b9eefd2af2")
+		)
+		(pin "31"
+			(uuid "1af8e859-d523-43e0-999b-5f8f02890d85")
+		)
+		(pin "32"
+			(uuid "e5a8f9bb-b7ef-4e37-a705-09f259da25c4")
+		)
+		(pin "33"
+			(uuid "e5618559-e7d7-4786-9667-11cc9da543f7")
+		)
+		(instances
+			(project "03_fpga_adc"
+				(path "/c84277fc-9258-4676-bd87-d4f84a5fd7bd"
+					(reference "U21")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Device:R_Small")
+		(at 400.05 298.45 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(fields_autoplaced no)
+		(uuid "054aeb76-6c48-4ceb-9d47-b1b74c609bf1")
+		(property "Reference" "R31"
+			(at 400.05 298.45 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Value" "33R"
+			(at 401.828 298.45 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Footprint" "Resistor_SMD:R_0402_1005Metric"
+			(at 400.05 298.45 0.0000)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" ""
+			(at 400.05 298.45 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" ""
+			(at 400.05 298.45 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "cf021d03-6bf0-4ff2-a05b-94ca3ae58295")
+		)
+		(pin "2"
+			(uuid "6f492aec-8135-401a-8e6e-8e9314d436b2")
+		)
+		(instances
+			(project "03_fpga_adc"
+				(path "/c84277fc-9258-4676-bd87-d4f84a5fd7bd"
+					(reference "R31")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Device:C_Small")
+		(at 510.54 298.45 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(fields_autoplaced no)
+		(uuid "70df07f6-78ce-4c67-8b72-29aa7562f522")
+		(property "Reference" "C40"
+			(at 510.794 300.228 0.0000)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Value" "100nF"
+			(at 510.794 296.418 0.0000)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Footprint" "Capacitor_SMD:C_0402_1005Metric"
+			(at 510.54 298.45 0.0000)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" ""
+			(at 510.54 298.45 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" "+3V3_ANA local bypass"
+			(at 510.54 298.45 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "9fcfd92a-b753-482e-8000-394699c17deb")
+		)
+		(pin "2"
+			(uuid "5e301c35-1683-452a-9461-e7b7df344509")
+		)
+		(instances
+			(project "03_fpga_adc"
+				(path "/c84277fc-9258-4676-bd87-d4f84a5fd7bd"
+					(reference "C40")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Device:C_Small")
+		(at 619.76 298.45 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(fields_autoplaced no)
+		(uuid "5510ed03-ea5e-41af-ade3-b4cd6067735a")
+		(property "Reference" "C41"
+			(at 620.014 300.228 0.0000)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Value" "10uF"
+			(at 620.014 296.418 0.0000)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Footprint" "Capacitor_SMD:C_0805_2012Metric"
+			(at 619.76 298.45 0.0000)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" ""
+			(at 619.76 298.45 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" "+3V3_ANA local bypass"
+			(at 619.76 298.45 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "3dc97d53-4713-44c2-89de-ddf179c07063")
+		)
+		(pin "2"
+			(uuid "a2b7c675-ddf4-4c22-9e1a-79900de3d9b8")
+		)
+		(instances
+			(project "03_fpga_adc"
+				(path "/c84277fc-9258-4676-bd87-d4f84a5fd7bd"
+					(reference "C41")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Device:C_Small")
+		(at 730.25 298.45 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(fields_autoplaced no)
+		(uuid "921d3e0a-0759-4c9a-b54b-6862279bf55d")
+		(property "Reference" "C42"
+			(at 730.504 300.228 0.0000)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Value" "100nF"
+			(at 730.504 296.418 0.0000)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Footprint" "Capacitor_SMD:C_0402_1005Metric"
+			(at 730.25 298.45 0.0000)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" ""
+			(at 730.25 298.45 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" "+3V3_DIG local bypass"
+			(at 730.25 298.45 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "58ffed73-f70b-4e9c-b705-6843e13047b0")
+		)
+		(pin "2"
+			(uuid "6123dc0e-f78d-4014-a955-3ca5f75ab613")
+		)
+		(instances
+			(project "03_fpga_adc"
+				(path "/c84277fc-9258-4676-bd87-d4f84a5fd7bd"
+					(reference "C42")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Device:C_Small")
+		(at 69.85 350.52 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(fields_autoplaced no)
+		(uuid "8a1413c5-3db3-4bfe-857c-f234f91a81c1")
+		(property "Reference" "C43"
+			(at 70.104 352.298 0.0000)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Value" "10uF"
+			(at 70.104 348.488 0.0000)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Footprint" "Capacitor_SMD:C_0805_2012Metric"
+			(at 69.85 350.52 0.0000)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" ""
+			(at 69.85 350.52 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" "+3V3_DIG local bypass"
+			(at 69.85 350.52 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "9fa19d4f-c637-4cf1-a178-48922ca34d9b")
+		)
+		(pin "2"
+			(uuid "81653f80-86d0-4a48-a6eb-47f6be912098")
+		)
+		(instances
+			(project "03_fpga_adc"
+				(path "/c84277fc-9258-4676-bd87-d4f84a5fd7bd"
+					(reference "C43")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Device:C_Small")
+		(at 180.34 350.52 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(fields_autoplaced no)
+		(uuid "ec127481-3750-4686-8ad5-0ce6551731a5")
+		(property "Reference" "C44"
+			(at 180.594 352.298 0.0000)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Value" "100nF"
+			(at 180.594 348.488 0.0000)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Footprint" "Capacitor_SMD:C_0402_1005Metric"
+			(at 180.34 350.52 0.0000)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" ""
+			(at 180.34 350.52 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" "+3V3_ANA local bypass"
+			(at 180.34 350.52 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "0063fd8d-8980-4399-9ce6-df37bd42c6e6")
+		)
+		(pin "2"
+			(uuid "5018b2dc-441b-4dc7-844d-6782810647b8")
+		)
+		(instances
+			(project "03_fpga_adc"
+				(path "/c84277fc-9258-4676-bd87-d4f84a5fd7bd"
+					(reference "C44")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Device:C_Small")
+		(at 289.56 350.52 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(fields_autoplaced no)
+		(uuid "9ccd565d-6a3d-4ff3-b7b3-b6b7272bf57b")
+		(property "Reference" "C45"
+			(at 289.814 352.298 0.0000)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Value" "10uF"
+			(at 289.814 348.488 0.0000)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Footprint" "Capacitor_SMD:C_0805_2012Metric"
+			(at 289.56 350.52 0.0000)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" ""
+			(at 289.56 350.52 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" "+3V3_ANA local bypass"
+			(at 289.56 350.52 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "be2382ba-9974-42a7-93a7-6081c867a7c0")
+		)
+		(pin "2"
+			(uuid "d3a91c02-a9c5-4aa8-b45c-e1f7dead40bd")
+		)
+		(instances
+			(project "03_fpga_adc"
+				(path "/c84277fc-9258-4676-bd87-d4f84a5fd7bd"
+					(reference "C45")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Device:C_Small")
+		(at 400.05 350.52 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(fields_autoplaced no)
+		(uuid "78b7aaa6-4776-4b98-8565-dc71deb3ad08")
+		(property "Reference" "C46"
+			(at 400.304 352.298 0.0000)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Value" "100nF"
+			(at 400.304 348.488 0.0000)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Footprint" "Capacitor_SMD:C_0402_1005Metric"
+			(at 400.05 350.52 0.0000)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" ""
+			(at 400.05 350.52 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" "ADC_VREF local bypass"
+			(at 400.05 350.52 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "3308239f-dde1-4916-ae89-1482ff45292a")
+		)
+		(pin "2"
+			(uuid "4981144d-c04b-46c7-9d15-79f7e2949533")
+		)
+		(instances
+			(project "03_fpga_adc"
+				(path "/c84277fc-9258-4676-bd87-d4f84a5fd7bd"
+					(reference "C46")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Device:C_Small")
+		(at 510.54 350.52 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(fields_autoplaced no)
+		(uuid "cf5ba008-5f00-4afc-a12d-a9089c3fd471")
+		(property "Reference" "C47"
+			(at 510.794 352.298 0.0000)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Value" "100nF"
+			(at 510.794 348.488 0.0000)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Footprint" "Capacitor_SMD:C_0402_1005Metric"
+			(at 510.54 350.52 0.0000)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" ""
+			(at 510.54 350.52 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" "ADC_REFB local bypass"
+			(at 510.54 350.52 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "b5acf94f-e777-4bf4-9ddd-dbf1291a6f7d")
+		)
+		(pin "2"
+			(uuid "7e0a47cc-8f5f-44a5-9e77-ca711cd9951e")
+		)
+		(instances
+			(project "03_fpga_adc"
+				(path "/c84277fc-9258-4676-bd87-d4f84a5fd7bd"
+					(reference "C47")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Device:C_Small")
+		(at 619.76 350.52 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(fields_autoplaced no)
+		(uuid "8fc17c3d-eda5-4027-9f52-ff8ad1b4eaf5")
+		(property "Reference" "C48"
+			(at 620.014 352.298 0.0000)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Value" "100nF"
+			(at 620.014 348.488 0.0000)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Footprint" "Capacitor_SMD:C_0402_1005Metric"
+			(at 619.76 350.52 0.0000)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" ""
+			(at 619.76 350.52 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" "ADC_REFT local bypass"
+			(at 619.76 350.52 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "7f9d38ee-b5cf-4470-ac70-c740b062f4cb")
+		)
+		(pin "2"
+			(uuid "93403b52-8b89-48be-885a-bc645e249348")
+		)
+		(instances
+			(project "03_fpga_adc"
+				(path "/c84277fc-9258-4676-bd87-d4f84a5fd7bd"
+					(reference "C48")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Device:R_Small")
+		(at 730.25 350.52 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(fields_autoplaced no)
+		(uuid "653f006b-b1c4-4ce4-975b-3d38124619fc")
+		(property "Reference" "R32"
+			(at 730.25 350.52 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Value" "0R"
+			(at 732.028 350.52 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Footprint" "Resistor_SMD:R_0402_1005Metric"
+			(at 730.25 350.52 0.0000)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" ""
+			(at 730.25 350.52 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" ""
+			(at 730.25 350.52 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "4346310d-1c6c-4119-8a47-95f28e39f350")
+		)
+		(pin "2"
+			(uuid "d4fe9eaf-79f3-45ff-a6d3-decbec2744fb")
+		)
+		(instances
+			(project "03_fpga_adc"
+				(path "/c84277fc-9258-4676-bd87-d4f84a5fd7bd"
+					(reference "R32")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Device:R_Small")
+		(at 69.85 402.59 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(fields_autoplaced no)
+		(uuid "60fd2747-41ab-4f78-9df5-716579932155")
+		(property "Reference" "R147"
+			(at 69.85 402.59 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Value" "10k"
+			(at 71.628 402.59 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Footprint" "Resistor_SMD:R_0402_1005Metric"
+			(at 69.85 402.59 0.0000)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" ""
+			(at 69.85 402.59 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" ""
+			(at 69.85 402.59 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "38578a50-34b5-4cc5-b73e-5caee8dbc903")
+		)
+		(pin "2"
+			(uuid "9d062a56-4f80-4113-b6c5-bacc24de3493")
+		)
+		(instances
+			(project "03_fpga_adc"
+				(path "/c84277fc-9258-4676-bd87-d4f84a5fd7bd"
+					(reference "R147")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Device:C_Small")
+		(at 180.34 402.59 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(fields_autoplaced no)
+		(uuid "aad9eed2-ac78-4150-b366-db698b4d1e85")
+		(property "Reference" "C159"
+			(at 180.594 404.368 0.0000)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Value" "10uF"
+			(at 180.594 400.558 0.0000)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Footprint" "Capacitor_SMD:C_0805_2012Metric"
+			(at 180.34 402.59 0.0000)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" ""
+			(at 180.34 402.59 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" "ADC_VREF local bypass"
+			(at 180.34 402.59 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "8941ca71-74b8-4390-a831-6635479635e6")
+		)
+		(pin "2"
+			(uuid "8f20f487-1751-4cc3-9849-6110722d4c33")
+		)
+		(instances
+			(project "03_fpga_adc"
+				(path "/c84277fc-9258-4676-bd87-d4f84a5fd7bd"
+					(reference "C159")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Device:C_Small")
+		(at 289.56 402.59 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(fields_autoplaced no)
+		(uuid "60ff9c3a-90f0-47d5-a62c-9ef7ef6ae7d6")
+		(property "Reference" "C154"
+			(at 289.814 404.368 0.0000)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Value" "10uF"
+			(at 289.814 400.558 0.0000)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Footprint" "Capacitor_SMD:C_0805_2012Metric"
+			(at 289.56 402.59 0.0000)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" ""
+			(at 289.56 402.59 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" "ADC_REFB local bypass"
+			(at 289.56 402.59 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "746ef800-931d-4180-818e-97eb261c7090")
+		)
+		(pin "2"
+			(uuid "cbae1e7b-5947-4e10-9cfa-0ca33ad940f9")
+		)
+		(instances
+			(project "03_fpga_adc"
+				(path "/c84277fc-9258-4676-bd87-d4f84a5fd7bd"
+					(reference "C154")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Device:C_Small")
+		(at 400.05 402.59 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(fields_autoplaced no)
+		(uuid "783ce9d4-232d-4e82-9545-3f47882676de")
+		(property "Reference" "C155"
+			(at 400.304 404.368 0.0000)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Value" "10uF"
+			(at 400.304 400.558 0.0000)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Footprint" "Capacitor_SMD:C_0805_2012Metric"
+			(at 400.05 402.59 0.0000)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" ""
+			(at 400.05 402.59 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" "ADC_REFT local bypass"
+			(at 400.05 402.59 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "5d1935a8-ea5e-4b5f-8f7c-c1b4eede0c9f")
+		)
+		(pin "2"
+			(uuid "f0f267f1-3928-4fbf-ae39-393736e75e65")
+		)
+		(instances
+			(project "03_fpga_adc"
+				(path "/c84277fc-9258-4676-bd87-d4f84a5fd7bd"
+					(reference "C155")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Device:R_Small")
+		(at 510.54 402.59 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(fields_autoplaced no)
+		(uuid "2c43cb29-aab7-4a5d-8029-9cad797242dd")
+		(property "Reference" "R90"
+			(at 510.54 402.59 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Value" "2.00k_1%"
+			(at 512.318 402.59 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Footprint" "Resistor_SMD:R_0402_1005Metric"
+			(at 510.54 402.59 0.0000)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" ""
+			(at 510.54 402.59 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" ""
+			(at 510.54 402.59 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "4297dbee-3969-4d27-a23d-3823d7fb3573")
+		)
+		(pin "2"
+			(uuid "8604d264-2c38-4f1b-8709-a45b4244941e")
+		)
+		(instances
+			(project "03_fpga_adc"
+				(path "/c84277fc-9258-4676-bd87-d4f84a5fd7bd"
+					(reference "R90")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Device:R_Small")
+		(at 619.76 402.59 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(fields_autoplaced no)
+		(uuid "fec9098b-97d3-4b7c-8b01-310cb095254c")
+		(property "Reference" "R91"
+			(at 619.76 402.59 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Value" "1.00k_1%"
+			(at 621.538 402.59 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Footprint" "Resistor_SMD:R_0402_1005Metric"
+			(at 619.76 402.59 0.0000)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" ""
+			(at 619.76 402.59 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" ""
+			(at 619.76 402.59 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "3d81b661-e319-4d12-b675-af2cd0dc0613")
+		)
+		(pin "2"
+			(uuid "49574adb-35f4-4c5f-a230-a63be0d31f38")
+		)
+		(instances
+			(project "03_fpga_adc"
+				(path "/c84277fc-9258-4676-bd87-d4f84a5fd7bd"
+					(reference "R91")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Device:C_Small")
+		(at 730.25 402.59 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(fields_autoplaced no)
+		(uuid "40471e5f-7ab8-4219-871b-aa17f509fa47")
+		(property "Reference" "C156"
+			(at 730.504 404.368 0.0000)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Value" "10nF"
+			(at 730.504 400.558 0.0000)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Footprint" "Capacitor_SMD:C_0402_1005Metric"
+			(at 730.25 402.59 0.0000)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" ""
+			(at 730.25 402.59 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" "ADC_MODE local bypass"
+			(at 730.25 402.59 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "4e5faa3f-fe92-4bbf-92cf-1126fc009847")
+		)
+		(pin "2"
+			(uuid "1d76cdf4-73ce-4e53-acd0-e8233ccb08f4")
+		)
+		(instances
+			(project "03_fpga_adc"
+				(path "/c84277fc-9258-4676-bd87-d4f84a5fd7bd"
+					(reference "C156")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(no_connect
+		(at 46.99 39.37)
+		(uuid "761ebb4d-c9e5-43d3-9afe-e0b19e23678e")
+	)
+	(no_connect
+		(at 46.99 41.91)
+		(uuid "448b5430-0179-44c9-b0b8-660d6befadbc")
+	)
+	(no_connect
+		(at 46.99 44.45)
+		(uuid "084435bb-03b4-422e-95c5-b0281202f31e")
+	)
+	(no_connect
+		(at 46.99 46.99)
+		(uuid "699b69c8-69cb-4652-a782-60814564d2bc")
+	)
+	(no_connect
+		(at 46.99 49.53)
+		(uuid "72a07a07-bd02-435e-a66a-850148c8ce99")
+	)
+	(no_connect
+		(at 46.99 52.07)
+		(uuid "858954f9-e04e-44b0-ade2-1bdc6399e33b")
+	)
+	(no_connect
+		(at 46.99 54.61)
+		(uuid "ce8c77ca-e815-4075-bd4a-389e928e6d18")
+	)
+	(no_connect
+		(at 46.99 57.15)
+		(uuid "b6f1a53e-b422-4112-a817-bc2a235789bc")
+	)
+	(no_connect
+		(at 46.99 59.69)
+		(uuid "a9a96c6f-e906-4f24-8c64-676e2fb3c2db")
+	)
+	(no_connect
+		(at 46.99 62.23)
+		(uuid "2f2365ad-da7c-4083-a3bd-0c49ed793dfe")
+	)
+	(no_connect
+		(at 46.99 64.77)
+		(uuid "a53e48cb-5805-4fbc-862e-e9f5595f7202")
+	)
+	(no_connect
+		(at 46.99 67.31)
+		(uuid "a223ecc1-56de-4a60-b2d5-9d1565847f97")
+	)
+	(no_connect
+		(at 46.99 69.85)
+		(uuid "091efcaf-d21f-450a-bedd-b1b100756928")
+	)
+	(no_connect
+		(at 46.99 72.39)
+		(uuid "60bdf2b9-6013-4e42-8f35-0202003c0123")
+	)
+	(no_connect
+		(at 46.99 74.93)
+		(uuid "71f66f0b-d765-490d-9b67-0ef9daebae7b")
+	)
+	(no_connect
+		(at 46.99 77.47)
+		(uuid "67b48135-f260-40f9-96a5-32e9610b5f01")
+	)
+	(no_connect
+		(at 46.99 80.01)
+		(uuid "7d7513dd-5927-4581-b442-814d4bfaa512")
+	)
+	(no_connect
+		(at 46.99 82.55)
+		(uuid "a54bb442-86ff-4fb6-b127-883bcc683c85")
+	)
+	(no_connect
+		(at 46.99 85.09)
+		(uuid "6ec5f04e-231f-457d-90d9-05d55a62659d")
+	)
+	(no_connect
+		(at 46.99 87.63)
+		(uuid "20438442-a2c0-4e6d-bd0f-2645102230a5")
+	)
+	(no_connect
+		(at 46.99 100.33)
+		(uuid "6f699df5-7546-4b81-a83e-34dc53406389")
+	)
+	(no_connect
+		(at 46.99 102.87)
+		(uuid "25b707f3-1187-46b2-9964-97abef752450")
+	)
+	(no_connect
+		(at 46.99 105.41)
+		(uuid "073302c7-4625-4758-b27c-88471292353a")
+	)
+	(no_connect
+		(at 46.99 113.03)
+		(uuid "ddec82b2-f878-4ea3-b2b2-c27da9d0c669")
+	)
+	(no_connect
+		(at 46.99 133.35)
+		(uuid "7801f8b1-b2e7-450d-a33d-23fd5d0830b8")
+	)
+	(no_connect
+		(at 92.71 113.03)
+		(uuid "81155bf8-a404-4041-bf5e-7e652c690dca")
+	)
+	(no_connect
+		(at 92.71 133.35)
+		(uuid "abfcca55-8aa3-4158-8576-8b2ebe1cf6de")
+	)
+	(no_connect
+		(at 92.71 135.89)
+		(uuid "7157e720-a921-4699-9124-927c534e45b9")
+	)
+	(no_connect
+		(at 92.71 138.43)
+		(uuid "00433f3b-0197-4ac5-b963-f9bc96754af3")
+	)
+	(no_connect
+		(at 266.7 276.86)
+		(uuid "a07e23ea-3574-4b73-bbf4-bc0dbf4797de")
+	)
+	(no_connect
+		(at 266.7 281.94)
+		(uuid "c4c8a869-1b8c-4848-afce-6b51e83f9ecf")
+	)
+	(no_connect
+		(at 266.7 287.02)
+		(uuid "a5b7007f-3875-4a2b-ae2a-23b1d424a3a0")
+	)
+	(no_connect
+		(at 266.7 289.56)
+		(uuid "7c5d7751-4042-4353-807c-ef3c400b0ac4")
+	)
+	(no_connect
+		(at 266.7 292.1)
+		(uuid "48496e3b-94ad-4bb7-94cd-c8d6918e41db")
+	)
+	(no_connect
+		(at 266.7 294.64)
+		(uuid "863c0b62-def1-416b-aef2-571cd2f873b0")
+	)
+	(text "CrossLink FPGA, AD9215 and shared 100 MHz sampling clock\nSee HARDWARE_VALIDATION.md and hardware/v2/README.md for design limits."
+		(exclude_from_sim no)
+		(at 150 25 0.0000)
+		(effects
+			(font
+				(size 1.5 1.5)
+				(bold yes)
+			)
+		)
+		(uuid "6f2f5b06-3c69-442f-b2da-d57a10ac6cdd")
+	)
+	(sheet_instances
+		(path "/"
+			(page "1")
+		)
+	)
+	(embedded_fonts no)
+
+	(global_label "GND"
+		(shape bidirectional)
+		(at 46.9900 90.1700 0)
+		(fields_autoplaced yes)
+		(effects
+			(font (size 1.27 1.27))
+			(justify left)
+		)
+		(uuid "5a0a5e08-2118-4d54-94f3-268ac2237e41")
+		(property "Intersheetrefs" "${INTERSHEET_REFS}"
+			(at 49.5300 90.1700 0)
+			(effects
+				(font (size 1.27 1.27))
+				(justify left)
+				(hide yes)
+			)
+		)
+	)
+	(global_label "GND"
+		(shape bidirectional)
+		(at 46.9900 92.7100 0)
+		(fields_autoplaced yes)
+		(effects
+			(font (size 1.27 1.27))
+			(justify left)
+		)
+		(uuid "92e2f427-baf2-43d8-aa7e-124085aa2252")
+		(property "Intersheetrefs" "${INTERSHEET_REFS}"
+			(at 49.5300 92.7100 0)
+			(effects
+				(font (size 1.27 1.27))
+				(justify left)
+				(hide yes)
+			)
+		)
+	)
+	(global_label "GND"
+		(shape bidirectional)
+		(at 46.9900 95.2500 0)
+		(fields_autoplaced yes)
+		(effects
+			(font (size 1.27 1.27))
+			(justify left)
+		)
+		(uuid "9071a9ad-2304-4a75-8035-f8be7303aea7")
+		(property "Intersheetrefs" "${INTERSHEET_REFS}"
+			(at 49.5300 95.2500 0)
+			(effects
+				(font (size 1.27 1.27))
+				(justify left)
+				(hide yes)
+			)
+		)
+	)
+	(global_label "GND"
+		(shape bidirectional)
+		(at 46.9900 97.7900 0)
+		(fields_autoplaced yes)
+		(effects
+			(font (size 1.27 1.27))
+			(justify left)
+		)
+		(uuid "5337cd61-9933-4317-80ef-e583a4d619ff")
+		(property "Intersheetrefs" "${INTERSHEET_REFS}"
+			(at 49.5300 97.7900 0)
+			(effects
+				(font (size 1.27 1.27))
+				(justify left)
+				(hide yes)
+			)
+		)
+	)
+	(global_label "FPGA_AUX_2V5"
+		(shape bidirectional)
+		(at 46.9900 107.9500 0)
+		(fields_autoplaced yes)
+		(effects
+			(font (size 1.27 1.27))
+			(justify left)
+		)
+		(uuid "dce0eb31-5fac-4bca-848d-0292776d653b")
+		(property "Intersheetrefs" "${INTERSHEET_REFS}"
+			(at 49.5300 107.9500 0)
+			(effects
+				(font (size 1.27 1.27))
+				(justify left)
+				(hide yes)
+			)
+		)
+	)
+	(global_label "GND"
+		(shape bidirectional)
+		(at 46.9900 110.4900 0)
+		(fields_autoplaced yes)
+		(effects
+			(font (size 1.27 1.27))
+			(justify left)
+		)
+		(uuid "7de7acca-d752-4254-bc7c-2a8f0582fa95")
+		(property "Intersheetrefs" "${INTERSHEET_REFS}"
+			(at 49.5300 110.4900 0)
+			(effects
+				(font (size 1.27 1.27))
+				(justify left)
+				(hide yes)
+			)
+		)
+	)
+	(global_label "ADC_CLK"
+		(shape bidirectional)
+		(at 46.9900 115.5700 0)
+		(fields_autoplaced yes)
+		(effects
+			(font (size 1.27 1.27))
+			(justify left)
+		)
+		(uuid "712860ac-211f-453f-8d1e-95298d6b8081")
+		(property "Intersheetrefs" "${INTERSHEET_REFS}"
+			(at 49.5300 115.5700 0)
+			(effects
+				(font (size 1.27 1.27))
+				(justify left)
+				(hide yes)
+			)
+		)
+	)
+	(global_label "ADC_D0"
+		(shape bidirectional)
+		(at 46.9900 118.1100 0)
+		(fields_autoplaced yes)
+		(effects
+			(font (size 1.27 1.27))
+			(justify left)
+		)
+		(uuid "f955bcb3-53cb-4a69-942a-66d3cfdd184a")
+		(property "Intersheetrefs" "${INTERSHEET_REFS}"
+			(at 49.5300 118.1100 0)
+			(effects
+				(font (size 1.27 1.27))
+				(justify left)
+				(hide yes)
+			)
+		)
+	)
+	(global_label "RGMII_TXD0_FPGA"
+		(shape bidirectional)
+		(at 46.9900 120.6500 0)
+		(fields_autoplaced yes)
+		(effects
+			(font (size 1.27 1.27))
+			(justify left)
+		)
+		(uuid "8ea680cb-8015-4077-8628-fb0e6a1fdc72")
+		(property "Intersheetrefs" "${INTERSHEET_REFS}"
+			(at 49.5300 120.6500 0)
+			(effects
+				(font (size 1.27 1.27))
+				(justify left)
+				(hide yes)
+			)
+		)
+	)
+	(global_label "RGMII_TXD1_FPGA"
+		(shape bidirectional)
+		(at 46.9900 123.1900 0)
+		(fields_autoplaced yes)
+		(effects
+			(font (size 1.27 1.27))
+			(justify left)
+		)
+		(uuid "5d519c50-7939-4d36-8d08-b5467b1ffbae")
+		(property "Intersheetrefs" "${INTERSHEET_REFS}"
+			(at 49.5300 123.1900 0)
+			(effects
+				(font (size 1.27 1.27))
+				(justify left)
+				(hide yes)
+			)
+		)
+	)
+	(global_label "FPGA_VCC_1V2"
+		(shape bidirectional)
+		(at 46.9900 125.7300 0)
+		(fields_autoplaced yes)
+		(effects
+			(font (size 1.27 1.27))
+			(justify left)
+		)
+		(uuid "3615622c-bc24-4817-b661-681682303d47")
+		(property "Intersheetrefs" "${INTERSHEET_REFS}"
+			(at 49.5300 125.7300 0)
+			(effects
+				(font (size 1.27 1.27))
+				(justify left)
+				(hide yes)
+			)
+		)
+	)
+	(global_label "GND"
+		(shape bidirectional)
+		(at 46.9900 128.2700 0)
+		(fields_autoplaced yes)
+		(effects
+			(font (size 1.27 1.27))
+			(justify left)
+		)
+		(uuid "dc5f3bc0-f1bb-4b44-9324-95ba09fbce0e")
+		(property "Intersheetrefs" "${INTERSHEET_REFS}"
+			(at 49.5300 128.2700 0)
+			(effects
+				(font (size 1.27 1.27))
+				(justify left)
+				(hide yes)
+			)
+		)
+	)
+	(global_label "FPGA_VCC_1V2"
+		(shape bidirectional)
+		(at 46.9900 130.8100 0)
+		(fields_autoplaced yes)
+		(effects
+			(font (size 1.27 1.27))
+			(justify left)
+		)
+		(uuid "ca24e1bf-4eb7-4fd4-9862-843670f5ae9d")
+		(property "Intersheetrefs" "${INTERSHEET_REFS}"
+			(at 49.5300 130.8100 0)
+			(effects
+				(font (size 1.27 1.27))
+				(justify left)
+				(hide yes)
+			)
+		)
+	)
+	(global_label "ADC_D1"
+		(shape bidirectional)
+		(at 46.9900 135.8900 0)
+		(fields_autoplaced yes)
+		(effects
+			(font (size 1.27 1.27))
+			(justify left)
+		)
+		(uuid "f974c336-b21e-4c37-aaab-360123e9b865")
+		(property "Intersheetrefs" "${INTERSHEET_REFS}"
+			(at 49.5300 135.8900 0)
+			(effects
+				(font (size 1.27 1.27))
+				(justify left)
+				(hide yes)
+			)
+		)
+	)
+	(global_label "ADC_D2"
+		(shape bidirectional)
+		(at 46.9900 138.4300 0)
+		(fields_autoplaced yes)
+		(effects
+			(font (size 1.27 1.27))
+			(justify left)
+		)
+		(uuid "97b3ebc3-9d8d-451e-ad25-db3ba48164a1")
+		(property "Intersheetrefs" "${INTERSHEET_REFS}"
+			(at 49.5300 138.4300 0)
+			(effects
+				(font (size 1.27 1.27))
+				(justify left)
+				(hide yes)
+			)
+		)
+	)
+	(global_label "RGMII_TXD2_FPGA"
+		(shape bidirectional)
+		(at 92.7100 39.3700 0)
+		(fields_autoplaced yes)
+		(effects
+			(font (size 1.27 1.27))
+			(justify left)
+		)
+		(uuid "2e2e401a-7b4b-4394-a771-12d998c24df6")
+		(property "Intersheetrefs" "${INTERSHEET_REFS}"
+			(at 95.2500 39.3700 0)
+			(effects
+				(font (size 1.27 1.27))
+				(justify left)
+				(hide yes)
+			)
+		)
+	)
+	(global_label "RGMII_TXD3_FPGA"
+		(shape bidirectional)
+		(at 92.7100 41.9100 0)
+		(fields_autoplaced yes)
+		(effects
+			(font (size 1.27 1.27))
+			(justify left)
+		)
+		(uuid "53607e4b-c96f-4de9-8fa4-78519be5ef15")
+		(property "Intersheetrefs" "${INTERSHEET_REFS}"
+			(at 95.2500 41.9100 0)
+			(effects
+				(font (size 1.27 1.27))
+				(justify left)
+				(hide yes)
+			)
+		)
+	)
+	(global_label "FPGA_VCCIO0_3V3"
+		(shape bidirectional)
+		(at 92.7100 44.4500 0)
+		(fields_autoplaced yes)
+		(effects
+			(font (size 1.27 1.27))
+			(justify left)
+		)
+		(uuid "c553768c-5178-4be1-a28c-231b659687d3")
+		(property "Intersheetrefs" "${INTERSHEET_REFS}"
+			(at 95.2500 44.4500 0)
+			(effects
+				(font (size 1.27 1.27))
+				(justify left)
+				(hide yes)
+			)
+		)
+	)
+	(global_label "FPGA_VCCIO1_3V3"
+		(shape bidirectional)
+		(at 92.7100 46.9900 0)
+		(fields_autoplaced yes)
+		(effects
+			(font (size 1.27 1.27))
+			(justify left)
+		)
+		(uuid "fe63cb9e-d582-42cb-ae2d-70c638e24b3d")
+		(property "Intersheetrefs" "${INTERSHEET_REFS}"
+			(at 95.2500 46.9900 0)
+			(effects
+				(font (size 1.27 1.27))
+				(justify left)
+				(hide yes)
+			)
+		)
+	)
+	(global_label "FPGA_VCCIO2_3V3"
+		(shape bidirectional)
+		(at 92.7100 49.5300 0)
+		(fields_autoplaced yes)
+		(effects
+			(font (size 1.27 1.27))
+			(justify left)
+		)
+		(uuid "5f95ce2e-e75c-41bc-a746-32921411e8f7")
+		(property "Intersheetrefs" "${INTERSHEET_REFS}"
+			(at 95.2500 49.5300 0)
+			(effects
+				(font (size 1.27 1.27))
+				(justify left)
+				(hide yes)
+			)
+		)
+	)
+	(global_label "FPGA_VCCIO2_3V3"
+		(shape bidirectional)
+		(at 92.7100 52.0700 0)
+		(fields_autoplaced yes)
+		(effects
+			(font (size 1.27 1.27))
+			(justify left)
+		)
+		(uuid "895393a7-2355-4c76-b88f-f8a7687723ce")
+		(property "Intersheetrefs" "${INTERSHEET_REFS}"
+			(at 95.2500 52.0700 0)
+			(effects
+				(font (size 1.27 1.27))
+				(justify left)
+				(hide yes)
+			)
+		)
+	)
+	(global_label "ADC_D3"
+		(shape bidirectional)
+		(at 92.7100 54.6100 0)
+		(fields_autoplaced yes)
+		(effects
+			(font (size 1.27 1.27))
+			(justify left)
+		)
+		(uuid "8b4c7c04-d074-449a-b6f5-b9d2addb13ba")
+		(property "Intersheetrefs" "${INTERSHEET_REFS}"
+			(at 95.2500 54.6100 0)
+			(effects
+				(font (size 1.27 1.27))
+				(justify left)
+				(hide yes)
+			)
+		)
+	)
+	(global_label "ADC_D4"
+		(shape bidirectional)
+		(at 92.7100 57.1500 0)
+		(fields_autoplaced yes)
+		(effects
+			(font (size 1.27 1.27))
+			(justify left)
+		)
+		(uuid "7a5bf4eb-ff3a-44cb-b2b8-62d6a99df215")
+		(property "Intersheetrefs" "${INTERSHEET_REFS}"
+			(at 95.2500 57.1500 0)
+			(effects
+				(font (size 1.27 1.27))
+				(justify left)
+				(hide yes)
+			)
+		)
+	)
+	(global_label "FPGA_SPI_MOSI"
+		(shape bidirectional)
+		(at 92.7100 59.6900 0)
+		(fields_autoplaced yes)
+		(effects
+			(font (size 1.27 1.27))
+			(justify left)
+		)
+		(uuid "c559a1e6-d86d-496c-ac25-fff861657b94")
+		(property "Intersheetrefs" "${INTERSHEET_REFS}"
+			(at 95.2500 59.6900 0)
+			(effects
+				(font (size 1.27 1.27))
+				(justify left)
+				(hide yes)
+			)
+		)
+	)
+	(global_label "GND"
+		(shape bidirectional)
+		(at 92.7100 62.2300 0)
+		(fields_autoplaced yes)
+		(effects
+			(font (size 1.27 1.27))
+			(justify left)
+		)
+		(uuid "2bc323ab-5446-445e-bcfa-94efa1a58d26")
+		(property "Intersheetrefs" "${INTERSHEET_REFS}"
+			(at 95.2500 62.2300 0)
+			(effects
+				(font (size 1.27 1.27))
+				(justify left)
+				(hide yes)
+			)
+		)
+	)
+	(global_label "FPGA_VCCIO1_3V3"
+		(shape bidirectional)
+		(at 92.7100 64.7700 0)
+		(fields_autoplaced yes)
+		(effects
+			(font (size 1.27 1.27))
+			(justify left)
+		)
+		(uuid "2f9b72e2-2256-4fff-8e33-1c054da7037d")
+		(property "Intersheetrefs" "${INTERSHEET_REFS}"
+			(at 95.2500 64.7700 0)
+			(effects
+				(font (size 1.27 1.27))
+				(justify left)
+				(hide yes)
+			)
+		)
+	)
+	(global_label "GND"
+		(shape bidirectional)
+		(at 92.7100 67.3100 0)
+		(fields_autoplaced yes)
+		(effects
+			(font (size 1.27 1.27))
+			(justify left)
+		)
+		(uuid "b54e558d-75bb-412d-9c30-dbf714022f78")
+		(property "Intersheetrefs" "${INTERSHEET_REFS}"
+			(at 95.2500 67.3100 0)
+			(effects
+				(font (size 1.27 1.27))
+				(justify left)
+				(hide yes)
+			)
+		)
+	)
+	(global_label "FPGA_PLL_1V2"
+		(shape bidirectional)
+		(at 92.7100 69.8500 0)
+		(fields_autoplaced yes)
+		(effects
+			(font (size 1.27 1.27))
+			(justify left)
+		)
+		(uuid "87450195-c6a7-4d36-9e06-bfccb5d2045d")
+		(property "Intersheetrefs" "${INTERSHEET_REFS}"
+			(at 95.2500 69.8500 0)
+			(effects
+				(font (size 1.27 1.27))
+				(justify left)
+				(hide yes)
+			)
+		)
+	)
+	(global_label "GND"
+		(shape bidirectional)
+		(at 92.7100 72.3900 0)
+		(fields_autoplaced yes)
+		(effects
+			(font (size 1.27 1.27))
+			(justify left)
+		)
+		(uuid "7785c6c4-5e5c-4874-b107-3282e76549a0")
+		(property "Intersheetrefs" "${INTERSHEET_REFS}"
+			(at 95.2500 72.3900 0)
+			(effects
+				(font (size 1.27 1.27))
+				(justify left)
+				(hide yes)
+			)
+		)
+	)
+	(global_label "ADC_D5"
+		(shape bidirectional)
+		(at 92.7100 74.9300 0)
+		(fields_autoplaced yes)
+		(effects
+			(font (size 1.27 1.27))
+			(justify left)
+		)
+		(uuid "121f0449-9acf-4c2b-b8f8-6050ae9da820")
+		(property "Intersheetrefs" "${INTERSHEET_REFS}"
+			(at 95.2500 74.9300 0)
+			(effects
+				(font (size 1.27 1.27))
+				(justify left)
+				(hide yes)
+			)
+		)
+	)
+	(global_label "ADC_D6"
+		(shape bidirectional)
+		(at 92.7100 77.4700 0)
+		(fields_autoplaced yes)
+		(effects
+			(font (size 1.27 1.27))
+			(justify left)
+		)
+		(uuid "9b5dfb31-a6aa-413a-99d2-59c0ca7a8a50")
+		(property "Intersheetrefs" "${INTERSHEET_REFS}"
+			(at 95.2500 77.4700 0)
+			(effects
+				(font (size 1.27 1.27))
+				(justify left)
+				(hide yes)
+			)
+		)
+	)
+	(global_label "FPGA_SPI_CS_N"
+		(shape bidirectional)
+		(at 92.7100 80.0100 0)
+		(fields_autoplaced yes)
+		(effects
+			(font (size 1.27 1.27))
+			(justify left)
+		)
+		(uuid "6405615a-fd2a-416f-bcf8-6d6791ad4f7d")
+		(property "Intersheetrefs" "${INTERSHEET_REFS}"
+			(at 95.2500 80.0100 0)
+			(effects
+				(font (size 1.27 1.27))
+				(justify left)
+				(hide yes)
+			)
+		)
+	)
+	(global_label "FPGA_RESET_N"
+		(shape bidirectional)
+		(at 92.7100 82.5500 0)
+		(fields_autoplaced yes)
+		(effects
+			(font (size 1.27 1.27))
+			(justify left)
+		)
+		(uuid "f4f1017d-82dd-4c89-974a-8812534d3df8")
+		(property "Intersheetrefs" "${INTERSHEET_REFS}"
+			(at 95.2500 82.5500 0)
+			(effects
+				(font (size 1.27 1.27))
+				(justify left)
+				(hide yes)
+			)
+		)
+	)
+	(global_label "ADC_D7"
+		(shape bidirectional)
+		(at 92.7100 85.0900 0)
+		(fields_autoplaced yes)
+		(effects
+			(font (size 1.27 1.27))
+			(justify left)
+		)
+		(uuid "dc0880d6-1485-4e51-8100-5b1098d71019")
+		(property "Intersheetrefs" "${INTERSHEET_REFS}"
+			(at 95.2500 85.0900 0)
+			(effects
+				(font (size 1.27 1.27))
+				(justify left)
+				(hide yes)
+			)
+		)
+	)
+	(global_label "ADC_D8"
+		(shape bidirectional)
+		(at 92.7100 87.6300 0)
+		(fields_autoplaced yes)
+		(effects
+			(font (size 1.27 1.27))
+			(justify left)
+		)
+		(uuid "30f75412-bb00-43e7-b433-7ca7b96716f5")
+		(property "Intersheetrefs" "${INTERSHEET_REFS}"
+			(at 95.2500 87.6300 0)
+			(effects
+				(font (size 1.27 1.27))
+				(justify left)
+				(hide yes)
+			)
+		)
+	)
+	(global_label "FPGA_SPI_SCK"
+		(shape bidirectional)
+		(at 92.7100 90.1700 0)
+		(fields_autoplaced yes)
+		(effects
+			(font (size 1.27 1.27))
+			(justify left)
+		)
+		(uuid "aa810c18-9d98-4d95-bacc-df464d03573f")
+		(property "Intersheetrefs" "${INTERSHEET_REFS}"
+			(at 95.2500 90.1700 0)
+			(effects
+				(font (size 1.27 1.27))
+				(justify left)
+				(hide yes)
+			)
+		)
+	)
+	(global_label "FPGA_CDONE"
+		(shape bidirectional)
+		(at 92.7100 92.7100 0)
+		(fields_autoplaced yes)
+		(effects
+			(font (size 1.27 1.27))
+			(justify left)
+		)
+		(uuid "640ecec7-6c68-4fcd-972c-7d21175e40b4")
+		(property "Intersheetrefs" "${INTERSHEET_REFS}"
+			(at 95.2500 92.7100 0)
+			(effects
+				(font (size 1.27 1.27))
+				(justify left)
+				(hide yes)
+			)
+		)
+	)
+	(global_label "RGMII_TX_EN_FPGA"
+		(shape bidirectional)
+		(at 92.7100 95.2500 0)
+		(fields_autoplaced yes)
+		(effects
+			(font (size 1.27 1.27))
+			(justify left)
+		)
+		(uuid "bb54388b-0c19-4823-b1fd-a16b03c6ef07")
+		(property "Intersheetrefs" "${INTERSHEET_REFS}"
+			(at 95.2500 95.2500 0)
+			(effects
+				(font (size 1.27 1.27))
+				(justify left)
+				(hide yes)
+			)
+		)
+	)
+	(global_label "RGMII_RXD0_FPGA"
+		(shape bidirectional)
+		(at 92.7100 97.7900 0)
+		(fields_autoplaced yes)
+		(effects
+			(font (size 1.27 1.27))
+			(justify left)
+		)
+		(uuid "24bcba46-79c8-4c98-90a3-c87a078de624")
+		(property "Intersheetrefs" "${INTERSHEET_REFS}"
+			(at 95.2500 97.7900 0)
+			(effects
+				(font (size 1.27 1.27))
+				(justify left)
+				(hide yes)
+			)
+		)
+	)
+	(global_label "RGMII_RXD1_FPGA"
+		(shape bidirectional)
+		(at 92.7100 100.3300 0)
+		(fields_autoplaced yes)
+		(effects
+			(font (size 1.27 1.27))
+			(justify left)
+		)
+		(uuid "49203f0a-7663-4117-ae9a-9121c5f7242f")
+		(property "Intersheetrefs" "${INTERSHEET_REFS}"
+			(at 95.2500 100.3300 0)
+			(effects
+				(font (size 1.27 1.27))
+				(justify left)
+				(hide yes)
+			)
+		)
+	)
+	(global_label "MDC"
+		(shape bidirectional)
+		(at 92.7100 102.8700 0)
+		(fields_autoplaced yes)
+		(effects
+			(font (size 1.27 1.27))
+			(justify left)
+		)
+		(uuid "653df2d4-06ad-4d80-aecf-eaf3c1d61a65")
+		(property "Intersheetrefs" "${INTERSHEET_REFS}"
+			(at 95.2500 102.8700 0)
+			(effects
+				(font (size 1.27 1.27))
+				(justify left)
+				(hide yes)
+			)
+		)
+	)
+	(global_label "RGMII_TXC_FPGA"
+		(shape bidirectional)
+		(at 92.7100 105.4100 0)
+		(fields_autoplaced yes)
+		(effects
+			(font (size 1.27 1.27))
+			(justify left)
+		)
+		(uuid "7b8d998a-148b-4855-8518-46742a3beb2c")
+		(property "Intersheetrefs" "${INTERSHEET_REFS}"
+			(at 95.2500 105.4100 0)
+			(effects
+				(font (size 1.27 1.27))
+				(justify left)
+				(hide yes)
+			)
+		)
+	)
+	(global_label "ADC_D9"
+		(shape bidirectional)
+		(at 92.7100 107.9500 0)
+		(fields_autoplaced yes)
+		(effects
+			(font (size 1.27 1.27))
+			(justify left)
+		)
+		(uuid "05631a86-6c2e-49f3-9c41-bd49e82b0953")
+		(property "Intersheetrefs" "${INTERSHEET_REFS}"
+			(at 95.2500 107.9500 0)
+			(effects
+				(font (size 1.27 1.27))
+				(justify left)
+				(hide yes)
+			)
+		)
+	)
+	(global_label "ADC_OR"
+		(shape bidirectional)
+		(at 92.7100 110.4900 0)
+		(fields_autoplaced yes)
+		(effects
+			(font (size 1.27 1.27))
+			(justify left)
+		)
+		(uuid "24f0dd11-ce51-4f0e-a2b9-e877d9a59808")
+		(property "Intersheetrefs" "${INTERSHEET_REFS}"
+			(at 95.2500 110.4900 0)
+			(effects
+				(font (size 1.27 1.27))
+				(justify left)
+				(hide yes)
+			)
+		)
+	)
+	(global_label "FPGA_SPI_MISO"
+		(shape bidirectional)
+		(at 92.7100 115.5700 0)
+		(fields_autoplaced yes)
+		(effects
+			(font (size 1.27 1.27))
+			(justify left)
+		)
+		(uuid "6c08a2bf-d235-4026-866b-2d5e67b706cc")
+		(property "Intersheetrefs" "${INTERSHEET_REFS}"
+			(at 95.2500 115.5700 0)
+			(effects
+				(font (size 1.27 1.27))
+				(justify left)
+				(hide yes)
+			)
+		)
+	)
+	(global_label "PHY_INT_N"
+		(shape bidirectional)
+		(at 92.7100 118.1100 0)
+		(fields_autoplaced yes)
+		(effects
+			(font (size 1.27 1.27))
+			(justify left)
+		)
+		(uuid "28b9d61b-7e67-4901-bd02-ed014e632e96")
+		(property "Intersheetrefs" "${INTERSHEET_REFS}"
+			(at 95.2500 118.1100 0)
+			(effects
+				(font (size 1.27 1.27))
+				(justify left)
+				(hide yes)
+			)
+		)
+	)
+	(global_label "RGMII_RXD2_FPGA"
+		(shape bidirectional)
+		(at 92.7100 120.6500 0)
+		(fields_autoplaced yes)
+		(effects
+			(font (size 1.27 1.27))
+			(justify left)
+		)
+		(uuid "c0ffcaff-dc72-4547-9ad9-1d05f51fb539")
+		(property "Intersheetrefs" "${INTERSHEET_REFS}"
+			(at 95.2500 120.6500 0)
+			(effects
+				(font (size 1.27 1.27))
+				(justify left)
+				(hide yes)
+			)
+		)
+	)
+	(global_label "RGMII_RXD3_FPGA"
+		(shape bidirectional)
+		(at 92.7100 123.1900 0)
+		(fields_autoplaced yes)
+		(effects
+			(font (size 1.27 1.27))
+			(justify left)
+		)
+		(uuid "9d6812d6-22a9-4470-b651-04997ba9b3fb")
+		(property "Intersheetrefs" "${INTERSHEET_REFS}"
+			(at 95.2500 123.1900 0)
+			(effects
+				(font (size 1.27 1.27))
+				(justify left)
+				(hide yes)
+			)
+		)
+	)
+	(global_label "RGMII_RX_DV_FPGA"
+		(shape bidirectional)
+		(at 92.7100 125.7300 0)
+		(fields_autoplaced yes)
+		(effects
+			(font (size 1.27 1.27))
+			(justify left)
+		)
+		(uuid "3281d263-80bf-442f-89ab-0873c603cd42")
+		(property "Intersheetrefs" "${INTERSHEET_REFS}"
+			(at 95.2500 125.7300 0)
+			(effects
+				(font (size 1.27 1.27))
+				(justify left)
+				(hide yes)
+			)
+		)
+	)
+	(global_label "RGMII_RXC_FPGA"
+		(shape bidirectional)
+		(at 92.7100 128.2700 0)
+		(fields_autoplaced yes)
+		(effects
+			(font (size 1.27 1.27))
+			(justify left)
+		)
+		(uuid "09f01ba8-3eb2-4752-bcfc-860902df33fa")
+		(property "Intersheetrefs" "${INTERSHEET_REFS}"
+			(at 95.2500 128.2700 0)
+			(effects
+				(font (size 1.27 1.27))
+				(justify left)
+				(hide yes)
+			)
+		)
+	)
+	(global_label "MDIO"
+		(shape bidirectional)
+		(at 92.7100 130.8100 0)
+		(fields_autoplaced yes)
+		(effects
+			(font (size 1.27 1.27))
+			(justify left)
+		)
+		(uuid "d4c07742-9a0a-4385-8a15-f7b5df403ad5")
+		(property "Intersheetrefs" "${INTERSHEET_REFS}"
+			(at 95.2500 130.8100 0)
+			(effects
+				(font (size 1.27 1.27))
+				(justify left)
+				(hide yes)
+			)
+		)
+	)
+	(global_label "FPGA_VCCIO0_3V3"
+		(shape bidirectional)
+		(at 180.3400 87.6300 0)
+		(fields_autoplaced yes)
+		(effects
+			(font (size 1.27 1.27))
+			(justify left)
+		)
+		(uuid "40615b41-04ee-4bd2-9617-c8617097f72a")
+		(property "Intersheetrefs" "${INTERSHEET_REFS}"
+			(at 182.8800 87.6300 0)
+			(effects
+				(font (size 1.27 1.27))
+				(justify left)
+				(hide yes)
+			)
+		)
+	)
+	(global_label "FPGA_RESET_N"
+		(shape bidirectional)
+		(at 180.3400 92.7100 0)
+		(fields_autoplaced yes)
+		(effects
+			(font (size 1.27 1.27))
+			(justify left)
+		)
+		(uuid "a20b2d3f-23fa-4064-a563-d1674967699b")
+		(property "Intersheetrefs" "${INTERSHEET_REFS}"
+			(at 182.8800 92.7100 0)
+			(effects
+				(font (size 1.27 1.27))
+				(justify left)
+				(hide yes)
+			)
+		)
+	)
+	(global_label "FPGA_VCCIO0_3V3"
+		(shape bidirectional)
+		(at 289.5600 87.6300 0)
+		(fields_autoplaced yes)
+		(effects
+			(font (size 1.27 1.27))
+			(justify left)
+		)
+		(uuid "c83e9db8-0eb9-402e-b128-198ab88ee36c")
+		(property "Intersheetrefs" "${INTERSHEET_REFS}"
+			(at 292.1000 87.6300 0)
+			(effects
+				(font (size 1.27 1.27))
+				(justify left)
+				(hide yes)
+			)
+		)
+	)
+	(global_label "FPGA_CDONE"
+		(shape bidirectional)
+		(at 289.5600 92.7100 0)
+		(fields_autoplaced yes)
+		(effects
+			(font (size 1.27 1.27))
+			(justify left)
+		)
+		(uuid "1d63d1e5-c9de-4910-acb0-19686e8ade28")
+		(property "Intersheetrefs" "${INTERSHEET_REFS}"
+			(at 292.1000 92.7100 0)
+			(effects
+				(font (size 1.27 1.27))
+				(justify left)
+				(hide yes)
+			)
+		)
+	)
+	(global_label "FPGA_VCCIO0_3V3"
+		(shape bidirectional)
+		(at 400.0500 87.6300 0)
+		(fields_autoplaced yes)
+		(effects
+			(font (size 1.27 1.27))
+			(justify left)
+		)
+		(uuid "355f1e28-eff7-43e6-af18-5b1cf41a3509")
+		(property "Intersheetrefs" "${INTERSHEET_REFS}"
+			(at 402.5900 87.6300 0)
+			(effects
+				(font (size 1.27 1.27))
+				(justify left)
+				(hide yes)
+			)
+		)
+	)
+	(global_label "FPGA_SPI_CS_N"
+		(shape bidirectional)
+		(at 400.0500 92.7100 0)
+		(fields_autoplaced yes)
+		(effects
+			(font (size 1.27 1.27))
+			(justify left)
+		)
+		(uuid "3820195f-adbb-412c-a2a5-f2ef935899ed")
+		(property "Intersheetrefs" "${INTERSHEET_REFS}"
+			(at 402.5900 92.7100 0)
+			(effects
+				(font (size 1.27 1.27))
+				(justify left)
+				(hide yes)
+			)
+		)
+	)
+	(global_label "+1V2_CORE"
+		(shape bidirectional)
+		(at 510.5400 86.3600 0)
+		(fields_autoplaced yes)
+		(effects
+			(font (size 1.27 1.27))
+			(justify left)
+		)
+		(uuid "3fe0c67b-8b14-4b4a-847f-1dbdf0c160c8")
+		(property "Intersheetrefs" "${INTERSHEET_REFS}"
+			(at 513.0800 86.3600 0)
+			(effects
+				(font (size 1.27 1.27))
+				(justify left)
+				(hide yes)
+			)
+		)
+	)
+	(global_label "FPGA_VCC_1V2"
+		(shape bidirectional)
+		(at 510.5400 93.9800 0)
+		(fields_autoplaced yes)
+		(effects
+			(font (size 1.27 1.27))
+			(justify left)
+		)
+		(uuid "2f7d8d5c-d800-4b65-92e8-dc1d4ce1d8f8")
+		(property "Intersheetrefs" "${INTERSHEET_REFS}"
+			(at 513.0800 93.9800 0)
+			(effects
+				(font (size 1.27 1.27))
+				(justify left)
+				(hide yes)
+			)
+		)
+	)
+	(global_label "+1V2_CORE"
+		(shape bidirectional)
+		(at 619.7600 86.3600 0)
+		(fields_autoplaced yes)
+		(effects
+			(font (size 1.27 1.27))
+			(justify left)
+		)
+		(uuid "38c264f0-21ac-45f1-bff8-6624f40da081")
+		(property "Intersheetrefs" "${INTERSHEET_REFS}"
+			(at 622.3000 86.3600 0)
+			(effects
+				(font (size 1.27 1.27))
+				(justify left)
+				(hide yes)
+			)
+		)
+	)
+	(global_label "FPGA_PLL_1V2"
+		(shape bidirectional)
+		(at 619.7600 93.9800 0)
+		(fields_autoplaced yes)
+		(effects
+			(font (size 1.27 1.27))
+			(justify left)
+		)
+		(uuid "c5876fc6-7830-4460-88ba-7fe947e6c7e5")
+		(property "Intersheetrefs" "${INTERSHEET_REFS}"
+			(at 622.3000 93.9800 0)
+			(effects
+				(font (size 1.27 1.27))
+				(justify left)
+				(hide yes)
+			)
+		)
+	)
+	(global_label "+3V3_DIG"
+		(shape bidirectional)
+		(at 730.2500 86.3600 0)
+		(fields_autoplaced yes)
+		(effects
+			(font (size 1.27 1.27))
+			(justify left)
+		)
+		(uuid "7ad9c33b-3424-4747-b82e-7ae18462dd0f")
+		(property "Intersheetrefs" "${INTERSHEET_REFS}"
+			(at 732.7900 86.3600 0)
+			(effects
+				(font (size 1.27 1.27))
+				(justify left)
+				(hide yes)
+			)
+		)
+	)
+	(global_label "FPGA_VCCIO0_3V3"
+		(shape bidirectional)
+		(at 730.2500 93.9800 0)
+		(fields_autoplaced yes)
+		(effects
+			(font (size 1.27 1.27))
+			(justify left)
+		)
+		(uuid "fead4928-5d64-4885-87bf-65e7f458251c")
+		(property "Intersheetrefs" "${INTERSHEET_REFS}"
+			(at 732.7900 93.9800 0)
+			(effects
+				(font (size 1.27 1.27))
+				(justify left)
+				(hide yes)
+			)
+		)
+	)
+	(global_label "+3V3_DIG"
+		(shape bidirectional)
+		(at 69.8500 138.4300 0)
+		(fields_autoplaced yes)
+		(effects
+			(font (size 1.27 1.27))
+			(justify left)
+		)
+		(uuid "7117bf8a-52c5-4b2f-b85a-bd91d3592882")
+		(property "Intersheetrefs" "${INTERSHEET_REFS}"
+			(at 72.3900 138.4300 0)
+			(effects
+				(font (size 1.27 1.27))
+				(justify left)
+				(hide yes)
+			)
+		)
+	)
+	(global_label "FPGA_VCCIO1_3V3"
+		(shape bidirectional)
+		(at 69.8500 146.0500 0)
+		(fields_autoplaced yes)
+		(effects
+			(font (size 1.27 1.27))
+			(justify left)
+		)
+		(uuid "e3bde04c-ce1a-4882-bc92-4c3bcc353fd5")
+		(property "Intersheetrefs" "${INTERSHEET_REFS}"
+			(at 72.3900 146.0500 0)
+			(effects
+				(font (size 1.27 1.27))
+				(justify left)
+				(hide yes)
+			)
+		)
+	)
+	(global_label "+3V3_DIG"
+		(shape bidirectional)
+		(at 180.3400 138.4300 0)
+		(fields_autoplaced yes)
+		(effects
+			(font (size 1.27 1.27))
+			(justify left)
+		)
+		(uuid "2e6ba77b-c1e9-4b63-87fa-9e47aeaba9b8")
+		(property "Intersheetrefs" "${INTERSHEET_REFS}"
+			(at 182.8800 138.4300 0)
+			(effects
+				(font (size 1.27 1.27))
+				(justify left)
+				(hide yes)
+			)
+		)
+	)
+	(global_label "FPGA_VCCIO2_3V3"
+		(shape bidirectional)
+		(at 180.3400 146.0500 0)
+		(fields_autoplaced yes)
+		(effects
+			(font (size 1.27 1.27))
+			(justify left)
+		)
+		(uuid "6a65839d-3a4b-4519-88f1-8682583524a2")
+		(property "Intersheetrefs" "${INTERSHEET_REFS}"
+			(at 182.8800 146.0500 0)
+			(effects
+				(font (size 1.27 1.27))
+				(justify left)
+				(hide yes)
+			)
+		)
+	)
+	(global_label "+2V5_AUX"
+		(shape bidirectional)
+		(at 289.5600 138.4300 0)
+		(fields_autoplaced yes)
+		(effects
+			(font (size 1.27 1.27))
+			(justify left)
+		)
+		(uuid "aeb52c96-5a7a-4d9e-a56b-e8308afff998")
+		(property "Intersheetrefs" "${INTERSHEET_REFS}"
+			(at 292.1000 138.4300 0)
+			(effects
+				(font (size 1.27 1.27))
+				(justify left)
+				(hide yes)
+			)
+		)
+	)
+	(global_label "FPGA_AUX_2V5"
+		(shape bidirectional)
+		(at 289.5600 146.0500 0)
+		(fields_autoplaced yes)
+		(effects
+			(font (size 1.27 1.27))
+			(justify left)
+		)
+		(uuid "84b02d04-8e24-40c7-8b5b-604d72f80902")
+		(property "Intersheetrefs" "${INTERSHEET_REFS}"
+			(at 292.1000 146.0500 0)
+			(effects
+				(font (size 1.27 1.27))
+				(justify left)
+				(hide yes)
+			)
+		)
+	)
+	(global_label "FPGA_VCC_1V2"
+		(shape bidirectional)
+		(at 400.0500 139.7000 0)
+		(fields_autoplaced yes)
+		(effects
+			(font (size 1.27 1.27))
+			(justify left)
+		)
+		(uuid "20a4b5f7-e8e9-42f5-8064-5d379d8a949a")
+		(property "Intersheetrefs" "${INTERSHEET_REFS}"
+			(at 402.5900 139.7000 0)
+			(effects
+				(font (size 1.27 1.27))
+				(justify left)
+				(hide yes)
+			)
+		)
+	)
+	(global_label "GND"
+		(shape bidirectional)
+		(at 400.0500 144.7800 0)
+		(fields_autoplaced yes)
+		(effects
+			(font (size 1.27 1.27))
+			(justify left)
+		)
+		(uuid "60cf7c7c-b5fb-434f-ac52-a890abc5de69")
+		(property "Intersheetrefs" "${INTERSHEET_REFS}"
+			(at 402.5900 144.7800 0)
+			(effects
+				(font (size 1.27 1.27))
+				(justify left)
+				(hide yes)
+			)
+		)
+	)
+	(global_label "FPGA_VCC_1V2"
+		(shape bidirectional)
+		(at 510.5400 139.7000 0)
+		(fields_autoplaced yes)
+		(effects
+			(font (size 1.27 1.27))
+			(justify left)
+		)
+		(uuid "fe2acbd8-fd98-4050-b47a-d77014e1bc46")
+		(property "Intersheetrefs" "${INTERSHEET_REFS}"
+			(at 513.0800 139.7000 0)
+			(effects
+				(font (size 1.27 1.27))
+				(justify left)
+				(hide yes)
+			)
+		)
+	)
+	(global_label "GND"
+		(shape bidirectional)
+		(at 510.5400 144.7800 0)
+		(fields_autoplaced yes)
+		(effects
+			(font (size 1.27 1.27))
+			(justify left)
+		)
+		(uuid "4ec5e311-9c32-4aec-a4af-cdf1647649c8")
+		(property "Intersheetrefs" "${INTERSHEET_REFS}"
+			(at 513.0800 144.7800 0)
+			(effects
+				(font (size 1.27 1.27))
+				(justify left)
+				(hide yes)
+			)
+		)
+	)
+	(global_label "FPGA_VCC_1V2"
+		(shape bidirectional)
+		(at 619.7600 139.7000 0)
+		(fields_autoplaced yes)
+		(effects
+			(font (size 1.27 1.27))
+			(justify left)
+		)
+		(uuid "523ec158-cb49-48aa-b398-d414cc20e84a")
+		(property "Intersheetrefs" "${INTERSHEET_REFS}"
+			(at 622.3000 139.7000 0)
+			(effects
+				(font (size 1.27 1.27))
+				(justify left)
+				(hide yes)
+			)
+		)
+	)
+	(global_label "GND"
+		(shape bidirectional)
+		(at 619.7600 144.7800 0)
+		(fields_autoplaced yes)
+		(effects
+			(font (size 1.27 1.27))
+			(justify left)
+		)
+		(uuid "df4a8445-d2c9-4dc1-b8db-83c58ed49b8b")
+		(property "Intersheetrefs" "${INTERSHEET_REFS}"
+			(at 622.3000 144.7800 0)
+			(effects
+				(font (size 1.27 1.27))
+				(justify left)
+				(hide yes)
+			)
+		)
+	)
+	(global_label "FPGA_PLL_1V2"
+		(shape bidirectional)
+		(at 730.2500 139.7000 0)
+		(fields_autoplaced yes)
+		(effects
+			(font (size 1.27 1.27))
+			(justify left)
+		)
+		(uuid "8380a001-64ac-44d3-b7b4-d16af332fcb1")
+		(property "Intersheetrefs" "${INTERSHEET_REFS}"
+			(at 732.7900 139.7000 0)
+			(effects
+				(font (size 1.27 1.27))
+				(justify left)
+				(hide yes)
+			)
+		)
+	)
+	(global_label "GND"
+		(shape bidirectional)
+		(at 730.2500 144.7800 0)
+		(fields_autoplaced yes)
+		(effects
+			(font (size 1.27 1.27))
+			(justify left)
+		)
+		(uuid "d3645e93-24cd-485d-a32e-1378d9adfb15")
+		(property "Intersheetrefs" "${INTERSHEET_REFS}"
+			(at 732.7900 144.7800 0)
+			(effects
+				(font (size 1.27 1.27))
+				(justify left)
+				(hide yes)
+			)
+		)
+	)
+	(global_label "FPGA_PLL_1V2"
+		(shape bidirectional)
+		(at 69.8500 191.7700 0)
+		(fields_autoplaced yes)
+		(effects
+			(font (size 1.27 1.27))
+			(justify left)
+		)
+		(uuid "e74fb1ef-9c1e-4e73-9ebf-72ecb6efde04")
+		(property "Intersheetrefs" "${INTERSHEET_REFS}"
+			(at 72.3900 191.7700 0)
+			(effects
+				(font (size 1.27 1.27))
+				(justify left)
+				(hide yes)
+			)
+		)
+	)
+	(global_label "GND"
+		(shape bidirectional)
+		(at 69.8500 196.8500 0)
+		(fields_autoplaced yes)
+		(effects
+			(font (size 1.27 1.27))
+			(justify left)
+		)
+		(uuid "c521ce42-f315-4eb5-9c54-7d6418ee778a")
+		(property "Intersheetrefs" "${INTERSHEET_REFS}"
+			(at 72.3900 196.8500 0)
+			(effects
+				(font (size 1.27 1.27))
+				(justify left)
+				(hide yes)
+			)
+		)
+	)
+	(global_label "FPGA_VCCIO0_3V3"
+		(shape bidirectional)
+		(at 180.3400 191.7700 0)
+		(fields_autoplaced yes)
+		(effects
+			(font (size 1.27 1.27))
+			(justify left)
+		)
+		(uuid "0b0aa763-67f3-4aad-970c-3b3e168635fe")
+		(property "Intersheetrefs" "${INTERSHEET_REFS}"
+			(at 182.8800 191.7700 0)
+			(effects
+				(font (size 1.27 1.27))
+				(justify left)
+				(hide yes)
+			)
+		)
+	)
+	(global_label "GND"
+		(shape bidirectional)
+		(at 180.3400 196.8500 0)
+		(fields_autoplaced yes)
+		(effects
+			(font (size 1.27 1.27))
+			(justify left)
+		)
+		(uuid "7097d601-ab11-4a39-91d7-dbf520b5c3b1")
+		(property "Intersheetrefs" "${INTERSHEET_REFS}"
+			(at 182.8800 196.8500 0)
+			(effects
+				(font (size 1.27 1.27))
+				(justify left)
+				(hide yes)
+			)
+		)
+	)
+	(global_label "FPGA_VCCIO0_3V3"
+		(shape bidirectional)
+		(at 289.5600 191.7700 0)
+		(fields_autoplaced yes)
+		(effects
+			(font (size 1.27 1.27))
+			(justify left)
+		)
+		(uuid "5b3737f3-6595-4a94-a891-31555bb59de8")
+		(property "Intersheetrefs" "${INTERSHEET_REFS}"
+			(at 292.1000 191.7700 0)
+			(effects
+				(font (size 1.27 1.27))
+				(justify left)
+				(hide yes)
+			)
+		)
+	)
+	(global_label "GND"
+		(shape bidirectional)
+		(at 289.5600 196.8500 0)
+		(fields_autoplaced yes)
+		(effects
+			(font (size 1.27 1.27))
+			(justify left)
+		)
+		(uuid "922b0f0d-245a-455f-8b45-5b4b2185731e")
+		(property "Intersheetrefs" "${INTERSHEET_REFS}"
+			(at 292.1000 196.8500 0)
+			(effects
+				(font (size 1.27 1.27))
+				(justify left)
+				(hide yes)
+			)
+		)
+	)
+	(global_label "FPGA_VCCIO1_3V3"
+		(shape bidirectional)
+		(at 400.0500 191.7700 0)
+		(fields_autoplaced yes)
+		(effects
+			(font (size 1.27 1.27))
+			(justify left)
+		)
+		(uuid "df14e028-66d0-4289-8389-5edd77380abe")
+		(property "Intersheetrefs" "${INTERSHEET_REFS}"
+			(at 402.5900 191.7700 0)
+			(effects
+				(font (size 1.27 1.27))
+				(justify left)
+				(hide yes)
+			)
+		)
+	)
+	(global_label "GND"
+		(shape bidirectional)
+		(at 400.0500 196.8500 0)
+		(fields_autoplaced yes)
+		(effects
+			(font (size 1.27 1.27))
+			(justify left)
+		)
+		(uuid "c65a2160-8fcf-4bce-941a-6c7167593ed6")
+		(property "Intersheetrefs" "${INTERSHEET_REFS}"
+			(at 402.5900 196.8500 0)
+			(effects
+				(font (size 1.27 1.27))
+				(justify left)
+				(hide yes)
+			)
+		)
+	)
+	(global_label "FPGA_VCCIO1_3V3"
+		(shape bidirectional)
+		(at 510.5400 191.7700 0)
+		(fields_autoplaced yes)
+		(effects
+			(font (size 1.27 1.27))
+			(justify left)
+		)
+		(uuid "a3f88085-3964-495f-9a74-3751425f7aac")
+		(property "Intersheetrefs" "${INTERSHEET_REFS}"
+			(at 513.0800 191.7700 0)
+			(effects
+				(font (size 1.27 1.27))
+				(justify left)
+				(hide yes)
+			)
+		)
+	)
+	(global_label "GND"
+		(shape bidirectional)
+		(at 510.5400 196.8500 0)
+		(fields_autoplaced yes)
+		(effects
+			(font (size 1.27 1.27))
+			(justify left)
+		)
+		(uuid "195ab5d4-339a-4576-86bd-850f2b3c74c8")
+		(property "Intersheetrefs" "${INTERSHEET_REFS}"
+			(at 513.0800 196.8500 0)
+			(effects
+				(font (size 1.27 1.27))
+				(justify left)
+				(hide yes)
+			)
+		)
+	)
+	(global_label "FPGA_VCCIO1_3V3"
+		(shape bidirectional)
+		(at 619.7600 191.7700 0)
+		(fields_autoplaced yes)
+		(effects
+			(font (size 1.27 1.27))
+			(justify left)
+		)
+		(uuid "72379396-7857-422b-908b-6c3207bf2273")
+		(property "Intersheetrefs" "${INTERSHEET_REFS}"
+			(at 622.3000 191.7700 0)
+			(effects
+				(font (size 1.27 1.27))
+				(justify left)
+				(hide yes)
+			)
+		)
+	)
+	(global_label "GND"
+		(shape bidirectional)
+		(at 619.7600 196.8500 0)
+		(fields_autoplaced yes)
+		(effects
+			(font (size 1.27 1.27))
+			(justify left)
+		)
+		(uuid "75c22bfe-ae6e-4b6c-bad9-621f458f3a34")
+		(property "Intersheetrefs" "${INTERSHEET_REFS}"
+			(at 622.3000 196.8500 0)
+			(effects
+				(font (size 1.27 1.27))
+				(justify left)
+				(hide yes)
+			)
+		)
+	)
+	(global_label "FPGA_VCCIO2_3V3"
+		(shape bidirectional)
+		(at 730.2500 191.7700 0)
+		(fields_autoplaced yes)
+		(effects
+			(font (size 1.27 1.27))
+			(justify left)
+		)
+		(uuid "f44bec60-2e36-4a14-b016-7c4d318212b0")
+		(property "Intersheetrefs" "${INTERSHEET_REFS}"
+			(at 732.7900 191.7700 0)
+			(effects
+				(font (size 1.27 1.27))
+				(justify left)
+				(hide yes)
+			)
+		)
+	)
+	(global_label "GND"
+		(shape bidirectional)
+		(at 730.2500 196.8500 0)
+		(fields_autoplaced yes)
+		(effects
+			(font (size 1.27 1.27))
+			(justify left)
+		)
+		(uuid "ddceef7c-1584-4449-94ee-882c35f47fbc")
+		(property "Intersheetrefs" "${INTERSHEET_REFS}"
+			(at 732.7900 196.8500 0)
+			(effects
+				(font (size 1.27 1.27))
+				(justify left)
+				(hide yes)
+			)
+		)
+	)
+	(global_label "FPGA_VCCIO2_3V3"
+		(shape bidirectional)
+		(at 69.8500 243.8400 0)
+		(fields_autoplaced yes)
+		(effects
+			(font (size 1.27 1.27))
+			(justify left)
+		)
+		(uuid "6e09202b-5227-43ae-94c4-db959d6834a9")
+		(property "Intersheetrefs" "${INTERSHEET_REFS}"
+			(at 72.3900 243.8400 0)
+			(effects
+				(font (size 1.27 1.27))
+				(justify left)
+				(hide yes)
+			)
+		)
+	)
+	(global_label "GND"
+		(shape bidirectional)
+		(at 69.8500 248.9200 0)
+		(fields_autoplaced yes)
+		(effects
+			(font (size 1.27 1.27))
+			(justify left)
+		)
+		(uuid "42f25421-c077-4377-9508-291b81617041")
+		(property "Intersheetrefs" "${INTERSHEET_REFS}"
+			(at 72.3900 248.9200 0)
+			(effects
+				(font (size 1.27 1.27))
+				(justify left)
+				(hide yes)
+			)
+		)
+	)
+	(global_label "FPGA_VCCIO2_3V3"
+		(shape bidirectional)
+		(at 180.3400 243.8400 0)
+		(fields_autoplaced yes)
+		(effects
+			(font (size 1.27 1.27))
+			(justify left)
+		)
+		(uuid "6cdc90e8-37eb-44f0-88b4-52036ec95591")
+		(property "Intersheetrefs" "${INTERSHEET_REFS}"
+			(at 182.8800 243.8400 0)
+			(effects
+				(font (size 1.27 1.27))
+				(justify left)
+				(hide yes)
+			)
+		)
+	)
+	(global_label "GND"
+		(shape bidirectional)
+		(at 180.3400 248.9200 0)
+		(fields_autoplaced yes)
+		(effects
+			(font (size 1.27 1.27))
+			(justify left)
+		)
+		(uuid "276c99f7-f1b7-4db4-a469-166a4cee68cf")
+		(property "Intersheetrefs" "${INTERSHEET_REFS}"
+			(at 182.8800 248.9200 0)
+			(effects
+				(font (size 1.27 1.27))
+				(justify left)
+				(hide yes)
+			)
+		)
+	)
+	(global_label "FPGA_AUX_2V5"
+		(shape bidirectional)
+		(at 289.5600 243.8400 0)
+		(fields_autoplaced yes)
+		(effects
+			(font (size 1.27 1.27))
+			(justify left)
+		)
+		(uuid "840c3dfa-a73c-4a65-a223-6b29b92ef61e")
+		(property "Intersheetrefs" "${INTERSHEET_REFS}"
+			(at 292.1000 243.8400 0)
+			(effects
+				(font (size 1.27 1.27))
+				(justify left)
+				(hide yes)
+			)
+		)
+	)
+	(global_label "GND"
+		(shape bidirectional)
+		(at 289.5600 248.9200 0)
+		(fields_autoplaced yes)
+		(effects
+			(font (size 1.27 1.27))
+			(justify left)
+		)
+		(uuid "035b831c-2b54-49ac-a3cd-8293e796714c")
+		(property "Intersheetrefs" "${INTERSHEET_REFS}"
+			(at 292.1000 248.9200 0)
+			(effects
+				(font (size 1.27 1.27))
+				(justify left)
+				(hide yes)
+			)
+		)
+	)
+	(global_label "RGMII_TXD0_FPGA"
+		(shape bidirectional)
+		(at 400.0500 243.8400 0)
+		(fields_autoplaced yes)
+		(effects
+			(font (size 1.27 1.27))
+			(justify left)
+		)
+		(uuid "c9018b5d-7ac6-411e-a514-d5268967a7ff")
+		(property "Intersheetrefs" "${INTERSHEET_REFS}"
+			(at 402.5900 243.8400 0)
+			(effects
+				(font (size 1.27 1.27))
+				(justify left)
+				(hide yes)
+			)
+		)
+	)
+	(global_label "RGMII_TXD0"
+		(shape bidirectional)
+		(at 400.0500 248.9200 0)
+		(fields_autoplaced yes)
+		(effects
+			(font (size 1.27 1.27))
+			(justify left)
+		)
+		(uuid "210d1d97-f256-4de2-ab13-9b8fc85d06b6")
+		(property "Intersheetrefs" "${INTERSHEET_REFS}"
+			(at 402.5900 248.9200 0)
+			(effects
+				(font (size 1.27 1.27))
+				(justify left)
+				(hide yes)
+			)
+		)
+	)
+	(global_label "RGMII_TXD1_FPGA"
+		(shape bidirectional)
+		(at 510.5400 243.8400 0)
+		(fields_autoplaced yes)
+		(effects
+			(font (size 1.27 1.27))
+			(justify left)
+		)
+		(uuid "3e0f5657-8ff1-4778-a8a3-3c92cc8256a4")
+		(property "Intersheetrefs" "${INTERSHEET_REFS}"
+			(at 513.0800 243.8400 0)
+			(effects
+				(font (size 1.27 1.27))
+				(justify left)
+				(hide yes)
+			)
+		)
+	)
+	(global_label "RGMII_TXD1"
+		(shape bidirectional)
+		(at 510.5400 248.9200 0)
+		(fields_autoplaced yes)
+		(effects
+			(font (size 1.27 1.27))
+			(justify left)
+		)
+		(uuid "e8760b96-c373-4f48-889a-4352ed505608")
+		(property "Intersheetrefs" "${INTERSHEET_REFS}"
+			(at 513.0800 248.9200 0)
+			(effects
+				(font (size 1.27 1.27))
+				(justify left)
+				(hide yes)
+			)
+		)
+	)
+	(global_label "RGMII_TXD2_FPGA"
+		(shape bidirectional)
+		(at 619.7600 243.8400 0)
+		(fields_autoplaced yes)
+		(effects
+			(font (size 1.27 1.27))
+			(justify left)
+		)
+		(uuid "dbe91698-fba5-419e-9c6a-84bb04b8a9a6")
+		(property "Intersheetrefs" "${INTERSHEET_REFS}"
+			(at 622.3000 243.8400 0)
+			(effects
+				(font (size 1.27 1.27))
+				(justify left)
+				(hide yes)
+			)
+		)
+	)
+	(global_label "RGMII_TXD2"
+		(shape bidirectional)
+		(at 619.7600 248.9200 0)
+		(fields_autoplaced yes)
+		(effects
+			(font (size 1.27 1.27))
+			(justify left)
+		)
+		(uuid "06c2d5fb-4fbf-4a21-87f3-6436d719226f")
+		(property "Intersheetrefs" "${INTERSHEET_REFS}"
+			(at 622.3000 248.9200 0)
+			(effects
+				(font (size 1.27 1.27))
+				(justify left)
+				(hide yes)
+			)
+		)
+	)
+	(global_label "RGMII_TXD3_FPGA"
+		(shape bidirectional)
+		(at 730.2500 243.8400 0)
+		(fields_autoplaced yes)
+		(effects
+			(font (size 1.27 1.27))
+			(justify left)
+		)
+		(uuid "758ef48d-301f-4e05-afa8-b51b05261b94")
+		(property "Intersheetrefs" "${INTERSHEET_REFS}"
+			(at 732.7900 243.8400 0)
+			(effects
+				(font (size 1.27 1.27))
+				(justify left)
+				(hide yes)
+			)
+		)
+	)
+	(global_label "RGMII_TXD3"
+		(shape bidirectional)
+		(at 730.2500 248.9200 0)
+		(fields_autoplaced yes)
+		(effects
+			(font (size 1.27 1.27))
+			(justify left)
+		)
+		(uuid "51a16626-38cf-4eaf-acbf-5e9b50aab664")
+		(property "Intersheetrefs" "${INTERSHEET_REFS}"
+			(at 732.7900 248.9200 0)
+			(effects
+				(font (size 1.27 1.27))
+				(justify left)
+				(hide yes)
+			)
+		)
+	)
+	(global_label "RGMII_TX_EN_FPGA"
+		(shape bidirectional)
+		(at 69.8500 295.9100 0)
+		(fields_autoplaced yes)
+		(effects
+			(font (size 1.27 1.27))
+			(justify left)
+		)
+		(uuid "8a4e48d2-8b89-458b-8754-b20e5593bbef")
+		(property "Intersheetrefs" "${INTERSHEET_REFS}"
+			(at 72.3900 295.9100 0)
+			(effects
+				(font (size 1.27 1.27))
+				(justify left)
+				(hide yes)
+			)
+		)
+	)
+	(global_label "RGMII_TX_EN"
+		(shape bidirectional)
+		(at 69.8500 300.9900 0)
+		(fields_autoplaced yes)
+		(effects
+			(font (size 1.27 1.27))
+			(justify left)
+		)
+		(uuid "3ecd2e25-de4a-4d9a-a2ca-3e724e99c6c3")
+		(property "Intersheetrefs" "${INTERSHEET_REFS}"
+			(at 72.3900 300.9900 0)
+			(effects
+				(font (size 1.27 1.27))
+				(justify left)
+				(hide yes)
+			)
+		)
+	)
+	(global_label "RGMII_TXC_FPGA"
+		(shape bidirectional)
+		(at 180.3400 295.9100 0)
+		(fields_autoplaced yes)
+		(effects
+			(font (size 1.27 1.27))
+			(justify left)
+		)
+		(uuid "742c3e5f-c673-4328-af65-5065e97dbf9d")
+		(property "Intersheetrefs" "${INTERSHEET_REFS}"
+			(at 182.8800 295.9100 0)
+			(effects
+				(font (size 1.27 1.27))
+				(justify left)
+				(hide yes)
+			)
+		)
+	)
+	(global_label "RGMII_TXC"
+		(shape bidirectional)
+		(at 180.3400 300.9900 0)
+		(fields_autoplaced yes)
+		(effects
+			(font (size 1.27 1.27))
+			(justify left)
+		)
+		(uuid "a41113dd-ddac-4227-acc3-b24bfd94cfd6")
+		(property "Intersheetrefs" "${INTERSHEET_REFS}"
+			(at 182.8800 300.9900 0)
+			(effects
+				(font (size 1.27 1.27))
+				(justify left)
+				(hide yes)
+			)
+		)
+	)
+	(global_label "ADC_CLK"
+		(shape bidirectional)
+		(at 266.7000 279.4000 0)
+		(fields_autoplaced yes)
+		(effects
+			(font (size 1.27 1.27))
+			(justify left)
+		)
+		(uuid "ca53e51b-ebf6-474f-9ff3-42357bad235d")
+		(property "Intersheetrefs" "${INTERSHEET_REFS}"
+			(at 269.2400 279.4000 0)
+			(effects
+				(font (size 1.27 1.27))
+				(justify left)
+				(hide yes)
+			)
+		)
+	)
+	(global_label "ADC_PDWN"
+		(shape bidirectional)
+		(at 266.7000 284.4800 0)
+		(fields_autoplaced yes)
+		(effects
+			(font (size 1.27 1.27))
+			(justify left)
+		)
+		(uuid "a595f9b7-1322-43d2-93c4-534620190444")
+		(property "Intersheetrefs" "${INTERSHEET_REFS}"
+			(at 269.2400 284.4800 0)
+			(effects
+				(font (size 1.27 1.27))
+				(justify left)
+				(hide yes)
+			)
+		)
+	)
+	(global_label "ADC_D0"
+		(shape bidirectional)
+		(at 266.7000 297.1800 0)
+		(fields_autoplaced yes)
+		(effects
+			(font (size 1.27 1.27))
+			(justify left)
+		)
+		(uuid "88aacc61-2f74-4d81-a5c9-4aa55f47f796")
+		(property "Intersheetrefs" "${INTERSHEET_REFS}"
+			(at 269.2400 297.1800 0)
+			(effects
+				(font (size 1.27 1.27))
+				(justify left)
+				(hide yes)
+			)
+		)
+	)
+	(global_label "ADC_D1"
+		(shape bidirectional)
+		(at 266.7000 299.7200 0)
+		(fields_autoplaced yes)
+		(effects
+			(font (size 1.27 1.27))
+			(justify left)
+		)
+		(uuid "8d1bc320-52f3-4886-915d-486a24bcce0f")
+		(property "Intersheetrefs" "${INTERSHEET_REFS}"
+			(at 269.2400 299.7200 0)
+			(effects
+				(font (size 1.27 1.27))
+				(justify left)
+				(hide yes)
+			)
+		)
+	)
+	(global_label "ADC_D2"
+		(shape bidirectional)
+		(at 266.7000 302.2600 0)
+		(fields_autoplaced yes)
+		(effects
+			(font (size 1.27 1.27))
+			(justify left)
+		)
+		(uuid "4e854078-a9d8-4c74-80ba-c8bef01e4f35")
+		(property "Intersheetrefs" "${INTERSHEET_REFS}"
+			(at 269.2400 302.2600 0)
+			(effects
+				(font (size 1.27 1.27))
+				(justify left)
+				(hide yes)
+			)
+		)
+	)
+	(global_label "ADC_D3"
+		(shape bidirectional)
+		(at 266.7000 304.8000 0)
+		(fields_autoplaced yes)
+		(effects
+			(font (size 1.27 1.27))
+			(justify left)
+		)
+		(uuid "fd21c297-88b0-4f16-8263-e9a23b114b81")
+		(property "Intersheetrefs" "${INTERSHEET_REFS}"
+			(at 269.2400 304.8000 0)
+			(effects
+				(font (size 1.27 1.27))
+				(justify left)
+				(hide yes)
+			)
+		)
+	)
+	(global_label "ADC_D4"
+		(shape bidirectional)
+		(at 266.7000 307.3400 0)
+		(fields_autoplaced yes)
+		(effects
+			(font (size 1.27 1.27))
+			(justify left)
+		)
+		(uuid "76b22cb1-6dd0-4ba0-89ca-9894f32ae79f")
+		(property "Intersheetrefs" "${INTERSHEET_REFS}"
+			(at 269.2400 307.3400 0)
+			(effects
+				(font (size 1.27 1.27))
+				(justify left)
+				(hide yes)
+			)
+		)
+	)
+	(global_label "ADC_D5"
+		(shape bidirectional)
+		(at 266.7000 309.8800 0)
+		(fields_autoplaced yes)
+		(effects
+			(font (size 1.27 1.27))
+			(justify left)
+		)
+		(uuid "f4ed5482-5ddf-40ed-bceb-0ea71afe6332")
+		(property "Intersheetrefs" "${INTERSHEET_REFS}"
+			(at 269.2400 309.8800 0)
+			(effects
+				(font (size 1.27 1.27))
+				(justify left)
+				(hide yes)
+			)
+		)
+	)
+	(global_label "GND"
+		(shape bidirectional)
+		(at 266.7000 312.4200 0)
+		(fields_autoplaced yes)
+		(effects
+			(font (size 1.27 1.27))
+			(justify left)
+		)
+		(uuid "d009f389-4b1b-4dc1-ad7e-de5a523fec74")
+		(property "Intersheetrefs" "${INTERSHEET_REFS}"
+			(at 269.2400 312.4200 0)
+			(effects
+				(font (size 1.27 1.27))
+				(justify left)
+				(hide yes)
+			)
+		)
+	)
+	(global_label "+3V3_DIG"
+		(shape bidirectional)
+		(at 266.7000 314.9600 0)
+		(fields_autoplaced yes)
+		(effects
+			(font (size 1.27 1.27))
+			(justify left)
+		)
+		(uuid "68900a3e-3eb5-4c4b-94a4-cc072d2498cb")
+		(property "Intersheetrefs" "${INTERSHEET_REFS}"
+			(at 269.2400 314.9600 0)
+			(effects
+				(font (size 1.27 1.27))
+				(justify left)
+				(hide yes)
+			)
+		)
+	)
+	(global_label "ADC_D6"
+		(shape bidirectional)
+		(at 266.7000 317.5000 0)
+		(fields_autoplaced yes)
+		(effects
+			(font (size 1.27 1.27))
+			(justify left)
+		)
+		(uuid "3786893e-77ba-4752-804f-835f265ef3fa")
+		(property "Intersheetrefs" "${INTERSHEET_REFS}"
+			(at 269.2400 317.5000 0)
+			(effects
+				(font (size 1.27 1.27))
+				(justify left)
+				(hide yes)
+			)
+		)
+	)
+	(global_label "ADC_D7"
+		(shape bidirectional)
+		(at 312.4200 276.8600 0)
+		(fields_autoplaced yes)
+		(effects
+			(font (size 1.27 1.27))
+			(justify left)
+		)
+		(uuid "bdf1fdc4-a90c-453b-a664-b3dec43cf2f8")
+		(property "Intersheetrefs" "${INTERSHEET_REFS}"
+			(at 314.9600 276.8600 0)
+			(effects
+				(font (size 1.27 1.27))
+				(justify left)
+				(hide yes)
+			)
+		)
+	)
+	(global_label "ADC_D8"
+		(shape bidirectional)
+		(at 312.4200 279.4000 0)
+		(fields_autoplaced yes)
+		(effects
+			(font (size 1.27 1.27))
+			(justify left)
+		)
+		(uuid "e119c9de-119e-4d9c-9e12-ae1153febaa4")
+		(property "Intersheetrefs" "${INTERSHEET_REFS}"
+			(at 314.9600 279.4000 0)
+			(effects
+				(font (size 1.27 1.27))
+				(justify left)
+				(hide yes)
+			)
+		)
+	)
+	(global_label "ADC_D9"
+		(shape bidirectional)
+		(at 312.4200 281.9400 0)
+		(fields_autoplaced yes)
+		(effects
+			(font (size 1.27 1.27))
+			(justify left)
+		)
+		(uuid "45cc2519-6417-4330-8b5b-0803226abd0d")
+		(property "Intersheetrefs" "${INTERSHEET_REFS}"
+			(at 314.9600 281.9400 0)
+			(effects
+				(font (size 1.27 1.27))
+				(justify left)
+				(hide yes)
+			)
+		)
+	)
+	(global_label "ADC_OR"
+		(shape bidirectional)
+		(at 312.4200 284.4800 0)
+		(fields_autoplaced yes)
+		(effects
+			(font (size 1.27 1.27))
+			(justify left)
+		)
+		(uuid "a5d01830-1f63-4edb-8c38-ea23f0715389")
+		(property "Intersheetrefs" "${INTERSHEET_REFS}"
+			(at 314.9600 284.4800 0)
+			(effects
+				(font (size 1.27 1.27))
+				(justify left)
+				(hide yes)
+			)
+		)
+	)
+	(global_label "ADC_MODE"
+		(shape bidirectional)
+		(at 312.4200 287.0200 0)
+		(fields_autoplaced yes)
+		(effects
+			(font (size 1.27 1.27))
+			(justify left)
+		)
+		(uuid "1af633d9-d028-411e-aac6-a1781f2903c0")
+		(property "Intersheetrefs" "${INTERSHEET_REFS}"
+			(at 314.9600 287.0200 0)
+			(effects
+				(font (size 1.27 1.27))
+				(justify left)
+				(hide yes)
+			)
+		)
+	)
+	(global_label "ADC_SENSE"
+		(shape bidirectional)
+		(at 312.4200 289.5600 0)
+		(fields_autoplaced yes)
+		(effects
+			(font (size 1.27 1.27))
+			(justify left)
+		)
+		(uuid "2cfd1a90-3fcf-4cc9-97a9-1b5418b63404")
+		(property "Intersheetrefs" "${INTERSHEET_REFS}"
+			(at 314.9600 289.5600 0)
+			(effects
+				(font (size 1.27 1.27))
+				(justify left)
+				(hide yes)
+			)
+		)
+	)
+	(global_label "ADC_VREF"
+		(shape bidirectional)
+		(at 312.4200 292.1000 0)
+		(fields_autoplaced yes)
+		(effects
+			(font (size 1.27 1.27))
+			(justify left)
+		)
+		(uuid "c0f61e12-d7b0-4638-9325-a7032af8e725")
+		(property "Intersheetrefs" "${INTERSHEET_REFS}"
+			(at 314.9600 292.1000 0)
+			(effects
+				(font (size 1.27 1.27))
+				(justify left)
+				(hide yes)
+			)
+		)
+	)
+	(global_label "ADC_REFB"
+		(shape bidirectional)
+		(at 312.4200 294.6400 0)
+		(fields_autoplaced yes)
+		(effects
+			(font (size 1.27 1.27))
+			(justify left)
+		)
+		(uuid "e274f312-cdbd-490c-ad4d-83a833b370ad")
+		(property "Intersheetrefs" "${INTERSHEET_REFS}"
+			(at 314.9600 294.6400 0)
+			(effects
+				(font (size 1.27 1.27))
+				(justify left)
+				(hide yes)
+			)
+		)
+	)
+	(global_label "ADC_REFT"
+		(shape bidirectional)
+		(at 312.4200 297.1800 0)
+		(fields_autoplaced yes)
+		(effects
+			(font (size 1.27 1.27))
+			(justify left)
+		)
+		(uuid "886ba3ec-d9ee-4573-a6ca-fdedcd6eaea3")
+		(property "Intersheetrefs" "${INTERSHEET_REFS}"
+			(at 314.9600 297.1800 0)
+			(effects
+				(font (size 1.27 1.27))
+				(justify left)
+				(hide yes)
+			)
+		)
+	)
+	(global_label "+3V3_ANA"
+		(shape bidirectional)
+		(at 312.4200 299.7200 0)
+		(fields_autoplaced yes)
+		(effects
+			(font (size 1.27 1.27))
+			(justify left)
+		)
+		(uuid "25af5370-9946-4b13-a500-addc7bf87d11")
+		(property "Intersheetrefs" "${INTERSHEET_REFS}"
+			(at 314.9600 299.7200 0)
+			(effects
+				(font (size 1.27 1.27))
+				(justify left)
+				(hide yes)
+			)
+		)
+	)
+	(global_label "GND"
+		(shape bidirectional)
+		(at 312.4200 302.2600 0)
+		(fields_autoplaced yes)
+		(effects
+			(font (size 1.27 1.27))
+			(justify left)
+		)
+		(uuid "b3328fae-45ee-4b8a-a9b8-b750299b82bd")
+		(property "Intersheetrefs" "${INTERSHEET_REFS}"
+			(at 314.9600 302.2600 0)
+			(effects
+				(font (size 1.27 1.27))
+				(justify left)
+				(hide yes)
+			)
+		)
+	)
+	(global_label "ADC_VIN_P"
+		(shape bidirectional)
+		(at 312.4200 304.8000 0)
+		(fields_autoplaced yes)
+		(effects
+			(font (size 1.27 1.27))
+			(justify left)
+		)
+		(uuid "6f6e2702-5da2-4503-9381-31c14749f72f")
+		(property "Intersheetrefs" "${INTERSHEET_REFS}"
+			(at 314.9600 304.8000 0)
+			(effects
+				(font (size 1.27 1.27))
+				(justify left)
+				(hide yes)
+			)
+		)
+	)
+	(global_label "ADC_VIN_N"
+		(shape bidirectional)
+		(at 312.4200 307.3400 0)
+		(fields_autoplaced yes)
+		(effects
+			(font (size 1.27 1.27))
+			(justify left)
+		)
+		(uuid "2a3c35fd-186e-477a-a36f-07ef7e4685c7")
+		(property "Intersheetrefs" "${INTERSHEET_REFS}"
+			(at 314.9600 307.3400 0)
+			(effects
+				(font (size 1.27 1.27))
+				(justify left)
+				(hide yes)
+			)
+		)
+	)
+	(global_label "GND"
+		(shape bidirectional)
+		(at 312.4200 309.8800 0)
+		(fields_autoplaced yes)
+		(effects
+			(font (size 1.27 1.27))
+			(justify left)
+		)
+		(uuid "4c2a2924-4829-46fc-afde-cdbefcc91041")
+		(property "Intersheetrefs" "${INTERSHEET_REFS}"
+			(at 314.9600 309.8800 0)
+			(effects
+				(font (size 1.27 1.27))
+				(justify left)
+				(hide yes)
+			)
+		)
+	)
+	(global_label "+3V3_ANA"
+		(shape bidirectional)
+		(at 312.4200 312.4200 0)
+		(fields_autoplaced yes)
+		(effects
+			(font (size 1.27 1.27))
+			(justify left)
+		)
+		(uuid "42128594-7f58-4361-89c6-429daab47eac")
+		(property "Intersheetrefs" "${INTERSHEET_REFS}"
+			(at 314.9600 312.4200 0)
+			(effects
+				(font (size 1.27 1.27))
+				(justify left)
+				(hide yes)
+			)
+		)
+	)
+	(global_label "GND"
+		(shape bidirectional)
+		(at 312.4200 314.9600 0)
+		(fields_autoplaced yes)
+		(effects
+			(font (size 1.27 1.27))
+			(justify left)
+		)
+		(uuid "b295b8a3-2add-40fc-ad5b-d3288e09629f")
+		(property "Intersheetrefs" "${INTERSHEET_REFS}"
+			(at 314.9600 314.9600 0)
+			(effects
+				(font (size 1.27 1.27))
+				(justify left)
+				(hide yes)
+			)
+		)
+	)
+	(global_label "REF_100M_ADC"
+		(shape bidirectional)
+		(at 400.0500 295.9100 0)
+		(fields_autoplaced yes)
+		(effects
+			(font (size 1.27 1.27))
+			(justify left)
+		)
+		(uuid "24038f4e-7305-46aa-8d21-95c5c9c884c3")
+		(property "Intersheetrefs" "${INTERSHEET_REFS}"
+			(at 402.5900 295.9100 0)
+			(effects
+				(font (size 1.27 1.27))
+				(justify left)
+				(hide yes)
+			)
+		)
+	)
+	(global_label "ADC_CLK"
+		(shape bidirectional)
+		(at 400.0500 300.9900 0)
+		(fields_autoplaced yes)
+		(effects
+			(font (size 1.27 1.27))
+			(justify left)
+		)
+		(uuid "5abff917-239f-478e-b5e8-2663c9f6f7bf")
+		(property "Intersheetrefs" "${INTERSHEET_REFS}"
+			(at 402.5900 300.9900 0)
+			(effects
+				(font (size 1.27 1.27))
+				(justify left)
+				(hide yes)
+			)
+		)
+	)
+	(global_label "+3V3_ANA"
+		(shape bidirectional)
+		(at 510.5400 295.9100 0)
+		(fields_autoplaced yes)
+		(effects
+			(font (size 1.27 1.27))
+			(justify left)
+		)
+		(uuid "cdf944d7-83d2-48fc-b56a-1f6b3d0c2b04")
+		(property "Intersheetrefs" "${INTERSHEET_REFS}"
+			(at 513.0800 295.9100 0)
+			(effects
+				(font (size 1.27 1.27))
+				(justify left)
+				(hide yes)
+			)
+		)
+	)
+	(global_label "GND"
+		(shape bidirectional)
+		(at 510.5400 300.9900 0)
+		(fields_autoplaced yes)
+		(effects
+			(font (size 1.27 1.27))
+			(justify left)
+		)
+		(uuid "dafc06a9-150d-470c-beb3-f106a564b05e")
+		(property "Intersheetrefs" "${INTERSHEET_REFS}"
+			(at 513.0800 300.9900 0)
+			(effects
+				(font (size 1.27 1.27))
+				(justify left)
+				(hide yes)
+			)
+		)
+	)
+	(global_label "+3V3_ANA"
+		(shape bidirectional)
+		(at 619.7600 295.9100 0)
+		(fields_autoplaced yes)
+		(effects
+			(font (size 1.27 1.27))
+			(justify left)
+		)
+		(uuid "870ea0ab-93dd-4b5d-9218-843b98204ae1")
+		(property "Intersheetrefs" "${INTERSHEET_REFS}"
+			(at 622.3000 295.9100 0)
+			(effects
+				(font (size 1.27 1.27))
+				(justify left)
+				(hide yes)
+			)
+		)
+	)
+	(global_label "GND"
+		(shape bidirectional)
+		(at 619.7600 300.9900 0)
+		(fields_autoplaced yes)
+		(effects
+			(font (size 1.27 1.27))
+			(justify left)
+		)
+		(uuid "b6803d05-a193-453b-8649-087b41b9899b")
+		(property "Intersheetrefs" "${INTERSHEET_REFS}"
+			(at 622.3000 300.9900 0)
+			(effects
+				(font (size 1.27 1.27))
+				(justify left)
+				(hide yes)
+			)
+		)
+	)
+	(global_label "+3V3_DIG"
+		(shape bidirectional)
+		(at 730.2500 295.9100 0)
+		(fields_autoplaced yes)
+		(effects
+			(font (size 1.27 1.27))
+			(justify left)
+		)
+		(uuid "2e63cd92-fdee-42a6-904a-f0c346a8e5f9")
+		(property "Intersheetrefs" "${INTERSHEET_REFS}"
+			(at 732.7900 295.9100 0)
+			(effects
+				(font (size 1.27 1.27))
+				(justify left)
+				(hide yes)
+			)
+		)
+	)
+	(global_label "GND"
+		(shape bidirectional)
+		(at 730.2500 300.9900 0)
+		(fields_autoplaced yes)
+		(effects
+			(font (size 1.27 1.27))
+			(justify left)
+		)
+		(uuid "9dba8d7f-303c-4efe-bfbb-195d547fa9bb")
+		(property "Intersheetrefs" "${INTERSHEET_REFS}"
+			(at 732.7900 300.9900 0)
+			(effects
+				(font (size 1.27 1.27))
+				(justify left)
+				(hide yes)
+			)
+		)
+	)
+	(global_label "+3V3_DIG"
+		(shape bidirectional)
+		(at 69.8500 347.9800 0)
+		(fields_autoplaced yes)
+		(effects
+			(font (size 1.27 1.27))
+			(justify left)
+		)
+		(uuid "0549d6d2-0202-473b-a7c1-591c7a955a52")
+		(property "Intersheetrefs" "${INTERSHEET_REFS}"
+			(at 72.3900 347.9800 0)
+			(effects
+				(font (size 1.27 1.27))
+				(justify left)
+				(hide yes)
+			)
+		)
+	)
+	(global_label "GND"
+		(shape bidirectional)
+		(at 69.8500 353.0600 0)
+		(fields_autoplaced yes)
+		(effects
+			(font (size 1.27 1.27))
+			(justify left)
+		)
+		(uuid "1824153c-c3b7-49d9-9bd3-a199b46aaeba")
+		(property "Intersheetrefs" "${INTERSHEET_REFS}"
+			(at 72.3900 353.0600 0)
+			(effects
+				(font (size 1.27 1.27))
+				(justify left)
+				(hide yes)
+			)
+		)
+	)
+	(global_label "+3V3_ANA"
+		(shape bidirectional)
+		(at 180.3400 347.9800 0)
+		(fields_autoplaced yes)
+		(effects
+			(font (size 1.27 1.27))
+			(justify left)
+		)
+		(uuid "0744df04-19db-4735-9bf9-20f2cdb93fb5")
+		(property "Intersheetrefs" "${INTERSHEET_REFS}"
+			(at 182.8800 347.9800 0)
+			(effects
+				(font (size 1.27 1.27))
+				(justify left)
+				(hide yes)
+			)
+		)
+	)
+	(global_label "GND"
+		(shape bidirectional)
+		(at 180.3400 353.0600 0)
+		(fields_autoplaced yes)
+		(effects
+			(font (size 1.27 1.27))
+			(justify left)
+		)
+		(uuid "638910d6-2b27-43ea-9380-21d1dd0d8802")
+		(property "Intersheetrefs" "${INTERSHEET_REFS}"
+			(at 182.8800 353.0600 0)
+			(effects
+				(font (size 1.27 1.27))
+				(justify left)
+				(hide yes)
+			)
+		)
+	)
+	(global_label "+3V3_ANA"
+		(shape bidirectional)
+		(at 289.5600 347.9800 0)
+		(fields_autoplaced yes)
+		(effects
+			(font (size 1.27 1.27))
+			(justify left)
+		)
+		(uuid "d05a2a94-4447-41a6-8415-9f7e05e1c554")
+		(property "Intersheetrefs" "${INTERSHEET_REFS}"
+			(at 292.1000 347.9800 0)
+			(effects
+				(font (size 1.27 1.27))
+				(justify left)
+				(hide yes)
+			)
+		)
+	)
+	(global_label "GND"
+		(shape bidirectional)
+		(at 289.5600 353.0600 0)
+		(fields_autoplaced yes)
+		(effects
+			(font (size 1.27 1.27))
+			(justify left)
+		)
+		(uuid "7cd2c465-c4cf-4edc-a337-7102067f8312")
+		(property "Intersheetrefs" "${INTERSHEET_REFS}"
+			(at 292.1000 353.0600 0)
+			(effects
+				(font (size 1.27 1.27))
+				(justify left)
+				(hide yes)
+			)
+		)
+	)
+	(global_label "ADC_VREF"
+		(shape bidirectional)
+		(at 400.0500 347.9800 0)
+		(fields_autoplaced yes)
+		(effects
+			(font (size 1.27 1.27))
+			(justify left)
+		)
+		(uuid "395f7f9a-8f7d-4252-9d6f-d945036636b3")
+		(property "Intersheetrefs" "${INTERSHEET_REFS}"
+			(at 402.5900 347.9800 0)
+			(effects
+				(font (size 1.27 1.27))
+				(justify left)
+				(hide yes)
+			)
+		)
+	)
+	(global_label "GND"
+		(shape bidirectional)
+		(at 400.0500 353.0600 0)
+		(fields_autoplaced yes)
+		(effects
+			(font (size 1.27 1.27))
+			(justify left)
+		)
+		(uuid "2bb3b6b5-506e-4a5e-bace-c0f3610143de")
+		(property "Intersheetrefs" "${INTERSHEET_REFS}"
+			(at 402.5900 353.0600 0)
+			(effects
+				(font (size 1.27 1.27))
+				(justify left)
+				(hide yes)
+			)
+		)
+	)
+	(global_label "ADC_REFB"
+		(shape bidirectional)
+		(at 510.5400 347.9800 0)
+		(fields_autoplaced yes)
+		(effects
+			(font (size 1.27 1.27))
+			(justify left)
+		)
+		(uuid "036465a8-b8d8-4d69-8bc1-e2cb02d7d5e4")
+		(property "Intersheetrefs" "${INTERSHEET_REFS}"
+			(at 513.0800 347.9800 0)
+			(effects
+				(font (size 1.27 1.27))
+				(justify left)
+				(hide yes)
+			)
+		)
+	)
+	(global_label "GND"
+		(shape bidirectional)
+		(at 510.5400 353.0600 0)
+		(fields_autoplaced yes)
+		(effects
+			(font (size 1.27 1.27))
+			(justify left)
+		)
+		(uuid "89d03b4c-ad9b-4d9e-8dc8-c0302055f942")
+		(property "Intersheetrefs" "${INTERSHEET_REFS}"
+			(at 513.0800 353.0600 0)
+			(effects
+				(font (size 1.27 1.27))
+				(justify left)
+				(hide yes)
+			)
+		)
+	)
+	(global_label "ADC_REFT"
+		(shape bidirectional)
+		(at 619.7600 347.9800 0)
+		(fields_autoplaced yes)
+		(effects
+			(font (size 1.27 1.27))
+			(justify left)
+		)
+		(uuid "29fa1109-eb96-4efd-8568-6accd8d96898")
+		(property "Intersheetrefs" "${INTERSHEET_REFS}"
+			(at 622.3000 347.9800 0)
+			(effects
+				(font (size 1.27 1.27))
+				(justify left)
+				(hide yes)
+			)
+		)
+	)
+	(global_label "GND"
+		(shape bidirectional)
+		(at 619.7600 353.0600 0)
+		(fields_autoplaced yes)
+		(effects
+			(font (size 1.27 1.27))
+			(justify left)
+		)
+		(uuid "3afca8fe-e25b-4192-9c23-cd0ad379a6d7")
+		(property "Intersheetrefs" "${INTERSHEET_REFS}"
+			(at 622.3000 353.0600 0)
+			(effects
+				(font (size 1.27 1.27))
+				(justify left)
+				(hide yes)
+			)
+		)
+	)
+	(global_label "ADC_SENSE"
+		(shape bidirectional)
+		(at 730.2500 347.9800 0)
+		(fields_autoplaced yes)
+		(effects
+			(font (size 1.27 1.27))
+			(justify left)
+		)
+		(uuid "a95f738b-f341-40d3-a098-d80ce5254ce7")
+		(property "Intersheetrefs" "${INTERSHEET_REFS}"
+			(at 732.7900 347.9800 0)
+			(effects
+				(font (size 1.27 1.27))
+				(justify left)
+				(hide yes)
+			)
+		)
+	)
+	(global_label "GND"
+		(shape bidirectional)
+		(at 730.2500 353.0600 0)
+		(fields_autoplaced yes)
+		(effects
+			(font (size 1.27 1.27))
+			(justify left)
+		)
+		(uuid "cd80e534-dcd8-4438-88c3-00dcb4ed4af6")
+		(property "Intersheetrefs" "${INTERSHEET_REFS}"
+			(at 732.7900 353.0600 0)
+			(effects
+				(font (size 1.27 1.27))
+				(justify left)
+				(hide yes)
+			)
+		)
+	)
+	(global_label "ADC_PDWN"
+		(shape bidirectional)
+		(at 69.8500 400.0500 0)
+		(fields_autoplaced yes)
+		(effects
+			(font (size 1.27 1.27))
+			(justify left)
+		)
+		(uuid "a26ed1cb-b8c5-4433-bbcb-3885ba0161c8")
+		(property "Intersheetrefs" "${INTERSHEET_REFS}"
+			(at 72.3900 400.0500 0)
+			(effects
+				(font (size 1.27 1.27))
+				(justify left)
+				(hide yes)
+			)
+		)
+	)
+	(global_label "GND"
+		(shape bidirectional)
+		(at 69.8500 405.1300 0)
+		(fields_autoplaced yes)
+		(effects
+			(font (size 1.27 1.27))
+			(justify left)
+		)
+		(uuid "f32ea654-41a5-4615-8650-d21318436877")
+		(property "Intersheetrefs" "${INTERSHEET_REFS}"
+			(at 72.3900 405.1300 0)
+			(effects
+				(font (size 1.27 1.27))
+				(justify left)
+				(hide yes)
+			)
+		)
+	)
+	(global_label "ADC_VREF"
+		(shape bidirectional)
+		(at 180.3400 400.0500 0)
+		(fields_autoplaced yes)
+		(effects
+			(font (size 1.27 1.27))
+			(justify left)
+		)
+		(uuid "166a70a9-f17d-446d-9793-15f32857363c")
+		(property "Intersheetrefs" "${INTERSHEET_REFS}"
+			(at 182.8800 400.0500 0)
+			(effects
+				(font (size 1.27 1.27))
+				(justify left)
+				(hide yes)
+			)
+		)
+	)
+	(global_label "GND"
+		(shape bidirectional)
+		(at 180.3400 405.1300 0)
+		(fields_autoplaced yes)
+		(effects
+			(font (size 1.27 1.27))
+			(justify left)
+		)
+		(uuid "ffe46895-a48d-4716-b095-05081bc57138")
+		(property "Intersheetrefs" "${INTERSHEET_REFS}"
+			(at 182.8800 405.1300 0)
+			(effects
+				(font (size 1.27 1.27))
+				(justify left)
+				(hide yes)
+			)
+		)
+	)
+	(global_label "ADC_REFB"
+		(shape bidirectional)
+		(at 289.5600 400.0500 0)
+		(fields_autoplaced yes)
+		(effects
+			(font (size 1.27 1.27))
+			(justify left)
+		)
+		(uuid "dd003c89-ecdf-41c4-b397-a4f0caac1195")
+		(property "Intersheetrefs" "${INTERSHEET_REFS}"
+			(at 292.1000 400.0500 0)
+			(effects
+				(font (size 1.27 1.27))
+				(justify left)
+				(hide yes)
+			)
+		)
+	)
+	(global_label "GND"
+		(shape bidirectional)
+		(at 289.5600 405.1300 0)
+		(fields_autoplaced yes)
+		(effects
+			(font (size 1.27 1.27))
+			(justify left)
+		)
+		(uuid "fa96986b-5c36-4d28-a28c-702df1ea7494")
+		(property "Intersheetrefs" "${INTERSHEET_REFS}"
+			(at 292.1000 405.1300 0)
+			(effects
+				(font (size 1.27 1.27))
+				(justify left)
+				(hide yes)
+			)
+		)
+	)
+	(global_label "ADC_REFT"
+		(shape bidirectional)
+		(at 400.0500 400.0500 0)
+		(fields_autoplaced yes)
+		(effects
+			(font (size 1.27 1.27))
+			(justify left)
+		)
+		(uuid "dbc8408d-fd53-487e-991e-f8ae0042f9ae")
+		(property "Intersheetrefs" "${INTERSHEET_REFS}"
+			(at 402.5900 400.0500 0)
+			(effects
+				(font (size 1.27 1.27))
+				(justify left)
+				(hide yes)
+			)
+		)
+	)
+	(global_label "GND"
+		(shape bidirectional)
+		(at 400.0500 405.1300 0)
+		(fields_autoplaced yes)
+		(effects
+			(font (size 1.27 1.27))
+			(justify left)
+		)
+		(uuid "3d479fb0-9ebd-4120-a029-2ee99efd01cc")
+		(property "Intersheetrefs" "${INTERSHEET_REFS}"
+			(at 402.5900 405.1300 0)
+			(effects
+				(font (size 1.27 1.27))
+				(justify left)
+				(hide yes)
+			)
+		)
+	)
+	(global_label "+3V3_ANA"
+		(shape bidirectional)
+		(at 510.5400 400.0500 0)
+		(fields_autoplaced yes)
+		(effects
+			(font (size 1.27 1.27))
+			(justify left)
+		)
+		(uuid "c4aafc71-3c5f-49ad-8233-8b00ca5be6a6")
+		(property "Intersheetrefs" "${INTERSHEET_REFS}"
+			(at 513.0800 400.0500 0)
+			(effects
+				(font (size 1.27 1.27))
+				(justify left)
+				(hide yes)
+			)
+		)
+	)
+	(global_label "ADC_MODE"
+		(shape bidirectional)
+		(at 510.5400 405.1300 0)
+		(fields_autoplaced yes)
+		(effects
+			(font (size 1.27 1.27))
+			(justify left)
+		)
+		(uuid "018b21f3-6ab0-4aab-b4d4-59590dca217f")
+		(property "Intersheetrefs" "${INTERSHEET_REFS}"
+			(at 513.0800 405.1300 0)
+			(effects
+				(font (size 1.27 1.27))
+				(justify left)
+				(hide yes)
+			)
+		)
+	)
+	(global_label "ADC_MODE"
+		(shape bidirectional)
+		(at 619.7600 400.0500 0)
+		(fields_autoplaced yes)
+		(effects
+			(font (size 1.27 1.27))
+			(justify left)
+		)
+		(uuid "4385e516-e1eb-434c-8e79-d56d9d70d1bf")
+		(property "Intersheetrefs" "${INTERSHEET_REFS}"
+			(at 622.3000 400.0500 0)
+			(effects
+				(font (size 1.27 1.27))
+				(justify left)
+				(hide yes)
+			)
+		)
+	)
+	(global_label "GND"
+		(shape bidirectional)
+		(at 619.7600 405.1300 0)
+		(fields_autoplaced yes)
+		(effects
+			(font (size 1.27 1.27))
+			(justify left)
+		)
+		(uuid "978abb91-2499-4792-bc46-7fed3136ed46")
+		(property "Intersheetrefs" "${INTERSHEET_REFS}"
+			(at 622.3000 405.1300 0)
+			(effects
+				(font (size 1.27 1.27))
+				(justify left)
+				(hide yes)
+			)
+		)
+	)
+	(global_label "ADC_MODE"
+		(shape bidirectional)
+		(at 730.2500 400.0500 0)
+		(fields_autoplaced yes)
+		(effects
+			(font (size 1.27 1.27))
+			(justify left)
+		)
+		(uuid "27fdf056-8094-453b-8054-257e89fc2175")
+		(property "Intersheetrefs" "${INTERSHEET_REFS}"
+			(at 732.7900 400.0500 0)
+			(effects
+				(font (size 1.27 1.27))
+				(justify left)
+				(hide yes)
+			)
+		)
+	)
+	(global_label "GND"
+		(shape bidirectional)
+		(at 730.2500 405.1300 0)
+		(fields_autoplaced yes)
+		(effects
+			(font (size 1.27 1.27))
+			(justify left)
+		)
+		(uuid "44afcd66-b9e6-4def-803c-b1382fe6c824")
+		(property "Intersheetrefs" "${INTERSHEET_REFS}"
+			(at 732.7900 405.1300 0)
+			(effects
+				(font (size 1.27 1.27))
+				(justify left)
+				(hide yes)
+			)
+		)
+	)
+)

@@ -1,0 +1,4 @@
+(fp_lib_table
+  (version 7)
+  (lib (name "CodeSDR")(type "KiCad")(uri "${KIPRJMOD}/CodeSDR.pretty")(options "")(descr "Code-SDR V2 datasheet-derived footprints"))
+)
