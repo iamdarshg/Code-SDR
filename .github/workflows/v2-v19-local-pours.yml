@@ -40,7 +40,7 @@ jobs:
         run: |
           cat > hardware/v2/build/add_v19_power_pours.py <<'PY'
           from __future__ import annotations
-          import json,sys,traceback
+          import json,sys
           from collections import defaultdict
           from pathlib import Path
           import pcbnew
@@ -69,7 +69,8 @@ jobs:
           set +e
           docker run --rm --user 0:0 -v "$GITHUB_WORKSPACE:/work" -w /work --entrypoint /bin/bash kicad/kicad:9.0.9-full -lc '
             set -o pipefail
-            python3 hardware/v2/build/add_v19_power_pours.py
+            apt-get update -qq && DEBIAN_FRONTEND=noninteractive apt-get install -y -qq xvfb
+            xvfb-run -a python3 hardware/v2/build/add_v19_power_pours.py
             kicad-cli pcb drc --format json --severity-all --all-track-errors --schematic-parity --units mm -o hardware/v2/build/drc-after.json hardware/v2/Code-SDR-V2.kicad_pcb || true
           ' > hardware/v2/build/power-pour-run.log 2>&1
           code=$?
