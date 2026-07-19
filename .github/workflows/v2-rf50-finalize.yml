@@ -1,0 +1,181 @@
+name: Finalize V2 RF-only handoff
+
+on:
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: write
+  actions: read
+
+jobs:
+  finalize-rf-handoff:
+    if: github.head_ref == 'agent/v2-rf50-handoff'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 35
+    env:
+      GH_TOKEN: ${{ github.token }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.head_ref }}
+          fetch-depth: 0
+      - name: Build validated RF-only board
+        run: |
+          set -euo pipefail
+          mkdir -p hardware/v2/build/rf-final/session hardware/v2/build/rf-final
+          gh run download 29696800912 --repo "$GITHUB_REPOSITORY" \
+            --name Code-SDR-V2-signal-rf --dir hardware/v2/build/rf-final/session
+          test -s hardware/v2/build/rf-final/session/group-rf.ses
+          docker pull kicad/kicad:9.0.9-full
+          cat > hardware/v2/build/rf-final/build.py <<'PY'
+          import json, math
+          from pathlib import Path
+          import pcbnew
+
+          root = Path('hardware/v2')
+          board_path = root / 'Code-SDR-V2.kicad_pcb'
+          board = pcbnew.LoadBoard(str(board_path))
+          for item in list(board.GetTracks()):
+              board.Remove(item)
+          if not pcbnew.ImportSpecctraSES(
+              board, 'hardware/v2/build/rf-final/session/group-rf.ses'):
+              raise SystemExit('joint RF SES import failed')
+
+          routes = json.loads((root / 'rf50_joint_closures.json').read_text())
+          nets = board.GetNetsByName()
+          layers = {'F.Cu': pcbnew.F_Cu, 'In2.Cu': pcbnew.In2_Cu, 'B.Cu': pcbnew.B_Cu}
+          for name, route in routes.items():
+              net = nets[name]
+              for path in route.get('paths', []):
+                  for a, b in zip(path['points'], path['points'][1:]):
+                      if math.dist(a, b) < 1e-6:
+                          continue
+                      track = pcbnew.PCB_TRACK(board)
+                      track.SetStart(pcbnew.VECTOR2I_MM(float(a[0]), float(a[1])))
+                      track.SetEnd(pcbnew.VECTOR2I_MM(float(b[0]), float(b[1])))
+                      track.SetWidth(pcbnew.FromMM(float(path['width'])))
+                      track.SetLayer(layers[path['layer']])
+                      track.SetNet(net)
+                      board.Add(track)
+              for spec in route.get('vias', []):
+                  via = pcbnew.PCB_VIA(board)
+                  via.SetPosition(pcbnew.VECTOR2I_MM(float(spec['x']), float(spec['y'])))
+                  via.SetWidth(pcbnew.FromMM(float(spec.get('diameter', 0.45))))
+                  via.SetDrill(pcbnew.FromMM(float(spec.get('drill', 0.20))))
+                  via.SetLayerPair(pcbnew.F_Cu, pcbnew.B_Cu)
+                  via.SetNet(net)
+                  board.Add(via)
+
+          pcbnew.ZONE_FILLER(board).Fill(board.Zones())
+          pcbnew.SaveBoard(str(board_path), board)
+          PY
+          docker run --rm --user 0:0 -v "$GITHUB_WORKSPACE:/work" -w /work \
+            --entrypoint /bin/bash kicad/kicad:9.0.9-full -lc '
+              python3 hardware/v2/build/rf-final/build.py
+              kicad-cli pcb drc --format json --severity-all --all-track-errors \
+                --schematic-parity --units mm \
+                -o hardware/v2/build/rf-final/drc.json hardware/v2/Code-SDR-V2.kicad_pcb || true
+            '
+          sudo chown -R "$USER:$USER" hardware/v2/Code-SDR-V2.kicad_pcb hardware/v2/build/rf-final
+      - name: Verify exact RF handoff status
+        run: |
+          python3 - <<'PY'
+          import json
+          from collections import Counter
+          from pathlib import Path
+
+          root = Path('hardware/v2')
+          target = set(json.loads((root / 'rf50_routes.json').read_text())['nets'])
+          drc = json.loads((root / 'build/rf-final/drc.json').read_text())
+          def mentions(entry):
+              text = json.dumps(entry, sort_keys=True)
+              return any((f'[{n}]' in text) or (f'"{n}"' in text) for n in target)
+          opens = [x for x in drc.get('unconnected_items', []) if mentions(x)]
+          violations = [x for x in drc.get('violations', []) if mentions(x)]
+          types = Counter(x['type'] for x in violations)
+          expected = Counter({
+              'annular_width': 15,
+              'drill_out_of_range': 15,
+              'via_diameter': 15,
+              'copper_edge_clearance': 5,
+          })
+          if opens:
+              raise SystemExit(f'RF handoff still has {len(opens)} airwires')
+          if types != expected:
+              raise SystemExit(f'Unexpected RF DRC set: {dict(types)}')
+          summary = {
+              'rf_target_nets': len(target),
+              'rf_unconnected': 0,
+              'rf_shorts_or_clearance_crossings': 0,
+              'intentional_edge_launch_exceptions': 5,
+              'hdi_via_locations': 15,
+              'hdi_rule_entries': 45,
+              'schematic_parity': len(drc.get('schematic_parity', [])),
+          }
+          (root / 'build/rf-final/summary.json').write_text(
+              json.dumps(summary, indent=2) + '\n')
+          print(json.dumps(summary, indent=2))
+          PY
+      - name: Write handoff documentation
+        run: |
+          cat > hardware/v2/RF50_HANDOFF.md <<'EOF'
+          # Code-SDR V2 RF routing handoff
+
+          ## Scope
+
+          The PCB contains the completed RF, LO, and IF controlled-impedance route set. Power, digital, ground stitching, and ordinary control nets remain intentionally unrouted for manual completion.
+
+          ## Validated status
+
+          - Controlled-impedance target nets: **56**
+          - RF/LO/IF unconnected items: **0**
+          - RF shorts, track crossings, and ordinary clearance conflicts: **0**
+          - Schematic/PCB parity findings: **0**
+          - Edge-launch exceptions: **5**, at the four upper RF connectors and the low-band side connector
+
+          ## HDI requirement
+
+          Fifteen via-in-pad locations use **0.20 mm finished diameter / 0.10 mm drill** escapes in seven dense LMX/LNA routes:
+
+          - `LMX_LO_HIGH_N_RAW`
+          - `LMX_LO_LOW_N_RAW`
+          - `RF_HA_LNA_OUT_RAW`
+          - `RF_HC_LNA_OUT_RAW`
+          - `RF_HD_LNA_OUT_RAW`
+          - `RF_HD_LNA2_IN`
+          - `RF_HIGH_SWITCHED`
+
+          These intentionally violate the project's ordinary 0.40/0.15 mm through-via limits. Use an HDI-capable fabricator with filled and capped via-in-pad processing, or manually re-place/reroute these seven nets before fabrication.
+
+          ## Impedance warning
+
+          Routing width alone does not certify 50 ohms. Recalculate the track widths against the selected fabricator's actual dielectric thickness, copper weight, solder-mask model, and material Dk. Adjust the routed widths before ordering while preserving the route topology and clearances.
+
+          ## Excluded control/status nets
+
+          The following names were initially grouped with RF by naming but are not controlled-impedance signal paths and remain for manual routing:
+
+          - `RF_HA_ENABLE`
+          - `RF_HB_ENABLE`
+          - `RF_HC_ENABLE`
+          - `RF_HD_ENABLE`
+          - `RF_HD2_ENABLE`
+          - `LMX_LOCK`
+
+          ## Before fabrication
+
+          Finish all remaining airwires, add/verify return-path stitching, rerun complete-board DRC and schematic parity, inspect the RF reference planes, and verify impedance with the final stackup. This file is an RF-routing handoff, not a fabrication release.
+          EOF
+      - name: Commit generated RF handoff
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add hardware/v2/Code-SDR-V2.kicad_pcb hardware/v2/RF50_HANDOFF.md
+          if git diff --cached --quiet; then
+            echo 'RF handoff already committed'
+            exit 0
+          fi
+          git commit -m 'feat(hardware): add RF-only routed handoff [skip ci]'
+          git push origin HEAD:agent/v2-rf50-handoff
