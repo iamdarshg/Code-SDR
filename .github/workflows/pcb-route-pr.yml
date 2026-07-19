@@ -28,8 +28,17 @@ jobs:
           fetch-depth: 0
 
       - name: Run deterministic routing pipeline
+        id: pipeline
+        continue-on-error: true
         shell: bash
-        run: bash hardware/v2/tools/route_ci.sh
+        run: |
+          mkdir -p hardware/v2/build
+          set +e
+          bash hardware/v2/tools/route_ci.sh > hardware/v2/build/route-run.log 2>&1
+          code=$?
+          echo "exit_code=$code" >> "$GITHUB_OUTPUT"
+          tail -200 hardware/v2/build/route-run.log
+          exit 0
 
       - name: Upload routed checkpoint
         if: always()
@@ -51,6 +60,10 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
+          if [[ ! -f hardware/v2/build/route-ok ]]; then
+            echo "Pipeline failed before route status; see route-run.log (exit ${{ steps.pipeline.outputs.exit_code }})."
+            exit 1
+          fi
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
           git add hardware/v2/Code-SDR-V2.kicad_pcb hardware/v2/ROUTE_STATUS.md
