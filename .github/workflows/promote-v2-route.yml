@@ -33,10 +33,10 @@ jobs:
           mkdir -p route-artifact hardware/v2/routing hardware/v2/build/promotion
           gh run download "$run_id" --repo "$GITHUB_REPOSITORY" \
             --name "$artifact" --dir route-artifact
-          summary=$(find route-artifact -name finish-sweep-summary.json -print -quit)
+          summary=$(find route-artifact \( -name finish-sweep-summary.json -o -name summary.json \) -print -quit)
           board=$(find route-artifact -name Code-SDR-V2.kicad_pcb -print -quit)
-          accepted=$(find route-artifact -name accepted-patches.json -print -quit)
-          drc=$(find route-artifact -name drc-finish-sweep.json -print -quit)
+          accepted=$(find route-artifact \( -name accepted-patches.json -o -name accepted-routes.json \) -print -quit)
+          drc=$(find route-artifact \( -name drc-finish-sweep.json -o -name drc-final.json \) -print -quit)
           test -s "$summary"
           test -s "$board"
           jq -e --argjson limit "$max_signal_opens" '
@@ -46,9 +46,9 @@ jobs:
             .after.parity == 0
           ' "$summary"
           cp "$board" hardware/v2/Code-SDR-V2.kicad_pcb
-          cp "$summary" hardware/v2/routing/finish-sweep-summary.json
-          test -z "$accepted" || cp "$accepted" hardware/v2/routing/accepted-patches.json
-          test -z "$drc" || cp "$drc" hardware/v2/routing/drc-promoted.json
+          cp "$summary" hardware/v2/routing/route-summary.json
+          test -z "$accepted" || cp "$accepted" hardware/v2/routing/accepted-routes.json
+          test -z "$drc" || cp "$drc" hardware/v2/routing/drc-artifact.json
       - name: Revalidate in clean final branch
         run: |
           set -euo pipefail
@@ -65,15 +65,27 @@ jobs:
                 > hardware/v2/build/promotion/validate-route.log
             '
           python3 - <<'PY'
-          import json
+          import json, re
+          from collections import Counter
           from pathlib import Path
+          config=json.loads(Path('.github/promote-v2-route.json').read_text())
+          limit=int(config['max_signal_opens'])
           d=json.loads(Path('hardware/v2/build/promotion/drc.json').read_text())
           real=[v for v in d.get('violations',[]) if not v.get('type','').startswith('lib_footprint_')]
           parity=d.get('schematic_parity',[])
+          by=Counter()
+          for entry in d.get('unconnected_items',[]):
+              text=' '.join(item.get('description','') for item in entry.get('items',[]))
+              match=re.search(r'\[([^\]]+)\]',text)
+              by[match.group(1) if match else ''] += 1
+          signal=sum(count for net,count in by.items() if net not in {'','GND','CHASSIS_GND'})
           if real:
               raise SystemExit(f'Promotion rejected: {len(real)} real DRC violations')
           if parity:
               raise SystemExit(f'Promotion rejected: {len(parity)} parity findings')
+          if signal > limit:
+              raise SystemExit(f'Promotion rejected: {signal} signal opens exceeds {limit}')
+          print(f'Promotion revalidated: {signal} signal opens, 0 real DRC, 0 parity')
           PY
           cp hardware/v2/build/promotion/drc.json hardware/v2/routing/drc-promoted.json
           cp hardware/v2/build/promotion/validate-route.log hardware/v2/routing/validate-route.log
@@ -85,6 +97,6 @@ jobs:
           git config user.email 41898282+github-actions[bot]@users.noreply.github.com
           git add hardware/v2/Code-SDR-V2.kicad_pcb hardware/v2/routing
           git diff --cached --quiet && exit 0
-          signal_opens=$(jq -r '.after.signal_opens' hardware/v2/routing/finish-sweep-summary.json)
+          signal_opens=$(jq -r '.after.signal_opens' hardware/v2/routing/route-summary.json)
           git commit -m "feat(hardware): promote V2 route checkpoint (${signal_opens} opens) [skip ci]"
           git push origin HEAD:agent/v2-route-final
