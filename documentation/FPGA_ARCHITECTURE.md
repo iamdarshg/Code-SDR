@@ -1,5 +1,11 @@
 # LIF-MD6000-6UMG64I FPGA Processing Pipeline Architecture
 
+> **Legacy implementation note:** this document describes the original
+> 105 MHz/GMII FPGA concept. The released V2 hardware uses a ctfBGA80
+> CrossLink, shared 100 MHz ADC/reference clock and KSZ9031 RGMII. Use
+> `documentation/INTEGRATION_SPECIFICATIONS.md` as the authoritative V2
+> interface; the legacy RTL below must be ported before loading it on V2.
+
 ## Executive Summary
 
 This document defines the comprehensive FPGA processing pipeline architecture for the LIF-MD6000-6UMG64I-based SDR system. The architecture implements a sophisticated multi-stage processing pipeline optimized for real-time SDR operations with high throughput and low latency.
