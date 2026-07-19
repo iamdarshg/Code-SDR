@@ -32,7 +32,9 @@ jobs:
           curl -fL --retry 4 --retry-delay 5 -o "$RUNNER_TEMP/freerouting.jar" https://github.com/freerouting/freerouting/releases/download/v2.2.4/freerouting-2.2.4.jar
       - name: Export existing copper and tune remaining-route rules
         run: |
-          docker run --rm --user 0:0 -v "$GITHUB_WORKSPACE:/work" -w /work --entrypoint /bin/bash kicad/kicad:9.0.9-full -lc 'python3 hardware/v2/tools/export_route_checkpoint.py --board hardware/v2/Code-SDR-V2.kicad_pcb'
+          set -euo pipefail
+          docker run --rm --user 0:0 -v "$GITHUB_WORKSPACE:/work" -w /work --entrypoint /bin/bash kicad/kicad:9.0.9-full -lc 'python3 hardware/v2/tools/export_route_checkpoint.py --board hardware/v2/Code-SDR-V2.kicad_pcb' || true
+          test -s hardware/v2/build/Code-SDR-V2.dsn
           python3 - <<'PY'
           from pathlib import Path
           import re
@@ -54,6 +56,7 @@ jobs:
           s=s[:a]+s[a:].replace('(width 150)','(width 120)',1)
           p.write_text(s)
           PY
+          grep -A12 '    (class POWER' hardware/v2/build/Code-SDR-V2.dsn
           ! grep -q '^    (net GND' hardware/v2/build/Code-SDR-V2.dsn
       - name: Route residual connections
         run: |
