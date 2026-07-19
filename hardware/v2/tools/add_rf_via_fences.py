@@ -49,6 +49,18 @@ def main() -> None:
     ]
     all_tracks = list(board.GetTracks())
     pads = [pad for footprint in board.GetFootprints() for pad in footprint.Pads()]
+
+    # This RF board uses a solid In1 ground plane plus outer-layer GND pours.
+    # Force direct copper connections at both the pad and zone level so KiCad
+    # does not report starved thermal spokes as unconnected ground pins after
+    # a Specctra route import and refill.
+    for pad in pads:
+        if pad.GetNetname() == "GND":
+            pad.SetZoneConnection(pcbnew.ZONE_CONNECTION_FULL)
+    for zone in board.Zones():
+        if zone.GetNetname() == "GND":
+            zone.SetPadConnection(pcbnew.ZONE_CONNECTION_FULL)
+
     accepted: list[pcbnew.VECTOR2I] = []
     width_mm = 160.0
     height_mm = 100.0
