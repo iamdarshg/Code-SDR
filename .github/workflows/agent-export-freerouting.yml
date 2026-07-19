@@ -20,7 +20,7 @@ jobs:
           set -euo pipefail
           curl -fL --retry 4 --retry-delay 5 -o freerouting-2.2.4.jar https://github.com/freerouting/freerouting/releases/download/v2.2.4/freerouting-2.2.4.jar
           sha256sum freerouting-2.2.4.jar > freerouting-2.2.4.sha256
-          "$JAVA_HOME/bin/jlink" --add-modules ALL-MODULE-PATH --output java25-runtime --strip-debug --no-header-files --no-man-pages
+          "$JAVA_HOME/bin/jlink" --module-path "$JAVA_HOME/jmods" --add-modules ALL-MODULE-PATH --output java25-runtime --strip-debug --no-header-files --no-man-pages
           java25-runtime/bin/java -jar freerouting-2.2.4.jar --help >/dev/null
           tar -czf java25-runtime.tar.gz java25-runtime
           sha256sum java25-runtime.tar.gz > java25-runtime.sha256
