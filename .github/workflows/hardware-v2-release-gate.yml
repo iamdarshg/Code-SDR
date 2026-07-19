@@ -33,9 +33,11 @@ jobs:
                 --schematic-parity --exit-code-violations --units mm \
                 -o hardware/v2/build/release-gate/drc.json \
                 hardware/v2/Code-SDR-V2.kicad_pcb
-              test -s hardware/v2/build/ROUTE_STATISTICS.csv
               python3 hardware/v2/tools/validate_route.py \
                 > hardware/v2/build/release-gate/validate-route.log
+              test -s hardware/v2/build/ROUTE_STATISTICS.csv
+              cp hardware/v2/build/ROUTE_STATISTICS.csv \
+                hardware/v2/build/release-gate/ROUTE_STATISTICS.csv
               kicad-cli pcb export gerbers \
                 -l "F.Cu,In1.Cu,In2.Cu,B.Cu,F.Paste,F.SilkS,B.SilkS,F.Mask,B.Mask,Edge.Cuts" \
                 --subtract-soldermask --precision 6 \
