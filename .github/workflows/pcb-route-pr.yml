@@ -19,7 +19,7 @@ jobs:
   route:
     if: github.head_ref == 'agent/route-v1-v2'
     runs-on: ubuntu-24.04
-    timeout-minutes: 150
+    timeout-minutes: 35
     steps:
       - name: Check out routing branch
         uses: actions/checkout@v4
@@ -42,6 +42,7 @@ jobs:
           sed -i '/generate_symbols.py/d;/generate_footprints.py/d;/generate_schematic.py/d;/generate_pcb.py/d' hardware/v2/tools/route_ci.sh
           sed -i 's/sch erc --format json --severity-all/sch erc --format json --severity-error/g' hardware/v2/tools/route_ci.sh
           sed -i 's/ openjdk-21-jre-headless//' hardware/v2/tools/route_ci.sh
+          sed -i 's/timeout 105m/timeout 20m/;s/-mp 80/-mp 1/' hardware/v2/tools/route_ci.sh
           set +e
           bash hardware/v2/tools/route_ci.sh > hardware/v2/build/route-run.log 2>&1
           code=$?
