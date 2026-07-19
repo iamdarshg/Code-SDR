@@ -48,6 +48,8 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         run: |
           set -euo pipefail
+          sudo apt-get update
+          sudo apt-get install -y xvfb
           docker pull kicad/kicad:9.0.9-full
           mkdir -p "$RUNNER_TEMP/freerouting-v201" hardware/v2/build/${{ matrix.name }}
           gh release download v2.0.1 --repo freerouting/freerouting --pattern '*.jar' --dir "$RUNNER_TEMP/freerouting-v201"
@@ -86,8 +88,8 @@ jobs:
           set -euo pipefail
           dir=hardware/v2/build/${{ matrix.name }}
           timeout --signal=TERM --kill-after=2m 78m \
-            java -Xmx5600m -jar "$FREEROUTING_JAR" -de "$dir/input.dsn" -do "$dir/routed.ses" \
-            -mp '${{ matrix.passes }}' -mt '${{ matrix.threads }}' -da -dct 1 --gui.enabled=false \
+            xvfb-run -a java -Xmx5600m -jar "$FREEROUTING_JAR" -de "$dir/input.dsn" -do "$dir/routed.ses" \
+            -mp '${{ matrix.passes }}' -mt '${{ matrix.threads }}' -da -dct 1 \
             2>&1 | tee "$dir/freerouting.log"
           test -s "$dir/routed.ses"
       - name: Import and score
