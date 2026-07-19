@@ -1,0 +1,92 @@
+name: V2 In2 power completion route
+
+on:
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+  actions: read
+
+jobs:
+  route-power-in2:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 180
+    env:
+      GH_TOKEN: ${{ github.token }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '25'
+      - name: Recover validated DSN and tools
+        run: |
+          set -euo pipefail
+          mkdir -p baseline hardware/v2/build
+          gh run download 29689598311 --repo "$GITHUB_REPOSITORY" --name Code-SDR-V2-route-five-pass --dir baseline
+          cp baseline/build/Code-SDR-V2.dsn hardware/v2/build/Code-SDR-V2-power-in2.dsn
+          curl -fL --retry 4 --retry-delay 5 -o "$RUNNER_TEMP/freerouting.jar" https://github.com/freerouting/freerouting/releases/download/v2.2.4/freerouting-2.2.4.jar
+      - name: Tune power trunks and dense escapes
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          import re
+          p=Path('hardware/v2/build/Code-SDR-V2-power-in2.dsn')
+          s=p.read_text()
+          start=s.index('    (class RF_CRITICAL\n')
+          end=s.index('    (class RF_50\n',start)
+          block=s[start:end]
+          controls=['RF_HA_ENABLE','RF_HB_ENABLE','RF_HC_ENABLE','RF_HD_ENABLE','RF_HD2_ENABLE']
+          mid=['RF_HA_IN','RF_HA_LNA_IN','RF_HA_LNA_OUT','RF_HA_LNA_OUT_RAW','RF_HB_IN','RF_HB_LNA_IN','RF_HB_LNA_OUT','RF_HB_LNA_OUT_RAW']
+          for n in controls+mid:
+              block=re.sub(r'(?<!\S)'+re.escape(n)+r'(?!\S)', '', block)
+          mid_block='''    (class RF_MID\n      '''+' '.join(mid)+'''\n      (circuit\n        (use_via "Via[0-3]_450:200_um")\n        (use_layer F.Cu)\n      )\n      (rule\n        (width 240)\n        (clearance 120)\n      )\n    )\n'''
+          s=s[:start]+block+mid_block+s[end:]
+          def tune(name,next_name,width,clearance):
+              global s
+              a=s.index(f'    (class {name}\n')
+              b=s.index(f'    (class {next_name}',a)
+              part=s[a:b]
+              part=re.sub(r'\(width \d+\)',f'(width {width})',part,count=1)
+              part=re.sub(r'\(clearance \d+\)',f'(clearance {clearance})',part,count=1)
+              s=s[:a]+part+s[b:]
+          tune('RF_50','IF_DIFF',280,130)
+          tune('IF_DIFF','DIGITAL_HS',160,100)
+          tune('DIGITAL_HS','POWER',110,90)
+          a=s.index('    (class POWER\n')
+          b=s.index('    (class DEFAULT',a)
+          power=s[a:b]
+          power=re.sub(r'\(use_layer F\.Cu In2\.Cu B\.Cu\)','(use_layer In2.Cu)',power,count=1)
+          power=re.sub(r'\(width \d+\)','(width 150)',power,count=1)
+          power=re.sub(r'\(clearance \d+\)','(clearance 90)',power,count=1)
+          s=s[:a]+power+s[b:]
+          a=s.index('    (class DEFAULT\n')
+          tail=s[a:]
+          tail=re.sub(r'\(width \d+\)','(width 100)',tail,count=1)
+          tail=re.sub(r'\(clearance \d+\)','(clearance 85)',tail,count=1)
+          s=s[:a]+tail
+          p.write_text(s)
+          PY
+          grep -A15 '    (class POWER' hardware/v2/build/Code-SDR-V2-power-in2.dsn
+      - name: Route In2 power candidate
+        run: |
+          set -o pipefail
+          timeout --signal=TERM --kill-after=2m 160m \
+            java -Xmx5600m -jar "$RUNNER_TEMP/freerouting.jar" \
+            -de hardware/v2/build/Code-SDR-V2-power-in2.dsn \
+            -do hardware/v2/build/Code-SDR-V2-power-in2.ses \
+            -mp 20 -mt 0 -da -dct 1 --gui.enabled=false \
+            2>&1 | tee hardware/v2/build/freerouting-power-in2.log
+          test -s hardware/v2/build/Code-SDR-V2-power-in2.ses
+      - name: Upload power candidate
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: Code-SDR-V2-power-in2
+          path: |
+            hardware/v2/build/Code-SDR-V2-power-in2.dsn
+            hardware/v2/build/Code-SDR-V2-power-in2.ses
+            hardware/v2/build/freerouting-power-in2.log
+          retention-days: 1
+          if-no-files-found: warn
