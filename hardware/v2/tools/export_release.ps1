@@ -101,7 +101,7 @@ if (Test-Path -LiteralPath $toolCache) {
 }
 
 Copy-Item -LiteralPath (Join-Path $repoRoot "hardware\HARDWARE_VALIDATION.md"),
-    (Join-Path $repoRoot "hardware\reccomendations.md"),
+    (Join-Path $repoRoot "hardware\recommendations.md"),
     (Join-Path $repoRoot "documentation\INTEGRATION_SPECIFICATIONS.md"),
     (Join-Path $repoRoot "documentation\FPGA_ARCHITECTURE.md") -Destination $docsDir
 Copy-Item -LiteralPath (Join-Path $repoRoot "hardware\redesign\FREQUENCY_PLAN.csv"),
@@ -116,8 +116,18 @@ Copy-Item -LiteralPath (Join-Path $repoRoot "hardware\redesign\FREQUENCY_PLAN.cs
     (Join-Path $repoRoot "hardware\redesign\validate_plan.py"),
     (Join-Path $repoRoot "hardware\redesign\rf_analysis.py"),
     (Join-Path $repoRoot "hardware\redesign\cost_model.py") -Destination $analysisDir
-if (Test-Path -LiteralPath (Join-Path $v2Root "build\ROUTE_STATISTICS.csv")) {
-    Copy-Item -LiteralPath (Join-Path $v2Root "build\ROUTE_STATISTICS.csv") -Destination $validationDir
+
+$routeAudit = Join-Path $v2Root "ROUTING_AUDIT.md"
+if (Test-Path -LiteralPath $routeAudit) {
+    Copy-Item -LiteralPath $routeAudit -Destination $validationDir
+}
+$routeStatistics = Join-Path $v2Root "build\ROUTE_STATISTICS.csv"
+if (Test-Path -LiteralPath $routeStatistics) {
+    Copy-Item -LiteralPath $routeStatistics -Destination $validationDir
+}
+$routeValidation = Join-Path $v2Root "build\validate-route.log"
+if (Test-Path -LiteralPath $routeValidation) {
+    Copy-Item -LiteralPath $routeValidation -Destination $validationDir
 }
 
 $manifest = Get-ChildItem -LiteralPath $packageRoot -Recurse -File |
