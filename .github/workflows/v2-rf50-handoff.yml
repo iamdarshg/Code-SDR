@@ -25,6 +25,7 @@ jobs:
           root = Path('hardware/v2')
           board_path = root / 'Code-SDR-V2.kicad_pcb'
           routes = json.loads((root / 'rf50_routes.json').read_text())['nets']
+          routes.update(json.loads((root / 'rf50_group_overrides.json').read_text()))
 
           # Correct the manually completed connector/switch escapes against the
           # actual rotated KiCad pad positions.
