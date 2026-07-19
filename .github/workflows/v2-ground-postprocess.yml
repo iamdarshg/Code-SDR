@@ -1,0 +1,82 @@
+name: V2 ground-plane postprocess measurement
+
+on:
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+  actions: read
+
+env:
+  GH_TOKEN: ${{ github.token }}
+  SOURCE_RUN_ID: '29691653824'
+  SOURCE_ARTIFACT: Code-SDR-V2-route-five-pass
+
+jobs:
+  measure:
+    if: github.head_ref == 'agent/v2-ground-postprocess'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: agent/v2-ground-postprocess
+      - name: Recover routed checkpoint
+        run: |
+          set -euo pipefail
+          mkdir -p recovered hardware/v2/build
+          gh run download "$SOURCE_RUN_ID" --repo "$GITHUB_REPOSITORY" --name "$SOURCE_ARTIFACT" --dir recovered
+          board=$(find recovered -type f -name 'Code-SDR-V2.kicad_pcb' -print -quit)
+          test -n "$board"
+          cp "$board" hardware/v2/Code-SDR-V2.kicad_pcb
+          docker pull kicad/kicad:9.0.9-full
+      - name: Force solid GND pad and zone connections
+        run: |
+          cat > hardware/v2/build/solid_gnd.py <<'PY'
+          from pathlib import Path
+          import pcbnew
+          p=Path('hardware/v2/Code-SDR-V2.kicad_pcb')
+          b=pcbnew.LoadBoard(str(p))
+          pads=0
+          for fp in b.GetFootprints():
+              for pad in fp.Pads():
+                  if pad.GetNetname() == 'GND':
+                      pad.SetZoneConnection(pcbnew.ZONE_CONNECTION_FULL)
+                      pads += 1
+          zones=0
+          for z in b.Zones():
+              if z.GetNetname() == 'GND':
+                  z.SetPadConnection(pcbnew.ZONE_CONNECTION_FULL)
+                  zones += 1
+          pcbnew.ZONE_FILLER(b).Fill(b.Zones())
+          pcbnew.SaveBoard(str(p),b)
+          print({'gnd_pads':pads,'gnd_zones':zones})
+          PY
+          docker run --rm --user 0:0 -v "$GITHUB_WORKSPACE:/work" -w /work --entrypoint /bin/bash kicad/kicad:9.0.9-full -lc '
+            python3 hardware/v2/build/solid_gnd.py
+            kicad-cli pcb drc --format json --severity-all --all-track-errors --schematic-parity --units mm -o hardware/v2/build/drc-solid-gnd.json hardware/v2/Code-SDR-V2.kicad_pcb || true
+          '
+          python3 - <<'PY'
+          import json,re
+          from collections import Counter
+          from pathlib import Path
+          d=json.loads(Path('hardware/v2/build/drc-solid-gnd.json').read_text())
+          nets=Counter()
+          for u in d.get('unconnected_items',[]):
+              found=set()
+              for item in u.get('items',[]):
+                  found.update(re.findall(r'\[([^\]]+)\]',item.get('description','')))
+              for n in found:nets[n]+=1
+          s={'violations':len(d.get('violations',[])),'unconnected_items':len(d.get('unconnected_items',[])),'schematic_parity':len(d.get('schematic_parity',[])),'unconnected_by_net':dict(nets.most_common())}
+          Path('hardware/v2/build/solid-gnd-summary.json').write_text(json.dumps(s,indent=2)+'\n')
+          print(json.dumps(s,indent=2))
+          PY
+      - uses: actions/upload-artifact@v4
+        with:
+          name: v2-solid-gnd-postprocess
+          path: |
+            hardware/v2/Code-SDR-V2.kicad_pcb
+            hardware/v2/build/drc-solid-gnd.json
+            hardware/v2/build/solid-gnd-summary.json
+          retention-days: 2
