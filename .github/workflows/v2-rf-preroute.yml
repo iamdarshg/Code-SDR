@@ -1,0 +1,203 @@
+name: V2 DRC-filtered RF pre-route tournament
+
+on:
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+
+env:
+  ROUTE_BRANCH: agent/v2-rf-preroute
+
+jobs:
+  route:
+    if: github.head_ref == 'agent/v2-rf-preroute'
+    name: rf-preroute-${{ matrix.name }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 85
+    strategy:
+      fail-fast: false
+      max-parallel: 2
+      matrix:
+        include:
+          - name: short4
+            max_length: '4.0'
+            passes: 16
+          - name: short8
+            max_length: '8.0'
+            passes: 18
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ env.ROUTE_BRANCH }}
+          fetch-depth: 0
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '25'
+      - name: Prepare tools
+        shell: bash
+        run: |
+          set -euo pipefail
+          docker pull kicad/kicad:9.0.9-full
+          curl -fL --retry 4 --retry-delay 5 -o "$RUNNER_TEMP/freerouting.jar" \
+            https://github.com/freerouting/freerouting/releases/download/v2.2.4/freerouting-2.2.4.jar
+          mkdir -p hardware/v2/build/${{ matrix.name }}
+          printf '{"components": {}}\n' > hardware/v2/build/schematic_paths.json
+      - name: Add short RF candidates
+        shell: bash
+        env:
+          MAX_LENGTH: ${{ matrix.max_length }}
+          NAME: ${{ matrix.name }}
+        run: |
+          cat > hardware/v2/build/${{ matrix.name }}/add_candidates.py <<'PY'
+          from __future__ import annotations
+          import json, math, os, sys
+          from collections import defaultdict
+          from pathlib import Path
+          import pcbnew
+
+          root=Path('hardware/v2'); sys.path.insert(0,str(root/'tools'))
+          from generate_pcb import router_class_for_net
+
+          p=root/'Code-SDR-V2.kicad_pcb'; b=pcbnew.LoadBoard(str(p))
+          pads=defaultdict(list)
+          for fp in b.GetFootprints():
+              for pad in fp.Pads():
+                  n=pad.GetNetname()
+                  if n and router_class_for_net(n) in {'RF_CRITICAL','RF_50'}:
+                      pads[n].append(pad)
+          maxlen=float(os.environ['MAX_LENGTH']); added=[]
+          def uid(x):
+              u=getattr(x,'m_Uuid',None)
+              if u is not None:
+                  try:return u.AsString()
+                  except Exception:return str(u)
+              try:return x.GetUuid().AsString()
+              except Exception:return str(x.GetUuid())
+          for net,plist in sorted(pads.items()):
+              pts=[]
+              for pad in plist:
+                  q=pad.GetPosition()
+                  if all(q!=x for x in pts):pts.append(q)
+              if len(pts)<2:continue
+              connected=[pts[0]]; remain=pts[1:]
+              while remain:
+                  a,c=min(((a,c) for a in connected for c in remain),key=lambda z:(z[0].x-z[1].x)**2+(z[0].y-z[1].y)**2)
+                  length=math.hypot(pcbnew.ToMM(a.x-c.x),pcbnew.ToMM(a.y-c.y))
+                  if length<=maxlen:
+                      t=pcbnew.PCB_TRACK(b); t.SetStart(a); t.SetEnd(c); t.SetLayer(pcbnew.F_Cu); t.SetWidth(pcbnew.FromMM(0.35)); t.SetNet(b.FindNet(net)); b.Add(t)
+                      added.append({'uuid':uid(t),'net':net,'length_mm':length})
+                  connected.append(c); remain.remove(c)
+          pcbnew.SaveBoard(str(p),b)
+          Path(f"hardware/v2/build/{os.environ['NAME']}/candidates.json").write_text(json.dumps(added,indent=2)+'\n')
+          print({'candidate_tracks':len(added),'max_length_mm':maxlen})
+          PY
+          docker run --rm --user 0:0 -v "$GITHUB_WORKSPACE:/work" -w /work --entrypoint /bin/bash kicad/kicad:9.0.9-full -lc \
+            "MAX_LENGTH='$MAX_LENGTH' NAME='$NAME' python3 hardware/v2/build/$NAME/add_candidates.py; kicad-cli pcb drc --format json --severity-all --all-track-errors --schematic-parity --units mm -o hardware/v2/build/$NAME/drc-with-candidates.json hardware/v2/Code-SDR-V2.kicad_pcb || true"
+      - name: Remove candidate tracks implicated by DRC
+        shell: bash
+        env:
+          NAME: ${{ matrix.name }}
+        run: |
+          cat > hardware/v2/build/${{ matrix.name }}/filter_candidates.py <<'PY'
+          from __future__ import annotations
+          import json,os
+          from pathlib import Path
+          import pcbnew
+          name=os.environ['NAME']; d=Path('hardware/v2/build')/name
+          candidates={x['uuid']:x for x in json.loads((d/'candidates.json').read_text())}
+          report=json.loads((d/'drc-with-candidates.json').read_text())
+          bad=set()
+          for issue in report.get('violations',[]):
+              if issue.get('type') not in {'clearance','track_dangling','track_without_net','track_width'}:continue
+              for item in issue.get('items',[]):
+                  u=item.get('uuid')
+                  if u in candidates:bad.add(u)
+          b=pcbnew.LoadBoard('hardware/v2/Code-SDR-V2.kicad_pcb')
+          def uid(x):
+              u=getattr(x,'m_Uuid',None)
+              if u is not None:
+                  try:return u.AsString()
+                  except Exception:return str(u)
+              try:return x.GetUuid().AsString()
+              except Exception:return str(x.GetUuid())
+          removed=[]
+          for t in list(b.GetTracks()):
+              u=uid(t)
+              if u in bad:
+                  removed.append(candidates[u]); b.Remove(t)
+          pcbnew.SaveBoard('hardware/v2/Code-SDR-V2.kicad_pcb',b)
+          kept=[v for k,v in candidates.items() if k not in bad]
+          (d/'filtered-candidates.json').write_text(json.dumps({'kept':kept,'removed':removed},indent=2)+'\n')
+          print({'kept':len(kept),'removed':len(removed)})
+          PY
+          docker run --rm --user 0:0 -v "$GITHUB_WORKSPACE:/work" -w /work --entrypoint /bin/bash kicad/kicad:9.0.9-full -lc \
+            "NAME='$NAME' python3 hardware/v2/build/$NAME/filter_candidates.py; kicad-cli pcb drc --format json --severity-all --all-track-errors --schematic-parity --units mm -o hardware/v2/build/$NAME/drc-preroute-clean.json hardware/v2/Code-SDR-V2.kicad_pcb || true"
+      - name: Export pre-routed DSN
+        shell: bash
+        env:
+          NAME: ${{ matrix.name }}
+        run: |
+          cat > hardware/v2/build/${{ matrix.name }}/export.py <<'PY'
+          import os,sys
+          from pathlib import Path
+          import pcbnew
+          root=Path('hardware/v2'); sys.path.insert(0,str(root/'tools'))
+          import generate_pcb as g
+          b=pcbnew.LoadBoard(str(root/'Code-SDR-V2.kicad_pcb'))
+          if not pcbnew.ExportSpecctraDSN(b,str(g.DSN_PATH)):raise SystemExit('DSN export failed')
+          g.enforce_router_contract()
+          out=root/'build'/os.environ['NAME']/'input-prerouted.dsn'; out.write_text(g.DSN_PATH.read_text())
+          PY
+          docker run --rm --user 0:0 -v "$GITHUB_WORKSPACE:/work" -w /work --entrypoint /bin/bash kicad/kicad:9.0.9-full -lc \
+            "NAME='$NAME' python3 hardware/v2/build/$NAME/export.py"
+      - name: Route remainder
+        shell: bash
+        run: |
+          set -euo pipefail
+          timeout --signal=TERM --kill-after=2m 68m \
+            java -Xmx5600m -jar "$RUNNER_TEMP/freerouting.jar" \
+            -de hardware/v2/build/${{ matrix.name }}/input-prerouted.dsn \
+            -do hardware/v2/build/${{ matrix.name }}/routed.ses \
+            -mp '${{ matrix.passes }}' -mt 2 -oit 0 -us global -is random \
+            -da -dct 1 --gui.enabled=false --router.algorithm=freerouting-router \
+            --router.automatic_neckdown=true --router.scoring.startRipupCosts=45 --router.scoring.viaCosts=8 \
+            2>&1 | tee hardware/v2/build/${{ matrix.name }}/freerouting.log
+          test -s hardware/v2/build/${{ matrix.name }}/routed.ses
+      - name: Import and score
+        if: always()
+        shell: bash
+        env:
+          NAME: ${{ matrix.name }}
+        run: |
+          set -euo pipefail
+          dir=hardware/v2/build/$NAME; test -s "$dir/routed.ses" || exit 0
+          cat > "$dir/import.py" <<PY
+          from pathlib import Path
+          import pcbnew
+          src=Path('hardware/v2/Code-SDR-V2.kicad_pcb'); out=Path('$dir/Code-SDR-V2-$NAME.kicad_pcb')
+          b=pcbnew.LoadBoard(str(src))
+          if not pcbnew.ImportSpecctraSES(b,'$dir/routed.ses'):raise SystemExit('SES import failed')
+          for z in b.Zones():z.SetPadConnection(pcbnew.ZONE_CONNECTION_FULL)
+          pcbnew.ZONE_FILLER(b).Fill(b.Zones()); pcbnew.SaveBoard(str(out),b)
+          PY
+          docker run --rm --user 0:0 -v "$GITHUB_WORKSPACE:/work" -w /work --entrypoint /bin/bash kicad/kicad:9.0.9-full -lc \
+            "python3 '$dir/import.py'; kicad-cli pcb drc --format json --severity-all --all-track-errors --schematic-parity --units mm -o '$dir/drc-final.json' '$dir/Code-SDR-V2-$NAME.kicad_pcb' || true"
+          python3 - <<'PY'
+          import json,os,re
+          from pathlib import Path
+          d=Path('hardware/v2/build')/os.environ['NAME']; r=json.loads((d/'drc-final.json').read_text()); log=(d/'freerouting.log').read_text(errors='replace')
+          ps=[{'pass':int(a),'router_unrouted':int(b),'router_violations':int(c)} for a,b,c in re.findall(r'pass #(\d+).*?\((\d+) unrouted and (\d+) violations\)',log)]
+          f=json.loads((d/'filtered-candidates.json').read_text())
+          s={'name':os.environ['NAME'],'pre_routes_kept':len(f['kept']),'pre_routes_removed':len(f['removed']),'unconnected_items':len(r.get('unconnected_items',[])),'violations':len(r.get('violations',[])),'parity':len(r.get('schematic_parity',[])),'last_router_pass':ps[-1] if ps else None}
+          (d/'summary.json').write_text(json.dumps(s,indent=2)+'\n'); print(json.dumps(s,indent=2))
+          PY
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: v2-rf-preroute-${{ matrix.name }}
+          path: hardware/v2/build/${{ matrix.name }}/
+          if-no-files-found: warn
+          retention-days: 2
