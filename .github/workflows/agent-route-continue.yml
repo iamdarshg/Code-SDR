@@ -1,0 +1,79 @@
+name: Continue V2 five-pass route
+
+on:
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+  actions: read
+
+jobs:
+  continue-route:
+    runs-on: ubuntu-latest
+    timeout-minutes: 100
+    env:
+      GH_TOKEN: ${{ github.token }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '25'
+      - name: Recover five-pass session and tools
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p recovered hardware/v2/build
+          gh run download 29689598311 --repo "$GITHUB_REPOSITORY" --name Code-SDR-V2-route-five-pass --dir recovered
+          find recovered -maxdepth 4 -type f -print
+          cp recovered/build/Code-SDR-V2-routed.ses hardware/v2/build/Code-SDR-V2-five-pass.ses
+          curl -fL --retry 4 --retry-delay 5 -o "$RUNNER_TEMP/freerouting.jar" https://github.com/freerouting/freerouting/releases/download/v2.2.4/freerouting-2.2.4.jar
+      - name: Continue routing from SES
+        shell: bash
+        run: |
+          set -euo pipefail
+          timeout --signal=TERM --kill-after=2m 80m java -Xmx5600m -jar "$RUNNER_TEMP/freerouting.jar" \
+            -de hardware/v2/build/Code-SDR-V2-five-pass.ses \
+            -do hardware/v2/build/Code-SDR-V2-continued.ses \
+            -mp 12 -mt 0 -da -dct 1 --gui.enabled=false \
+            2>&1 | tee hardware/v2/build/freerouting-continue.log
+          test -s hardware/v2/build/Code-SDR-V2-continued.ses
+      - name: Import continuation and validate
+        shell: bash
+        run: |
+          set -euo pipefail
+          cp recovered/Code-SDR-V2.kicad_pcb hardware/v2/Code-SDR-V2.kicad_pcb
+          cp hardware/v2/build/Code-SDR-V2-continued.ses hardware/v2/build/Code-SDR-V2-routed.ses
+          printf '{"components": {}}\n' > hardware/v2/build/schematic_paths.json
+          docker pull kicad/kicad:9.0.9-full
+          docker run --rm --user 0:0 -v "$GITHUB_WORKSPACE:/work" -w /work --entrypoint /bin/bash kicad/kicad:9.0.9-full -lc '
+            python3 hardware/v2/tools/import_route.py
+            python3 hardware/v2/tools/add_rf_via_fences.py
+            kicad-cli pcb drc --format json --severity-all --all-track-errors --schematic-parity --units mm \
+              -o hardware/v2/build/drc-continued.json hardware/v2/Code-SDR-V2.kicad_pcb || true
+            python3 hardware/v2/tools/validate_route.py > hardware/v2/build/validate-continued.log 2>&1 || true
+          '
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+          d=json.loads(Path('hardware/v2/build/drc-continued.json').read_text())
+          summary={k:len(d.get(k,[])) for k in ('violations','unconnected_items','schematic_parity')}
+          Path('hardware/v2/build/continued-summary.json').write_text(json.dumps(summary,indent=2)+'\n')
+          print(summary)
+          PY
+      - name: Upload continued route
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: Code-SDR-V2-route-continued
+          path: |
+            hardware/v2/Code-SDR-V2.kicad_pcb
+            hardware/v2/build/Code-SDR-V2-continued.ses
+            hardware/v2/build/freerouting-continue.log
+            hardware/v2/build/drc-continued.json
+            hardware/v2/build/continued-summary.json
+            hardware/v2/build/validate-continued.log
+            hardware/v2/build/ROUTE_STATISTICS.csv
+          if-no-files-found: warn
+          retention-days: 1
