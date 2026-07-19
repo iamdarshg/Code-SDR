@@ -1,4 +1,4 @@
-name: V2 remove orphan GND islands
+name: V2 geometry-driven GND island stitching
 
 on:
   pull_request:
@@ -14,10 +14,10 @@ env:
   SOURCE_ARTIFACT: Code-SDR-V2-route-five-pass
 
 jobs:
-  remove-islands:
+  stitch-islands:
     if: github.head_ref == 'agent/v2-gnd-island-stitch'
     runs-on: ubuntu-24.04
-    timeout-minutes: 25
+    timeout-minutes: 30
     steps:
       - uses: actions/checkout@v4
         with:
@@ -34,39 +34,158 @@ jobs:
           cp "$board" hardware/v2/Code-SDR-V2.kicad_pcb
           cp "$drc" hardware/v2/build/drc-before.json
           docker pull kicad/kicad:9.0.9-full
-      - name: Remove orphaned outer-layer GND pour islands
+      - name: Stitch every actual outer-layer GND polygon to In1
         shell: bash
         run: |
-          cat > hardware/v2/build/remove_gnd_islands.py <<'PY'
+          cat > hardware/v2/build/stitch_filled_polygons.py <<'PY'
+          from __future__ import annotations
+
+          import json
+          import math
           from pathlib import Path
+
           import pcbnew
 
-          p=Path('hardware/v2/Code-SDR-V2.kicad_pcb')
-          b=pcbnew.LoadBoard(str(p))
-          enum=getattr(pcbnew,'ISLAND_REMOVAL_MODE',None)
-          always=getattr(pcbnew,'ISLAND_REMOVAL_MODE_ALWAYS',None)
-          if always is None and enum is not None:
-              always=enum.ALWAYS
-          if always is None:
-              raise SystemExit('KiCad island-removal enum unavailable')
-          changed=[]
-          for z in b.Zones():
-              if z.GetNetname()=='GND' and z.GetLayer() in (pcbnew.F_Cu,pcbnew.B_Cu):
-                  z.SetIslandRemovalMode(always)
-                  z.SetPadConnection(pcbnew.ZONE_CONNECTION_FULL)
-                  z.UnFill()
-                  z.SetNeedRefill(True)
-                  changed.append(b.GetLayerName(z.GetLayer()))
+          BOARD = Path('hardware/v2/Code-SDR-V2.kicad_pcb')
+          OUT = Path('hardware/v2/build/gnd-polygon-stitch.json')
+          VIA_D = 0.45
+          VIA_DRILL = 0.20
+          EDGE = 0.10
+
+          b = pcbnew.LoadBoard(str(BOARD))
+          gnd = b.FindNet('GND')
+          if gnd is None:
+              raise SystemExit('GND net missing')
+
+          pads = [pad for fp in b.GetFootprints() for pad in fp.Pads()]
+          tracks = list(b.GetTracks())
+          existing_gnd_vias = [
+              t for t in tracks
+              if isinstance(t, pcbnew.PCB_VIA) and t.GetNetname() == 'GND'
+          ]
+
+          def mm(point):
+              return pcbnew.ToMM(point.x), pcbnew.ToMM(point.y)
+
+          def segment_distance(x, y, a, c):
+              ax, ay = mm(a); bx, by = mm(c)
+              dx, dy = bx - ax, by - ay
+              if dx == 0 and dy == 0:
+                  return math.hypot(x - ax, y - ay)
+              t = max(0.0, min(1.0, ((x-ax)*dx + (y-ay)*dy) / (dx*dx + dy*dy)))
+              return math.hypot(x - (ax+t*dx), y - (ay+t*dy))
+
+          def clear(point):
+              x, y = mm(point)
+              if not (0.35 < x < 159.65 and 0.35 < y < 99.65):
+                  return False
+              radius = VIA_D / 2.0
+              for pad in pads:
+                  box = pad.GetBoundingBox()
+                  box.Inflate(pcbnew.FromMM(radius + EDGE))
+                  if box.Contains(point):
+                      return False
+              for item in tracks:
+                  if isinstance(item, pcbnew.PCB_VIA):
+                      qx, qy = mm(item.GetPosition())
+                      required = radius + pcbnew.ToMM(item.GetWidth()) / 2.0 + EDGE
+                      if math.hypot(x-qx, y-qy) < required:
+                          return False
+                  else:
+                      required = radius + pcbnew.ToMM(item.GetWidth()) / 2.0 + EDGE
+                      if segment_distance(x, y, item.GetStart(), item.GetEnd()) < required:
+                          return False
+              return True
+
+          def candidate_points(polyset, outline_index):
+              chain = polyset.COutline(outline_index)
+              pts = [chain.CPoint(i) for i in range(chain.PointCount())]
+              if not pts:
+                  return []
+              xs = [p.x for p in pts]; ys = [p.y for p in pts]
+              # Polygon centroid first.
+              area2 = 0.0; cx_num = 0.0; cy_num = 0.0
+              for i, p in enumerate(pts):
+                  q = pts[(i+1) % len(pts)]
+                  cross = p.x*q.y - q.x*p.y
+                  area2 += cross
+                  cx_num += (p.x+q.x)*cross
+                  cy_num += (p.y+q.y)*cross
+              candidates = []
+              if abs(area2) > 1:
+                  candidates.append(pcbnew.VECTOR2I(int(cx_num/(3*area2)), int(cy_num/(3*area2))))
+              candidates.append(pcbnew.VECTOR2I(sum(xs)//len(xs), sum(ys)//len(ys)))
+              # Deterministic grid search through the polygon bounding box.
+              minx, maxx, miny, maxy = min(xs), max(xs), min(ys), max(ys)
+              for n in (5, 9, 17, 33):
+                  for iy in range(1, n):
+                      for ix in range(1, n):
+                          candidates.append(pcbnew.VECTOR2I(
+                              minx + (maxx-minx)*ix//n,
+                              miny + (maxy-miny)*iy//n,
+                          ))
+              # Bias a few samples inward from each vertex toward the average.
+              avg = candidates[1]
+              for p in pts[::max(1, len(pts)//24)]:
+                  for fraction in (0.15, 0.30, 0.50):
+                      candidates.append(pcbnew.VECTOR2I(
+                          int(p.x + (avg.x-p.x)*fraction),
+                          int(p.y + (avg.y-p.y)*fraction),
+                      ))
+              unique=[]; seen=set()
+              for p in candidates:
+                  key=(p.x,p.y)
+                  if key in seen: continue
+                  seen.add(key)
+                  if polyset.Contains(p, outline_index) and clear(p):
+                      unique.append(p)
+              return unique
+
+          added=[]; skipped=[]; failed=[]
+          for zone in b.Zones():
+              if zone.GetNetname() != 'GND' or zone.GetLayer() not in (pcbnew.F_Cu, pcbnew.B_Cu):
+                  continue
+              layer = zone.GetLayer()
+              polyset = zone.GetFilledPolysList(layer)
+              for index in range(polyset.OutlineCount()):
+                  # An existing GND via already ties this polygon to the plane.
+                  anchors = [v for v in existing_gnd_vias if polyset.Contains(v.GetPosition(), index)]
+                  if anchors:
+                      skipped.append({'layer':b.GetLayerName(layer),'outline':index,'reason':'existing_gnd_via'})
+                      continue
+                  candidates = candidate_points(polyset, index)
+                  if not candidates:
+                      failed.append({'layer':b.GetLayerName(layer),'outline':index,'reason':'no_clear_interior_point'})
+                      continue
+                  point = candidates[0]
+                  via = pcbnew.PCB_VIA(b)
+                  via.SetPosition(point)
+                  via.SetWidth(pcbnew.FromMM(VIA_D))
+                  via.SetDrill(pcbnew.FromMM(VIA_DRILL))
+                  via.SetLayerPair(pcbnew.F_Cu, pcbnew.B_Cu)
+                  via.SetNet(gnd)
+                  b.Add(via)
+                  tracks.append(via)
+                  existing_gnd_vias.append(via)
+                  x,y=mm(point)
+                  added.append({'layer':b.GetLayerName(layer),'outline':index,'x_mm':x,'y_mm':y})
+
           for fp in b.GetFootprints():
               for pad in fp.Pads():
-                  if pad.GetNetname()=='GND':
+                  if pad.GetNetname() == 'GND':
                       pad.SetZoneConnection(pcbnew.ZONE_CONNECTION_FULL)
-          pcbnew.ZONE_FILLER(b).Fill(b.Zones(),True)
-          pcbnew.SaveBoard(str(p),b)
-          print({'zones_unfilled_and_refilled_with_island_removal':changed})
+          for zone in b.Zones():
+              if zone.GetNetname() == 'GND':
+                  zone.SetPadConnection(pcbnew.ZONE_CONNECTION_FULL)
+                  zone.SetNeedRefill(True)
+          pcbnew.ZONE_FILLER(b).Fill(b.Zones(), True)
+          pcbnew.SaveBoard(str(BOARD), b)
+          result={'added':added,'skipped':skipped,'failed':failed}
+          OUT.write_text(json.dumps(result,indent=2)+'\n')
+          print({'added':len(added),'skipped':len(skipped),'failed':len(failed)})
           PY
           docker run --rm --user 0:0 -v "$GITHUB_WORKSPACE:/work" -w /work --entrypoint /bin/bash kicad/kicad:9.0.9-full -lc '
-            python3 hardware/v2/build/remove_gnd_islands.py
+            python3 hardware/v2/build/stitch_filled_polygons.py
             kicad-cli pcb drc --format json --severity-all --all-track-errors --schematic-parity --units mm -o hardware/v2/build/drc-after.json hardware/v2/Code-SDR-V2.kicad_pcb || true
           '
       - name: Compare DRC
@@ -84,15 +203,16 @@ jobs:
                   for n in names:nets[n]+=1
               return {'violations':len(d.get('violations',[])),'unconnected_items':len(d.get('unconnected_items',[])),'parity':len(d.get('schematic_parity',[])),'gnd_unconnected':nets.get('GND',0),'by_net':dict(nets.most_common())}
           out={'before':stats('hardware/v2/build/drc-before.json'),'after':stats('hardware/v2/build/drc-after.json')}
-          Path('hardware/v2/build/gnd-island-removal-summary.json').write_text(json.dumps(out,indent=2)+'\n')
+          Path('hardware/v2/build/gnd-polygon-stitch-summary.json').write_text(json.dumps(out,indent=2)+'\n')
           print(json.dumps(out,indent=2))
           PY
       - uses: actions/upload-artifact@v4
         with:
-          name: v2-gnd-island-removal
+          name: v2-gnd-polygon-stitch
           path: |
             hardware/v2/Code-SDR-V2.kicad_pcb
             hardware/v2/build/drc-before.json
             hardware/v2/build/drc-after.json
-            hardware/v2/build/gnd-island-removal-summary.json
+            hardware/v2/build/gnd-polygon-stitch.json
+            hardware/v2/build/gnd-polygon-stitch-summary.json
           retention-days: 2
