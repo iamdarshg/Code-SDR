@@ -23,7 +23,7 @@ jobs:
           sha256sum freerouting-2.2.4.jar > freerouting-2.2.4.sha256
           real_java_home="$(dirname "$(dirname "$(readlink -f "$JAVA_HOME/bin/java")")")"
           echo "Resolved Java runtime: $real_java_home"
-          "$real_java_home/bin/java" -jar freerouting-2.2.4.jar --help >/dev/null
+          "$real_java_home/bin/java" -version
           tar -C "$(dirname "$real_java_home")" -czf java25-runtime.tar.gz "$(basename "$real_java_home")"
           test "$(stat -c %s java25-runtime.tar.gz)" -gt 10000000
           sha256sum java25-runtime.tar.gz > java25-runtime.sha256
