@@ -1,0 +1,236 @@
+name: V2 routing strategy tournament
+
+on:
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+
+env:
+  ROUTE_BRANCH: agent/v2-route-tournament
+
+jobs:
+  route:
+    if: github.head_ref == 'agent/v2-route-tournament'
+    name: route-${{ matrix.name }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 95
+    strategy:
+      fail-fast: false
+      max-parallel: 6
+      matrix:
+        include:
+          - name: current-global-random
+            algorithm: freerouting-router
+            passes: 14
+            threads: 2
+            update: global
+            items: random
+            hybrid: ''
+            ripup: 30
+            via: 12
+            unrouted: 80000
+            clearance: 30000
+            accuracy: 500
+          - name: current-hybrid-priority
+            algorithm: freerouting-router
+            passes: 16
+            threads: 4
+            update: hybrid
+            items: prioritized
+            hybrid: '1:2'
+            ripup: 60
+            via: 8
+            unrouted: 100000
+            clearance: 40000
+            accuracy: 500
+          - name: current-greedy-cheap-vias
+            algorithm: freerouting-router
+            passes: 18
+            threads: 1
+            update: greedy
+            items: prioritized
+            hybrid: ''
+            ripup: 8
+            via: 2
+            unrouted: 150000
+            clearance: 50000
+            accuracy: 250
+          - name: v19-global-random
+            algorithm: freerouting-router-v19
+            passes: 16
+            threads: 2
+            update: global
+            items: random
+            hybrid: ''
+            ripup: 20
+            via: 10
+            unrouted: 100000
+            clearance: 40000
+            accuracy: 500
+          - name: v19-hybrid-aggressive
+            algorithm: freerouting-router-v19
+            passes: 20
+            threads: 4
+            update: hybrid
+            items: prioritized
+            hybrid: '1:1'
+            ripup: 80
+            via: 5
+            unrouted: 180000
+            clearance: 60000
+            accuracy: 250
+          - name: v19-sequential-ripup
+            algorithm: freerouting-router-v19
+            passes: 22
+            threads: 1
+            update: greedy
+            items: sequential
+            hybrid: ''
+            ripup: 120
+            via: 15
+            unrouted: 200000
+            clearance: 75000
+            accuracy: 1000
+    steps:
+      - name: Check out clean V2 source
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ env.ROUTE_BRANCH }}
+          fetch-depth: 0
+      - name: Use Java 25
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '25'
+      - name: Prepare KiCad and Freerouting
+        shell: bash
+        run: |
+          set -euo pipefail
+          docker pull kicad/kicad:9.0.9-full
+          curl -fL --retry 4 --retry-delay 5 -o "$RUNNER_TEMP/freerouting.jar" \
+            https://github.com/freerouting/freerouting/releases/download/v2.2.4/freerouting-2.2.4.jar
+          mkdir -p hardware/v2/build/${{ matrix.name }}
+          printf '{"components": {}}\n' > hardware/v2/build/schematic_paths.json
+      - name: Export signal-only DSN
+        shell: bash
+        run: |
+          set -euo pipefail
+          sed -i 's/Via\[0-3\]_600:300_um/Via[0-3]_450:200_um/' hardware/v2/tools/generate_pcb.py
+          docker run --rm --user 0:0 -v "$GITHUB_WORKSPACE:/work" -w /work \
+            --entrypoint /bin/bash kicad/kicad:9.0.9-full -lc \
+            'python3 hardware/v2/tools/export_route_checkpoint.py'
+          cp hardware/v2/build/Code-SDR-V2.dsn hardware/v2/build/${{ matrix.name }}/input.dsn
+          ! grep -q '^    (net GND' hardware/v2/build/${{ matrix.name }}/input.dsn
+      - name: Route candidate
+        shell: bash
+        run: |
+          set -euo pipefail
+          extra=()
+          if [[ -n '${{ matrix.hybrid }}' ]]; then extra+=( -hr '${{ matrix.hybrid }}' ); fi
+          timeout --signal=TERM --kill-after=2m 78m \
+            java -Xmx5600m -jar "$RUNNER_TEMP/freerouting.jar" \
+            -de hardware/v2/build/${{ matrix.name }}/input.dsn \
+            -do hardware/v2/build/${{ matrix.name }}/routed.ses \
+            -mp '${{ matrix.passes }}' -mt '${{ matrix.threads }}' -oit 0 \
+            -us '${{ matrix.update }}' -is '${{ matrix.items }}' "${extra[@]}" \
+            -da -dct 1 --gui.enabled=false \
+            --router.algorithm='${{ matrix.algorithm }}' \
+            --router.automatic_neckdown=true \
+            --router.trace_pull_tight_accuracy='${{ matrix.accuracy }}' \
+            --router.scoring.unroutedNetPenalty='${{ matrix.unrouted }}' \
+            --router.scoring.clearanceViolationPenalty='${{ matrix.clearance }}' \
+            --router.scoring.startRipupCosts='${{ matrix.ripup }}' \
+            --router.scoring.viaCosts='${{ matrix.via }}' \
+            2>&1 | tee hardware/v2/build/${{ matrix.name }}/freerouting.log
+          test -s hardware/v2/build/${{ matrix.name }}/routed.ses
+      - name: Import and score candidate
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          dir=hardware/v2/build/${{ matrix.name }}
+          test -s "$dir/routed.ses" || exit 0
+          cat > "$dir/import.py" <<PY
+          from pathlib import Path
+          import pcbnew
+          src=Path('hardware/v2/Code-SDR-V2.kicad_pcb')
+          out=Path('$dir/Code-SDR-V2-${{ matrix.name }}.kicad_pcb')
+          b=pcbnew.LoadBoard(str(src))
+          if not pcbnew.ImportSpecctraSES(b, '$dir/routed.ses'):
+              raise SystemExit('SES import failed')
+          for z in b.Zones():
+              z.SetPadConnection(pcbnew.ZONE_CONNECTION_FULL)
+          pcbnew.ZONE_FILLER(b).Fill(b.Zones())
+          pcbnew.SaveBoard(str(out), b)
+          print('tracks', len(list(b.GetTracks())))
+          PY
+          docker run --rm --user 0:0 -v "$GITHUB_WORKSPACE:/work" -w /work \
+            --entrypoint /bin/bash kicad/kicad:9.0.9-full -lc \
+            "python3 '$dir/import.py'; kicad-cli pcb drc --format json --severity-all --all-track-errors --schematic-parity --units mm -o '$dir/drc.json' '$dir/Code-SDR-V2-${{ matrix.name }}.kicad_pcb' || true"
+          MATRIX_NAME='${{ matrix.name }}' ALGORITHM='${{ matrix.algorithm }}' python3 - <<'PY'
+          import json, os, re
+          from pathlib import Path
+          name=os.environ['MATRIX_NAME']; d=Path('hardware/v2/build')/name
+          report=json.loads((d/'drc.json').read_text())
+          log=(d/'freerouting.log').read_text(errors='replace')
+          passes=[]
+          for m in re.finditer(r'pass #(\d+).*?\((\d+) unrouted and (\d+) violations\)', log):
+              passes.append({'pass':int(m.group(1)),'router_unrouted':int(m.group(2)),'router_violations':int(m.group(3))})
+          summary={
+            'name':name,
+            'algorithm':os.environ['ALGORITHM'],
+            'violations':len(report.get('violations',[])),
+            'unconnected_items':len(report.get('unconnected_items',[])),
+            'schematic_parity':len(report.get('schematic_parity',[])),
+            'last_router_pass':passes[-1] if passes else None,
+            'all_passes':passes,
+          }
+          (d/'summary.json').write_text(json.dumps(summary,indent=2)+'\n')
+          print(json.dumps(summary,indent=2))
+          PY
+      - name: Upload candidate
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: v2-route-${{ matrix.name }}
+          path: hardware/v2/build/${{ matrix.name }}/
+          if-no-files-found: warn
+          retention-days: 2
+
+  leaderboard:
+    if: always()
+    needs: route
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: v2-route-*
+          path: candidates
+      - name: Rank candidates
+        shell: bash
+        run: |
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+          rows=[]
+          for p in Path('candidates').rglob('summary.json'):
+              try: rows.append(json.loads(p.read_text()))
+              except Exception: pass
+          rows.sort(key=lambda x:(x['schematic_parity'],x['unconnected_items'],x['violations']))
+          Path('leaderboard.json').write_text(json.dumps(rows,indent=2)+'\n')
+          lines=['# V2 routing tournament','', '| Rank | Candidate | Router opens | KiCad opens | Violations | Parity |','|---:|---|---:|---:|---:|---:|']
+          for i,r in enumerate(rows,1):
+              rp=r.get('last_router_pass') or {}
+              lines.append(f"| {i} | {r['name']} | {rp.get('router_unrouted','n/a')} | {r['unconnected_items']} | {r['violations']} | {r['schematic_parity']} |")
+          Path('leaderboard.md').write_text('\n'.join(lines)+'\n')
+          print('\n'.join(lines))
+          PY
+      - uses: actions/upload-artifact@v4
+        with:
+          name: v2-route-tournament-leaderboard
+          path: |
+            leaderboard.json
+            leaderboard.md
+          retention-days: 2
