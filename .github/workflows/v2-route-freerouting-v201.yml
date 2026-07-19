@@ -1,0 +1,160 @@
+name: V2 Freerouting 2.0.1 tournament
+
+on:
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+
+env:
+  ROUTE_BRANCH: agent/v2-route-freerouting-v201
+
+jobs:
+  route:
+    if: github.head_ref == 'agent/v2-route-freerouting-v201'
+    name: v2p0p1-${{ matrix.name }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 95
+    strategy:
+      fail-fast: false
+      max-parallel: 3
+      matrix:
+        include:
+          - name: baseline-150
+            passes: 150
+            threads: 1
+            dense: 'false'
+          - name: baseline-600
+            passes: 600
+            threads: 1
+            dense: 'false'
+          - name: dense-400
+            passes: 400
+            threads: 1
+            dense: 'true'
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ env.ROUTE_BRANCH }}
+          fetch-depth: 0
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '21'
+      - name: Prepare KiCad and Freerouting 2.0.1
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          docker pull kicad/kicad:9.0.9-full
+          mkdir -p "$RUNNER_TEMP/freerouting-v201" hardware/v2/build/${{ matrix.name }}
+          gh release download v2.0.1 --repo freerouting/freerouting --pattern '*.jar' --dir "$RUNNER_TEMP/freerouting-v201"
+          jar=$(find "$RUNNER_TEMP/freerouting-v201" -type f -name '*.jar' -printf '%s %p\n' | sort -nr | head -1 | cut -d' ' -f2-)
+          test -s "$jar"
+          echo "FREEROUTING_JAR=$jar" >> "$GITHUB_ENV"
+          printf '{"components": {}}\n' > hardware/v2/build/schematic_paths.json
+      - name: Export DSN
+        shell: bash
+        env:
+          NAME: ${{ matrix.name }}
+          DENSE: ${{ matrix.dense }}
+        run: |
+          set -euo pipefail
+          docker run --rm --user 0:0 -v "$GITHUB_WORKSPACE:/work" -w /work --entrypoint /bin/bash kicad/kicad:9.0.9-full -lc \
+            'python3 hardware/v2/tools/export_route_checkpoint.py'
+          python3 - <<'PY'
+          import os,re
+          from pathlib import Path
+          s=Path('hardware/v2/build/Code-SDR-V2.dsn').read_text()
+          if os.environ['DENSE']=='true':
+              for name,width in {'IF_DIFF':150,'DIGITAL_HS':100,'POWER':250,'DEFAULT':100}.items():
+                  marker=f'    (class {name}\n';start=s.index(marker);depth=0
+                  for i in range(start,len(s)):
+                      if s[i]=='(':depth+=1
+                      elif s[i]==')':
+                          depth-=1
+                          if depth==0:end=i+1;break
+                  block=re.sub(r'\(width \d+\)',f'(width {width})',s[start:end],count=1)
+                  s=s[:start]+block+s[end:]
+          out=Path('hardware/v2/build')/os.environ['NAME']/'input.dsn';out.write_text(s)
+          PY
+      - name: Route with 2.0.1
+        shell: bash
+        run: |
+          set -euo pipefail
+          dir=hardware/v2/build/${{ matrix.name }}
+          timeout --signal=TERM --kill-after=2m 78m \
+            java -Xmx5600m -jar "$FREEROUTING_JAR" -de "$dir/input.dsn" -do "$dir/routed.ses" \
+            -mp '${{ matrix.passes }}' -mt '${{ matrix.threads }}' -da -dct 1 --gui.enabled=false \
+            2>&1 | tee "$dir/freerouting.log"
+          test -s "$dir/routed.ses"
+      - name: Import and score
+        if: always()
+        shell: bash
+        env:
+          NAME: ${{ matrix.name }}
+        run: |
+          set -euo pipefail
+          dir=hardware/v2/build/$NAME;test -s "$dir/routed.ses" || exit 0
+          cat > "$dir/import.py" <<PY
+          from pathlib import Path
+          import pcbnew
+          b=pcbnew.LoadBoard('hardware/v2/Code-SDR-V2.kicad_pcb')
+          if not pcbnew.ImportSpecctraSES(b,'$dir/routed.ses'):raise SystemExit('SES import failed')
+          for z in b.Zones():z.SetPadConnection(pcbnew.ZONE_CONNECTION_FULL)
+          pcbnew.ZONE_FILLER(b).Fill(b.Zones(),True)
+          pcbnew.SaveBoard('$dir/Code-SDR-V2-$NAME.kicad_pcb',b)
+          PY
+          docker run --rm --user 0:0 -v "$GITHUB_WORKSPACE:/work" -w /work --entrypoint /bin/bash kicad/kicad:9.0.9-full -lc \
+            "python3 '$dir/import.py'; kicad-cli pcb drc --format json --severity-all --all-track-errors --schematic-parity --units mm -o '$dir/drc.json' '$dir/Code-SDR-V2-$NAME.kicad_pcb' || true"
+          python3 - <<'PY'
+          import json,os,re
+          from pathlib import Path
+          d=Path('hardware/v2/build')/os.environ['NAME'];r=json.loads((d/'drc.json').read_text());log=(d/'freerouting.log').read_text(errors='replace')
+          passes=[]
+          for a,b,c in re.findall(r'pass #(\d+).*?\((\d+) unrouted(?: and (\d+) violations)?\)',log,re.I|re.S):passes.append({'pass':int(a),'router_unrouted':int(b),'router_violations':int(c) if c else None})
+          s={'name':os.environ['NAME'],'engine':'freerouting-2.0.1','unconnected_items':len(r.get('unconnected_items',[])),'violations':len(r.get('violations',[])),'parity':len(r.get('schematic_parity',[])),'last_router_pass':passes[-1] if passes else None,'all_passes':passes}
+          (d/'summary.json').write_text(json.dumps(s,indent=2)+'\n');print(json.dumps(s,indent=2))
+          PY
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: v2-freerouting-v201-${{ matrix.name }}
+          path: hardware/v2/build/${{ matrix.name }}/
+          if-no-files-found: warn
+          retention-days: 2
+
+  leaderboard:
+    if: always()
+    needs: route
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: v2-freerouting-v201-*
+          path: candidates
+      - name: Rank candidates
+        run: |
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+          rows=[]
+          for p in Path('candidates').rglob('summary.json'):
+              try:rows.append(json.loads(p.read_text()))
+              except Exception:pass
+          rows.sort(key=lambda x:(x['parity'],x['unconnected_items'],x['violations']))
+          Path('leaderboard.json').write_text(json.dumps(rows,indent=2)+'\n')
+          lines=['# Freerouting 2.0.1 V2 tournament','', '| Rank | Candidate | Router opens | KiCad opens | Violations | Parity |','|---:|---|---:|---:|---:|---:|']
+          for i,r in enumerate(rows,1):
+              rp=r.get('last_router_pass') or {};lines.append(f"| {i} | {r['name']} | {rp.get('router_unrouted','n/a')} | {r['unconnected_items']} | {r['violations']} | {r['parity']} |")
+          Path('leaderboard.md').write_text('\n'.join(lines)+'\n');print('\n'.join(lines))
+          PY
+      - uses: actions/upload-artifact@v4
+        with:
+          name: v2-freerouting-v201-leaderboard
+          path: |
+            leaderboard.json
+            leaderboard.md
+          retention-days: 2
