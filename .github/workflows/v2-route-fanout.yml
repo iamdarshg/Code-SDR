@@ -1,0 +1,175 @@
+name: V2 fanout-escape routing tournament
+
+on:
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+
+env:
+  ROUTE_BRANCH: agent/v2-route-fanout
+
+jobs:
+  route:
+    if: github.head_ref == 'agent/v2-route-fanout'
+    name: fanout-${{ matrix.name }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 100
+    strategy:
+      fail-fast: false
+      max-parallel: 4
+      matrix:
+        include:
+          - name: density-baseline
+            order: surroundings_density
+            dense: 'false'
+            min_escape: '1.0'
+            max_escape: '4.5'
+          - name: inner-baseline
+            order: inner_first
+            dense: 'false'
+            min_escape: '0.8'
+            max_escape: '4.0'
+          - name: nearest-dense
+            order: distance_to_closest_on_net
+            dense: 'true'
+            min_escape: '0.8'
+            max_escape: '3.5'
+          - name: outer-dense
+            order: outer_first
+            dense: 'true'
+            min_escape: '1.2'
+            max_escape: '5.0'
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ env.ROUTE_BRANCH }}
+          fetch-depth: 0
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '25'
+      - name: Prepare tools
+        shell: bash
+        run: |
+          set -euo pipefail
+          docker pull kicad/kicad:9.0.9-full
+          curl -fL --retry 4 --retry-delay 5 -o "$RUNNER_TEMP/freerouting.jar" \
+            https://github.com/freerouting/freerouting/releases/download/v2.2.4/freerouting-2.2.4.jar
+          mkdir -p hardware/v2/build/${{ matrix.name }}
+          printf '{"components": {}}\n' > hardware/v2/build/schematic_paths.json
+      - name: Export candidate DSN
+        shell: bash
+        env:
+          NAME: ${{ matrix.name }}
+          DENSE: ${{ matrix.dense }}
+        run: |
+          set -euo pipefail
+          docker run --rm --user 0:0 -v "$GITHUB_WORKSPACE:/work" -w /work --entrypoint /bin/bash kicad/kicad:9.0.9-full -lc \
+            'python3 hardware/v2/tools/export_route_checkpoint.py'
+          python3 - <<'PY'
+          import os,re
+          from pathlib import Path
+          s=Path('hardware/v2/build/Code-SDR-V2.dsn').read_text()
+          if os.environ['DENSE']=='true':
+              for name,width in {'IF_DIFF':150,'DIGITAL_HS':100,'POWER':250,'DEFAULT':100}.items():
+                  marker=f'    (class {name}\n';start=s.index(marker);depth=0
+                  for i in range(start,len(s)):
+                      if s[i]=='(':depth+=1
+                      elif s[i]==')':
+                          depth-=1
+                          if depth==0:end=i+1;break
+                  block=re.sub(r'\(width \d+\)',f'(width {width})',s[start:end],count=1)
+                  s=s[:start]+block+s[end:]
+          out=Path('hardware/v2/build')/os.environ['NAME']/'input.dsn';out.write_text(s)
+          PY
+      - name: Route with tuned fanout stage
+        shell: bash
+        run: |
+          set -euo pipefail
+          dir=hardware/v2/build/${{ matrix.name }}
+          timeout --signal=TERM --kill-after=2m 82m \
+            java -Xmx5600m -jar "$RUNNER_TEMP/freerouting.jar" \
+            -de "$dir/input.dsn" -do "$dir/routed.ses" \
+            -mp 24 -mt 2 -oit 0 -us global -is prioritized -da -dct 1 --gui.enabled=false \
+            --router.fanout.enabled=true \
+            --router.fanout.max_passes=50 \
+            --router.fanout.max_milliseconds_per_pin=20000 \
+            --router.fanout.ripup_allowed=true \
+            --router.fanout.min_escape_length_mm='${{ matrix.min_escape }}' \
+            --router.fanout.max_escape_length_mm='${{ matrix.max_escape }}' \
+            --router.fanout.start_via_diameter_mm=0.45 \
+            --router.fanout.end_via_diameter_mm=0.45 \
+            --router.fanout.pin_sorting_order='${{ matrix.order }}' \
+            --router.automatic_neckdown=true \
+            --router.via_costs=8 \
+            --router.start_ripup_costs=65 \
+            2>&1 | tee "$dir/freerouting.log"
+          test -s "$dir/routed.ses"
+      - name: Import and score
+        if: always()
+        shell: bash
+        env:
+          NAME: ${{ matrix.name }}
+        run: |
+          set -euo pipefail
+          dir=hardware/v2/build/$NAME;test -s "$dir/routed.ses" || exit 0
+          cat > "$dir/import.py" <<PY
+          import pcbnew
+          b=pcbnew.LoadBoard('hardware/v2/Code-SDR-V2.kicad_pcb')
+          if not pcbnew.ImportSpecctraSES(b,'$dir/routed.ses'):raise SystemExit('SES import failed')
+          for z in b.Zones():z.SetPadConnection(pcbnew.ZONE_CONNECTION_FULL)
+          pcbnew.ZONE_FILLER(b).Fill(b.Zones(),True)
+          pcbnew.SaveBoard('$dir/Code-SDR-V2-$NAME.kicad_pcb',b)
+          PY
+          docker run --rm --user 0:0 -v "$GITHUB_WORKSPACE:/work" -w /work --entrypoint /bin/bash kicad/kicad:9.0.9-full -lc \
+            "python3 '$dir/import.py'; kicad-cli pcb drc --format json --severity-all --all-track-errors --schematic-parity --units mm -o '$dir/drc.json' '$dir/Code-SDR-V2-$NAME.kicad_pcb' || true"
+          python3 - <<'PY'
+          import json,os,re
+          from pathlib import Path
+          d=Path('hardware/v2/build')/os.environ['NAME'];r=json.loads((d/'drc.json').read_text());log=(d/'freerouting.log').read_text(errors='replace')
+          ps=[{'pass':int(a),'router_unrouted':int(b),'router_violations':int(c)} for a,b,c in re.findall(r'pass #(\d+).*?\((\d+) unrouted and (\d+) violations\)',log)]
+          s={'name':os.environ['NAME'],'unconnected_items':len(r.get('unconnected_items',[])),'violations':len(r.get('violations',[])),'parity':len(r.get('schematic_parity',[])),'last_router_pass':ps[-1] if ps else None,'all_passes':ps}
+          (d/'summary.json').write_text(json.dumps(s,indent=2)+'\n');print(json.dumps(s,indent=2))
+          PY
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: v2-fanout-${{ matrix.name }}
+          path: hardware/v2/build/${{ matrix.name }}/
+          if-no-files-found: warn
+          retention-days: 2
+
+  leaderboard:
+    if: always()
+    needs: route
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: v2-fanout-*
+          path: candidates
+      - name: Rank fanout candidates
+        run: |
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+          rows=[]
+          for p in Path('candidates').rglob('summary.json'):
+              try:rows.append(json.loads(p.read_text()))
+              except Exception:pass
+          rows.sort(key=lambda x:(x['parity'],x['unconnected_items'],x['violations']))
+          Path('leaderboard.json').write_text(json.dumps(rows,indent=2)+'\n')
+          lines=['# V2 fanout tournament','', '| Rank | Candidate | Router opens | KiCad opens | Violations | Parity |','|---:|---|---:|---:|---:|---:|']
+          for i,r in enumerate(rows,1):
+              rp=r.get('last_router_pass') or {};lines.append(f"| {i} | {r['name']} | {rp.get('router_unrouted','n/a')} | {r['unconnected_items']} | {r['violations']} | {r['parity']} |")
+          Path('leaderboard.md').write_text('\n'.join(lines)+'\n');print('\n'.join(lines))
+          PY
+      - uses: actions/upload-artifact@v4
+        with:
+          name: v2-fanout-leaderboard
+          path: |
+            leaderboard.json
+            leaderboard.md
+          retention-days: 2
