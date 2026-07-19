@@ -25,6 +25,34 @@ jobs:
           root = Path('hardware/v2')
           board_path = root / 'Code-SDR-V2.kicad_pcb'
           routes = json.loads((root / 'rf50_routes.json').read_text())['nets']
+
+          # Correct the manually completed connector/switch escapes against the
+          # actual rotated KiCad pad positions.
+          for x, name, side in ((20.0, 'RF_HA_IN', -1.0), (50.0, 'RF_HB_IN', -1.0),
+                                (80.0, 'RF_HC_IN', 1.0), (110.0, 'RF_HD_IN', 1.0)):
+              route = routes[name]
+              route['paths'] = [p for p in route['paths']
+                                if min(point[1] for point in p['points']) > 1.72]
+              dx = 0.65 * side
+              route['paths'].append({'layer': 'F.Cu', 'width': 0.35,
+                                     'points': [[x, -1.72], [x + dx, 3.8],
+                                                [x + dx, 5.5], [x, 5.5]]})
+          low = routes['RF_LOW_IN']
+          low['paths'] = [p for p in low['paths']
+                          if not any(abs(point[0] - 5.6) < 1e-6 for point in p['points'])]
+          low['paths'].append({'layer': 'F.Cu', 'width': 0.35,
+                               'points': [[-1.72, 44.0], [4.25, 44.0]]})
+          routes['IF_SELECTED'] = {
+              'vias': [{'x': 72.0, 'y': 35.0, 'diameter': 0.45, 'drill': 0.2},
+                       {'x': 76.5, 'y': 35.0, 'diameter': 0.45, 'drill': 0.2}],
+              'paths': [{'layer': 'F.Cu', 'width': 0.15,
+                         'points': [[72.0, 34.35], [72.0, 35.0]]},
+                        {'layer': 'B.Cu', 'width': 0.35,
+                         'points': [[72.0, 35.0], [76.5, 35.0]]},
+                        {'layer': 'F.Cu', 'width': 0.15,
+                         'points': [[76.5, 35.0], [77.105, 34.0]]}],
+              'source': 'manual'}
+
           board = pcbnew.LoadBoard(str(board_path))
           nets = board.GetNetsByName()
           layers = {'F.Cu': pcbnew.F_Cu, 'In2.Cu': pcbnew.In2_Cu, 'B.Cu': pcbnew.B_Cu}
@@ -42,10 +70,8 @@ jobs:
               total = 0.0
               for path in route.get('paths', []):
                   width = float(path['width'])
-                  # Use the design's 0.35 mm controlled-impedance trunk width;
-                  # preserve explicit pad neckdowns below 0.29 mm.
-                  if width >= 0.29:
-                      width = 0.35
+                  # Preserve the routed geometry width. Final impedance must be verified
+                  # against the chosen fabrication stackup before manufacturing.
                   points = path['points']
                   for a, b in zip(points, points[1:]):
                       if math.dist(a, b) < 1e-6:
@@ -86,7 +112,7 @@ jobs:
       - name: Summarize RF validation
         run: |
           python3 - <<'PY'
-          import json
+          import json, re
           from pathlib import Path
           root = Path('hardware/v2')
           route_data = json.loads((root / 'rf50_routes.json').read_text())
