@@ -181,7 +181,7 @@ def inductor(
     fp = {
         "0402": "Inductor_SMD:L_0402_1005Metric_Pad0.77x0.64mm_HandSolder",
         "0603": "Inductor_SMD:L_0603_1608Metric_Pad1.05x0.95mm_HandSolder",
-        "0805": "Inductor_SMD:L_0805_2012Metric_Pad1.15x1.40mm_HandSolder",
+        "0805": "CodeSDR:Inductor_0805_HandSolder",
     }[size]
     return two_pin(
         sheet,
@@ -237,7 +237,7 @@ two_pin(
     "VIN_FUSED",
     "+5V_RF",
     (40, 91),
-    footprint="Inductor_SMD:L_0805_2012Metric_Pad1.15x1.40mm_HandSolder",
+    footprint="CodeSDR:Inductor_0805_HandSolder",
     symbol="Device:FerriteBead_Small",
 )
 cap("01_power", "C1", "22uF", "VIN_FUSED", (34, 87), size="0805")

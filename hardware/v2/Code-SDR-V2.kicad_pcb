@@ -9107,7 +9107,7 @@
 			)
 		)
 	)
-	(footprint "Inductor_SMD:L_0805_2012Metric_Pad1.15x1.40mm_HandSolder"
+	(footprint "CodeSDR:Inductor_0805_HandSolder"
 		(layer "F.Cu")
 		(uuid "25b2f11c-b242-4ba6-a47c-59b595b7bf36")
 		(at 24.85 98.08)
@@ -24297,7 +24297,7 @@
 			)
 		)
 	)
-	(footprint "Inductor_SMD:L_0805_2012Metric_Pad1.15x1.40mm_HandSolder"
+	(footprint "CodeSDR:Inductor_0805_HandSolder"
 		(layer "F.Cu")
 		(uuid "6ef360fb-e03e-4b36-a3d8-4565a87fcd8f")
 		(at 11.85 77.88)
@@ -33307,7 +33307,7 @@
 			)
 		)
 	)
-	(footprint "Inductor_SMD:L_0805_2012Metric_Pad1.15x1.40mm_HandSolder"
+	(footprint "CodeSDR:Inductor_0805_HandSolder"
 		(layer "F.Cu")
 		(uuid "9e570e35-4f56-446c-ba86-d7632da6fe0a")
 		(at 18 87.8)
