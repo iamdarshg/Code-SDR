@@ -44,64 +44,82 @@ def run_cmd(cmd: list[str], description: str, fatal: bool = False) -> int:
         return 1
 
 
-def validate_pcb_structure() -> bool:
+def validate_pcb_structure() -> int:
     """Validate that PCB has required structure."""
     print("\n[VALIDATE] PCB Structure")
 
-    if not PCB_PATH.exists():
-        print(f"ERROR: PCB not found: {PCB_PATH}")
-        return False
+    try:
+        if not PCB_PATH.exists():
+            print(f"ERROR: PCB not found: {PCB_PATH}")
+            print(f"  Looked in: {PCB_PATH}")
+            print(f"  ROOT resolved to: {ROOT}")
+            print(f"  CWD: {Path.cwd()}")
+            print(f"  Available files: {list(ROOT.glob('*.kicad_pcb'))}")
+            return 1
 
-    # Would need pcbnew to fully validate, but we can do basic checks
-    with open(PCB_PATH) as f:
-        content = f.read()
+        # Would need pcbnew to fully validate, but we can do basic checks
+        with open(PCB_PATH) as f:
+            content = f.read()
 
-    if not ("(footprint " in content):
-        print("ERROR: No footprints found in PCB")
-        return False
+        if not ("(footprint " in content):
+            print("ERROR: No footprints found in PCB")
+            return 1
 
-    if not ("(net " in content):
-        print("ERROR: No nets found in PCB")
-        return False
+        if not ("(net " in content):
+            print("ERROR: No nets found in PCB")
+            return 1
 
-    print("✓ PCB structure looks valid")
-    return True
+        print("✓ PCB structure looks valid")
+        print(f"  File: {PCB_PATH}")
+        print(f"  Size: {PCB_PATH.stat().st_size} bytes")
+        return 0
+    except Exception as e:
+        print(f"ERROR: Validation failed: {e}")
+        import traceback
+        traceback.print_exc()
+        return 1
 
 
-def create_baseline_metrics() -> dict:
+def create_baseline_metrics() -> bool:
     """Create baseline metrics before routing."""
     print("\n[BASELINE] PCB Metrics")
 
     import hashlib
     import re
 
-    with open(PCB_PATH) as f:
-        content = f.read()
+    try:
+        with open(PCB_PATH) as f:
+            content = f.read()
 
-    metrics = {
-        "sha256": hashlib.sha256(content.encode()).hexdigest(),
-        "file_size": len(content),
-        "footprints": len(re.findall(r"\(footprint\s", content)),
-        "nets": len(re.findall(r"\(net\s\d+", content)),
-        "tracks": len(re.findall(r"\(segment\s", content)),
-        "vias": len(re.findall(r"\(via\s", content)),
-        "zones": len(re.findall(r"\(zone\s", content)),
-    }
+        metrics = {
+            "sha256": hashlib.sha256(content.encode()).hexdigest(),
+            "file_size": len(content),
+            "footprints": len(re.findall(r"\(footprint\s", content)),
+            "nets": len(re.findall(r"\(net\s\d+", content)),
+            "tracks": len(re.findall(r"\(segment\s", content)),
+            "vias": len(re.findall(r"\(via\s", content)),
+            "zones": len(re.findall(r"\(zone\s", content)),
+        }
 
-    BUILD.mkdir(exist_ok=True)
-    with open(BUILD / "baseline.json", "w") as f:
-        json.dump(metrics, f, indent=2)
+        BUILD.mkdir(exist_ok=True)
+        with open(BUILD / "baseline.json", "w") as f:
+            json.dump(metrics, f, indent=2)
 
-    print(f"Footprints: {metrics['footprints']}")
-    print(f"Nets: {metrics['nets']}")
-    print(f"Tracks: {metrics['tracks']}")
-    print(f"Vias: {metrics['vias']}")
-    print(f"Zones: {metrics['zones']}")
+        print(f"Footprints: {metrics['footprints']}")
+        print(f"Nets: {metrics['nets']}")
+        print(f"Tracks: {metrics['tracks']}")
+        print(f"Vias: {metrics['vias']}")
+        print(f"Zones: {metrics['zones']}")
 
-    if metrics["tracks"] == 0 and metrics["vias"] == 0:
-        print("⚠ PCB is completely unrouted")
+        if metrics["tracks"] == 0 and metrics["vias"] == 0:
+            print("⚠ PCB is completely unrouted")
 
-    return metrics
+        return True
+    except Exception as e:
+        print(f"ERROR: Baseline metrics creation failed: {e}")
+        import traceback
+        traceback.print_exc()
+        return False
 
 
 def run_erc() -> int:
@@ -242,63 +260,69 @@ def validate_route() -> int:
     )
 
 
-def create_fab_report() -> dict:
+def create_fab_report() -> bool:
     """Create fabrication readiness report."""
     print("\n[FAB_REPORT] Fabrication Readiness")
 
     import hashlib
     import re
 
-    with open(PCB_PATH) as f:
-        content = f.read()
+    try:
+        with open(PCB_PATH) as f:
+            content = f.read()
 
-    metrics = {
-        "sha256": hashlib.sha256(content.encode()).hexdigest(),
-        "footprints": len(re.findall(r"\(footprint\s", content)),
-        "nets": len(re.findall(r"\(net\s\d+", content)),
-        "tracks": len(re.findall(r"\(segment\s", content)),
-        "vias": len(re.findall(r"\(via\s", content)),
-        "zones": len(re.findall(r"\(zone\s", content)),
-    }
+        metrics = {
+            "sha256": hashlib.sha256(content.encode()).hexdigest(),
+            "footprints": len(re.findall(r"\(footprint\s", content)),
+            "nets": len(re.findall(r"\(net\s\d+", content)),
+            "tracks": len(re.findall(r"\(segment\s", content)),
+            "vias": len(re.findall(r"\(via\s", content)),
+            "zones": len(re.findall(r"\(zone\s", content)),
+        }
 
-    issues = []
+        issues = []
 
-    if metrics["tracks"] == 0 and metrics["vias"] == 0:
-        issues.append("Board is completely unrouted")
+        if metrics["tracks"] == 0 and metrics["vias"] == 0:
+            issues.append("Board is completely unrouted")
 
-    if metrics["tracks"] < 100:
-        issues.append(f"Very few tracks ({metrics['tracks']})")
+        if metrics["tracks"] < 100:
+            issues.append(f"Very few tracks ({metrics['tracks']})")
 
-    # Check DRC results if available
-    drc_path = BUILD / "drc.json"
-    if drc_path.exists():
-        with open(drc_path) as f:
-            drc = json.load(f)
-        unconnected = len(drc.get("unconnected_items", []))
-        errors = len(drc.get("errors", []))
-        if unconnected > 0:
-            issues.append(f"DRC: {unconnected} unconnected items")
-        if errors > 0:
-            issues.append(f"DRC: {errors} errors")
+        # Check DRC results if available
+        drc_path = BUILD / "drc.json"
+        if drc_path.exists():
+            with open(drc_path) as f:
+                drc = json.load(f)
+            unconnected = len(drc.get("unconnected_items", []))
+            errors = len(drc.get("errors", []))
+            if unconnected > 0:
+                issues.append(f"DRC: {unconnected} unconnected items")
+            if errors > 0:
+                issues.append(f"DRC: {errors} errors")
 
-    report = {
-        "metrics": metrics,
-        "ready": len(issues) == 0,
-        "issues": issues,
-    }
+        report = {
+            "metrics": metrics,
+            "ready": len(issues) == 0,
+            "issues": issues,
+        }
 
-    with open(BUILD / "fab-readiness.json", "w") as f:
-        json.dump(report, f, indent=2)
+        with open(BUILD / "fab-readiness.json", "w") as f:
+            json.dump(report, f, indent=2)
 
-    print(f"Tracks: {metrics['tracks']}")
-    print(f"Vias: {metrics['vias']}")
-    print(f"Status: {'READY' if report['ready'] else 'NOT READY'}")
-    if issues:
-        print("Issues:")
-        for issue in issues:
-            print(f"  - {issue}")
+        print(f"Tracks: {metrics['tracks']}")
+        print(f"Vias: {metrics['vias']}")
+        print(f"Status: {'READY' if report['ready'] else 'NOT READY'}")
+        if issues:
+            print("Issues:")
+            for issue in issues:
+                print(f"  - {issue}")
 
-    return report
+        return True
+    except Exception as e:
+        print(f"ERROR: Fab report creation failed: {e}")
+        import traceback
+        traceback.print_exc()
+        return False
 
 
 def main() -> int:
@@ -334,14 +358,14 @@ def main() -> int:
 
     stages = {
         "validate": validate_pcb_structure,
-        "baseline": lambda: create_baseline_metrics() and 0 or 1,
+        "baseline": lambda: 0 if create_baseline_metrics() else 1,
         "erc": run_erc,
         "export": export_dsn,
         "import": import_ses,
         "fences": add_rf_fences,
         "validate-route": validate_route,
         "drc": run_drc,
-        "report": lambda: create_fab_report() and 0 or 1,
+        "report": lambda: 0 if create_fab_report() else 1,
     }
 
     if args.stage == "all":
