@@ -1,0 +1,205 @@
+name: Code-SDR V2 Fabrication Readiness
+
+on:
+  push:
+    branches: [claude/rev-b-pcb-routing-fab-yp4v6y]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: code-sdr-v2-readiness
+  cancel-in-progress: true
+
+jobs:
+  validate:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    outputs:
+      ready: ${{ steps.check.outputs.ready }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+
+      - name: Run schematic validation
+        id: erc
+        continue-on-error: true
+        run: |
+          mkdir -p build
+          kicad-cli sch erc \
+            --format json \
+            --severity-error \
+            -o build/erc.json \
+            Code-SDR-V2.kicad_sch 2>&1 | tee build/erc.log
+
+          # Parse ERC results
+          if [ -f build/erc.json ]; then
+            python3 << 'EOF'
+import json
+with open("build/erc.json") as f:
+    erc = json.load(f)
+errors = len(erc.get("schematic", {}).get("errors", []))
+print(f"ERC Errors: {errors}")
+if errors > 0:
+    exit(1)
+EOF
+          fi
+
+      - name: Analyze PCB routing status
+        id: routing
+        continue-on-error: true
+        run: |
+          mkdir -p build
+          python3 << 'EOF'
+import json
+import re
+import os
+
+# Analyze PCB file
+with open("Code-SDR-V2.kicad_pcb") as f:
+    content = f.read()
+
+footprints = len(re.findall(r'\(footprint\s', content))
+nets = len(re.findall(r'\(net\s\d+', content))
+tracks = len(re.findall(r'\(segment\s', content))
+vias = len(re.findall(r'\(via\s', content))
+zones = len(re.findall(r'\(zone\s', content))
+
+report = {
+    "routing_status": {
+        "footprints": footprints,
+        "nets": nets,
+        "tracks": tracks,
+        "vias": vias,
+        "zones": zones,
+        "is_routed": tracks > 0 or vias > 0,
+        "critical_issues": []
+    }
+}
+
+# Check for critical issues
+if footprints == 0:
+    report["routing_status"]["critical_issues"].append("No footprints found")
+if nets == 0:
+    report["routing_status"]["critical_issues"].append("No nets found")
+if tracks == 0 and vias == 0 and nets > 10:
+    report["routing_status"]["critical_issues"].append("Board is completely unrouted but has nets")
+
+with open("build/routing-status.json", "w") as f:
+    json.dump(report, f, indent=2)
+
+print(json.dumps(report, indent=2))
+print(f"\nFinal status: {'ROUTED' if report['routing_status']['is_routed'] else 'UNROUTED'}")
+print(f"Issues: {len(report['routing_status']['critical_issues'])}")
+
+if report['routing_status']['critical_issues']:
+    for issue in report['routing_status']['critical_issues']:
+        print(f"  - {issue}")
+    exit(1)
+EOF
+
+      - name: Run DRC check
+        id: drc
+        continue-on-error: true
+        run: |
+          kicad-cli pcb drc \
+            --format json \
+            --all-track-errors \
+            -o build/drc.json \
+            Code-SDR-V2.kicad_pcb 2>&1 | tee build/drc.log || true
+
+          # Analyze DRC results if available
+          if [ -f build/drc.json ]; then
+            python3 << 'EOF'
+import json
+with open("build/drc.json") as f:
+    drc = json.load(f)
+unconnected = len(drc.get("unconnected_items", []))
+errors = len(drc.get("errors", []))
+print(f"DRC Unconnected items: {unconnected}")
+print(f"DRC Errors: {errors}")
+EOF
+          fi
+
+      - name: Fabrication readiness gate
+        id: check
+        run: |
+          python3 << 'EOF'
+import json
+import os
+
+ready = True
+issues = []
+
+# Check routing status
+if os.path.exists("build/routing-status.json"):
+    with open("build/routing-status.json") as f:
+        routing = json.load(f)["routing_status"]
+
+    if not routing["is_routed"]:
+        issues.append("Board is not routed")
+        ready = False
+
+    if routing["critical_issues"]:
+        issues.extend(routing["critical_issues"])
+        ready = False
+
+# Check ERC
+if os.path.exists("build/erc.json"):
+    with open("build/erc.json") as f:
+        erc = json.load(f)
+    errors = len(erc.get("schematic", {}).get("errors", []))
+    if errors > 0:
+        issues.append(f"ERC has {errors} errors")
+        ready = False
+
+# Check DRC
+if os.path.exists("build/drc.json"):
+    with open("build/drc.json") as f:
+        drc = json.load(f)
+    unconnected = len(drc.get("unconnected_items", []))
+    errors = len(drc.get("errors", []))
+    if unconnected > 0:
+        issues.append(f"DRC has {unconnected} unconnected items")
+        ready = False
+    if errors > 0:
+        issues.append(f"DRC has {errors} errors")
+        ready = False
+
+print(f"Fabrication Readiness: {'READY' if ready else 'NOT READY'}")
+if issues:
+    print("\nIssues:")
+    for issue in issues:
+        print(f"  - {issue}")
+    exit(1)
+EOF
+          echo "ready=$([[ $? -eq 0 ]] && echo 'yes' || echo 'no')" >> "$GITHUB_OUTPUT"
+
+      - name: Upload validation reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: Code-SDR-V2-fab-readiness
+          path: build/
+          if-no-files-found: warn
+          retention-days: 7
+
+      - name: Report readiness status
+        if: always()
+        run: |
+          echo "## Code-SDR V2 Fabrication Readiness" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          if [[ "${{ steps.check.outputs.ready }}" == "yes" ]]; then
+            echo "✅ **READY FOR FABRICATION**" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "❌ **NOT READY FOR FABRICATION**" >> $GITHUB_STEP_SUMMARY
+          fi
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**Artifacts:**" >> $GITHUB_STEP_SUMMARY
+          echo "- ERC Report: build/erc.json" >> $GITHUB_STEP_SUMMARY
+          echo "- Routing Status: build/routing-status.json" >> $GITHUB_STEP_SUMMARY
+          echo "- DRC Report: build/drc.json" >> $GITHUB_STEP_SUMMARY
