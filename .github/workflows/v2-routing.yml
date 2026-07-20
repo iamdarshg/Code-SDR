@@ -1,0 +1,94 @@
+name: Route Code-SDR V2
+
+on:
+  push:
+    branches: [claude/rev-b-pcb-routing-fab-yp4v6y]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: code-sdr-v2-routing
+  cancel-in-progress: false
+
+jobs:
+  route:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '21'
+
+      - name: Install KiCad
+        run: sudo apt-get update && sudo apt-get install -y kicad
+
+      - name: Create build directory
+        run: mkdir -p hardware/v2/build
+
+      - name: Check PCB status
+        run: python3 hardware/v2/tools/check_fab_readiness.py --output hardware/v2/build/pcb-status.json || true
+
+      - name: Setup Python tools
+        run: cd hardware/v2 && python3 tools/route_v2_complete.py --stage validate
+
+      - name: Export DSN
+        continue-on-error: true
+        run: cd hardware/v2 && python3 tools/route_v2_complete.py --stage export
+
+      - name: Download FreeRouting
+        continue-on-error: true
+        run: |
+          mkdir -p hardware/v2/build
+          cd hardware/v2/build
+          curl -L -o freerouting.jar \
+            'https://github.com/freerouting/freerouting/releases/download/v2.2.4/freerouting-2.2.4.jar' \
+            || echo "Download failed"
+
+      - name: Run FreeRouting
+        continue-on-error: true
+        run: |
+          cd hardware/v2/build
+          if [ -f freerouting.jar ]; then
+            timeout 45m java -Xmx3g -jar freerouting.jar \
+              -de Code-SDR-V2.dsn \
+              -do Code-SDR-V2-routed.ses \
+              -mp 10 -mt 0 -da --gui.enabled=false \
+              2>&1 | tee route.log || true
+          fi
+
+      - name: Import routed SES
+        continue-on-error: true
+        run: cd hardware/v2 && python3 tools/route_v2_complete.py --stage import
+
+      - name: Validate route
+        continue-on-error: true
+        run: cd hardware/v2 && python3 tools/validate_route.py || true
+
+      - name: Final status
+        run: python3 hardware/v2/tools/check_fab_readiness.py --output hardware/v2/build/final-status.json
+
+      - name: Upload results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: Code-SDR-V2-routing
+          path: hardware/v2/build/
+          retention-days: 30
+
+      - name: Commit routed PCB
+        if: success()
+        run: |
+          cd hardware/v2
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add Code-SDR-V2.kicad_pcb
+          git diff --cached --quiet || (git commit -m 'feat: route Code-SDR V2' && git push)
