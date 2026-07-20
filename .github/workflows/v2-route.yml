@@ -233,18 +233,18 @@ EOF
 
           # Check if SES was created and has content
           if [ -f "$SES_FILE" ] && [ -s "$SES_FILE" ]; then
-            SIZE=$(stat -f%z "$SES_FILE" 2>/dev/null || stat -c%s "$SES_FILE")
+            SIZE=$(stat -c%s "$SES_FILE" || echo 0)
             echo "SES file created: $SIZE bytes"
             if [ "$SIZE" -gt 1000 ]; then
               echo "SES file appears valid"
-              echo "routing_success=true" >> $GITHUB_OUTPUT
+              echo "routing_success=true" >> "$GITHUB_OUTPUT"
             else
               echo "WARNING: SES file is very small"
-              echo "routing_success=false" >> $GITHUB_OUTPUT
+              echo "routing_success=false" >> "$GITHUB_OUTPUT"
             fi
           else
             echo "ERROR: SES file was not created or is empty"
-            echo "routing_success=false" >> $GITHUB_OUTPUT
+            echo "routing_success=false" >> "$GITHUB_OUTPUT"
           fi
 
       - name: Import routed SES
