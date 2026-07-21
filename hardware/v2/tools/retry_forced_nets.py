@@ -71,9 +71,13 @@ def main():
                 edges = ar.nearest_neighbor_chain(pads)
 
             extra_attempts = [
-                dict(extra_pad_mm=60.0, track_width_mm=width_mm, clearance_mm=0.12, pitch_mm=0.2),
-                dict(extra_pad_mm=100.0, track_width_mm=0.1, clearance_mm=0.1, pitch_mm=0.3),
-                dict(extra_pad_mm=160.0, track_width_mm=0.1, clearance_mm=0.08, pitch_mm=0.4),
+                # never search below the board's true 0.1mm min clearance --
+                # a coarser grid pitch needs *more* margin, not less, to
+                # avoid landing a "just barely blocked" path that DRC then
+                # flags as a marginal clearance violation
+                dict(extra_pad_mm=60.0, track_width_mm=width_mm, clearance_mm=0.15, pitch_mm=0.15),
+                dict(extra_pad_mm=100.0, track_width_mm=0.1, clearance_mm=0.12, pitch_mm=0.15),
+                dict(extra_pad_mm=160.0, track_width_mm=0.1, clearance_mm=0.1, pitch_mm=0.15),
             ]
 
             for (pa, pb) in edges:

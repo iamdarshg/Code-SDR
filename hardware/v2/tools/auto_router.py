@@ -424,10 +424,10 @@ def route_edge_with_fallback(obstacles, src, dst, allow_vias, net_name, src_laye
     attempts = [
         dict(extra_pad_mm=4.0, track_width_mm=pw, clearance_mm=pw_clear, pitch_mm=GRID_PITCH_MM),
         dict(extra_pad_mm=10.0, track_width_mm=pw, clearance_mm=pw_clear, pitch_mm=GRID_PITCH_MM),
-        dict(extra_pad_mm=15.0, track_width_mm=pw, clearance_mm=0.12, pitch_mm=0.2),
-        dict(extra_pad_mm=10.0, track_width_mm=0.12, clearance_mm=0.12, pitch_mm=0.2),
-        dict(extra_pad_mm=25.0, track_width_mm=0.12, clearance_mm=0.1, pitch_mm=0.2),
-        dict(extra_pad_mm=40.0, track_width_mm=0.1, clearance_mm=0.1, pitch_mm=0.25),
+        dict(extra_pad_mm=15.0, track_width_mm=pw, clearance_mm=0.15, pitch_mm=0.15),
+        dict(extra_pad_mm=10.0, track_width_mm=0.12, clearance_mm=0.15, pitch_mm=0.15),
+        dict(extra_pad_mm=25.0, track_width_mm=0.12, clearance_mm=0.12, pitch_mm=0.15),
+        dict(extra_pad_mm=40.0, track_width_mm=0.1, clearance_mm=0.12, pitch_mm=0.15),
     ]
     for kw in attempts:
         path = build_grid_and_search(obstacles, src, dst, allow_vias, net_name,
