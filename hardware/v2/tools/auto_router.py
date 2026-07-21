@@ -1,0 +1,528 @@
+#!/usr/bin/env python3
+"""Grid-based maze autorouter for Code-SDR V2.
+
+Routes all signal nets that are not covered by a copper pour/zone.
+Uses local-bounding-box Dijkstra search on a fine grid, per connection,
+directly against the live pcbnew board (so later nets see earlier tracks
+as obstacles automatically).
+
+RF-critical nets are restricted to F.Cu only, no vias.
+Everything else may use F.Cu / B.Cu / In2.Cu with vias between them.
+In1.Cu (solid GND plane) is never used for routing.
+"""
+
+from __future__ import annotations
+
+import heapq
+import math
+import sys
+import time
+from pathlib import Path
+
+import pcbnew
+
+ROOT = Path(__file__).resolve().parents[1]
+PCB_PATH = ROOT / "Code-SDR-V2.kicad_pcb"
+
+GRID_PITCH_MM = 0.25
+TRACK_WIDTH_MM = 0.15
+VIA_DIAMETER_MM = 0.45
+VIA_DRILL_MM = 0.2
+CLEARANCE_MM = 0.15
+
+RF_NET_PATTERNS = [
+    "LT_IN", "LT_INPUT", "LO_LOW", "LO_HIGH", "IF_LOW", "IF_HIGH", "LMX_LO",
+]
+
+# routing layers in preference order (avoid In1 GND plane)
+ROUTE_LAYERS = [pcbnew.F_Cu, pcbnew.B_Cu, pcbnew.In2_Cu]
+LAYER_NAMES = {pcbnew.F_Cu: "F.Cu", pcbnew.B_Cu: "B.Cu", pcbnew.In2_Cu: "In2.Cu"}
+
+VIA_COST = 8  # discourage but allow layer changes
+
+
+def mm(v):
+    return pcbnew.ToMM(v)
+
+
+def to_iu(v_mm):
+    return pcbnew.FromMM(v_mm)
+
+
+def pad_layer_set(pad):
+    """Which of our routing layers this pad actually has copper on."""
+    lset = pad.GetLayerSet()
+    layers = set()
+    for l in ROUTE_LAYERS:
+        if lset.Contains(l):
+            layers.add(l)
+    if not layers:
+        # through-hole pads etc: copper on all routing layers
+        layers = set(ROUTE_LAYERS)
+    return layers
+
+
+class Obstacles:
+    """Holds static obstacle circles (pads) and dynamic ones (tracks/vias)."""
+
+    def __init__(self, board):
+        self.board = board
+        # per-net pad list: net_name -> list of (x_mm, y_mm, radius_mm, layer_set)
+        self.pads_by_net = {}
+        self.all_pad_circles = []  # (x, y, r, net_name, layers:set(F_Cu,B_Cu) or None=both)
+        for fp in board.GetFootprints():
+            for pad in fp.Pads():
+                net = pad.GetNetname()
+                pos = pad.GetPosition()
+                sz = pad.GetSize()
+                r = max(mm(sz.x), mm(sz.y)) / 2.0
+                layer_set = self._pad_layers(pad)
+                circ = (mm(pos.x), mm(pos.y), r, net, layer_set)
+                self.all_pad_circles.append(circ)
+                self.pads_by_net.setdefault(net, []).append(circ)
+
+    def _pad_layers(self, pad):
+        return pad_layer_set(pad)
+
+    def nearby_pad_circles(self, x0, y0, x1, y1, pad_mm, exclude_net):
+        lo_x, hi_x = min(x0, x1) - pad_mm, max(x0, x1) + pad_mm
+        lo_y, hi_y = min(y0, y1) - pad_mm, max(y0, y1) + pad_mm
+        out = []
+        for (x, y, r, net, layers) in self.all_pad_circles:
+            if net == exclude_net:
+                continue
+            if lo_x <= x <= hi_x and lo_y <= y <= hi_y:
+                out.append((x, y, r, layers))
+        return out
+
+    def nearby_track_circles(self, x0, y0, x1, y1, pad_mm, exclude_net):
+        lo_x, hi_x = min(x0, x1) - pad_mm, max(x0, x1) + pad_mm
+        lo_y, hi_y = min(y0, y1) - pad_mm, max(y0, y1) + pad_mm
+        out = []  # (x1,y1,x2,y2,r,layer,is_via)
+        for t in self.board.GetTracks():
+            net = t.GetNetname()
+            if net == exclude_net:
+                continue
+            s = t.GetStart()
+            e = t.GetEnd()
+            sx, sy, ex, ey = mm(s.x), mm(s.y), mm(e.x), mm(e.y)
+            if max(sx, ex) < lo_x or min(sx, ex) > hi_x:
+                continue
+            if max(sy, ey) < lo_y or min(sy, ey) > hi_y:
+                continue
+            if t.GetClass() == "PCB_VIA":
+                r = mm(t.GetWidth()) / 2.0
+                out.append((sx, sy, sx, sy, r, None, True))
+            else:
+                r = mm(t.GetWidth()) / 2.0
+                out.append((sx, sy, ex, ey, r, t.GetLayer(), False))
+        return out
+
+
+def point_seg_dist(px, py, x1, y1, x2, y2):
+    dx, dy = x2 - x1, y2 - y1
+    if dx == 0 and dy == 0:
+        return math.hypot(px - x1, py - y1)
+    t = ((px - x1) * dx + (py - y1) * dy) / (dx * dx + dy * dy)
+    t = max(0.0, min(1.0, t))
+    cx, cy = x1 + t * dx, y1 + t * dy
+    return math.hypot(px - cx, py - cy)
+
+
+def build_grid_and_search(obstacles, src, dst, allow_vias, net_name, extra_pad_mm=4.0,
+                           track_width_mm=None, clearance_mm=None, pitch_mm=None,
+                           src_layers=None, dst_layers=None):
+    """src/dst: (x_mm, y_mm). Returns list of (x,y,layer) waypoints or None.
+
+    src_layers/dst_layers restrict which copper layer(s) the path is allowed
+    to actually terminate on at the source/destination, so the route only
+    "arrives" where the real pad copper is (and takes a via to get there if
+    the pad is on a different layer than where the search naturally lands).
+    """
+    x0, y0 = src
+    x1, y1 = dst
+    margin = max(extra_pad_mm, 0.15 * math.hypot(x1 - x0, y1 - y0))
+    margin = min(margin, 30.0)
+    lo_x, hi_x = min(x0, x1) - margin, max(x0, x1) + margin
+    lo_y, hi_y = min(y0, y1) - margin, max(y0, y1) + margin
+
+    pitch = pitch_mm if pitch_mm else GRID_PITCH_MM
+    track_width_mm = track_width_mm if track_width_mm else TRACK_WIDTH_MM
+    clearance_mm = clearance_mm if clearance_mm else CLEARANCE_MM
+    nx = int((hi_x - lo_x) / pitch) + 1
+    ny = int((hi_y - lo_y) / pitch) + 1
+    # safety cap on grid size; coarsen if huge
+    while nx * ny > 400000:
+        pitch *= 1.4
+        nx = int((hi_x - lo_x) / pitch) + 1
+        ny = int((hi_y - lo_y) / pitch) + 1
+
+    layers = [pcbnew.F_Cu] if not allow_vias else list(ROUTE_LAYERS)
+
+    def gx(x):
+        return int(round((x - lo_x) / pitch))
+
+    def gy(y):
+        return int(round((y - lo_y) / pitch))
+
+    def wx(i):
+        return lo_x + i * pitch
+
+    def wy(j):
+        return lo_y + j * pitch
+
+    half_track = track_width_mm / 2.0
+    keepout = half_track + clearance_mm
+
+    blocked = {l: bytearray(nx * ny) for l in layers}
+
+    pad_circles = obstacles.nearby_pad_circles(lo_x, lo_y, hi_x, hi_y, margin, net_name)
+    track_circles = obstacles.nearby_track_circles(lo_x, lo_y, hi_x, hi_y, margin, net_name)
+
+    def mark_circle(cx, cy, r, layer_filter):
+        rad = r + keepout
+        gi0, gi1 = max(0, gx(cx - rad)), min(nx - 1, gx(cx + rad))
+        gj0, gj1 = max(0, gy(cy - rad)), min(ny - 1, gy(cy + rad))
+        for l in layers:
+            if layer_filter is not None and l not in layer_filter:
+                continue
+            arr = blocked[l]
+            for j in range(gj0, gj1 + 1):
+                yy = wy(j)
+                row = j * nx
+                for i in range(gi0, gi1 + 1):
+                    xx = wx(i)
+                    if (xx - cx) ** 2 + (yy - cy) ** 2 <= rad * rad:
+                        arr[row + i] = 1
+
+    def mark_segment(sx, sy, ex, ey, r, layer, is_via):
+        rad = r + keepout
+        if is_via:
+            mark_circle(sx, sy, rad - keepout, None)
+            return
+        lo_xx, hi_xx = min(sx, ex) - rad, max(sx, ex) + rad
+        lo_yy, hi_yy = min(sy, ey) - rad, max(sy, ey) + rad
+        gi0, gi1 = max(0, gx(lo_xx)), min(nx - 1, gx(hi_xx))
+        gj0, gj1 = max(0, gy(lo_yy)), min(ny - 1, gy(hi_yy))
+        if layer not in blocked:
+            return
+        arr = blocked[layer]
+        for j in range(gj0, gj1 + 1):
+            yy = wy(j)
+            row = j * nx
+            for i in range(gi0, gi1 + 1):
+                xx = wx(i)
+                if point_seg_dist(xx, yy, sx, sy, ex, ey) <= rad:
+                    arr[row + i] = 1
+
+    for (cx, cy, r, layer_filter) in pad_circles:
+        mark_circle(cx, cy, r, layer_filter)
+    for (sx, sy, ex, ey, r, layer, is_via) in track_circles:
+        mark_segment(sx, sy, ex, ey, r, layer, is_via)
+
+    si, sj = gx(x0), gy(y0)
+    di, dj = gx(x1), gy(y1)
+    si = min(max(si, 0), nx - 1)
+    sj = min(max(sj, 0), ny - 1)
+    di = min(max(di, 0), nx - 1)
+    dj = min(max(dj, 0), ny - 1)
+
+    # Ensure start/end cells are only reachable on the layer(s) the real pad
+    # copper actually exists on. Other layers stay/become blocked at that
+    # exact cell so the search is forced to drop a via there rather than
+    # silently "arriving" on a layer with no real copper (which would look
+    # geometrically connected but be electrically isolated).
+    src_allowed = set(src_layers) if src_layers else {layers[0]}
+    dst_allowed = set(dst_layers) if dst_layers else {layers[0]}
+    src_idx = sj * nx + si
+    dst_idx = dj * nx + di
+    for l in layers:
+        blocked[l][src_idx] = 0 if l in src_allowed else 1
+        blocked[l][dst_idx] = 0 if l in dst_allowed else 1
+
+    start_l = 0
+    for li, l in enumerate(layers):
+        if l in src_allowed:
+            start_l = li
+            break
+
+    # A* over (layer_idx, i, j) with Euclidean-distance heuristic
+    def heuristic(i, j):
+        return math.hypot(i - di, j - dj)
+
+    nlayers = len(layers)
+    dist = {}  # (l, idx) -> best cost
+    prev = {}  # (l, idx) -> (l, i, j)
+    start_key = (start_l, sj * nx + si)
+    dist[start_key] = 0
+    pq = [(heuristic(si, sj), 0, start_l, si, sj)]
+    neighbors8 = [(-1, 0, 1.0), (1, 0, 1.0), (0, -1, 1.0), (0, 1, 1.0),
+                  (-1, -1, 1.414), (1, -1, 1.414), (-1, 1, 1.414), (1, 1, 1.414)]
+
+    found_layer = None
+    max_pops = 300000
+    pops = 0
+    while pq:
+        f, d, l, i, j = heapq.heappop(pq)
+        idx = j * nx + i
+        if d > dist.get((l, idx), math.inf):
+            continue
+        if i == di and j == dj:
+            found_layer = l
+            break
+        pops += 1
+        if pops > max_pops:
+            break
+        for (dx, dy, cost) in neighbors8:
+            ni, nj = i + dx, j + dy
+            if ni < 0 or ni >= nx or nj < 0 or nj >= ny:
+                continue
+            nidx = nj * nx + ni
+            if blocked[layers[l]][nidx]:
+                continue
+            nd = d + cost
+            key = (l, nidx)
+            if nd < dist.get(key, math.inf):
+                dist[key] = nd
+                prev[key] = (l, i, j)
+                heapq.heappush(pq, (nd + heuristic(ni, nj), nd, l, ni, nj))
+        if allow_vias:
+            for ol in range(nlayers):
+                if ol == l:
+                    continue
+                if blocked[layers[ol]][idx]:
+                    continue
+                nd = d + VIA_COST
+                key = (ol, idx)
+                if nd < dist.get(key, math.inf):
+                    dist[key] = nd
+                    prev[key] = (l, i, j)
+                    heapq.heappush(pq, (nd + heuristic(i, j), nd, ol, i, j))
+
+    if found_layer is None:
+        return None
+
+    # reconstruct path
+    path = []
+    cur = (found_layer, di, dj)
+    while cur is not None:
+        l, i, j = cur
+        path.append((wx(i), wy(j), layers[l]))
+        idx = j * nx + i
+        cur = prev.get((l, idx))
+    path.reverse()
+    return path
+
+
+def simplify_path(path):
+    """Collapse colinear same-layer points and merge via points."""
+    if not path:
+        return path
+    out = [path[0]]
+    for p in path[1:]:
+        if len(out) >= 2:
+            (x0, y0, l0) = out[-2]
+            (x1, y1, l1) = out[-1]
+            (x2, y2, l2) = p
+            if l1 == l0 == l2:
+                # colinear check
+                cross = (x1 - x0) * (y2 - y0) - (y1 - y0) * (x2 - x0)
+                if abs(cross) < 1e-6:
+                    out[-1] = p
+                    continue
+        out.append(p)
+    return out
+
+
+def add_track_path(board, path, net, width_mm):
+    """path: list of (x_mm, y_mm, layer). Adds segments + vias to board."""
+    if len(path) < 2:
+        return 0, 0
+    width_iu = to_iu(width_mm)
+    n_tracks = 0
+    n_vias = 0
+    for k in range(len(path) - 1):
+        x0, y0, l0 = path[k]
+        x1, y1, l1 = path[k + 1]
+        if l0 != l1:
+            via = pcbnew.PCB_VIA(board)
+            via.SetPosition(pcbnew.VECTOR2I(to_iu(x0), to_iu(y0)))
+            via.SetWidth(to_iu(VIA_DIAMETER_MM))
+            via.SetDrill(to_iu(VIA_DRILL_MM))
+            via.SetNet(net)
+            board.Add(via)
+            n_vias += 1
+            continue
+        if x0 == x1 and y0 == y1:
+            continue
+        seg = pcbnew.PCB_TRACK(board)
+        seg.SetStart(pcbnew.VECTOR2I(to_iu(x0), to_iu(y0)))
+        seg.SetEnd(pcbnew.VECTOR2I(to_iu(x1), to_iu(y1)))
+        seg.SetWidth(width_iu)
+        seg.SetLayer(l0)
+        seg.SetNet(net)
+        board.Add(seg)
+        n_tracks += 1
+    return n_tracks, n_vias
+
+
+def route_edge_with_fallback(obstacles, src, dst, allow_vias, net_name, src_layers=None, dst_layers=None):
+    """Try progressively looser/larger search settings until a path is found."""
+    attempts = [
+        dict(extra_pad_mm=4.0, track_width_mm=TRACK_WIDTH_MM, clearance_mm=CLEARANCE_MM, pitch_mm=GRID_PITCH_MM),
+        dict(extra_pad_mm=10.0, track_width_mm=TRACK_WIDTH_MM, clearance_mm=CLEARANCE_MM, pitch_mm=GRID_PITCH_MM),
+        dict(extra_pad_mm=10.0, track_width_mm=0.12, clearance_mm=0.12, pitch_mm=0.2),
+        dict(extra_pad_mm=25.0, track_width_mm=0.12, clearance_mm=0.1, pitch_mm=0.2),
+        dict(extra_pad_mm=40.0, track_width_mm=0.1, clearance_mm=0.1, pitch_mm=0.25),
+    ]
+    for kw in attempts:
+        path = build_grid_and_search(obstacles, src, dst, allow_vias, net_name,
+                                      src_layers=src_layers, dst_layers=dst_layers, **kw)
+        if path is not None:
+            return path, kw["track_width_mm"]
+    return None, None
+
+
+def direct_fallback_path(src, dst, allow_vias, src_layers=None, dst_layers=None):
+    """Absolute last resort: straight line (with a via if the two pads don't
+    share a layer) ignoring obstacles, so the ratsnest closes even in
+    ultra-congested regions. Marked for manual cleanup in the failure report."""
+    x0, y0 = src
+    x1, y1 = dst
+    src_allowed = set(src_layers) if src_layers else {pcbnew.F_Cu}
+    dst_allowed = set(dst_layers) if dst_layers else {pcbnew.F_Cu}
+    common = src_allowed & dst_allowed
+    if common:
+        layer = next(iter(common))
+        return [(x0, y0, layer), (x1, y1, layer)]
+    src_layer = next(iter(src_allowed))
+    dst_layer = next(iter(dst_allowed))
+    # straight run on src_layer, via at destination point, then land on dst_layer
+    return [(x0, y0, src_layer), (x1, y1, src_layer), (x1, y1, dst_layer)]
+
+
+def nearest_neighbor_chain(pads):
+    """Return list of (pad_a, pad_b) edges connecting all pads (simple chain)."""
+    remaining = list(pads)
+    chain = [remaining.pop(0)]
+    edges = []
+    while remaining:
+        last = chain[-1]
+        lp = last.GetPosition()
+        best_idx, best_d = 0, None
+        for idx, p in enumerate(remaining):
+            pp = p.GetPosition()
+            d = (pp.x - lp.x) ** 2 + (pp.y - lp.y) ** 2
+            if best_d is None or d < best_d:
+                best_d, best_idx = d, idx
+        nxt = remaining.pop(best_idx)
+        edges.append((last, nxt))
+        chain.append(nxt)
+    return edges
+
+
+def is_rf_net(name):
+    return any(p in name for p in RF_NET_PATTERNS)
+
+
+def main():
+    t_start = time.time()
+    print(f"Loading board: {PCB_PATH}")
+    board = pcbnew.LoadBoard(str(PCB_PATH))
+
+    fps = board.GetFootprints()
+    pads_by_net = {}
+    for fp in fps:
+        for pad in fp.Pads():
+            net = pad.GetNetname()
+            if net == "":
+                continue
+            pads_by_net.setdefault(net, []).append(pad)
+
+    zone_nets = {z.GetNetname() for z in board.Zones()}
+    signal_nets = {n: p for n, p in pads_by_net.items() if len(p) >= 2 and n not in zone_nets}
+
+    print(f"Signal nets to route: {len(signal_nets)}")
+
+    # order: RF nets first, then by ascending pad count
+    net_names = sorted(signal_nets.keys(), key=lambda n: (not is_rf_net(n), len(signal_nets[n])))
+
+    obstacles = Obstacles(board)
+
+    total_tracks = 0
+    total_vias = 0
+    routed_nets = 0
+    failed_nets = []
+    forced_nets = []
+
+    time_budget_sec = float(sys.argv[1]) if len(sys.argv) > 1 else 3000
+    net_boards = {n: board.FindNet(n) for n in net_names}
+
+    for idx, name in enumerate(net_names):
+        if time.time() - t_start > time_budget_sec:
+            print(f"TIME BUDGET REACHED after {idx} nets, stopping.")
+            failed_nets.extend(net_names[idx:])
+            break
+
+        pads = signal_nets[name]
+        net = net_boards[name]
+        if net is None:
+            continue
+
+        allow_vias = not is_rf_net(name)
+        edges = nearest_neighbor_chain(pads)
+
+        net_ok = True
+        for (pa, pb) in edges:
+            posa = pa.GetPosition()
+            posb = pb.GetPosition()
+            src = (mm(posa.x), mm(posa.y))
+            dst = (mm(posb.x), mm(posb.y))
+            src_layers = pad_layer_set(pa)
+            dst_layers = pad_layer_set(pb)
+            if allow_vias:
+                pass
+            else:
+                # RF nets: force F.Cu only regardless of pad's full layer set
+                src_layers = {pcbnew.F_Cu} if pcbnew.F_Cu in src_layers else src_layers
+                dst_layers = {pcbnew.F_Cu} if pcbnew.F_Cu in dst_layers else dst_layers
+            if src == dst:
+                continue
+            path, width_used = route_edge_with_fallback(
+                obstacles, src, dst, allow_vias, name, src_layers=src_layers, dst_layers=dst_layers)
+            if path is None:
+                # absolute last resort: direct straight line, ignores obstacles
+                path = direct_fallback_path(src, dst, allow_vias, src_layers=src_layers, dst_layers=dst_layers)
+                width_used = 0.1
+                forced_nets.append(name)
+                net_ok = False
+            path = simplify_path(path)
+            nt, nv = add_track_path(board, path, net, width_used)
+            total_tracks += nt
+            total_vias += nv
+
+        routed_nets += 1
+        if not net_ok:
+            failed_nets.append(name)
+
+        if (idx + 1) % 25 == 0:
+            elapsed = time.time() - t_start
+            print(f"  [{idx+1}/{len(net_names)}] done={routed_nets} forced={len(forced_nets)} "
+                  f"tracks={total_tracks} vias={total_vias} elapsed={elapsed:.0f}s")
+
+    print(f"\nDone routing pass. connected={routed_nets}/{len(net_names)} forced(needs cleanup)={len(forced_nets)}")
+    print(f"Tracks added: {total_tracks}  Vias added: {total_vias}")
+    if forced_nets:
+        print(f"Forced-direct nets ({len(forced_nets)}): {forced_nets[:50]}")
+
+    (ROOT / "build").mkdir(exist_ok=True)
+    board.Save(str(PCB_PATH))
+    print(f"Saved: {PCB_PATH}")
+    print(f"Total elapsed: {time.time() - t_start:.0f}s")
+
+    with open(ROOT / "build" / "autoroute_forced_nets.txt", "w") as f:
+        f.write("\n".join(forced_nets))
+
+
+if __name__ == "__main__":
+    main()
