@@ -55,7 +55,14 @@ def main():
         if len(pads) < 2:
             continue
         allow_vias = not ar.is_rf_net(name)
+        width_mm, _, _ = ar.net_electrical_class(name)
         edges = ar.nearest_neighbor_chain(pads)
+
+        extra_attempts = [
+            dict(extra_pad_mm=60.0, track_width_mm=width_mm, clearance_mm=0.12, pitch_mm=0.2),
+            dict(extra_pad_mm=100.0, track_width_mm=0.1, clearance_mm=0.1, pitch_mm=0.3),
+            dict(extra_pad_mm=160.0, track_width_mm=0.1, clearance_mm=0.08, pitch_mm=0.4),
+        ]
 
         for (pa, pb) in edges:
             posa = pa.GetPosition()
@@ -69,24 +76,19 @@ def main():
                 dst_layers = {pcbnew.F_Cu} if pcbnew.F_Cu in dst_layers else dst_layers
             if src == dst:
                 continue
-            # bigger, more patient attempts than the first pass
-            attempts = [
-                dict(extra_pad_mm=15.0, track_width_mm=0.15, clearance_mm=0.15, pitch_mm=0.2),
-                dict(extra_pad_mm=30.0, track_width_mm=0.12, clearance_mm=0.12, pitch_mm=0.2),
-                dict(extra_pad_mm=50.0, track_width_mm=0.1, clearance_mm=0.1, pitch_mm=0.25),
-                dict(extra_pad_mm=80.0, track_width_mm=0.1, clearance_mm=0.08, pitch_mm=0.3),
-            ]
-            path = None
-            width_used = None
-            for kw in attempts:
-                path = ar.build_grid_and_search(obstacles, src, dst, allow_vias, name,
-                                                 src_layers=src_layers, dst_layers=dst_layers, **kw)
-                if path is not None:
-                    width_used = kw["track_width_mm"]
-                    break
+            path, width_used = ar.route_edge_with_fallback(
+                obstacles, src, dst, allow_vias, name, src_layers=src_layers, dst_layers=dst_layers,
+                preferred_width_mm=width_mm)
+            if path is None:
+                for kw in extra_attempts:
+                    path = ar.build_grid_and_search(obstacles, src, dst, allow_vias, name,
+                                                     src_layers=src_layers, dst_layers=dst_layers, **kw)
+                    if path is not None:
+                        width_used = kw["track_width_mm"]
+                        break
             if path is None:
                 path = ar.direct_fallback_path(src, dst, allow_vias, src_layers=src_layers, dst_layers=dst_layers)
-                width_used = 0.1
+                width_used = width_mm
                 still_forced.append(name)
             path = ar.simplify_path(path)
             nt, nv = ar.add_track_path(board, path, net, width_used)
