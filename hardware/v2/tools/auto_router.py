@@ -482,12 +482,15 @@ def mirror_path_offset(path, offset_mm, sign):
     return out
 
 
-def route_diff_pair(obstacles, pad_p_a, pad_p_b, pad_n_a, pad_n_b, name_p, name_n,
+def route_diff_pair(obstacles, board, net_p, net_n, pad_p_a, pad_p_b, pad_n_a, pad_n_b, name_p, name_n,
                      allow_vias, width_mm, gap_mm):
     """Route P as a normal maze search, then mirror it to build N so the pair
     stays tightly coupled at constant spacing (matched length + impedance).
     Falls back to an independent search for N if the mirror doesn't land
-    close enough to N's real pads."""
+    close enough to N's real pads. Adds P's tracks to the board *before*
+    searching for N's fallback path, so N's search actually sees P as an
+    obstacle instead of potentially routing on top of it.
+    Returns (tracks_added, vias_added, forced_p, forced_n)."""
     posa, posb = pad_p_a.GetPosition(), pad_p_b.GetPosition()
     src = (mm(posa.x), mm(posa.y))
     dst = (mm(posb.x), mm(posb.y))
@@ -531,9 +534,14 @@ def route_diff_pair(obstacles, pad_p_a, pad_p_b, pad_n_a, pad_n_b, name_p, name_
         # snap exact endpoints to true pad centers
         mirrored[0] = (n_src[0], n_src[1], mirrored[0][2])
         mirrored[-1] = (n_dst[0], n_dst[1], mirrored[-1][2])
-        return path_p, width_used, mirrored, width_used, forced_p, False
+        nt1, nv1 = add_track_path(board, path_p, net_p, width_used)
+        nt2, nv2 = add_track_path(board, mirrored, net_n, width_used)
+        return nt1 + nt2, nv1 + nv2, forced_p, False
 
-    # fallback: route N independently
+    # Mirror didn't land near N's real pads: add P now (so N's search below
+    # actually sees it as an obstacle), then route N independently.
+    nt1, nv1 = add_track_path(board, path_p, net_p, width_used)
+
     n_src_layers = pad_layer_set(pad_n_a)
     n_dst_layers = pad_layer_set(pad_n_b)
     if not allow_vias:
@@ -548,7 +556,8 @@ def route_diff_pair(obstacles, pad_p_a, pad_p_b, pad_n_a, pad_n_b, name_p, name_
         width_used_n = width_mm
         forced_n = True
     path_n = simplify_path(path_n)
-    return path_p, width_used, path_n, width_used_n, forced_p, forced_n
+    nt2, nv2 = add_track_path(board, path_n, net_n, width_used_n)
+    return nt1 + nt2, nv1 + nv2, forced_p, forced_n
 
 
 def nearest_neighbor_chain(pads):
@@ -686,13 +695,9 @@ def main():
             if net_p is None or net_n is None:
                 continue
             allow_vias_pair = not is_rf_net(name) and not is_rf_net(name_n)
-            path_p, w_p, path_n, w_n, forced_p, forced_n = route_diff_pair(
-                obstacles, pads_p[0], pads_p[1], pads_n[0], pads_n[1],
+            nt, nv, forced_p, forced_n = route_diff_pair(
+                obstacles, board, net_p, net_n, pads_p[0], pads_p[1], pads_n[0], pads_n[1],
                 name, name_n, allow_vias_pair, width_mm, gap_mm)
-            nt, nv = add_track_path(board, path_p, net_p, w_p)
-            total_tracks += nt
-            total_vias += nv
-            nt, nv = add_track_path(board, path_n, net_n, w_n)
             total_tracks += nt
             total_vias += nv
             routed_nets += 2
