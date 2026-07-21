@@ -561,8 +561,20 @@ def route_diff_pair(obstacles, board, net_p, net_n, pad_p_a, pad_p_b, pad_n_a, p
 
 
 def nearest_neighbor_chain(pads):
-    """Return list of (pad_a, pad_b) edges connecting all pads (simple chain)."""
-    remaining = list(pads)
+    """Return list of (pad_a, pad_b) edges connecting all pads (simple chain).
+    Defensively drops any pad object whose GetPosition() fails (occasionally
+    seen as a stale SWIG wrapper after heavy programmatic track add/remove)
+    rather than crashing the whole routing run."""
+    good = []
+    for p in pads:
+        try:
+            _ = p.GetPosition().x
+            good.append(p)
+        except AttributeError:
+            print(f"WARNING: dropping invalid pad reference in chain (stale SWIG object)")
+    remaining = good
+    if len(remaining) < 2:
+        return []
     chain = [remaining.pop(0)]
     edges = []
     while remaining:
