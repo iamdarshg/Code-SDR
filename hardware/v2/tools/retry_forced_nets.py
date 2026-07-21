@@ -62,7 +62,13 @@ def main():
                 continue
             allow_vias = not ar.is_rf_net(name)
             width_mm, _, _ = ar.net_electrical_class(name)
-            edges = ar.nearest_neighbor_chain(pads)
+            # big spread-out nets (power rails) branch much more cleanly as
+            # an MST than as a forced serial chain, which is prone to
+            # zig-zagging across the whole board and self-crossing
+            if len(pads) > 6:
+                edges = ar.minimum_spanning_tree_edges(pads)
+            else:
+                edges = ar.nearest_neighbor_chain(pads)
 
             extra_attempts = [
                 dict(extra_pad_mm=60.0, track_width_mm=width_mm, clearance_mm=0.12, pitch_mm=0.2),

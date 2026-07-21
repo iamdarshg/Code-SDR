@@ -592,6 +592,43 @@ def nearest_neighbor_chain(pads):
     return edges
 
 
+def minimum_spanning_tree_edges(pads):
+    """Return list of (pad_a, pad_b) edges forming a minimum spanning tree
+    over `pads` (Prim's algorithm, O(n^2) -- fine for the pad counts here).
+    Unlike nearest_neighbor_chain, this doesn't force a single serial path:
+    each new pad joins whichever already-connected pad is nearest to it, so
+    the result branches locally instead of zig-zagging across the whole
+    net's footprint -- far less prone to self-crossing on a big, spread-out
+    net like a power rail with pads scattered over the entire board."""
+    good = []
+    for p in pads:
+        try:
+            _ = p.GetPosition().x
+            good.append(p)
+        except AttributeError:
+            print(f"WARNING: dropping invalid pad reference in MST (stale SWIG object)")
+    if len(good) < 2:
+        return []
+
+    in_tree = [good[0]]
+    remaining = good[1:]
+    edges = []
+    while remaining:
+        best_i, best_j, best_d = None, None, None
+        for i, a in enumerate(in_tree):
+            ap = a.GetPosition()
+            for j, b in enumerate(remaining):
+                bp = b.GetPosition()
+                d = (ap.x - bp.x) ** 2 + (ap.y - bp.y) ** 2
+                if best_d is None or d < best_d:
+                    best_d, best_i, best_j = d, i, j
+        a = in_tree[best_i]
+        b = remaining.pop(best_j)
+        edges.append((a, b))
+        in_tree.append(b)
+    return edges
+
+
 def is_rf_net(name):
     return any(p in name for p in RF_NET_PATTERNS)
 
