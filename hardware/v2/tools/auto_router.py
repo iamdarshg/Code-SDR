@@ -34,6 +34,50 @@ RF_NET_PATTERNS = [
     "LT_IN", "LT_INPUT", "LO_LOW", "LO_HIGH", "IF_LOW", "IF_HIGH", "LMX_LO",
 ]
 
+# --- Impedance / isolation model -------------------------------------------
+# Stackup (from Code-SDR-V2.kicad_pcb): F.Cu -> 0.18mm FR4 (er=4.2) -> In1.Cu (GND).
+# Solved with Hammerstad-Jensen microstrip equations for this stackup:
+#   50-ohm single-ended (RF chain after baluns, LO/IF "_SE"/"_RAW" feeds,
+#     LNA in/out, filters): W=0.32mm
+#   100-ohm differential (LMX2592 RF output is spec'd 100-ohm differential;
+#     Ethernet MDI is 100-ohm per IEEE 802.3; used as the general diff-pair
+#     default): W=0.20mm, gap=0.15mm
+#   90-ohm differential (USB 2.0 D+/D- per USB-IF spec): W=0.25mm, gap=0.15mm
+#
+# Mixer differential RF/IF ports (LT5560, ADL5801, LTC5548) have odd native
+# impedances set by on-chip matching (25-1100 ohm depending on part/freq per
+# datasheet) that are realized with lumped L/C right at the pins, not by a
+# controlled-impedance PCB transmission line -- correct PCB practice there is
+# "as short and symmetric as possible", which our router already does for
+# these (all such pads sit within a few mm of each other). We still route
+# them as a matched pair (see DIFF_PAIR_SUFFIXES) so P/N stay length-matched.
+RF_50OHM_SE_PATTERNS = [
+    "_SE", "_RAW", "RF_HC_LNA", "RF_HB_LNA", "LT_INPUT_SE",
+]
+USB_DIFF_PATTERNS = ["USB_DP", "USB_DM"]
+
+TRACK_WIDTH_RF_50OHM_MM = 0.32
+DIFF_PAIR_100OHM_WIDTH_MM = 0.20
+DIFF_PAIR_100OHM_GAP_MM = 0.15
+DIFF_PAIR_90OHM_WIDTH_MM = 0.25
+DIFF_PAIR_90OHM_GAP_MM = 0.15
+
+DIFF_PAIR_SUFFIXES = [("_P", "_N"), ("_DP", "_DM")]
+
+# Nets whose signal integrity depends on staying away from switching-digital
+# return current / EMI: RF chain, LO/IF, ADC analog side.
+ANALOG_NET_PATTERNS = [
+    "LT_IN", "LT_INPUT", "LO_LOW", "LO_HIGH", "IF_LOW", "IF_HIGH", "LMX_LO",
+    "ADF_LO2", "RF_HC_LNA", "RF_HB_LNA", "RF_LOW", "RF_HIGH", "ADC_VCM",
+    "ADC_IN", "+3V3_ANA", "+5V_RF",
+]
+# Noisy digital nets: routed last, and kept an extra margin away from analog.
+DIGITAL_NOISY_PATTERNS = [
+    "RGMII", "FPGA_", "QSPI", "MDI_", "USB_D", "ADC_D", "SPI_", "SWD", "SWCLK",
+    "SWDIO", "RESET", "BOOTSEL", "W25Q", "MDC", "MDIO",
+]
+EXTRA_ANALOG_KEEPOUT_MM = 0.25
+
 # routing layers in preference order (avoid In1 GND plane)
 ROUTE_LAYERS = [pcbnew.F_Cu, pcbnew.B_Cu, pcbnew.In2_Cu]
 LAYER_NAMES = {pcbnew.F_Cu: "F.Cu", pcbnew.B_Cu: "B.Cu", pcbnew.In2_Cu: "In2.Cu"}
@@ -92,13 +136,13 @@ class Obstacles:
             if net == exclude_net:
                 continue
             if lo_x <= x <= hi_x and lo_y <= y <= hi_y:
-                out.append((x, y, r, layers))
+                out.append((x, y, r, layers, net))
         return out
 
     def nearby_track_circles(self, x0, y0, x1, y1, pad_mm, exclude_net):
         lo_x, hi_x = min(x0, x1) - pad_mm, max(x0, x1) + pad_mm
         lo_y, hi_y = min(y0, y1) - pad_mm, max(y0, y1) + pad_mm
-        out = []  # (x1,y1,x2,y2,r,layer,is_via)
+        out = []  # (x1,y1,x2,y2,r,layer,is_via,net)
         for t in self.board.GetTracks():
             net = t.GetNetname()
             if net == exclude_net:
@@ -112,10 +156,10 @@ class Obstacles:
                 continue
             if t.GetClass() == "PCB_VIA":
                 r = mm(t.GetWidth()) / 2.0
-                out.append((sx, sy, sx, sy, r, None, True))
+                out.append((sx, sy, sx, sy, r, None, True, net))
             else:
                 r = mm(t.GetWidth()) / 2.0
-                out.append((sx, sy, ex, ey, r, t.GetLayer(), False))
+                out.append((sx, sy, ex, ey, r, t.GetLayer(), False, net))
         return out
 
 
@@ -178,9 +222,10 @@ def build_grid_and_search(obstacles, src, dst, allow_vias, net_name, extra_pad_m
 
     pad_circles = obstacles.nearby_pad_circles(lo_x, lo_y, hi_x, hi_y, margin, net_name)
     track_circles = obstacles.nearby_track_circles(lo_x, lo_y, hi_x, hi_y, margin, net_name)
+    routing_is_noisy_digital = is_noisy_digital_net(net_name)
 
-    def mark_circle(cx, cy, r, layer_filter):
-        rad = r + keepout
+    def mark_circle(cx, cy, r, layer_filter, extra=0.0):
+        rad = r + keepout + extra
         gi0, gi1 = max(0, gx(cx - rad)), min(nx - 1, gx(cx + rad))
         gj0, gj1 = max(0, gy(cy - rad)), min(ny - 1, gy(cy + rad))
         for l in layers:
@@ -195,8 +240,8 @@ def build_grid_and_search(obstacles, src, dst, allow_vias, net_name, extra_pad_m
                     if (xx - cx) ** 2 + (yy - cy) ** 2 <= rad * rad:
                         arr[row + i] = 1
 
-    def mark_segment(sx, sy, ex, ey, r, layer, is_via):
-        rad = r + keepout
+    def mark_segment(sx, sy, ex, ey, r, layer, is_via, extra=0.0):
+        rad = r + keepout + extra
         if is_via:
             mark_circle(sx, sy, rad - keepout, None)
             return
@@ -215,10 +260,12 @@ def build_grid_and_search(obstacles, src, dst, allow_vias, net_name, extra_pad_m
                 if point_seg_dist(xx, yy, sx, sy, ex, ey) <= rad:
                     arr[row + i] = 1
 
-    for (cx, cy, r, layer_filter) in pad_circles:
-        mark_circle(cx, cy, r, layer_filter)
-    for (sx, sy, ex, ey, r, layer, is_via) in track_circles:
-        mark_segment(sx, sy, ex, ey, r, layer, is_via)
+    for (cx, cy, r, layer_filter, obs_net) in pad_circles:
+        extra = EXTRA_ANALOG_KEEPOUT_MM if (routing_is_noisy_digital and is_analog_net(obs_net)) else 0.0
+        mark_circle(cx, cy, r, layer_filter, extra=extra)
+    for (sx, sy, ex, ey, r, layer, is_via, obs_net) in track_circles:
+        extra = EXTRA_ANALOG_KEEPOUT_MM if (routing_is_noisy_digital and is_analog_net(obs_net)) else 0.0
+        mark_segment(sx, sy, ex, ey, r, layer, is_via, extra=extra)
 
     si, sj = gx(x0), gy(y0)
     di, dj = gx(x1), gy(y1)
@@ -366,11 +413,18 @@ def add_track_path(board, path, net, width_mm):
     return n_tracks, n_vias
 
 
-def route_edge_with_fallback(obstacles, src, dst, allow_vias, net_name, src_layers=None, dst_layers=None):
-    """Try progressively looser/larger search settings until a path is found."""
+def route_edge_with_fallback(obstacles, src, dst, allow_vias, net_name, src_layers=None, dst_layers=None,
+                              preferred_width_mm=None):
+    """Try progressively looser/larger search settings until a path is found.
+    The first attempts search at the impedance-target width (preferred_width_mm)
+    so the placed track isn't wider than the corridor that was actually
+    verified clear; only the last-ditch attempts narrow down for connectivity."""
+    pw = preferred_width_mm if preferred_width_mm else TRACK_WIDTH_MM
+    pw_clear = max(CLEARANCE_MM, pw * 0.6)
     attempts = [
-        dict(extra_pad_mm=4.0, track_width_mm=TRACK_WIDTH_MM, clearance_mm=CLEARANCE_MM, pitch_mm=GRID_PITCH_MM),
-        dict(extra_pad_mm=10.0, track_width_mm=TRACK_WIDTH_MM, clearance_mm=CLEARANCE_MM, pitch_mm=GRID_PITCH_MM),
+        dict(extra_pad_mm=4.0, track_width_mm=pw, clearance_mm=pw_clear, pitch_mm=GRID_PITCH_MM),
+        dict(extra_pad_mm=10.0, track_width_mm=pw, clearance_mm=pw_clear, pitch_mm=GRID_PITCH_MM),
+        dict(extra_pad_mm=15.0, track_width_mm=pw, clearance_mm=0.12, pitch_mm=0.2),
         dict(extra_pad_mm=10.0, track_width_mm=0.12, clearance_mm=0.12, pitch_mm=0.2),
         dict(extra_pad_mm=25.0, track_width_mm=0.12, clearance_mm=0.1, pitch_mm=0.2),
         dict(extra_pad_mm=40.0, track_width_mm=0.1, clearance_mm=0.1, pitch_mm=0.25),
@@ -401,6 +455,102 @@ def direct_fallback_path(src, dst, allow_vias, src_layers=None, dst_layers=None)
     return [(x0, y0, src_layer), (x1, y1, src_layer), (x1, y1, dst_layer)]
 
 
+def mirror_path_offset(path, offset_mm, sign):
+    """Offset every point of `path` perpendicular to the local trace direction
+    by offset_mm * sign, for coupled differential-pair routing. Keeps layer
+    assignment identical to the source path."""
+    n = len(path)
+    if n < 2:
+        return list(path)
+    out = []
+    for k in range(n):
+        x, y, l = path[k]
+        if k == 0:
+            dx, dy = path[1][0] - x, path[1][1] - y
+        elif k == n - 1:
+            dx, dy = x - path[k - 1][0], y - path[k - 1][1]
+        else:
+            dx = path[k + 1][0] - path[k - 1][0]
+            dy = path[k + 1][1] - path[k - 1][1]
+        length = math.hypot(dx, dy)
+        if length < 1e-9:
+            out.append((x, y, l))
+            continue
+        # perpendicular unit vector
+        px, py = -dy / length, dx / length
+        out.append((x + px * offset_mm * sign, y + py * offset_mm * sign, l))
+    return out
+
+
+def route_diff_pair(obstacles, pad_p_a, pad_p_b, pad_n_a, pad_n_b, name_p, name_n,
+                     allow_vias, width_mm, gap_mm):
+    """Route P as a normal maze search, then mirror it to build N so the pair
+    stays tightly coupled at constant spacing (matched length + impedance).
+    Falls back to an independent search for N if the mirror doesn't land
+    close enough to N's real pads."""
+    posa, posb = pad_p_a.GetPosition(), pad_p_b.GetPosition()
+    src = (mm(posa.x), mm(posa.y))
+    dst = (mm(posb.x), mm(posb.y))
+    src_layers = pad_layer_set(pad_p_a)
+    dst_layers = pad_layer_set(pad_p_b)
+    if not allow_vias:
+        src_layers = {pcbnew.F_Cu} if pcbnew.F_Cu in src_layers else src_layers
+        dst_layers = {pcbnew.F_Cu} if pcbnew.F_Cu in dst_layers else dst_layers
+
+    path_p, width_used = route_edge_with_fallback(
+        obstacles, src, dst, allow_vias, name_p, src_layers=src_layers, dst_layers=dst_layers,
+        preferred_width_mm=width_mm)
+    forced_p = False
+    if path_p is None:
+        path_p = direct_fallback_path(src, dst, allow_vias, src_layers=src_layers, dst_layers=dst_layers)
+        width_used = width_mm
+        forced_p = True
+    path_p = simplify_path(path_p)
+
+    n_posa, n_posb = pad_n_a.GetPosition(), pad_n_b.GetPosition()
+    n_src = (mm(n_posa.x), mm(n_posa.y))
+    n_dst = (mm(n_posb.x), mm(n_posb.y))
+
+    offset = width_mm + gap_mm
+    # decide which side N is really on relative to P's first segment
+    x0, y0, _ = path_p[0]
+    x1, y1, _ = path_p[min(1, len(path_p) - 1)]
+    dx, dy = x1 - x0, y1 - y0
+    length = math.hypot(dx, dy) or 1.0
+    px, py = -dy / length, dx / length
+    sign = 1.0 if ((n_src[0] - x0) * px + (n_src[1] - y0) * py) >= 0 else -1.0
+
+    mirrored = mirror_path_offset(path_p, offset, sign)
+    mstart = (mirrored[0][0], mirrored[0][1])
+    mend = (mirrored[-1][0], mirrored[-1][1])
+    tol = max(1.0, offset * 4)
+    start_ok = math.hypot(mstart[0] - n_src[0], mstart[1] - n_src[1]) < tol
+    end_ok = math.hypot(mend[0] - n_dst[0], mend[1] - n_dst[1]) < tol
+
+    if start_ok and end_ok:
+        # snap exact endpoints to true pad centers
+        mirrored[0] = (n_src[0], n_src[1], mirrored[0][2])
+        mirrored[-1] = (n_dst[0], n_dst[1], mirrored[-1][2])
+        return path_p, width_used, mirrored, width_used, forced_p, False
+
+    # fallback: route N independently
+    n_src_layers = pad_layer_set(pad_n_a)
+    n_dst_layers = pad_layer_set(pad_n_b)
+    if not allow_vias:
+        n_src_layers = {pcbnew.F_Cu} if pcbnew.F_Cu in n_src_layers else n_src_layers
+        n_dst_layers = {pcbnew.F_Cu} if pcbnew.F_Cu in n_dst_layers else n_dst_layers
+    path_n, width_used_n = route_edge_with_fallback(
+        obstacles, n_src, n_dst, allow_vias, name_n, src_layers=n_src_layers, dst_layers=n_dst_layers,
+        preferred_width_mm=width_mm)
+    forced_n = False
+    if path_n is None:
+        path_n = direct_fallback_path(n_src, n_dst, allow_vias, src_layers=n_src_layers, dst_layers=n_dst_layers)
+        width_used_n = width_mm
+        forced_n = True
+    path_n = simplify_path(path_n)
+    return path_p, width_used, path_n, width_used_n, forced_p, forced_n
+
+
 def nearest_neighbor_chain(pads):
     """Return list of (pad_a, pad_b) edges connecting all pads (simple chain)."""
     remaining = list(pads)
@@ -425,6 +575,36 @@ def is_rf_net(name):
     return any(p in name for p in RF_NET_PATTERNS)
 
 
+def is_analog_net(name):
+    return any(p in name for p in ANALOG_NET_PATTERNS)
+
+
+def is_noisy_digital_net(name):
+    return any(p in name for p in DIGITAL_NOISY_PATTERNS)
+
+
+def diff_pair_partner_suffix(name):
+    """If name ends with a recognized diff-pair suffix, return (base, my_suffix, partner_suffix)."""
+    for a, b in DIFF_PAIR_SUFFIXES:
+        if name.endswith(a):
+            return name[: -len(a)], a, b
+        if name.endswith(b):
+            return name[: -len(b)], b, a
+    return None
+
+
+def net_electrical_class(name):
+    """Return (track_width_mm, is_diff_pair, diff_gap_mm) for a net name."""
+    pair = diff_pair_partner_suffix(name)
+    if pair is not None:
+        if any(p in name for p in USB_DIFF_PATTERNS):
+            return DIFF_PAIR_90OHM_WIDTH_MM, True, DIFF_PAIR_90OHM_GAP_MM
+        return DIFF_PAIR_100OHM_WIDTH_MM, True, DIFF_PAIR_100OHM_GAP_MM
+    if any(p in name for p in RF_50OHM_SE_PATTERNS) or is_rf_net(name):
+        return TRACK_WIDTH_RF_50OHM_MM, False, 0.0
+    return TRACK_WIDTH_MM, False, 0.0
+
+
 def main():
     t_start = time.time()
     print(f"Loading board: {PCB_PATH}")
@@ -444,8 +624,37 @@ def main():
 
     print(f"Signal nets to route: {len(signal_nets)}")
 
-    # order: RF nets first, then by ascending pad count
-    net_names = sorted(signal_nets.keys(), key=lambda n: (not is_rf_net(n), len(signal_nets[n])))
+    # detect valid 2-pad differential pairs so we can route them coupled
+    pair_partner = {}  # name -> partner_name (only set on the "P"/first-alpha member)
+    handled_as_partner = set()
+    for name in list(signal_nets.keys()):
+        if name in handled_as_partner or name in pair_partner:
+            continue
+        info = diff_pair_partner_suffix(name)
+        if info is None:
+            continue
+        base, my_suf, partner_suf = info
+        partner = base + partner_suf
+        if partner in signal_nets and len(signal_nets[name]) == 2 and len(signal_nets[partner]) == 2:
+            # canonical order: P before N, DP before DM
+            if my_suf in ("_P", "_DP"):
+                pair_partner[name] = partner
+            else:
+                pair_partner[partner] = name
+            handled_as_partner.add(name)
+            handled_as_partner.add(partner)
+
+    # route order: analog/RF first, general nets next, noisy digital last;
+    # within each tier, smaller nets (fewer pads) first
+    def sort_key(n):
+        return (is_noisy_digital_net(n), not is_analog_net(n), len(signal_nets[n]))
+
+    # net_names holds one entry per net, but a paired "N" member is skipped
+    # (it gets routed together with its "P" partner)
+    net_names = sorted(
+        [n for n in signal_nets.keys() if n not in (set(pair_partner.values()))],
+        key=sort_key,
+    )
 
     obstacles = Obstacles(board)
 
@@ -456,7 +665,7 @@ def main():
     forced_nets = []
 
     time_budget_sec = float(sys.argv[1]) if len(sys.argv) > 1 else 3000
-    net_boards = {n: board.FindNet(n) for n in net_names}
+    net_boards = {n: board.FindNet(n) for n in signal_nets.keys()}
 
     for idx, name in enumerate(net_names):
         if time.time() - t_start > time_budget_sec:
@@ -464,12 +673,40 @@ def main():
             failed_nets.extend(net_names[idx:])
             break
 
+        width_mm, is_pair_member, gap_mm = net_electrical_class(name)
+        allow_vias = not is_rf_net(name)
+
+        if name in pair_partner:
+            # coupled differential-pair routing: P and N together
+            name_n = pair_partner[name]
+            pads_p = signal_nets[name]
+            pads_n = signal_nets[name_n]
+            net_p = net_boards[name]
+            net_n = net_boards[name_n]
+            if net_p is None or net_n is None:
+                continue
+            allow_vias_pair = not is_rf_net(name) and not is_rf_net(name_n)
+            path_p, w_p, path_n, w_n, forced_p, forced_n = route_diff_pair(
+                obstacles, pads_p[0], pads_p[1], pads_n[0], pads_n[1],
+                name, name_n, allow_vias_pair, width_mm, gap_mm)
+            nt, nv = add_track_path(board, path_p, net_p, w_p)
+            total_tracks += nt
+            total_vias += nv
+            nt, nv = add_track_path(board, path_n, net_n, w_n)
+            total_tracks += nt
+            total_vias += nv
+            routed_nets += 2
+            if forced_p:
+                forced_nets.append(name)
+            if forced_n:
+                forced_nets.append(name_n)
+            continue
+
         pads = signal_nets[name]
         net = net_boards[name]
         if net is None:
             continue
 
-        allow_vias = not is_rf_net(name)
         edges = nearest_neighbor_chain(pads)
 
         net_ok = True
@@ -480,20 +717,19 @@ def main():
             dst = (mm(posb.x), mm(posb.y))
             src_layers = pad_layer_set(pa)
             dst_layers = pad_layer_set(pb)
-            if allow_vias:
-                pass
-            else:
+            if not allow_vias:
                 # RF nets: force F.Cu only regardless of pad's full layer set
                 src_layers = {pcbnew.F_Cu} if pcbnew.F_Cu in src_layers else src_layers
                 dst_layers = {pcbnew.F_Cu} if pcbnew.F_Cu in dst_layers else dst_layers
             if src == dst:
                 continue
             path, width_used = route_edge_with_fallback(
-                obstacles, src, dst, allow_vias, name, src_layers=src_layers, dst_layers=dst_layers)
+                obstacles, src, dst, allow_vias, name, src_layers=src_layers, dst_layers=dst_layers,
+                preferred_width_mm=width_mm)
             if path is None:
                 # absolute last resort: direct straight line, ignores obstacles
                 path = direct_fallback_path(src, dst, allow_vias, src_layers=src_layers, dst_layers=dst_layers)
-                width_used = 0.1
+                width_used = width_mm
                 forced_nets.append(name)
                 net_ok = False
             path = simplify_path(path)
