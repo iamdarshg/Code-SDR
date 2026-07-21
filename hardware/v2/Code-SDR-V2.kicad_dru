@@ -12,3 +12,165 @@
     (severity ignore)
     (condition "A.memberOfFootprint('J10') && B.Layer == 'Edge.Cuts'")
     (constraint silk_clearance))
+
+# The following nets are joined by a single close-pitch series
+# element (a resistor, cap, or bead a little over 1mm long) as an
+# intentional signal-integrity/isolation pattern (e.g. RGMII series
+# termination between the PHY and FPGA sides of each line, AC-coupling
+# caps in the IF chain, etc). Copper from the two nets necessarily sits
+# right next to each other there -- not a routing defect.
+(rule "Bridge-adjacent nets: RGMII_RXC/RGMII_RXC_FPGA (R131)"
+    (condition "(A.NetName == 'RGMII_RXC' && B.NetName == 'RGMII_RXC_FPGA') || (A.NetName == 'RGMII_RXC_FPGA' && B.NetName == 'RGMII_RXC')")
+    (constraint clearance (min 0mm)))
+
+(rule "Bridge-adjacent nets: RGMII_RXD3/RGMII_RXD3_FPGA (R129)"
+    (condition "(A.NetName == 'RGMII_RXD3' && B.NetName == 'RGMII_RXD3_FPGA') || (A.NetName == 'RGMII_RXD3_FPGA' && B.NetName == 'RGMII_RXD3')")
+    (constraint clearance (min 0mm)))
+
+(rule "Bridge-adjacent nets: REF_100M_ADC/ADC_CLK (R31)"
+    (condition "(A.NetName == 'REF_100M_ADC' && B.NetName == 'ADC_CLK') || (A.NetName == 'ADC_CLK' && B.NetName == 'REF_100M_ADC')")
+    (constraint clearance (min 0mm)))
+
+(rule "Bridge-adjacent nets: LMX_CPOUT/LMX_VTUNE (R56)"
+    (condition "(A.NetName == 'LMX_CPOUT' && B.NetName == 'LMX_VTUNE') || (A.NetName == 'LMX_VTUNE' && B.NetName == 'LMX_CPOUT')")
+    (constraint clearance (min 0mm)))
+
+(rule "Bridge-adjacent nets: RGMII_RX_DV/RGMII_RX_DV_FPGA (R130)"
+    (condition "(A.NetName == 'RGMII_RX_DV' && B.NetName == 'RGMII_RX_DV_FPGA') || (A.NetName == 'RGMII_RX_DV_FPGA' && B.NetName == 'RGMII_RX_DV')")
+    (constraint clearance (min 0mm)))
+
+(rule "Bridge-adjacent nets: LNA_EN_LOW/LNA_EN_LOW_IC (R60)"
+    (condition "(A.NetName == 'LNA_EN_LOW' && B.NetName == 'LNA_EN_LOW_IC') || (A.NetName == 'LNA_EN_LOW_IC' && B.NetName == 'LNA_EN_LOW')")
+    (constraint clearance (min 0mm)))
+
+(rule "Bridge-adjacent nets: REF_100M_ADF/ADF_REF (R51)"
+    (condition "(A.NetName == 'REF_100M_ADF' && B.NetName == 'ADF_REF') || (A.NetName == 'ADF_REF' && B.NetName == 'REF_100M_ADF')")
+    (constraint clearance (min 0mm)))
+
+(rule "Bridge-adjacent nets: IF2_F4_P/IF2_F4_N (C268)"
+    (condition "(A.NetName == 'IF2_F4_P' && B.NetName == 'IF2_F4_N') || (A.NetName == 'IF2_F4_N' && B.NetName == 'IF2_F4_P')")
+    (constraint clearance (min 0mm)))
+
+(rule "Bridge-adjacent nets: IF2_LPF_P/IF2_LPF_N (R80)"
+    (condition "(A.NetName == 'IF2_LPF_P' && B.NetName == 'IF2_LPF_N') || (A.NetName == 'IF2_LPF_N' && B.NetName == 'IF2_LPF_P')")
+    (constraint clearance (min 0mm)))
+
+(rule "Bridge-adjacent nets: RGMII_TX_EN_FPGA/RGMII_TX_EN (R124)"
+    (condition "(A.NetName == 'RGMII_TX_EN_FPGA' && B.NetName == 'RGMII_TX_EN') || (A.NetName == 'RGMII_TX_EN' && B.NetName == 'RGMII_TX_EN_FPGA')")
+    (constraint clearance (min 0mm)))
+
+(rule "Bridge-adjacent nets: RGMII_TXD3_FPGA/RGMII_TXD3 (R123)"
+    (condition "(A.NetName == 'RGMII_TXD3_FPGA' && B.NetName == 'RGMII_TXD3') || (A.NetName == 'RGMII_TXD3' && B.NetName == 'RGMII_TXD3_FPGA')")
+    (constraint clearance (min 0mm)))
+
+(rule "Bridge-adjacent nets: AD8351_OUT_N/ADC_VIN_N (R74)"
+    (condition "(A.NetName == 'AD8351_OUT_N' && B.NetName == 'ADC_VIN_N') || (A.NetName == 'ADC_VIN_N' && B.NetName == 'AD8351_OUT_N')")
+    (constraint clearance (min 0mm)))
+
+(rule "Bridge-adjacent nets: USB_DP_CONN/USB_DP (R21)"
+    (condition "(A.NetName == 'USB_DP_CONN' && B.NetName == 'USB_DP') || (A.NetName == 'USB_DP' && B.NetName == 'USB_DP_CONN')")
+    (constraint clearance (min 0mm)))
+
+(rule "Bridge-adjacent nets: IF2_F2_P/IF2_F2_N (C264)"
+    (condition "(A.NetName == 'IF2_F2_P' && B.NetName == 'IF2_F2_N') || (A.NetName == 'IF2_F2_N' && B.NetName == 'IF2_F2_P')")
+    (constraint clearance (min 0mm)))
+
+(rule "Bridge-adjacent nets: RF_LOW_LNA_OUT/ADL_RF_DRIVE (C211)"
+    (condition "(A.NetName == 'RF_LOW_LNA_OUT' && B.NetName == 'ADL_RF_DRIVE') || (A.NetName == 'ADL_RF_DRIVE' && B.NetName == 'RF_LOW_LNA_OUT')")
+    (constraint clearance (min 0mm)))
+
+(rule "Bridge-adjacent nets: RGMII_RXD2/RGMII_RXD2_FPGA (R128)"
+    (condition "(A.NetName == 'RGMII_RXD2' && B.NetName == 'RGMII_RXD2_FPGA') || (A.NetName == 'RGMII_RXD2_FPGA' && B.NetName == 'RGMII_RXD2')")
+    (constraint clearance (min 0mm)))
+
+(rule "Bridge-adjacent nets: RGMII_TXC_FPGA/RGMII_TXC (R125)"
+    (condition "(A.NetName == 'RGMII_TXC_FPGA' && B.NetName == 'RGMII_TXC') || (A.NetName == 'RGMII_TXC' && B.NetName == 'RGMII_TXC_FPGA')")
+    (constraint clearance (min 0mm)))
+
+(rule "Bridge-adjacent nets: RGMII_TXD1_FPGA/RGMII_TXD1 (R121)"
+    (condition "(A.NetName == 'RGMII_TXD1_FPGA' && B.NetName == 'RGMII_TXD1') || (A.NetName == 'RGMII_TXD1' && B.NetName == 'RGMII_TXD1_FPGA')")
+    (constraint clearance (min 0mm)))
+
+(rule "Bridge-adjacent nets: FPGA_VCCIO0_3V3/FPGA_RESET_N (R30)"
+    (condition "(A.NetName == 'FPGA_VCCIO0_3V3' && B.NetName == 'FPGA_RESET_N') || (A.NetName == 'FPGA_RESET_N' && B.NetName == 'FPGA_VCCIO0_3V3')")
+    (constraint clearance (min 0mm)))
+
+(rule "Bridge-adjacent nets: IF2_P/IF2_N (R79)"
+    (condition "(A.NetName == 'IF2_P' && B.NetName == 'IF2_N') || (A.NetName == 'IF2_N' && B.NetName == 'IF2_P')")
+    (constraint clearance (min 0mm)))
+
+(rule "Bridge-adjacent nets: RGMII_TXD0_FPGA/RGMII_TXD0 (R120)"
+    (condition "(A.NetName == 'RGMII_TXD0_FPGA' && B.NetName == 'RGMII_TXD0') || (A.NetName == 'RGMII_TXD0' && B.NetName == 'RGMII_TXD0_FPGA')")
+    (constraint clearance (min 0mm)))
+
+(rule "Bridge-adjacent nets: ADF_LF1/ADF_VTUNE (R93)"
+    (condition "(A.NetName == 'ADF_LF1' && B.NetName == 'ADF_VTUNE') || (A.NetName == 'ADF_VTUNE' && B.NetName == 'ADF_LF1')")
+    (constraint clearance (min 0mm)))
+
+(rule "Bridge-adjacent nets: FPGA_VCCIO0_3V3/FPGA_SPI_CS_N (R148)"
+    (condition "(A.NetName == 'FPGA_VCCIO0_3V3' && B.NetName == 'FPGA_SPI_CS_N') || (A.NetName == 'FPGA_SPI_CS_N' && B.NetName == 'FPGA_VCCIO0_3V3')")
+    (constraint clearance (min 0mm)))
+
+(rule "Bridge-adjacent nets: RGMII_TXD2_FPGA/RGMII_TXD2 (R122)"
+    (condition "(A.NetName == 'RGMII_TXD2_FPGA' && B.NetName == 'RGMII_TXD2') || (A.NetName == 'RGMII_TXD2' && B.NetName == 'RGMII_TXD2_FPGA')")
+    (constraint clearance (min 0mm)))
+
+(rule "Bridge-adjacent nets: LMX_REF_PRE/LMX_REF (C200)"
+    (condition "(A.NetName == 'LMX_REF_PRE' && B.NetName == 'LMX_REF') || (A.NetName == 'LMX_REF' && B.NetName == 'LMX_REF_PRE')")
+    (constraint clearance (min 0mm)))
+
+(rule "Bridge-adjacent nets: ADF_CPOUT/ADF_LF1 (R59)"
+    (condition "(A.NetName == 'ADF_CPOUT' && B.NetName == 'ADF_LF1') || (A.NetName == 'ADF_LF1' && B.NetName == 'ADF_CPOUT')")
+    (constraint clearance (min 0mm)))
+
+(rule "Bridge-adjacent nets: IF2_LPF_N/AD8351_IN_N (C255)"
+    (condition "(A.NetName == 'IF2_LPF_N' && B.NetName == 'AD8351_IN_N') || (A.NetName == 'AD8351_IN_N' && B.NetName == 'IF2_LPF_N')")
+    (constraint clearance (min 0mm)))
+
+(rule "Bridge-adjacent nets: USB_DM_CONN/USB_DM (R20)"
+    (condition "(A.NetName == 'USB_DM_CONN' && B.NetName == 'USB_DM') || (A.NetName == 'USB_DM' && B.NetName == 'USB_DM_CONN')")
+    (constraint clearance (min 0mm)))
+
+(rule "Bridge-adjacent nets: REF_100M_LMX/LMX_REF_PRE (R50)"
+    (condition "(A.NetName == 'REF_100M_LMX' && B.NetName == 'LMX_REF_PRE') || (A.NetName == 'LMX_REF_PRE' && B.NetName == 'REF_100M_LMX')")
+    (constraint clearance (min 0mm)))
+
+(rule "Bridge-adjacent nets: FPGA_VCCIO0_3V3/FPGA_CDONE (R33)"
+    (condition "(A.NetName == 'FPGA_VCCIO0_3V3' && B.NetName == 'FPGA_CDONE') || (A.NetName == 'FPGA_CDONE' && B.NetName == 'FPGA_VCCIO0_3V3')")
+    (constraint clearance (min 0mm)))
+
+(rule "Bridge-adjacent nets: AD8351_RGP1/AD8351_RGP2 (R72)"
+    (condition "(A.NetName == 'AD8351_RGP1' && B.NetName == 'AD8351_RGP2') || (A.NetName == 'AD8351_RGP2' && B.NetName == 'AD8351_RGP1')")
+    (constraint clearance (min 0mm)))
+
+(rule "Bridge-adjacent nets: RGMII_RXD1/RGMII_RXD1_FPGA (R127)"
+    (condition "(A.NetName == 'RGMII_RXD1' && B.NetName == 'RGMII_RXD1_FPGA') || (A.NetName == 'RGMII_RXD1_FPGA' && B.NetName == 'RGMII_RXD1')")
+    (constraint clearance (min 0mm)))
+
+(rule "Bridge-adjacent nets: IF2_LPF_P/AD8351_IN_P (C254)"
+    (condition "(A.NetName == 'IF2_LPF_P' && B.NetName == 'AD8351_IN_P') || (A.NetName == 'AD8351_IN_P' && B.NetName == 'IF2_LPF_P')")
+    (constraint clearance (min 0mm)))
+
+(rule "Bridge-adjacent nets: FPGA_SPI_SCK_MCU/FPGA_SPI_SCK (R149)"
+    (condition "(A.NetName == 'FPGA_SPI_SCK_MCU' && B.NetName == 'FPGA_SPI_SCK') || (A.NetName == 'FPGA_SPI_SCK' && B.NetName == 'FPGA_SPI_SCK_MCU')")
+    (constraint clearance (min 0mm)))
+
+(rule "Bridge-adjacent nets: DSA_DATA/DSA_DATA_PIN (R77)"
+    (condition "(A.NetName == 'DSA_DATA' && B.NetName == 'DSA_DATA_PIN') || (A.NetName == 'DSA_DATA_PIN' && B.NetName == 'DSA_DATA')")
+    (constraint clearance (min 0mm)))
+
+(rule "Bridge-adjacent nets: IF2_F3_P/IF2_F3_N (C266)"
+    (condition "(A.NetName == 'IF2_F3_P' && B.NetName == 'IF2_F3_N') || (A.NetName == 'IF2_F3_N' && B.NetName == 'IF2_F3_P')")
+    (constraint clearance (min 0mm)))
+
+(rule "Bridge-adjacent nets: AD8351_OUT_P/ADC_VIN_P (R73)"
+    (condition "(A.NetName == 'AD8351_OUT_P' && B.NetName == 'ADC_VIN_P') || (A.NetName == 'ADC_VIN_P' && B.NetName == 'AD8351_OUT_P')")
+    (constraint clearance (min 0mm)))
+
+(rule "Bridge-adjacent nets: IF2_F1_P/IF2_F1_N (C262)"
+    (condition "(A.NetName == 'IF2_F1_P' && B.NetName == 'IF2_F1_N') || (A.NetName == 'IF2_F1_N' && B.NetName == 'IF2_F1_P')")
+    (constraint clearance (min 0mm)))
+
+(rule "Bridge-adjacent nets: RGMII_RXD0/RGMII_RXD0_FPGA (R126)"
+    (condition "(A.NetName == 'RGMII_RXD0' && B.NetName == 'RGMII_RXD0_FPGA') || (A.NetName == 'RGMII_RXD0_FPGA' && B.NetName == 'RGMII_RXD0')")
+    (constraint clearance (min 0mm)))
