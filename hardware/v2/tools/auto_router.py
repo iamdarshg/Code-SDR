@@ -423,6 +423,15 @@ def build_grid_and_search(obstacles, src, dst, allow_vias, net_name, extra_pad_m
         idx = j * nx + i
         cur = prev.get((l, idx))
     path.reverse()
+    # Snap the endpoints to the exact requested src/dst instead of the
+    # nearest grid point -- every waypoint above is grid-quantized, so the
+    # path's true start/end can be off by up to half a grid pitch. Routing
+    # to/from a pad usually hides this (the gap lands inside the pad's own
+    # copper), but routing between two bare mid-net waypoints (no pad to
+    # absorb it) turns that gap into a real dangling, unconnected stub.
+    if path:
+        path[0] = (x0, y0, path[0][2])
+        path[-1] = (x1, y1, path[-1][2])
     return path
 
 
