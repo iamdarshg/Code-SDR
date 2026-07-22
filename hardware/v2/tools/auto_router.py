@@ -113,15 +113,26 @@ class Obstacles:
         self.board = board
         # per-net pad list: net_name -> list of (x_mm, y_mm, radius_mm, layer_set)
         self.pads_by_net = {}
-        self.all_pad_circles = []  # (x, y, r, net_name, layers:set(F_Cu,B_Cu) or None=both)
+        # (x, y, r, net_name, layers:set(F_Cu,B_Cu) or None=both, halfw_mm, halfh_mm, angle_deg)
+        # r is the circumscribing radius (kept for callers that only want a
+        # quick circular bound); halfw/halfh/angle describe the pad's actual
+        # oriented bounding rectangle, used for the real obstacle check.
+        # NOTE: a plain circle of radius max(w,h)/2 badly overestimates the
+        # occlusion of an oblong pad (e.g. a 0.875x0.2mm gull-wing pad on a
+        # fine-pitch QFN) -- along the SHORT axis it blocks 2x+ further than
+        # the pad actually extends, which can wall a pad in against its own
+        # tightly-pitched neighbors even though a real corridor exists.
+        self.all_pad_circles = []
         for fp in board.GetFootprints():
             for pad in fp.Pads():
                 net = pad.GetNetname()
                 pos = pad.GetPosition()
                 sz = pad.GetSize()
-                r = max(mm(sz.x), mm(sz.y)) / 2.0
+                halfw, halfh = mm(sz.x) / 2.0, mm(sz.y) / 2.0
+                r = math.hypot(halfw, halfh)
+                angle_deg = pad.GetOrientation().AsDegrees()
                 layer_set = self._pad_layers(pad)
-                circ = (mm(pos.x), mm(pos.y), r, net, layer_set)
+                circ = (mm(pos.x), mm(pos.y), r, net, layer_set, halfw, halfh, angle_deg)
                 self.all_pad_circles.append(circ)
                 self.pads_by_net.setdefault(net, []).append(circ)
 
@@ -132,11 +143,11 @@ class Obstacles:
         lo_x, hi_x = min(x0, x1) - pad_mm, max(x0, x1) + pad_mm
         lo_y, hi_y = min(y0, y1) - pad_mm, max(y0, y1) + pad_mm
         out = []
-        for (x, y, r, net, layers) in self.all_pad_circles:
+        for (x, y, r, net, layers, halfw, halfh, angle_deg) in self.all_pad_circles:
             if net == exclude_net:
                 continue
             if lo_x <= x <= hi_x and lo_y <= y <= hi_y:
-                out.append((x, y, r, layers, net))
+                out.append((x, y, r, layers, net, halfw, halfh, angle_deg))
         return out
 
     def nearby_track_circles(self, x0, y0, x1, y1, pad_mm, exclude_net):
@@ -175,18 +186,25 @@ def point_seg_dist(px, py, x1, y1, x2, y2):
 
 def build_grid_and_search(obstacles, src, dst, allow_vias, net_name, extra_pad_mm=4.0,
                            track_width_mm=None, clearance_mm=None, pitch_mm=None,
-                           src_layers=None, dst_layers=None):
+                           src_layers=None, dst_layers=None, margin_cap_mm=30.0,
+                           max_pops=300000, max_cells=400000):
     """src/dst: (x_mm, y_mm). Returns list of (x,y,layer) waypoints or None.
 
     src_layers/dst_layers restrict which copper layer(s) the path is allowed
     to actually terminate on at the source/destination, so the route only
     "arrives" where the real pad copper is (and takes a via to get there if
     the pad is on a different layer than where the search naturally lands).
+
+    margin_cap_mm bounds how far the search box extends past the src/dst
+    bounding box. NOTE: this used to be hardcoded at 30.0mm regardless of
+    extra_pad_mm, which silently defeated every "search wider" fallback
+    attempt -- callers that actually need a bigger detour (long nets on a
+    dense board) must raise this explicitly.
     """
     x0, y0 = src
     x1, y1 = dst
     margin = max(extra_pad_mm, 0.15 * math.hypot(x1 - x0, y1 - y0))
-    margin = min(margin, 30.0)
+    margin = min(margin, margin_cap_mm)
     lo_x, hi_x = min(x0, x1) - margin, max(x0, x1) + margin
     lo_y, hi_y = min(y0, y1) - margin, max(y0, y1) + margin
 
@@ -196,7 +214,7 @@ def build_grid_and_search(obstacles, src, dst, allow_vias, net_name, extra_pad_m
     nx = int((hi_x - lo_x) / pitch) + 1
     ny = int((hi_y - lo_y) / pitch) + 1
     # safety cap on grid size; coarsen if huge
-    while nx * ny > 400000:
+    while nx * ny > max_cells:
         pitch *= 1.4
         nx = int((hi_x - lo_x) / pitch) + 1
         ny = int((hi_y - lo_y) / pitch) + 1
@@ -240,6 +258,54 @@ def build_grid_and_search(obstacles, src, dst, allow_vias, net_name, extra_pad_m
                     if (xx - cx) ** 2 + (yy - cy) ** 2 <= rad * rad:
                         arr[row + i] = 1
 
+    def mark_oriented_rect(cx, cy, halfw, halfh, angle_deg, layer_filter, extra=0.0):
+        """Block cells inside the pad's true oriented rectangle (expanded by
+        keepout+extra), instead of a circumscribing circle. A circle sized
+        off the pad's longer dimension badly overblocks along the shorter
+        axis for oblong pads (gull-wing/QFN pins), which can wall a pad in
+        against its own tightly-pitched neighbors even when a real corridor
+        exists between them."""
+        ehw, ehh = halfw + keepout + extra, halfh + keepout + extra
+        rad = math.hypot(ehw, ehh)  # bounding circle for the cell-range scan only
+        gi0, gi1 = max(0, gx(cx - rad)), min(nx - 1, gx(cx + rad))
+        gj0, gj1 = max(0, gy(cy - rad)), min(ny - 1, gy(cy + rad))
+        if angle_deg % 90.0 < 1e-6:
+            # axis-aligned (0/90/180/270, the overwhelming common case) --
+            # skip the trig, swap half-extents for the 90/270 cases
+            swapped = (round(angle_deg / 90.0) % 2) == 1
+            ehw2, ehh2 = (ehh, ehw) if swapped else (ehw, ehh)
+            for l in layers:
+                if layer_filter is not None and l not in layer_filter:
+                    continue
+                arr = blocked[l]
+                for j in range(gj0, gj1 + 1):
+                    yy = wy(j)
+                    dy = abs(yy - cy)
+                    if dy > ehh2:
+                        continue
+                    row = j * nx
+                    for i in range(gi0, gi1 + 1):
+                        xx = wx(i)
+                        if abs(xx - cx) <= ehw2:
+                            arr[row + i] = 1
+            return
+        rad_theta = math.radians(-angle_deg)
+        cos_t, sin_t = math.cos(rad_theta), math.sin(rad_theta)
+        for l in layers:
+            if layer_filter is not None and l not in layer_filter:
+                continue
+            arr = blocked[l]
+            for j in range(gj0, gj1 + 1):
+                yy = wy(j)
+                row = j * nx
+                for i in range(gi0, gi1 + 1):
+                    xx = wx(i)
+                    dx, dy = xx - cx, yy - cy
+                    lx = dx * cos_t - dy * sin_t
+                    ly = dx * sin_t + dy * cos_t
+                    if abs(lx) <= ehw and abs(ly) <= ehh:
+                        arr[row + i] = 1
+
     def mark_segment(sx, sy, ex, ey, r, layer, is_via, extra=0.0):
         rad = r + keepout + extra
         if is_via:
@@ -260,9 +326,9 @@ def build_grid_and_search(obstacles, src, dst, allow_vias, net_name, extra_pad_m
                 if point_seg_dist(xx, yy, sx, sy, ex, ey) <= rad:
                     arr[row + i] = 1
 
-    for (cx, cy, r, layer_filter, obs_net) in pad_circles:
+    for (cx, cy, r, layer_filter, obs_net, halfw, halfh, angle_deg) in pad_circles:
         extra = EXTRA_ANALOG_KEEPOUT_MM if (routing_is_noisy_digital and is_analog_net(obs_net)) else 0.0
-        mark_circle(cx, cy, r, layer_filter, extra=extra)
+        mark_oriented_rect(cx, cy, halfw, halfh, angle_deg, layer_filter, extra=extra)
     for (sx, sy, ex, ey, r, layer, is_via, obs_net) in track_circles:
         extra = EXTRA_ANALOG_KEEPOUT_MM if (routing_is_noisy_digital and is_analog_net(obs_net)) else 0.0
         mark_segment(sx, sy, ex, ey, r, layer, is_via, extra=extra)
@@ -307,7 +373,6 @@ def build_grid_and_search(obstacles, src, dst, allow_vias, net_name, extra_pad_m
                   (-1, -1, 1.414), (1, -1, 1.414), (-1, 1, 1.414), (1, 1, 1.414)]
 
     found_layer = None
-    max_pops = 300000
     pops = 0
     while pq:
         f, d, l, i, j = heapq.heappop(pq)
@@ -422,12 +487,20 @@ def route_edge_with_fallback(obstacles, src, dst, allow_vias, net_name, src_laye
     pw = preferred_width_mm if preferred_width_mm else TRACK_WIDTH_MM
     pw_clear = max(CLEARANCE_MM, pw * 0.6)
     attempts = [
-        dict(extra_pad_mm=4.0, track_width_mm=pw, clearance_mm=pw_clear, pitch_mm=GRID_PITCH_MM),
-        dict(extra_pad_mm=10.0, track_width_mm=pw, clearance_mm=pw_clear, pitch_mm=GRID_PITCH_MM),
-        dict(extra_pad_mm=15.0, track_width_mm=pw, clearance_mm=0.15, pitch_mm=0.15),
-        dict(extra_pad_mm=10.0, track_width_mm=0.12, clearance_mm=0.15, pitch_mm=0.15),
-        dict(extra_pad_mm=25.0, track_width_mm=0.12, clearance_mm=0.12, pitch_mm=0.15),
-        dict(extra_pad_mm=40.0, track_width_mm=0.1, clearance_mm=0.12, pitch_mm=0.15),
+        dict(extra_pad_mm=4.0, track_width_mm=pw, clearance_mm=pw_clear, pitch_mm=GRID_PITCH_MM, margin_cap_mm=30.0),
+        dict(extra_pad_mm=10.0, track_width_mm=pw, clearance_mm=pw_clear, pitch_mm=GRID_PITCH_MM, margin_cap_mm=30.0),
+        dict(extra_pad_mm=15.0, track_width_mm=pw, clearance_mm=0.15, pitch_mm=0.15, margin_cap_mm=30.0),
+        dict(extra_pad_mm=10.0, track_width_mm=0.12, clearance_mm=0.15, pitch_mm=0.15, margin_cap_mm=30.0),
+        dict(extra_pad_mm=25.0, track_width_mm=0.12, clearance_mm=0.12, pitch_mm=0.15, margin_cap_mm=60.0),
+        dict(extra_pad_mm=40.0, track_width_mm=0.1, clearance_mm=0.12, pitch_mm=0.15, margin_cap_mm=90.0,
+             max_cells=1200000, max_pops=900000),
+        # last-resort wide search before giving up to a straight-line direct
+        # fallback -- this used to be capped at 30mm margin regardless of
+        # extra_pad_mm, which meant long nets on a dense board almost always
+        # fell straight through to direct_fallback_path instead of finding a
+        # real detour
+        dict(extra_pad_mm=160.0, track_width_mm=0.1, clearance_mm=0.12, pitch_mm=0.2, margin_cap_mm=160.0,
+             max_cells=2000000, max_pops=1500000),
     ]
     for kw in attempts:
         path = build_grid_and_search(obstacles, src, dst, allow_vias, net_name,
@@ -702,10 +775,20 @@ def main():
             handled_as_partner.add(name)
             handled_as_partner.add(partner)
 
-    # route order: analog/RF first, general nets next, noisy digital last;
-    # within each tier, smaller nets (fewer pads) first
+    # route order: power rails first (highest pad-count nets get first pick
+    # of clean routing corridors -- routing them last, as the old ascending
+    # pad-count sort did within every tier, meant the nets needing the most
+    # connections always got whatever space was left over), then analog/RF,
+    # general nets next, noisy digital last; within the non-power tiers,
+    # smaller nets (fewer pads) first
+    def is_power_net(n):
+        return (n.startswith("+") or n in ("GND", "VIN_5V")
+                or n.endswith("_3V3") or n.endswith("_5V"))
+
     def sort_key(n):
-        return (is_noisy_digital_net(n), not is_analog_net(n), len(signal_nets[n]))
+        if is_power_net(n):
+            return (0, -len(signal_nets[n]))
+        return (1, is_noisy_digital_net(n), not is_analog_net(n), len(signal_nets[n]))
 
     # net_names holds one entry per net, but a paired "N" member is skipped
     # (it gets routed together with its "P" partner)

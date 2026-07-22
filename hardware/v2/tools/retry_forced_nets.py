@@ -43,6 +43,71 @@ def main():
     total_new_tracks = 0
     total_new_vias = 0
 
+    # detect diff-pair partners where BOTH members were requested together --
+    # routing them independently (the old behavior) breaks the mirrored
+    # coupling that keeps a differential pair's length/spacing matched, which
+    # is exactly why some of these ended up as bare single-segment fallback
+    # lines instead of a real coupled pair.
+    names_set = set(names)
+    handled_as_partner = set()
+    pairs = []  # (p_name, n_name)
+    solo_names = []
+    for name in names:
+        if name in handled_as_partner:
+            continue
+        info = ar.diff_pair_partner_suffix(name)
+        if info is None:
+            solo_names.append(name)
+            continue
+        base, my_suf, partner_suf = info
+        partner = base + partner_suf
+        if partner in names_set and partner not in handled_as_partner:
+            if my_suf in ("_P", "_DP"):
+                pairs.append((name, partner))
+            else:
+                pairs.append((partner, name))
+            handled_as_partner.add(name)
+            handled_as_partner.add(partner)
+        else:
+            solo_names.append(name)
+
+    if pairs:
+        print(f"Detected {len(pairs)} coupled diff pairs among requested nets: {pairs}")
+
+    for (name_p, name_n) in pairs:
+        try:
+            net_p = board.FindNet(name_p)
+            net_n = board.FindNet(name_n)
+            if net_p is None or net_n is None:
+                continue
+            to_remove = [t for t in board.GetTracks() if t.GetNetname() in (name_p, name_n)]
+            for t in to_remove:
+                board.Remove(t)
+            print(f"Removed {len(to_remove)} existing segments/vias for pair {name_p}/{name_n}")
+
+            pads_p = pads_for_net(name_p)
+            pads_n = pads_for_net(name_n)
+            if len(pads_p) != 2 or len(pads_n) != 2:
+                # not a clean 2-pad pair any more -- treat as solo nets instead
+                solo_names.extend([name_p, name_n])
+                continue
+            allow_vias = not ar.is_rf_net(name_p)
+            width_mm, _, gap_mm = ar.net_electrical_class(name_p)
+            nt, nv, forced_p, forced_n = ar.route_diff_pair(
+                obstacles, board, net_p, net_n, pads_p[0], pads_p[1], pads_n[0], pads_n[1],
+                name_p, name_n, allow_vias, width_mm, gap_mm)
+            total_new_tracks += nt
+            total_new_vias += nv
+            if forced_p:
+                still_forced.append(name_p)
+            if forced_n:
+                still_forced.append(name_n)
+        except Exception as e:
+            print(f"ERROR processing pair {name_p}/{name_n}: {e!r} -- skipping, leaving as forced")
+            still_forced.extend([name_p, name_n])
+            continue
+
+    names = solo_names
     for idx, name in enumerate(names):
         if idx > 0 and idx % 20 == 0:
             board.Save(str(PCB_PATH))
@@ -74,10 +139,18 @@ def main():
                 # never search below the board's true 0.1mm min clearance --
                 # a coarser grid pitch needs *more* margin, not less, to
                 # avoid landing a "just barely blocked" path that DRC then
-                # flags as a marginal clearance violation
-                dict(extra_pad_mm=60.0, track_width_mm=width_mm, clearance_mm=0.15, pitch_mm=0.15),
-                dict(extra_pad_mm=100.0, track_width_mm=0.1, clearance_mm=0.12, pitch_mm=0.15),
-                dict(extra_pad_mm=160.0, track_width_mm=0.1, clearance_mm=0.1, pitch_mm=0.15),
+                # flags as a marginal clearance violation.
+                # margin_cap_mm must be raised explicitly here -- it used to
+                # default to a hardcoded 30mm inside build_grid_and_search
+                # regardless of extra_pad_mm, which silently defeated these
+                # "search wider" attempts and pushed long nets straight to
+                # direct_fallback_path (a straight line through everything).
+                dict(extra_pad_mm=60.0, track_width_mm=width_mm, clearance_mm=0.15, pitch_mm=0.15,
+                     margin_cap_mm=60.0, max_cells=800000, max_pops=600000),
+                dict(extra_pad_mm=100.0, track_width_mm=0.1, clearance_mm=0.12, pitch_mm=0.18,
+                     margin_cap_mm=100.0, max_cells=1500000, max_pops=1000000),
+                dict(extra_pad_mm=160.0, track_width_mm=0.1, clearance_mm=0.1, pitch_mm=0.2,
+                     margin_cap_mm=170.0, max_cells=2500000, max_pops=1800000),
             ]
 
             for (pa, pb) in edges:
