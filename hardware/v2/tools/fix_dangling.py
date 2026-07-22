@@ -25,6 +25,7 @@ PCB_PATH = ROOT / "Code-SDR-V2.kicad_pcb"
 
 # (net_name, x_mm, y_mm) from the DRC report's dangling-track positions
 DANGLING_POINTS = [
+    ("+3V3_ANA", 103.65, 42.3625),
     ("DSA_CLK", 51.6961, 80.4461),
     ("DSA_CLK", 51.5661, 80.5161),
     ("PHY_XO", 118.15, 74.27),
