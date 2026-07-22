@@ -145,11 +145,11 @@ def main():
                 # regardless of extra_pad_mm, which silently defeated these
                 # "search wider" attempts and pushed long nets straight to
                 # direct_fallback_path (a straight line through everything).
-                dict(extra_pad_mm=60.0, track_width_mm=width_mm, clearance_mm=0.15, pitch_mm=0.15,
+                dict(extra_pad_mm=60.0, track_width_mm=width_mm, clearance_mm=0.2, pitch_mm=0.15,
                      margin_cap_mm=60.0, max_cells=800000, max_pops=600000),
-                dict(extra_pad_mm=100.0, track_width_mm=0.1, clearance_mm=0.12, pitch_mm=0.18,
+                dict(extra_pad_mm=100.0, track_width_mm=0.1, clearance_mm=0.18, pitch_mm=0.15,
                      margin_cap_mm=100.0, max_cells=1500000, max_pops=1000000),
-                dict(extra_pad_mm=160.0, track_width_mm=0.1, clearance_mm=0.1, pitch_mm=0.2,
+                dict(extra_pad_mm=160.0, track_width_mm=0.1, clearance_mm=0.14, pitch_mm=0.18,
                      margin_cap_mm=170.0, max_cells=2500000, max_pops=1800000),
             ]
 

@@ -153,19 +153,21 @@ def main():
                 edges = ar.nearest_neighbor_chain(pads)
 
             extra_attempts = [
-                dict(extra_pad_mm=60.0, track_width_mm=width_mm, clearance_mm=0.15, pitch_mm=0.15,
+                dict(extra_pad_mm=60.0, track_width_mm=width_mm, clearance_mm=0.2, pitch_mm=0.15,
                      margin_cap_mm=60.0, max_cells=800000, max_pops=600000),
-                dict(extra_pad_mm=100.0, track_width_mm=0.1, clearance_mm=0.12, pitch_mm=0.18,
+                dict(extra_pad_mm=100.0, track_width_mm=0.1, clearance_mm=0.18, pitch_mm=0.15,
                      margin_cap_mm=100.0, max_cells=1500000, max_pops=1000000),
-                dict(extra_pad_mm=160.0, track_width_mm=0.1, clearance_mm=0.1, pitch_mm=0.2,
+                dict(extra_pad_mm=160.0, track_width_mm=0.1, clearance_mm=0.14, pitch_mm=0.18,
                      margin_cap_mm=170.0, max_cells=2500000, max_pops=1800000),
                 # last-ditch: much finer pitch, for razor-thin gaps between
                 # fine-pitch BGA/LGA pads that a coarser grid can't resolve
-                # at all. Track width must never drop below the board's
-                # 0.1mm minimum manufacturable width (a previous version of
-                # this attempt used 0.08mm, which "succeeded" at pathfinding
-                # but created guaranteed track_width DRC violations instead).
-                dict(extra_pad_mm=20.0, track_width_mm=0.1, clearance_mm=0.08, pitch_mm=0.05,
+                # at all. Track width AND clearance must never drop below
+                # the board's 0.1mm minimum design rule (a previous version
+                # used 0.08mm for both, which "succeeded" at pathfinding but
+                # created guaranteed DRC violations instead -- the fine
+                # 0.05mm pitch here needs only a small safety margin above
+                # the true minimum, not zero margin).
+                dict(extra_pad_mm=20.0, track_width_mm=0.1, clearance_mm=0.11, pitch_mm=0.05,
                      margin_cap_mm=20.0, max_cells=1500000, max_pops=1200000),
             ]
 
