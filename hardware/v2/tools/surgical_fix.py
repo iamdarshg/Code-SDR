@@ -105,9 +105,17 @@ def try_nudge_via(board, obstacles, via, search_radius_mm=0.5, step_mm=0.05):
 
 def restitch_via_move(board, via, old_x, old_y, new_x, new_y):
     """Move the via and extend/shrink whichever track endpoints sat exactly
-    at its old position so the net stays continuously connected."""
+    at its old position so the net stays continuously connected.
+
+    Tolerance is 0.1mm (not the exact-match 0.01mm this used to be) because
+    several nets on this board have pre-existing small imprecisions (40-70um)
+    left over from earlier declutter/reroute rounds, before every waypoint
+    was snapped to its exact requested coordinate -- a too-tight restitch
+    tolerance here silently missed those and created new disconnected
+    islands (found and fixed via check_full_connectivity.py / bridge_
+    disconnected_islands.py after this bug was first triggered)."""
     net_name = via.GetNetname()
-    tol_iu = to_iu(0.01)
+    tol_iu = to_iu(0.1)
     old_pos = pcbnew.VECTOR2I(to_iu(old_x), to_iu(old_y))
     new_pos = pcbnew.VECTOR2I(to_iu(new_x), to_iu(new_y))
     moved_segments = 0
