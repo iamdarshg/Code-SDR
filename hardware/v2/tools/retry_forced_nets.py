@@ -175,6 +175,21 @@ def main():
                         if path is not None:
                             width_used = kw["track_width_mm"]
                             break
+                if path is None and not allow_vias:
+                    # Absolute last resort for RF/analog nets that are
+                    # normally kept F.Cu-only (no vias) for impedance
+                    # control: a real routed path with one layer change is
+                    # still far better for signal integrity than the
+                    # straight-line direct_fallback_path below, which has no
+                    # controlled impedance or clearance guarantee at all.
+                    real_src_layers = ar.pad_layer_set(pa)
+                    real_dst_layers = ar.pad_layer_set(pb)
+                    for kw in extra_attempts:
+                        path = ar.build_grid_and_search(obstacles, src, dst, True, name,
+                                                         src_layers=real_src_layers, dst_layers=real_dst_layers, **kw)
+                        if path is not None:
+                            width_used = kw["track_width_mm"]
+                            break
                 if path is None:
                     path = ar.direct_fallback_path(src, dst, allow_vias, src_layers=src_layers, dst_layers=dst_layers)
                     width_used = width_mm
