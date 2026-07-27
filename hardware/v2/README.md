@@ -8,7 +8,8 @@ the ESC remains a separate external board.
 
 - `Code-SDR-V2.kicad_sch` - hierarchical root schematic.
 - `sheets/` - eight functional subsheets.
-- `Code-SDR-V2.kicad_pcb` - four-layer routed PCB source.
+- `Code-SDR-V2.kicad_pcb` - 99 x 99 mm, four-layer PCB with the 49 RF50
+  controlled-impedance nets routed.
 - `Code-SDR-V2.kicad_pro` and `.kicad_dru` - project and enforced rules.
 - `CodeSDR.pretty/` and `CodeSDR.kicad_sym` - project-local audited libraries.
 - `tools/design_model.py` - single electrical component/net contract.
@@ -32,8 +33,10 @@ kicad-cli sch erc --format json -o hardware/v2/build/erc.json hardware/v2/Code-S
 kicad-cli pcb drc --format json --all-track-errors -o hardware/v2/build/drc.json hardware/v2/Code-SDR-V2.kicad_pcb
 ```
 
-Regeneration replaces the PCB, so do not run `generate_pcb.py` after importing
-or hand-editing a route unless the route will be regenerated too.
+Regeneration intentionally replaces the PCB with the clean placement baseline:
+344 footprints, four copper layers, and the two internal ground-reference zones.
+Do not run `generate_pcb.py` after beginning a manual route unless that route
+is meant to be discarded.
 
 ## Route import and release
 
@@ -41,30 +44,40 @@ Freerouting must write its completed session to
 `build/Code-SDR-V2-routed.ses`. Then run:
 
 ```powershell
-java -Xmx2200m -jar freerouting-2.2.4.jar `
+java -Xmx2600m -jar freerouting-2.2.4.jar `
   -de hardware/v2/build/Code-SDR-V2.dsn `
   -do hardware/v2/build/Code-SDR-V2-routed.ses `
-  -mp 10 -mt 0 -da --gui.enabled=false
+  -mp 1 -mt 0 -da -dct 1 --gui.enabled=false
+python hardware/v2/tools/sanitize_route_session.py
 & "C:\Program Files\KiCad\9.0\bin\python.exe" hardware/v2/tools/import_route.py
+& "C:\Program Files\KiCad\9.0\bin\python.exe" hardware/v2/tools/export_route_checkpoint.py
+& "C:\Program Files\KiCad\9.0\bin\python.exe" hardware/v2/tools/refill_zones.py
 & "C:\Program Files\KiCad\9.0\bin\python.exe" hardware/v2/tools/add_rf_via_fences.py
 & "C:\Program Files\KiCad\9.0\bin\python.exe" hardware/v2/tools/validate_route.py
 powershell -ExecutionPolicy Bypass -File hardware/v2/tools/export_release.ps1
 ```
 
-The exported DSN intentionally omits GND from track routing: the uninterrupted
-In1 plane and filled F.Cu/B.Cu pours connect it without unnecessary stubs.
-`-mt 0` disables post-route optimization; run length/skew validation and the
-final DRC after importing the completed clean-board route.
+The four-layer routing contract is `F.Cu / solid In1 GND / solid In2 GND /
+B.Cu`. The 49 RF50 nets are routed as nominal 50-ohm microstrip on the two
+outer layers using 0.23 mm traces over a 0.13 mm dielectric. F.Cu is preferred;
+B.Cu is used only for four unavoidable crossings, with a nearby ground-return
+via at every layer transition. All remaining digital, power and slow nets are
+intentionally unrouted for completion in KiCad. No signal trace may cut either
+internal reference plane.
+Use one persisted pass at a time: import each normally completed session,
+run DRC, export the routed board with `export_route_checkpoint.py`, and repeat
+until KiCad reports no opens. `-mt 0` lets Freerouting select the available
+worker-thread count. Add the fences and run length/skew validation only
+after importing the completed clean-board route.
 
 `import_route.py` also refreshes footprint hierarchy paths from the current
-schematic before parity checking. `validate_route.py` rejects signal routing
-on the solid In1 ground plane and rejects vias or non-F.Cu segments in the
-critical RF paths. It also checks USB, MDI and analog differential-pair skew,
-ADC data-bus skew, and RGMII data/control skew.
+schematic before parity checking. Route-validation helpers must enforce the
+four-layer contract above before manufacturing output is accepted.
 
 ## Non-CAD release gates
 
-The specified 0.18 mm outer dielectric is the impedance-design basis. Have the
+The specified 0.13 mm outer dielectric and nominal 0.23 mm RF trace are the
+50-ohm impedance-design basis. Have the
 selected fabricator field-solve RF and differential geometries using its actual
 Dk, copper and solder mask. A first article must pass the VNA, PLL, NF,
 linearity, image, thermal and full-range calibration plan in

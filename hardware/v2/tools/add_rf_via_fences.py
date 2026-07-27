@@ -80,17 +80,17 @@ def main() -> None:
         via_radius = VIA_DIAMETER_MM / 2.0
         for pad in pads:
             box = pad.GetBoundingBox()
-            box.Inflate(pcbnew.FromMM(via_radius + 0.12))
+            box.Inflate(pcbnew.FromMM(via_radius + 0.22))
             if box.Contains(point):
                 return False
         for item in all_tracks:
             if isinstance(item, pcbnew.PCB_VIA):
                 other = item.GetPosition()
-                required = via_radius + pcbnew.ToMM(item.GetWidth()) / 2.0 + 0.10
+                required = via_radius + pcbnew.ToMM(item.GetWidth()) / 2.0 + 0.20
                 if math.hypot(x - pcbnew.ToMM(other.x), y - pcbnew.ToMM(other.y)) < required:
                     return False
             else:
-                required = via_radius + pcbnew.ToMM(item.GetWidth()) / 2.0 + 0.10
+                required = via_radius + pcbnew.ToMM(item.GetWidth()) / 2.0 + 0.20
                 if point_segment_distance_mm(point, item.GetStart(), item.GetEnd()) < required:
                     return False
         return True
@@ -125,6 +125,11 @@ def main() -> None:
                 board.Add(via)
                 all_tracks.append(via)
                 accepted.append(point)
+
+    # Ground is an RF reference structure, not a hand-solder thermal island.
+    for zone in board.Zones():
+        if zone.GetNetname() == "GND":
+            zone.SetPadConnection(pcbnew.ZONE_CONNECTION_FULL)
 
     # Refill all copper after adding stitching vias so the saved manufacturing
     # board contains current F.Cu/B.Cu pours and the solid In1 ground plane.

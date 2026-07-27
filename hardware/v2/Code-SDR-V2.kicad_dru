@@ -12,3 +12,16 @@
     (severity ignore)
     (condition "A.memberOfFootprint('J10') && B.Layer == 'Edge.Cuts'")
     (constraint silk_clearance))
+
+# J30 is the Pulse integrated-magnetics RJ45.  Its two plated shield stakes
+# and connector body sit close to/cross the mating edge by construction.
+# Retain the manufacturer's footprint and explicitly encode that mechanical
+# exception instead of moving the connector away from the enclosure opening.
+(rule "J30 shield stakes near mating edge"
+    (condition "A.memberOfFootprint('J30') || B.memberOfFootprint('J30')")
+    (constraint edge_clearance (min -0.10mm)))
+
+(rule "J30 body silk across mating edge"
+    (severity ignore)
+    (condition "A.memberOfFootprint('J30') && B.Layer == 'Edge.Cuts'")
+    (constraint silk_clearance))

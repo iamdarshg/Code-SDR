@@ -21,6 +21,9 @@ def main() -> None:
         raise FileNotFoundError(f"Missing completed route: {SES_PATH}")
     shutil.copy2(BOARD_PATH, BASE_COPY)
     board = pcbnew.LoadBoard(str(BOARD_PATH))
+    # Import directly onto the DSN's base board.  KiCad's SES importer
+    # reconciles the session idempotently; removing SWIG-wrapped track objects
+    # first invalidates the board iterator and can leave the route unchanged.
     if not pcbnew.ImportSpecctraSES(board, str(SES_PATH)):
         raise RuntimeError("KiCad failed to import the Specctra session")
 

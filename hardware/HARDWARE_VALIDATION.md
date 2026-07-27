@@ -216,15 +216,21 @@ normal receiver operating mode.
 
 ## PCB implementation requirements
 
-V2 is a 160 x 100 mm, single-sided-assembly, four-layer board:
+V2 is a 99 x 99 mm (98.01 cm2), single-sided-assembly, four-layer board. The
+checked-in PCB has all 49 RF50 nets routed; the remaining power, digital and
+slow nets are intentionally left for the subsequent full-board route:
 
-`F.Cu / 0.18 mm prepreg / solid In1 GND / 1.09 mm core / In2 power+slow /
-0.18 mm prepreg / B.Cu`
+`F.Cu / 0.13 mm prepreg / solid In1 GND / 1.20 mm core / solid In2 GND /
+0.13 mm prepreg / B.Cu`
 
-The finish is ENIG. RF uses grounded coplanar routing on F.Cu referenced to
-the uninterrupted In1 plane. The >7 GHz connector/LNA/select paths must remain
-on F.Cu without signal vias, with short runs and ground-via fencing. RGMII,
-ADC data, clocks and USB require continuous reference and controlled geometry.
+The finish is ENIG. RF uses nominal 0.23 mm, 50-ohm microstrip on F.Cu
+referenced to the uninterrupted In1 plane. Four nets use short B.Cu sections
+for unavoidable crossings, referenced to solid In2; each layer transition has
+a nearby ground-return via. The protected corridors are reserved so the later
+power/digital route cannot run parallel beside or cross beneath them. RGMII,
+ADC data, clocks and USB still require continuous reference and controlled
+geometry. No noisy digital route may share a corridor with a protected
+analogue route.
 
 The stack values are a fabrication specification, not a generic promise of
 50 ohms. The selected fabricator must field-solve the RF and differential
@@ -232,8 +238,9 @@ width/gap against its actual Dk, copper and solder mask before ordering.
 
 ## Release and first-article gates
 
-1. Zero schematic ERC errors, PCB DRC violations, parity mismatches and
-   unconnected items.
+1. Zero schematic ERC errors, PCB DRC violations and parity mismatches. The
+   RF50 handoff intentionally retains opens only on nets outside the RF50
+   route scope; a fabrication release must additionally reach zero opens.
 2. Gerber/drill/BOM/position outputs generated from the exact routed board.
 3. Independent visual review of every schematic sheet and both PCB sides.
 4. Written production quote for QPC6144; the cost model reports its ceiling.

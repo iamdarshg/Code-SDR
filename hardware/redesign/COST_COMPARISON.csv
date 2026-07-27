@@ -53,13 +53,13 @@ V2,01_power,"C5,C8",100nF,Capacitor_SMD:C_0402_1005Metric,2,0.01000,0.02000,comm
 V2,01_power,"C3,C6",10uF,Capacitor_SMD:C_0805_2012Metric,2,0.07500,0.15000,commodity passive allowance,https://www.digikey.com/
 V2,01_power,C9,1uF,Capacitor_SMD:C_0603_1608Metric,1,0.02500,0.02500,commodity passive allowance,https://www.digikey.com/
 V2,01_power,C10,2.2uF,Capacitor_SMD:C_0603_1608Metric,1,0.03500,0.03500,commodity passive allowance,https://www.digikey.com/
-V2,01_power,"L1,L2",2.2uH_2.5A,Inductor_SMD:L_0805_2012Metric_Pad1.15x1.40mm_HandSolder,2,0.18000,0.36000,commodity inductor/ferrite allowance,https://www.digikey.com/
+V2,01_power,"L1,L2",2.2uH_2.5A,CodeSDR:Inductor_0805_HandSolder,2,0.18000,0.36000,commodity inductor/ferrite allowance,https://www.digikey.com/
 V2,01_power,F1,2.5A_PTC,Fuse:Fuse_1812_4532Metric,1,0.18000,0.18000,"authorized 1,000-unit tier",https://www.digikey.com/
 V2,01_power,"C1,C2,C4,C7",22uF,Capacitor_SMD:C_0805_2012Metric,4,0.14000,0.56000,commodity passive allowance,https://www.digikey.com/
 V2,01_power,"C11,C12",4.7uF,Capacitor_SMD:C_0805_2012Metric,2,0.03500,0.07000,commodity passive allowance,https://www.digikey.com/
 V2,01_power,R1,453k_1%,Resistor_SMD:R_0402_1005Metric,1,0.00600,0.00600,commodity 1% resistor allowance,https://www.digikey.com/
 V2,01_power,J1,5V_INPUT_ONLY,"TerminalBlock_Phoenix:TerminalBlock_Phoenix_MKDS-1,5-2_1x02_P5.00mm_Horizontal",1,0.62000,0.62000,volume terminal-block allowance,https://www.digikey.com/
-V2,01_power,FB1,600R@100MHz_2A,Inductor_SMD:L_0805_2012Metric_Pad1.15x1.40mm_HandSolder,1,0.07000,0.07000,commodity inductor/ferrite allowance,https://www.digikey.com/
+V2,01_power,FB1,600R@100MHz_2A,CodeSDR:Inductor_0805_HandSolder,1,0.07000,0.07000,commodity inductor/ferrite allowance,https://www.digikey.com/
 V2,01_power,D1,SMAJ5.0A,Diode_SMD:D_SMA,1,0.17000,0.17000,manufacturer public 500-unit tier,https://estore.st.com/en/products/protections-and-emi-filters/transient-voltage-suppressors-tvs/smaj5-0a.html
 V2,01_power,"U1,U2",TLV62569DBVR,Package_TO_SOT_SMD:SOT-23-5,2,0.37000,0.74000,"authorized 1,000-unit tier",https://www.digikey.com/
 V2,01_power,U3,TLV75525PDBVR,Package_TO_SOT_SMD:SOT-23-5,1,0.19000,0.19000,"authorized 1,000-unit tier",https://www.digikey.com/

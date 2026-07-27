@@ -5,14 +5,10 @@ param(
 $ErrorActionPreference = "Stop"
 
 function Invoke-KiCad {
-    param(
-        [Parameter(ValueFromRemainingArguments = $true)]
-        [string[]]$Arguments
-    )
-
-    & kicad-cli @Arguments
+    $KiCadArguments = @($args)
+    & kicad-cli @KiCadArguments
     if ($LASTEXITCODE -ne 0) {
-        throw "kicad-cli failed with exit code $LASTEXITCODE`: $($Arguments -join ' ')"
+        throw "kicad-cli failed with exit code $LASTEXITCODE`: $($KiCadArguments -join ' ')"
     }
 }
 
@@ -44,8 +40,24 @@ $schematic = Join-Path $v2Root "Code-SDR-V2.kicad_sch"
 Invoke-KiCad sch erc --format json --severity-all --exit-code-violations `
     -o (Join-Path $validationDir "erc.json") $schematic
 Invoke-KiCad pcb drc --format json --severity-all --all-track-errors `
-    --schematic-parity --exit-code-violations --units mm `
+    --schematic-parity --units mm `
     -o (Join-Path $validationDir "drc.json") $board
+
+$drcReport = Get-Content -Raw -LiteralPath (Join-Path $validationDir "drc.json") |
+    ConvertFrom-Json
+if ($drcReport.violations.Count -ne 0) {
+    throw "Release DRC contains $($drcReport.violations.Count) violation(s)"
+}
+if ($drcReport.schematic_parity.Count -ne 0) {
+    throw "Release DRC contains $($drcReport.schematic_parity.Count) schematic parity issue(s)"
+}
+
+$kicadCli = (Get-Command kicad-cli -ErrorAction Stop).Source
+$kicadPython = Join-Path (Split-Path -Parent $kicadCli) "python.exe"
+& $kicadPython (Join-Path $PSScriptRoot "audit_rf50_routes.py")
+if ($LASTEXITCODE -ne 0) {
+    throw "RF50 connectivity/geometry audit failed with exit code $LASTEXITCODE"
+}
 
 Invoke-KiCad sch export bom `
     --fields 'Reference,Value,Footprint,Datasheet,Description,${QUANTITY},${DNP}' `
@@ -120,12 +132,30 @@ if (Test-Path -LiteralPath (Join-Path $v2Root "build\ROUTE_STATISTICS.csv")) {
     Copy-Item -LiteralPath (Join-Path $v2Root "build\ROUTE_STATISTICS.csv") -Destination $validationDir
 }
 
+$handoffNotice = @"
+CODE-SDR V2 RF50 ROUTING HANDOFF
+
+All 49 RF50 controlled-impedance nets are routed and independently audited.
+The remaining $($drcReport.unconnected_items.Count) power, digital and slow-net
+connections are intentionally unrouted per the requested scope.  The included
+Gerbers are inspection artifacts only and MUST NOT be sent for fabrication
+until the remaining nets are routed and KiCad reports zero unconnected items.
+
+The board house must field-solve/tune the nominal 0.23 mm outer-layer traces
+for its actual 0.13 mm prepreg, copper plating, solder mask and dielectric Dk.
+"@
+[IO.File]::WriteAllText(
+    (Join-Path $packageRoot "NOT-FABRICATION-READY.txt"),
+    $handoffNotice,
+    [Text.UTF8Encoding]::new($false)
+)
+
 $manifest = Get-ChildItem -LiteralPath $packageRoot -Recurse -File |
     Sort-Object FullName |
     ForEach-Object {
         $hash = Get-FileHash -Algorithm SHA256 -LiteralPath $_.FullName
         [pscustomobject]@{
-            Path = [IO.Path]::GetRelativePath($packageRoot, $_.FullName)
+            Path = $_.FullName.Substring($packageRoot.Length + 1)
             Bytes = $_.Length
             SHA256 = $hash.Hash
         }
@@ -138,4 +168,5 @@ if (Test-Path -LiteralPath $zipPath) {
     Remove-Item -LiteralPath $zipPath -Force
 }
 Compress-Archive -LiteralPath $packageRoot -DestinationPath $zipPath -CompressionLevel Optimal
+Remove-Item -LiteralPath $packageRoot -Recurse -Force
 Write-Output $zipPath

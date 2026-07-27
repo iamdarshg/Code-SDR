@@ -53,6 +53,7 @@ def main() -> None:
     forbidden_plane_items: list[str] = []
     critical_vias: list[str] = []
     critical_wrong_layers: list[str] = []
+    protected_analog_classes = {"RF_CRITICAL", "RF_50", "IF_DIFF"}
 
     for item in board.GetTracks():
         net_name = item.GetNetname()
@@ -62,16 +63,16 @@ def main() -> None:
         rows[key]["layers"].add(layer_name)  # type: ignore[union-attr]
         if isinstance(item, pcbnew.PCB_VIA):
             rows[key]["vias"] = int(rows[key]["vias"]) + 1
-            if route_class == "RF_CRITICAL":
+            if route_class in protected_analog_classes:
                 critical_vias.append(net_name)
         else:
             rows[key]["track_segments"] = int(rows[key]["track_segments"]) + 1
             rows[key]["length_mm"] = float(rows[key]["length_mm"]) + pcbnew.ToMM(
                 item.GetLength()
             )
-            if item.GetLayer() == pcbnew.In1_Cu:
+            if item.GetLayer() in (pcbnew.In1_Cu, pcbnew.In4_Cu):
                 forbidden_plane_items.append(net_name)
-            if route_class == "RF_CRITICAL" and item.GetLayer() != pcbnew.F_Cu:
+            if route_class in protected_analog_classes and item.GetLayer() != pcbnew.F_Cu:
                 critical_wrong_layers.append(f"{net_name}:{layer_name}")
 
     with OUT_CSV.open("w", newline="", encoding="utf-8") as handle:
@@ -99,16 +100,18 @@ def main() -> None:
 
     if forbidden_plane_items:
         raise AssertionError(
-            "Signal routing exists on solid In1 ground plane: "
+            "Signal routing exists on solid In1/In4 ground plane: "
             + ", ".join(sorted(set(forbidden_plane_items)))
         )
     if critical_vias:
         raise AssertionError(
-            "Critical RF route contains vias: " + ", ".join(sorted(set(critical_vias)))
+            "Protected analog route contains vias: "
+            + ", ".join(sorted(set(critical_vias)))
         )
     if critical_wrong_layers:
         raise AssertionError(
-            "Critical RF route left F.Cu: " + ", ".join(sorted(set(critical_wrong_layers)))
+            "Protected analog route left F.Cu: "
+            + ", ".join(sorted(set(critical_wrong_layers)))
         )
 
     def aggregate(net_names: tuple[str, ...]) -> tuple[float, int]:
@@ -172,7 +175,7 @@ def main() -> None:
     vias = sum(int(data["vias"]) for data in rows.values())
     print(
         f"Route invariants valid: {track_segments} segments, {vias} vias, "
-        "solid In1 preserved, critical RF F.Cu-only, high-speed skew valid"
+        "solid In1/In4 preserved, protected analog F.Cu-only, high-speed skew valid"
     )
 
 

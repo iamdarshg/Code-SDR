@@ -1,6 +1,6 @@
 [CmdletBinding()]
 param(
-    [string]$ProjectBase = "Wideband-Test-V1",
+    [string]$ProjectBase = "v2/Code-SDR-V2",
     [string]$OutputDirectory = "validation-output",
     [switch]$AllowViolations
 )
@@ -38,7 +38,8 @@ if ($LASTEXITCODE -ne 0) {
     throw "KiCad ERC command failed with exit code $LASTEXITCODE."
 }
 
-& $kicad.Source pcb drc --output $drcPath --format json --severity-all --schematic-parity $board
+& $kicad.Source pcb drc --output $drcPath --format json --severity-all `
+    --all-track-errors --schematic-parity $board
 if ($LASTEXITCODE -ne 0) {
     throw "KiCad DRC command failed with exit code $LASTEXITCODE."
 }

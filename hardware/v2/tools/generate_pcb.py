@@ -1,4 +1,4 @@
-"""Generate the placed four-layer Code-SDR V2 PCB from design_model.py."""
+"""Generate the compact four-layer Code-SDR V2 placement/plane baseline."""
 
 from __future__ import annotations
 
@@ -36,43 +36,66 @@ DSN_PATH = ROOT / "build" / "Code-SDR-V2.dsn"
 PROJECT_PATH = ROOT / "Code-SDR-V2.kicad_pro"
 SCHEMATIC_PATHS = ROOT / "build" / "schematic_paths.json"
 
-W, H = 160.0, 100.0
+W, H = 99.0, 99.0
+ROUTER_VIA_NAME = "Via[0-5]_450:200_um"
 
-# Cost-first 160 x 100 mm board. Each rectangle is a physical functional block;
-# the ESC remains an entirely separate board and is not present in this design.
+# Cost-first 99 x 99 mm board (98.01 cm^2).  Critical analogue/RF blocks retain
+# dedicated placement regions; tolerant controller and Ethernet support parts
+# are shelf-packed densely.  The ESC remains a separate board.
 REGIONS = {
-    "07_rf_high": (4.0, 18.0, 132.0, 10.0),
-    "06_rf_low": (4.0, 31.0, 53.0, 24.0),
-    "08_if_chain": (61.0, 31.0, 75.0, 31.0),
-    "05_reference_lo": (4.0, 58.0, 53.0, 19.0),
-    "01_power": (4.0, 77.5, 23.0, 15.5),
-    "02_controller": (30.0, 77.5, 36.0, 15.5),
-    "03_fpga_adc": (69.0, 65.0, 40.0, 28.0),
-    "04_ethernet": (109.5, 65.0, 16.0, 28.0),
+    "07_rf_high": (3.0, 4.0, 93.0, 19.0),
+    "06_rf_low": (3.0, 27.0, 37.0, 23.0),
+    "08_if_chain": (43.0, 27.0, 53.0, 23.0),
+    "05_reference_lo": (3.0, 53.0, 41.0, 20.0),
+    "03_fpga_adc": (47.0, 53.0, 22.0, 43.0),
+    "04_ethernet": (72.0, 53.0, 25.0, 20.0),
+    "01_power": (3.0, 76.0, 22.0, 20.0),
+    "02_controller": (28.0, 75.0, 32.0, 21.0),
 }
 
 MANUAL_PLACEMENT = {
     # Keep the protected 5 V entry beside the power converters.  The rotated
     # terminal block stays inside the bottom-left outline and avoids carrying
     # unfused input power across the RF/digital board.
-    "J1": (8.5, 94.0, 180.0),
-    "F1": (14.5, 96.0, 0.0),
-    "D1": (21.5, 92.5, 0.0),
-    "FB1": (18.0, 87.8, 0.0),
-    "J10": (48.0, 100.0, 0.0),
-    "SW1": (54.0, 90.0, 0.0),
-    "SW2": (35.0, 90.0, 0.0),
-    # RJ45 jack axis points toward the right-hand board edge. Its mating face
-    # ends at x=159.15 mm while all signal pins and Ethernet electronics remain
-    # safely inboard. The extra 20 mm is cheaper than a second-sided assembly.
-    "J30": (133.0, 78.0, 0.0),
-    "J50": (0.0, 44.0, 0.0),
+    "J1": (9.0, 93.0, 180.0),
+    "F1": (18.0, 96.0, 0.0),
+    "D1": (18.0, 92.0, 0.0),
+    "FB1": (16.0, 86.5, 0.0),
+    "J10": (43.0, 99.0, 0.0),
+    "SW1": (55.0, 90.0, 0.0),
+    "SW2": (31.5, 90.0, 0.0),
+    # RJ45 jack stays against the right-hand edge while its signal pins and the
+    # Ethernet support block remain inboard.
+    "J30": (81.5, 86.0, 0.0),
+    "J50": (0.0, 39.0, 0.0),
     # 270 degrees puts each SMA body outside the top outline and leaves only
     # the manufacturer-defined edge-clamping lands crossing into the board.
-    "J60": (20.0, 0.0, 270.0),
-    "J61": (50.0, 0.0, 270.0),
-    "J62": (80.0, 0.0, 270.0),
-    "J63": (110.0, 0.0, 270.0),
+    "J60": (15.0, 0.0, 270.0),
+    "J61": (38.0, 0.0, 270.0),
+    "J62": (61.0, 0.0, 270.0),
+    "J63": (84.0, 0.0, 270.0),
+    # Symmetric LMX2592 RF launch cells: DC-block capacitors stay on the
+    # through path while the 50-ohm bias terminations branch with short stubs.
+    "R53": (16.2, 64.6, 0.0),
+    "C202": (17.8, 66.5, 270.0),
+    "R52": (20.0, 64.6, 180.0),
+    "C201": (19.2, 66.5, 270.0),
+    "R54": (21.2, 60.2, 270.0),
+    "C203": (22.5, 61.75, 0.0),
+    "R55": (22.5, 65.2, 90.0),
+    "C204": (22.5, 63.25, 0.0),
+    "R56": (9.0, 69.0, 0.0),
+    "C71": (11.5, 69.0, 0.0),
+    "R51": (14.0, 69.0, 0.0),
+    "C70": (16.5, 69.0, 0.0),
+    "C272": (19.0, 69.5, 0.0),
+    "C67": (27.0, 61.0, 0.0),
+    # Place the low-band mixer's left-facing LO pair directly beside the
+    # synthesizer corridor; shift its IF transformer to preserve clearance.
+    "U51": (29.0, 32.0, 0.0),
+    "T50": (38.0, 28.0, 180.0),
+    "C282": (36.0, 26.0, 0.0),
+    "C283": (38.5, 26.0, 0.0),
 }
 FOOTPRINT_CACHE: dict[str, pcbnew.FOOTPRINT] = {}
 PATH_MAP = (
@@ -88,14 +111,16 @@ PATH_MAP = (
 # the longer convergence runs.
 RF_HIGH_PLACEMENT: dict[str, tuple[float, float, float]] = {}
 for port_x, refs in [
-    (20.0, ("D60", "C215", "C219", "U60", "R100", "L83", "C223", "C224")),
-    (50.0, ("D61", "C216", "C2110", "U61", "R101", "R105", "C225", None)),
-    (80.0, ("D62", "C217", "C2111", "U62", "R102", "R106", "C226", "C2210")),
-    (110.0, ("D63", "C218", "C2112", "U66", "R103", "R107", "C227", "C2211")),
+    (15.0, ("D60", "C215", "C219", "U60", "R100", "L83", "C223", "C224")),
+    (38.0, ("D61", "C216", "C2110", "U61", "R101", "R105", "C225", None)),
+    (61.0, ("D62", "C217", "C2111", "U62", "R102", "R106", "C226", "C2210")),
+    (84.0, ("D63", "C218", "C2112", "U66", "R103", "R107", "C227", "C2211")),
 ]:
     esd, series, shunt, lna, enable, output_part, bypass, vdd_match = refs
     RF_HIGH_PLACEMENT.update({
-        esd: (port_x, 5.2, 90.0),
+        # Face the signal pad toward the edge launch; the previous 90-degree
+        # orientation put the shunt-ground pad directly in the RF path.
+        esd: (port_x, 5.2, 270.0),
         series: (port_x, 7.0, 90.0),
         shunt: (port_x - 2.0, 7.7, 0.0),
         lna: (port_x, 9.6, 90.0),
@@ -108,24 +133,33 @@ for port_x, refs in [
 RF_HIGH_PLACEMENT.update({
     # The second D-port LNA forms a short monotonic 10 GHz path from U66 to
     # the closest QPC6144 common-port side.
-    "C291": (107.0, 13.2, 0.0),
-    "C292": (106.5, 15.0, 0.0),
-    "U67": (103.0, 13.2, 0.0),
-    "R112": (101.0, 15.0, 0.0),
-    "R111": (100.0, 13.2, 0.0),
-    "C293": (103.0, 10.5, 0.0),
-    "C294": (100.5, 10.5, 0.0),
-    "U64": (95.0, 16.0, 0.0),
-    "C260": (92.0, 20.5, 0.0),
-    "C261": (95.0, 21.0, 0.0),
-    "R144": (98.0, 20.5, 0.0),
-    "R145": (100.5, 20.5, 0.0),
-    "C232": (100.0, 16.0, 0.0),
-    "C233": (104.0, 12.5, 90.0),
-    "U63": (105.0, 16.0, 0.0),
-    "C93": (105.0, 20.5, 0.0),
-    "C94": (108.5, 20.5, 0.0),
-    "T60": (113.0, 16.0, 0.0),
+    "C291": (82.0, 13.2, 0.0),
+    "C292": (81.5, 15.0, 0.0),
+    # Pad 3 faces the preceding coupling network and pad 4 faces the switch.
+    "U67": (78.0, 13.2, 180.0),
+    "R112": (76.0, 15.0, 0.0),
+    "R111": (75.0, 13.2, 0.0),
+    "C293": (78.0, 10.5, 0.0),
+    "C294": (75.5, 10.5, 0.0),
+    # Rotate the four-way switch so its A/B/C/D RF pads face the source bank
+    # and its common RF pad faces the high-band mixer coupling capacitor.
+    "U64": (74.0, 22.0, 270.0),
+    "C260": (88.0, 17.0, 0.0),
+    "C261": (91.0, 17.0, 0.0),
+    "R144": (88.0, 19.0, 0.0),
+    "R145": (91.0, 19.0, 0.0),
+    "C232": (79.0, 22.25, 0.0),
+    "C233": (88.0, 21.25, 180.0),
+    "U63": (84.0, 22.0, 0.0),
+    "C93": (84.0, 25.5, 0.0),
+    "C94": (88.0, 25.5, 0.0),
+    "T60": (37.0, 34.0, 0.0),
+    # B-channel series/LNA/output pads face monotonically from the launch;
+    # the input shunt is a short side stub rather than an in-line obstacle.
+    "C216": (38.0, 7.0, 270.0),
+    "C2110": (40.5, 8.2, 0.0),
+    "U61": (38.0, 9.6, 270.0),
+    "R105": (38.0, 12.3, 270.0),
 })
 
 
@@ -143,47 +177,50 @@ def placement_override(item) -> tuple[float, float, float] | None:
     # footprint height, which can strand bypass capacitors away from their IC
     # and lengthen high-speed buses.
     if item.sheet == "01_power":
-        x = 4.0 + (item.xy[0] - 22.0) * 0.31
-        y = 78.0 + (item.xy[1] - 77.0) * 0.72
+        x = 3.0 + (item.xy[0] - 22.0) * 0.28
+        y = 76.0 + (item.xy[1] - 77.0) * 0.72
         return x, y, item.rotation
     if item.sheet == "02_controller":
-        x = 31.0 + (item.xy[0] - 18.0) * 0.75
-        y = 78.0 + (item.xy[1] - 25.0) * 0.50
-        return x, y, item.rotation
+        # Control/support circuitry is noise-tolerant and intentionally uses
+        # dense shelf packing inside its region.
+        return None
     if item.sheet == "03_fpga_adc":
-        x = 70.0 + (item.xy[0] - 78.0) * 0.78
-        y = 66.0 + (item.xy[1] - 21.0) * 0.75
+        x = 47.0 + (item.xy[0] - 72.0) * 0.40
+        y = 56.0 + (item.xy[1] - 20.0) * 1.10
         return x, y, item.rotation
     if item.sheet == "04_ethernet":
-        x = 110.0 + (item.xy[0] - 136.0) * 0.35
-        y = 66.0 + (item.xy[1] - 24.0) * 0.72
-        return x, y, item.rotation
+        # Ethernet support passives are tolerant and densely shelf-packed;
+        # the edge connector itself remains fixed by MANUAL_PLACEMENT.
+        return None
     if item.sheet == "06_rf_low":
-        x = (item.xy[0] - 5.0) * 0.65
-        y = 44.0 + (item.xy[1] - 63.0) * 0.55
+        x = (item.xy[0] - 5.0) * 0.47
+        y = 32.0 + (item.xy[1] - 63.0) * 0.48
         return x, y, item.rotation
     if item.sheet == "07_rf_high":
         return RF_HIGH_PLACEMENT[item.ref]
     if item.sheet == "08_if_chain":
+        if item.ref == "T70":
+            # Keep the LT5560 input transformer out of the PE4312 pin field;
+            # this leaves a legal top-layer 50-ohm approach to its SE input.
+            return (64.0, 25.0, item.rotation)
         if item.ref in {"U75", "R81", "L97", "C284", "C238"}:
             local = {
-                "U75": (98.0, 40.0, 0.0),
-                "R81": (95.5, 42.5, 0.0),
-                "L97": (100.5, 42.5, 0.0),
-                "C284": (103.0, 42.5, 0.0),
-                "C238": (102.0, 40.0, 0.0),
+                "U75": (73.0, 38.0, 0.0),
+                "R81": (70.5, 40.5, 0.0),
+                "L97": (75.5, 40.5, 0.0),
+                "C284": (78.0, 40.5, 0.0),
+                "C238": (77.0, 38.0, 0.0),
             }
             return local[item.ref]
-        x = 72.0 + (item.xy[0] - 73.0) * 0.80
-        y = 34.0 + (item.xy[1] - 67.0) * 0.55
+        x = 43.0 + (item.xy[0] - 73.0) * 0.55
+        y = 31.0 + (item.xy[1] - 67.0) * 0.43
         return x, y, item.rotation
     if item.sheet == "05_reference_lo":
         if item.ref in ADF_REFS:
-            x = 102.0 + (item.xy[0] - 165.0) * 0.65
-            y = 45.0 + (item.xy[1] - 88.0) * 0.45
+            x = 28.0 + (item.xy[0] - 155.0) * 0.55
         else:
-            x = 70.0 + (item.xy[0] - 140.0) * 0.65
-            y = 22.0 + (item.xy[1] - 88.0) * 0.45
+            x = 5.0 + (item.xy[0] - 119.0) * 0.55
+        y = 54.0 + (item.xy[1] - 78.0) * 0.65
         return x, y, item.rotation
     return None
 
@@ -296,6 +333,15 @@ def place_overrides(board: pcbnew.BOARD, net_items: dict[str, pcbnew.NETINFO_ITE
                 return True
         return False
 
+    def inside_board(candidate) -> bool:
+        margin = pcbnew.FromMM(0.25)
+        return (
+            candidate.GetLeft() >= margin
+            and candidate.GetRight() <= pcbnew.FromMM(W) - margin
+            and candidate.GetTop() >= margin
+            and candidate.GetBottom() <= pcbnew.FromMM(H) - margin
+        )
+
     search_offsets = [(0.0, 0.0)]
     for radius_steps in range(1, 25):
         radius = radius_steps * 0.50
@@ -316,7 +362,7 @@ def place_overrides(board: pcbnew.BOARD, net_items: dict[str, pcbnew.NETINFO_ITE
                 pcbnew.VECTOR2I(pcbnew.FromMM(x + dx), pcbnew.FromMM(y + dy))
             )
             candidate = footprint.GetBoundingBox()
-            if fixed or not overlaps(candidate):
+            if fixed or (inside_board(candidate) and not overlaps(candidate)):
                 occupied.append(candidate)
                 break
         else:
@@ -356,8 +402,8 @@ def add_ground_zone(board: pcbnew.BOARD, net: pcbnew.NETINFO_ITEM, layer: int, m
     zone = pcbnew.ZONE(board)
     zone.SetLayer(layer)
     zone.SetNet(net)
-    # Solid ground connections minimize inductance and avoid thermal starvation
-    # in the RF/high-speed return path.
+    # Ground is the RF return structure; solid attachment avoids added
+    # inductance and thermally-starved stitching vias beside 10 GHz paths.
     zone.SetPadConnection(pcbnew.ZONE_CONNECTION_FULL)
     zone.SetLocalClearance(pcbnew.FromMM(0.15))
     zone.SetMinThickness(pcbnew.FromMM(0.12))
@@ -371,75 +417,12 @@ def add_ground_zone(board: pcbnew.BOARD, net: pcbnew.NETINFO_ITEM, layer: int, m
     board.Add(zone)
 
 
-def is_critical_signal(name: str) -> bool:
-    return (
-        name.startswith((
-            "RF_", "LO_", "LMX_LO", "ADF_LO2", "LTC_", "IF_HIGH", "IF_LOW",
-            "IF_SELECTED", "IF_BAW", "GRF2013_RFIN", "GRF2013_RFOUT",
-            "IF_GAIN", "PE4312", "IF_DSA", "LT_INPUT", "LT_IN", "IF2",
-            "AD8351_IN", "AD8351_OUT", "ADC_VIN", "REF_100M",
-        ))
-        or name in {"ADC_CLK", "ADF_REF", "LMX_REF", "LMX_REF_N", "LMX_REF_PRE"}
-    )
-
-
-def route_critical_signals(
-    board: pcbnew.BOARD,
-    net_items: dict[str, pcbnew.NETINFO_ITEM],
-) -> int:
-    """Pre-route RF/clock/analog nets as shortest top-layer trees.
-
-    These routes are deliberately present in the DSN before Freerouting sees
-    the design, so the general-purpose router cannot introduce vias into the
-    microwave paths.
-    """
-    pads_by_net: dict[str, list[pcbnew.PAD]] = defaultdict(list)
-    for footprint in board.GetFootprints():
-        for pad_item in footprint.Pads():
-            name = pad_item.GetNetname()
-            if name and is_critical_signal(name):
-                pads_by_net[name].append(pad_item)
-
-    count = 0
-    for name, pads in sorted(pads_by_net.items()):
-        points: list[pcbnew.VECTOR2I] = []
-        for pad_item in pads:
-            point = pad_item.GetPosition()
-            if all(point != existing for existing in points):
-                points.append(point)
-        if len(points) < 2:
-            continue
-        connected = [points[0]]
-        remaining = points[1:]
-        while remaining:
-            start, end = min(
-                ((a, b) for a in connected for b in remaining),
-                key=lambda pair: (
-                    (pair[0].x - pair[1].x) ** 2 + (pair[0].y - pair[1].y) ** 2
-                ),
-            )
-            track = pcbnew.PCB_TRACK(board)
-            track.SetStart(start)
-            track.SetEnd(end)
-            track.SetLayer(pcbnew.F_Cu)
-            width = 0.35 if not name.startswith((
-                "IF2", "AD8351_IN", "AD8351_OUT", "ADC_VIN", "REF_100M",
-            )) and name != "ADC_CLK" else 0.20
-            track.SetWidth(pcbnew.FromMM(width))
-            track.SetNet(net_items[name])
-            board.Add(track)
-            count += 1
-            connected.append(end)
-            remaining.remove(end)
-    return count
-
-
 def configure_netclasses(
     board: pcbnew.BOARD,
     net_items: dict[str, pcbnew.NETINFO_ITEM],
 ) -> None:
     definitions = {
-        "RF_50": (0.18, 0.35, 0.60, 0.30, 0.20, 0.20),
+        "RF_50": (0.18, 0.23, 0.60, 0.30, 0.20, 0.20),
         "IF_DIFF": (0.15, 0.20, 0.50, 0.25, 0.20, 0.20),
         "DIGITAL_HS": (0.12, 0.15, 0.45, 0.20, 0.15, 0.15),
         "POWER": (0.15, 0.60, 0.80, 0.40, 0.20, 0.20),
@@ -530,7 +513,7 @@ def _format_dsn_class(
         lines.append("      " + " ".join(nets[index:index + 8]))
     lines.extend([
         "      (circuit",
-        '        (use_via "Via[0-3]_450:200_um")',
+        f'        (use_via "{ROUTER_VIA_NAME}")',
         "        (use_layer " + " ".join(layers) + ")",
         "      )",
         "      (rule",
@@ -564,25 +547,70 @@ def _remove_dsn_net(source: str, net_name: str) -> str:
 
 
 def enforce_router_contract() -> None:
-    """Prevent the autorouter from cutting the reference plane.
+    """Keep the future router off the primary reference plane.
 
     KiCad 9 exports every copper layer as a signal layer and collapses Python
-    API net-class assignments into one Specctra class.  Rewrite only those two
-    deterministic DSN sections: In1 is a plane, critical RF is F.Cu-only, and
-    all other tracks may use F.Cu/In2.Cu/B.Cu.
+    API net-class assignments into one Specctra class.  Rewrite only those
+    deterministic DSN sections: In1 is a plane, protected analog is F.Cu-only,
+    and all other tracks may use F.Cu/In2.Cu/B.Cu.
     """
     source = DSN_PATH.read_text(encoding="utf-8")
-    in1_signal = """\
-    (layer In1.Cu
-      (type signal)
-"""
-    in1_power = """\
-    (layer In1.Cu
-      (type power)
-"""
-    if in1_signal not in source:
-        raise RuntimeError("Cannot locate In1.Cu signal-layer declaration in DSN")
-    source = source.replace(in1_signal, in1_power, 1)
+
+    # KiCad exports one global Specctra via using whichever configured
+    # netclass it selects first (currently the 0.60/0.30 mm RF class), even
+    # though the board's low-cost general via is 0.45/0.20 mm.  Rewrite that
+    # single padstack as well as its library selector so every class points to
+    # a real, consistently-sized through via.
+    via_selector = '    (via "'
+    selector_start = source.find(via_selector)
+    selector_end = source.find('")', selector_start)
+    if selector_start < 0 or selector_end < 0:
+        raise RuntimeError("Cannot locate exported Specctra via selector")
+    exported_via_name = source[
+        selector_start + len(via_selector):selector_end
+    ]
+    dimensions = exported_via_name.rsplit("_", 2)[-2]
+    exported_diameter = dimensions.split(":", 1)[0]
+    padstack_start = source.find(f'    (padstack "{exported_via_name}"')
+    padstack_end_marker = "      (attach off)\n    )"
+    padstack_end = source.find(padstack_end_marker, padstack_start)
+    if padstack_start < 0 or padstack_end < 0:
+        raise RuntimeError(
+            f"Cannot locate exported Specctra via padstack {exported_via_name}"
+        )
+    padstack_end += len(padstack_end_marker)
+    padstack = source[padstack_start:padstack_end]
+    padstack = padstack.replace(exported_via_name, ROUTER_VIA_NAME)
+    padstack = padstack.replace(
+        f"(circle F.Cu {exported_diameter})", "(circle F.Cu 450)"
+    ).replace(
+        f"(circle In1.Cu {exported_diameter})", "(circle In1.Cu 450)"
+    ).replace(
+        f"(circle In2.Cu {exported_diameter})", "(circle In2.Cu 450)"
+    ).replace(
+        f"(circle B.Cu {exported_diameter})", "(circle B.Cu 450)"
+    )
+    source = (
+        source[:padstack_start] + padstack + source[padstack_end:]
+    ).replace(
+        f'(via "{exported_via_name}")',
+        f'(via "{ROUTER_VIA_NAME}")',
+        1,
+    )
+    for plane_name in ("In1.Cu",):
+        signal_declaration = (
+            f"    (layer {plane_name}\n"
+            "      (type signal)\n"
+        )
+        power_declaration = (
+            f"    (layer {plane_name}\n"
+            "      (type power)\n"
+        )
+        if signal_declaration not in source:
+            raise RuntimeError(
+                f"Cannot locate {plane_name} signal-layer declaration in DSN"
+            )
+        source = source.replace(signal_declaration, power_declaration, 1)
     source = source.replace(
         """\
     (rule
@@ -601,9 +629,8 @@ def enforce_router_contract() -> None:
         1,
     )
 
-    # Ground is connected by the solid In1 plane plus filled F/B pours.  Do
-    # not make the track router spend most of its passes on hundreds of ground
-    # pads or create unnecessary reference-plane stubs.
+    # Ground will be connected by the solid In1 plane during the later routing
+    # phase. Do not make a track router create reference-plane stubs.
     source = _remove_dsn_net(source, "GND")
 
     grouped: dict[str, list[str]] = defaultdict(list)
@@ -612,10 +639,10 @@ def enforce_router_contract() -> None:
             continue
         grouped[router_class_for_net(net_name)].append(net_name)
     class_specs = [
-        ("RF_CRITICAL", 350, 180, ("F.Cu",)),
-        ("RF_50", 350, 180, ("F.Cu", "In2.Cu", "B.Cu")),
-        ("IF_DIFF", 200, 150, ("F.Cu", "In2.Cu", "B.Cu")),
-        ("DIGITAL_HS", 150, 120, ("F.Cu", "In2.Cu", "B.Cu")),
+        ("RF_CRITICAL", 230, 180, ("F.Cu",)),
+        ("RF_50", 230, 180, ("F.Cu",)),
+        ("IF_DIFF", 200, 150, ("F.Cu",)),
+        ("DIGITAL_HS", 150, 120, ("F.Cu",)),
         ("POWER", 600, 150, ("F.Cu", "In2.Cu", "B.Cu")),
         ("DEFAULT", 150, 100, ("F.Cu", "In2.Cu", "B.Cu")),
     ]
@@ -632,18 +659,18 @@ def enforce_router_contract() -> None:
 
 
 def inject_stackup() -> None:
-    """Add the controlled, low-cost four-layer impedance stack to the board."""
+    """Add the cost-first four-layer impedance stack to the board."""
     stackup = """\
 \t\t(stackup
 \t\t\t(layer "F.SilkS" (type "Top Silk Screen"))
 \t\t\t(layer "F.Paste" (type "Top Solder Paste"))
 \t\t\t(layer "F.Mask" (type "Top Solder Mask") (thickness 0.010))
 \t\t\t(layer "F.Cu" (type "copper") (thickness 0.035))
-\t\t\t(layer "dielectric 1" (type "prepreg") (thickness 0.180) (material "FR4") (epsilon_r 4.2) (loss_tangent 0.020))
+\t\t\t(layer "dielectric 1" (type "prepreg") (thickness 0.130) (material "FR4") (epsilon_r 4.2) (loss_tangent 0.020))
 \t\t\t(layer "In1.Cu" (type "copper") (thickness 0.035))
-\t\t\t(layer "dielectric 2" (type "core") (thickness 1.090) (material "FR4") (epsilon_r 4.2) (loss_tangent 0.020))
+\t\t\t(layer "dielectric 2" (type "core") (thickness 1.200) (material "FR4") (epsilon_r 4.2) (loss_tangent 0.020))
 \t\t\t(layer "In2.Cu" (type "copper") (thickness 0.035))
-\t\t\t(layer "dielectric 3" (type "prepreg") (thickness 0.180) (material "FR4") (epsilon_r 4.2) (loss_tangent 0.020))
+\t\t\t(layer "dielectric 3" (type "prepreg") (thickness 0.130) (material "FR4") (epsilon_r 4.2) (loss_tangent 0.020))
 \t\t\t(layer "B.Cu" (type "copper") (thickness 0.035))
 \t\t\t(layer "B.Mask" (type "Bottom Solder Mask") (thickness 0.010))
 \t\t\t(layer "B.Paste" (type "Bottom Solder Paste"))
@@ -699,7 +726,7 @@ def enforce_project_rules() -> None:
         "wire_width": 6,
     })
     for name, clearance, width, via, drill, diff_width, diff_gap in [
-        ("RF_50", 0.18, 0.35, 0.60, 0.30, 0.20, 0.20),
+        ("RF_50", 0.18, 0.23, 0.60, 0.30, 0.20, 0.20),
         ("IF_DIFF", 0.15, 0.20, 0.50, 0.25, 0.20, 0.20),
         ("DIGITAL_HS", 0.12, 0.15, 0.45, 0.20, 0.15, 0.15),
         ("POWER", 0.15, 0.60, 0.80, 0.40, 0.20, 0.20),
@@ -733,7 +760,7 @@ def main() -> None:
     board.SetCopperLayerCount(4)
     board.SetFileName(str(BOARD_PATH))
     board.GetTitleBlock().SetTitle("Code-SDR V2 100 MHz to 10 GHz receiver/control board")
-    board.GetTitleBlock().SetRevision("2.0")
+    board.GetTitleBlock().SetRevision("2.1")
     board.GetTitleBlock().SetCompany("Code-SDR")
     board.GetTitleBlock().SetComment(0, "CONTROL/SDR BOARD ONLY - ESC IS A DISTINCT EXTERNAL BOARD")
 
@@ -776,8 +803,8 @@ def main() -> None:
     add_edge(board, (W, H), (0, H))
     add_edge(board, (0, H), (0, 0))
 
-    add_text(board, "CODE-SDR V2 / 100 MHz - 10 GHz", 31, 98, 1.2, pcbnew.Cmts_User)
-    add_text(board, "RECEIVER + CONTROL BOARD / NO ESC", 87, 98, 1.0, pcbnew.Cmts_User)
+    add_text(board, "CODE-SDR V2 / 100 MHz - 10 GHz", 28, 97.5, 0.8, pcbnew.Cmts_User)
+    add_text(board, "4-LAYER PLACEMENT ONLY / NO ESC", 62, 97.5, 0.7, pcbnew.Cmts_User)
     for sheet, title in SHEETS:
         x, y, width, height = REGIONS[sheet]
         add_text(
@@ -789,11 +816,11 @@ def main() -> None:
             pcbnew.Cmts_User,
         )
 
-    # In1.Cu is the uninterrupted RF/digital reference plane.  Front/back
-    # pours shorten ground return paths; power and signals route on F/B/In2.
+    # Symmetric solid reference planes support 0.23 mm, nominal-50-ohm
+    # microstrip on both outer layers.  Signal routing and return stitching
+    # are added only after placement review.
     add_ground_zone(board, net_items["GND"], pcbnew.In1_Cu, 0.25)
-    add_ground_zone(board, net_items["GND"], pcbnew.F_Cu, 0.35)
-    add_ground_zone(board, net_items["GND"], pcbnew.B_Cu, 0.35)
+    add_ground_zone(board, net_items["GND"], pcbnew.In2_Cu, 0.25)
 
     ROOT.joinpath("build").mkdir(parents=True, exist_ok=True)
     pcbnew.SaveBoard(str(BOARD_PATH), board)
@@ -804,7 +831,8 @@ def main() -> None:
     enforce_project_rules()
     print(
         f"Generated {BOARD_PATH.name}: {len(components)} footprints, "
-        f"{len(all_nets())} nets, four copper layers, {W:.0f}x{H:.0f} mm"
+        f"{len(all_nets())} nets, four copper layers, {W:.0f}x{H:.0f} mm, "
+        "placement only"
     )
     print(f"Exported autorouter input {DSN_PATH}")
 

@@ -24,21 +24,22 @@ V2_TOOLS = ROOT / "hardware" / "v2" / "tools"
 OUT_CSV = ROOT / "hardware" / "redesign" / "COST_COMPARISON.csv"
 OUT_MD = ROOT / "hardware" / "redesign" / "COST_SUMMARY.md"
 
-# Upstox mid-market close shown for 17 July 2026, checked 18 July 2026.
-USD_INR = 96.312285
+# Latest RBI/FBIL reference rate available at the time of this release,
+# published by RBI for 24 July 2026.
+USD_INR = 96.5390
 QPC6144_BUDGET_USD = 6.00
 MAX_ALLOWED_DELTA_USD = 40.00
 
 # Comparable 1,000-unit manufacturing allowances.  PCB fabrication must still
 # be replaced by a written quote; assembly rates are current public JLCPCB
 # standard-PCBA tiers for an order exceeding 100,000 total joints.
-PCB_USD_PER_CM2_ALLOWANCE = 0.04
+PCB_USD_PER_CM2_ALLOWANCE = {"V1": 0.04, "V2": 0.05}
 AUTO_ASSEMBLY_USD_PER_JOINT = 0.0011
 MANUAL_ASSEMBLY_USD_PER_JOINT = 0.011
 XRAY_USD_PER_BOARD = 0.24
 BOARD_CONTEXT = {
     "V1": {"area_cm2": 48.1601, "smd_joints": 994, "manual_joints": 115},
-    "V2": {"area_cm2": 160.2601, "smd_joints": 1301, "manual_joints": 119},
+    "V2": {"area_cm2": 98.01, "smd_joints": 1301, "manual_joints": 119},
 }
 
 
@@ -278,7 +279,8 @@ def main() -> None:
     qpc_ceiling = totals["V1"] + MAX_ALLOWED_DELTA_USD - v2_without_qpc
     manufacturing = {
         board: (
-            float(BOARD_CONTEXT[board]["area_cm2"]) * PCB_USD_PER_CM2_ALLOWANCE
+            float(BOARD_CONTEXT[board]["area_cm2"])
+            * PCB_USD_PER_CM2_ALLOWANCE[board]
             + int(BOARD_CONTEXT[board]["smd_joints"]) * AUTO_ASSEMBLY_USD_PER_JOINT
             + int(BOARD_CONTEXT[board]["manual_joints"]) * MANUAL_ASSEMBLY_USD_PER_JOINT
             + XRAY_USD_PER_BOARD
@@ -300,7 +302,7 @@ def main() -> None:
             "board", "sheet", "references", "value", "footprint", "quantity",
             "unit_usd", "extended_usd", "basis", "source",
         ]
-        writer = csv.DictWriter(handle, fieldnames=fieldnames)
+        writer = csv.DictWriter(handle, fieldnames=fieldnames, lineterminator="\n")
         writer.writeheader()
         for row in rows:
             formatted = dict(row)
@@ -313,8 +315,8 @@ def main() -> None:
 Pricing basis: public manufacturer or authorized-distributor volume pricing at
 1,000 units, or the closest public tier. Commodity lines use conservative
 volume allowances. INR conversion uses the
-[Upstox mid-market rate](https://upstox.com/currency-converter/usd-to-inr/)
-shown for 17 July 2026 and checked 18 July 2026.
+[RBI/FBIL reference rate](https://m.rbi.org.in/scripts/BS_CircularIndexDisplay.aspx?Id=3646)
+shown for 24 July 2026.
 
 | Metric | USD | INR at {USD_INR:.5f} INR/USD |
 |---|---:|---:|
@@ -324,9 +326,11 @@ shown for 17 July 2026 and checked 18 July 2026.
 
 ## Comparable 1,000-unit assembled allowance
 
-This adds a conservative **${PCB_USD_PER_CM2_ALLOWANCE:.2f}/cm2** four-layer
-PCB allowance, current public high-volume automated/manual joint rates, and
-the same ${XRAY_USD_PER_BOARD:.2f}/board X-ray allowance to both designs.
+This adds conservative PCB allowances of
+**${PCB_USD_PER_CM2_ALLOWANCE['V1']:.2f}/cm2 for V1** and
+**${PCB_USD_PER_CM2_ALLOWANCE['V2']:.2f}/cm2 for the 99 x 99 mm four-layer V2**,
+current public high-volume automated/manual joint rates, and the same
+${XRAY_USD_PER_BOARD:.2f}/board X-ray allowance to both designs.
 It excludes setup/stencil amortization, electrical test, shipping, duties and
 taxes. Replace the PCB allowance with quotes from the intended fabricator.
 Assembly allowances use the published
