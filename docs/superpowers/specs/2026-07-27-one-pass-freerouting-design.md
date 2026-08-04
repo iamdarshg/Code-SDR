@@ -42,7 +42,8 @@ optimizer movement or, when necessary, rerouting.
    protected wiring. Within the allowlist, unlock only incomplete or
    out-of-tolerance pairs; preserve already-compliant pairs.
 3. Mark both `In1.Cu` and `In2.Cu` as power/reference layers. Freerouting may
-   create signal tracks only on `F.Cu` and `B.Cu`.
+   create signal tracks only on `F.Cu` and `B.Cu`. Existing In2 signal tracks
+   in the user board remain protected and are not removed by this pass.
 4. Preserve the two internal GND zones and exclude GND from track routing.
 5. Put differential classes before ordinary digital, power and default classes
    so the single pass attempts differential connectivity first.
@@ -65,7 +66,8 @@ candidate. The candidate is rejected unless:
 - Existing RF50 copper outside the unlocked differential subset is unchanged
   and remains connected. Any unlocked RF/IF pair must retain its assigned
   width, outer-layer/reference-plane contract and balanced via count.
-- No signal item is placed on `In1.Cu` or `In2.Cu`.
+- No new signal item is placed on `In1.Cu` or `In2.Cu`; pre-existing protected
+  In2 user routes are permitted unchanged.
 - Schematic parity remains unchanged and KiCad reports no new DRC violations
   relative to the pre-route checkpoint.
 

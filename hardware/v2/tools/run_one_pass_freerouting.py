@@ -83,13 +83,18 @@ def _copy_inputs(board_path: Path, project_path: Path, run_dir: Path) -> tuple[P
     return checkpoint, candidate, candidate_project
 
 
-def _export_transformed_dsn(candidate: Path, dsn_path: Path, editable_nets: frozenset[str]) -> None:
+def _export_transformed_dsn(
+    candidate: Path, dsn_path: Path, editable_nets: frozenset[str], route_only: bool = False,
+) -> None:
     import pcbnew
 
     board = pcbnew.LoadBoard(str(candidate))
     if not pcbnew.ExportSpecctraDSN(board, str(dsn_path)):
         raise RuntimeError(f"KiCad failed to export DSN: {dsn_path}")
-    dsn_path.write_text(transform_dsn(dsn_path.read_text(encoding="utf-8"), set(editable_nets)), encoding="utf-8")
+    dsn_path.write_text(
+        transform_dsn(dsn_path.read_text(encoding="utf-8"), set(editable_nets), route_only=route_only),
+        encoding="utf-8",
+    )
 
 
 def _download_router(run_dir: Path) -> Path:
@@ -114,7 +119,7 @@ def _invoke_router_once(
     )
     command = [
         "java", "-Xmx2600m", "-jar", str(router_jar), "-de", str(dsn_path), "-do", str(ses_path),
-        "-mp", "1", "-mt", "0", "-da", "-dct", "1", "--gui.enabled=false",
+        "-mp", "1", "-mt", "1", "-is", "Sequential", "-da", "-dct", "1", "--gui.enabled=false",
     ]
     _router_invoked = True
     completed = subprocess.run(command, cwd=run_dir, text=True, capture_output=True, timeout=router_timeout)
@@ -194,6 +199,9 @@ def run_one_pass(
     dry_run: bool = False,
     download_official_router: bool = False,
     router_timeout: float | None = None,
+    route_only: bool = False,
+    require_eligible_pairs: bool = False,
+    editable_nets_override: frozenset[str] | None = None,
 ) -> RouteResult:
     """Create a candidate, run at most once, and copy it over only if accepted."""
     global _router_invoked
@@ -205,9 +213,10 @@ def run_one_pass(
     run_dir = _new_run_dir(work_root)
     checkpoint, candidate, _candidate_project = _copy_inputs(board_path, project_path, run_dir)
     before = snapshot_board(checkpoint)
+    editable_nets = editable_nets_override or before.editable_nets
     dsn = run_dir / "input.dsn"
     ses = run_dir / "output.ses"
-    _export_transformed_dsn(candidate, dsn, before.editable_nets)
+    _export_transformed_dsn(candidate, dsn, editable_nets, route_only)
     if dry_run:
         result = RouteResult(
             run_dir, checkpoint, candidate, dsn, ses, False, 0, None, None, (), (),
@@ -228,6 +237,13 @@ def run_one_pass(
     after_opens = _issue_count(after_drc, "unconnected_items")
     preservation_errors = compare_preservation(before, candidate)
     quality_errors = _pair_quality_errors(before, after)
+    if require_eligible_pairs:
+        for name, old in before.pair_measurements.items():
+            new = after.pair_measurements[name]
+            if all(net in editable_nets for net in (*old.positive, *old.negative)) and not (
+                new.connected and new.skew_mm <= new.tolerance_mm and new.positive_vias == new.negative_vias
+            ):
+                quality_errors.append(f"eligible pair remains incomplete or out of tolerance: {name}")
     if _issue_count(after_drc, "violations") > _issue_count(before_drc, "violations"):
         quality_errors.append("candidate adds KiCad DRC violations")
     if _issue_count(after_drc, "schematic_parity") > _issue_count(before_drc, "schematic_parity"):
@@ -254,6 +270,9 @@ def _parse_args() -> argparse.Namespace:
     parser.add_argument("--download-official-router", action="store_true")
     parser.add_argument("--dry-run", action="store_true")
     parser.add_argument("--router-timeout", type=float, help="seconds; omitted means no timeout")
+    parser.add_argument("--route-only", action="store_true", help="route only unlocked differential nets")
+    parser.add_argument("--require-eligible-pairs", action="store_true", help="reject unless all unlocked pairs meet tolerance")
+    parser.add_argument("--editable-net", action="append", default=[], help="net to unlock; repeat as needed")
     return parser.parse_args()
 
 
@@ -271,6 +290,8 @@ def main() -> None:
         args.board, args.project, args.work_root, args.router_jar,
         dry_run=args.dry_run, download_official_router=args.download_official_router,
         router_timeout=args.router_timeout,
+        route_only=args.route_only, require_eligible_pairs=args.require_eligible_pairs,
+        editable_nets_override=frozenset(args.editable_net) or None,
     )
     print(json.dumps({"accepted": result.accepted, "run_dir": str(result.run_dir), "router_invocations": result.router_invocations}))
     if not args.dry_run and not result.accepted:

@@ -16,6 +16,7 @@ sys.path.insert(0, str(TOOLS))
 from freerouting_contract import snapshot_board, transform_dsn  # noqa: E402
 from run_one_pass_freerouting import run_one_pass  # noqa: E402
 from freerouting_monitor import summarize_unconnected  # noqa: E402
+from route_ethernet_and_skew import ethernet_route_contract  # noqa: E402
 
 
 FOUR_LAYER_DSN = """(pcb sample
@@ -76,6 +77,14 @@ class DsnContractTests(unittest.TestCase):
         self.assertNotIn("MDI_A_P", default_header)
         self.assertNotIn("MDI_A_N", default_header)
 
+    def test_route_only_transform_excludes_noneditable_open_nets(self) -> None:
+        transformed = transform_dsn(FOUR_LAYER_DSN, {"MDI_A_P", "MDI_A_N"}, route_only=True)
+        default_header = transformed[
+            transformed.index("(class kicad_default"): transformed.index("(circuit", transformed.index("(class kicad_default"))
+        ]
+        self.assertNotIn("LOCKED", default_header)
+        self.assertIn("(rule (width 200)(clearance 120))", transformed)
+
     @unittest.skipUnless(importlib.util.find_spec("pcbnew"), "requires KiCad Python")
     def test_snapshot_supports_kicad_9_vias_and_zones(self) -> None:
         board = TOOLS.parent / "Code-SDR-V2.kicad_pcb"
@@ -95,6 +104,16 @@ class DsnContractTests(unittest.TestCase):
         summary = summarize_unconnected(report)
         self.assertEqual(summary.total, 3)
         self.assertEqual(summary.by_net, {"+3V3_DIG": 1, "MDI_A_P": 2})
+
+    def test_ethernet_route_contract_uses_200_um_and_balanced_crossover_vias(self) -> None:
+        contract = ethernet_route_contract()
+        self.assertEqual(contract["width_mm"], 0.20)
+        self.assertTrue(contract["allow_vias"])
+        self.assertEqual(contract["max_signal_vias_per_net"], 2)
+        self.assertEqual(contract["layers"], ("F.Cu", "B.Cu"))
+        self.assertEqual(contract["via_diameter_mm"], 0.50)
+        self.assertEqual(contract["pad_neck_width_mm"], 0.15)
+        self.assertEqual(contract["pad_neck_length_mm"], 2.0)
 
 
 @unittest.skipUnless(importlib.util.find_spec("pcbnew"), "requires KiCad Python")

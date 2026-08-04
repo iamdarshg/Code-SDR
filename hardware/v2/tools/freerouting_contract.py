@@ -151,7 +151,7 @@ def _priority_sort_key(net_name: str) -> tuple[int, str]:
     return (family, net_name)
 
 
-def _rewrite_classes(source: str, editable_nets: set[str]) -> str:
+def _rewrite_classes(source: str, editable_nets: set[str], route_only: bool = False) -> str:
     """Put editable differential nets in correctly-sized classes before default.
 
     Freerouting uses class declaration order as its routing order.  Removing
@@ -171,8 +171,11 @@ def _rewrite_classes(source: str, editable_nets: set[str]) -> str:
     if header_end < 0:
         raise ValueError("malformed kicad_default class")
     header, body = scope[:header_end], scope[header_end:]
-    for net_name in sorted((*editable_nets, "GND"), key=len, reverse=True):
-        header = re.sub(rf"(?<!\S){re.escape(net_name)}(?!\S)", "", header)
+    if route_only:
+        header = "(class kicad_default"
+    else:
+        for net_name in sorted((*editable_nets, "GND"), key=len, reverse=True):
+            header = re.sub(rf"(?<!\S){re.escape(net_name)}(?!\S)", "", header)
     header = re.sub(r"[ \t]+", " ", header).rstrip()
     rewritten_default = header + body
 
@@ -180,7 +183,7 @@ def _rewrite_classes(source: str, editable_nets: set[str]) -> str:
     for net_name in editable_nets:
         buckets[_priority_class(net_name)].append(net_name)
     rule = {
-        "DIFF_DIGITAL": (150, 120),
+        "DIFF_DIGITAL": (200, 120),
         "DIFF_IF": (200, 150),
         "DIFF_RF": (230, 180),
     }
@@ -205,11 +208,11 @@ def _rewrite_classes(source: str, editable_nets: set[str]) -> str:
     return source[:start] + priority_text + rewritten_default + source[end:]
 
 
-def transform_dsn(source: str, editable_nets: set[str]) -> str:
+def transform_dsn(source: str, editable_nets: set[str], route_only: bool = False) -> str:
     """Protect prior non-editable wiring and bar new inner-layer signals."""
     return _limit_route_layers(
         _mark_internal_layers_power(
-            _rewrite_classes(_protect_wires(source, editable_nets), editable_nets)
+            _rewrite_classes(_protect_wires(source, editable_nets), editable_nets, route_only)
         )
     )
 
