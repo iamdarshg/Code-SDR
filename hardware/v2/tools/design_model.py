@@ -500,11 +500,14 @@ fpga_pins.update({
     "D9": "ADC_CLK",
     "D10": "ADC_D0", "E9": "ADC_D1", "E10": "ADC_D2", "F9": "ADC_D3",
     "F10": "ADC_D4", "G9": "ADC_D5", "G10": "ADC_D6", "H9": "ADC_D7",
-    "H10": "ADC_D8", "J8": "ADC_D9", "J9": "ADC_OR",
+    # Keep the last data bit and over-range flag on perimeter GPIO balls.
+    # J8/J9 are buried by the 0.65 mm BGA geometry and require costly
+    # via-in-pad/HDI escape with the board's production via rules.
+    "H10": "ADC_D8", "J10": "ADC_D9", "K9": "ADC_OR",
     # RGMII clocks use bank-1 primary-clock pins PCLKT1_0 and PCLKT1_1.
     "E1": "RGMII_TXD0_FPGA", "E2": "RGMII_TXD1_FPGA", "F1": "RGMII_TXD2_FPGA",
     "F2": "RGMII_TXD3_FPGA", "J3": "RGMII_TX_EN_FPGA", "J7": "RGMII_TXC_FPGA",
-    "J4": "RGMII_RXD0_FPGA", "J5": "RGMII_RXD1_FPGA", "K3": "RGMII_RXD2_FPGA",
+    "K8": "RGMII_RXD0_FPGA", "J5": "RGMII_RXD1_FPGA", "K10": "RGMII_RXD2_FPGA",
     "K4": "RGMII_RXD3_FPGA", "K5": "RGMII_RX_DV_FPGA", "K6": "RGMII_RXC_FPGA",
     "J6": "MDC", "K7": "MDIO", "K2": "PHY_INT_N",
 })
