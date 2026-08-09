@@ -16,6 +16,7 @@ fft_ddc_performance_report.json
 *.vvp
 *.egg-info/
 /tmp/
+/.worktrees/
 /hardware/validation-output/
 /hardware/v2/build/
 /hardware/v2/release/*
