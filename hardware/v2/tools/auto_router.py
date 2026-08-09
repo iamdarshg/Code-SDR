@@ -25,15 +25,43 @@ import pcbnew
 ROOT = Path(__file__).resolve().parents[1]
 PCB_PATH = Path(os.environ.get("CODE_SDR_PCB_PATH", ROOT / "Code-SDR-V2.kicad_pcb"))
 RF50_ONLY = os.environ.get("CODE_SDR_RF50_ONLY", "0") == "1"
+REMOVE_SELECTED = os.environ.get("CODE_SDR_REMOVE_SELECTED", "0") == "1"
+SAFE_ONLY = os.environ.get("CODE_SDR_SAFE_ONLY", "0") == "1"
+FORCE_ALLOW_VIAS = os.environ.get("CODE_SDR_FORCE_ALLOW_VIAS", "0") == "1"
+MAX_SEARCH_POPS = int(os.environ.get("CODE_SDR_MAX_SEARCH_POPS", "300000"))
+MAX_SEARCH_CELLS = int(os.environ.get("CODE_SDR_MAX_SEARCH_CELLS", "400000"))
 
-GRID_PITCH_MM = 0.25
+
+def parse_selected_nets(value: str) -> set[str]:
+    """Parse the explicit comma-separated routing allowlist."""
+    return {name.strip() for name in value.split(",") if name.strip()}
+
+
+def parse_selected_order(value: str) -> tuple[str, ...]:
+    return tuple(dict.fromkeys(name.strip() for name in value.split(",") if name.strip()))
+
+
+def parse_positive_mm(value: str, default: float) -> float:
+    if not value.strip():
+        return default
+    parsed = float(value)
+    if parsed <= 0:
+        raise ValueError("routing geometry values must be positive")
+    return parsed
+
+
+SELECTED_NETS = parse_selected_nets(os.environ.get("CODE_SDR_SELECTED_NETS", ""))
+SELECTED_NET_ORDER = parse_selected_order(os.environ.get("CODE_SDR_SELECTED_NETS", ""))
+
+GRID_PITCH_MM = parse_positive_mm(os.environ.get("CODE_SDR_GRID_PITCH_MM", ""), 0.25)
 TRACK_WIDTH_MM = 0.15
-VIA_DIAMETER_MM = 0.45
-VIA_DRILL_MM = 0.2
-CLEARANCE_MM = 0.18
+VIA_DIAMETER_MM = 0.50
+VIA_DRILL_MM = 0.25
+CLEARANCE_MM = parse_positive_mm(os.environ.get("CODE_SDR_CLEARANCE_MM", ""), 0.25)
 
 RF_NET_PATTERNS = [
-    "LT_IN", "LT_INPUT", "LO_LOW", "LO_HIGH", "IF_LOW", "IF_HIGH", "LMX_LO",
+    "LT_IN", "LT_INPUT", "LO_LOW", "LO_HIGH", "LO2_", "IF_LOW", "IF_HIGH", "LMX_LO",
+    "AD8351", "ADC_VIN", "IF2_",
 ]
 
 # --- Impedance / isolation model -------------------------------------------
@@ -62,16 +90,16 @@ TRACK_WIDTH_RF_50OHM_MM = 0.23
 DIFF_PAIR_100OHM_WIDTH_MM = 0.20
 DIFF_PAIR_100OHM_GAP_MM = 0.15
 DIFF_PAIR_90OHM_WIDTH_MM = 0.25
-DIFF_PAIR_90OHM_GAP_MM = 0.15
+DIFF_PAIR_90OHM_GAP_MM = 0.20
 
-DIFF_PAIR_SUFFIXES = [("_P", "_N"), ("_DP", "_DM")]
+DIFF_PAIR_SUFFIXES = [("_DP_CONN", "_DM_CONN"), ("_P", "_N"), ("_DP", "_DM")]
 
 # Nets whose signal integrity depends on staying away from switching-digital
 # return current / EMI: RF chain, LO/IF, ADC analog side.
 ANALOG_NET_PATTERNS = [
     "LT_IN", "LT_INPUT", "LO_LOW", "LO_HIGH", "IF_LOW", "IF_HIGH", "LMX_LO",
     "ADF_LO2", "RF_HC_LNA", "RF_HB_LNA", "RF_LOW", "RF_HIGH", "ADC_VCM",
-    "ADC_IN", "+3V3_ANA", "+5V_RF",
+    "ADC_IN", "ADC_VIN", "AD8351", "IF2_", "+3V3_ANA", "+5V_RF",
 ]
 # Noisy digital nets: routed last, and kept an extra margin away from analog.
 DIGITAL_NOISY_PATTERNS = [
@@ -193,7 +221,7 @@ def point_seg_dist(px, py, x1, y1, x2, y2):
 def build_grid_and_search(obstacles, src, dst, allow_vias, net_name, extra_pad_mm=4.0,
                            track_width_mm=None, clearance_mm=None, pitch_mm=None,
                            src_layers=None, dst_layers=None, margin_cap_mm=30.0,
-                           max_pops=300000, max_cells=400000):
+                           max_pops=None, max_cells=None):
     """src/dst: (x_mm, y_mm). Returns list of (x,y,layer) waypoints or None.
 
     src_layers/dst_layers restrict which copper layer(s) the path is allowed
@@ -207,6 +235,8 @@ def build_grid_and_search(obstacles, src, dst, allow_vias, net_name, extra_pad_m
     attempt -- callers that actually need a bigger detour (long nets on a
     dense board) must raise this explicitly.
     """
+    max_pops = MAX_SEARCH_POPS if max_pops is None else max_pops
+    max_cells = MAX_SEARCH_CELLS if max_cells is None else max_cells
     x0, y0 = src
     x1, y1 = dst
     margin = max(extra_pad_mm, 0.15 * math.hypot(x1 - x0, y1 - y0))
@@ -606,6 +636,13 @@ def mirror_path_offset(path, offset_mm, sign):
     return out
 
 
+def orient_partner_endpoints(p_src, p_dst, n_a, n_b):
+    """Return N endpoints ordered beside the corresponding P endpoints."""
+    direct = math.dist(p_src, n_a) + math.dist(p_dst, n_b)
+    swapped = math.dist(p_src, n_b) + math.dist(p_dst, n_a)
+    return (n_b, n_a) if swapped < direct else (n_a, n_b)
+
+
 def route_diff_pair(obstacles, board, net_p, net_n, pad_p_a, pad_p_b, pad_n_a, pad_n_b, name_p, name_n,
                      allow_vias, width_mm, gap_mm):
     """Route P as a normal maze search, then mirror it to build N so the pair
@@ -629,14 +666,19 @@ def route_diff_pair(obstacles, board, net_p, net_n, pad_p_a, pad_p_b, pad_n_a, p
         preferred_width_mm=width_mm)
     forced_p = False
     if path_p is None:
+        if SAFE_ONLY:
+            return 0, 0, True, True
         path_p = direct_fallback_path(src, dst, allow_vias, src_layers=src_layers, dst_layers=dst_layers)
         width_used = width_mm
         forced_p = True
     path_p = simplify_path(path_p)
 
     n_posa, n_posb = pad_n_a.GetPosition(), pad_n_b.GetPosition()
-    n_src = (mm(n_posa.x), mm(n_posa.y))
-    n_dst = (mm(n_posb.x), mm(n_posb.y))
+    n_a = (mm(n_posa.x), mm(n_posa.y))
+    n_b = (mm(n_posb.x), mm(n_posb.y))
+    n_src, n_dst = orient_partner_endpoints(src, dst, n_a, n_b)
+    if n_src == n_b:
+        pad_n_a, pad_n_b = pad_n_b, pad_n_a
 
     offset = width_mm + gap_mm
     # decide which side N is really on relative to P's first segment
@@ -654,7 +696,7 @@ def route_diff_pair(obstacles, board, net_p, net_n, pad_p_a, pad_p_b, pad_n_a, p
     start_ok = math.hypot(mstart[0] - n_src[0], mstart[1] - n_src[1]) < tol
     end_ok = math.hypot(mend[0] - n_dst[0], mend[1] - n_dst[1]) < tol
 
-    if start_ok and end_ok:
+    if start_ok and end_ok and not SAFE_ONLY:
         # snap exact endpoints to true pad centers
         mirrored[0] = (n_src[0], n_src[1], mirrored[0][2])
         mirrored[-1] = (n_dst[0], n_dst[1], mirrored[-1][2])
@@ -676,6 +718,8 @@ def route_diff_pair(obstacles, board, net_p, net_n, pad_p_a, pad_p_b, pad_n_a, p
         preferred_width_mm=width_mm)
     forced_n = False
     if path_n is None:
+        if SAFE_ONLY:
+            return nt1, nv1, forced_p, True
         path_n = direct_fallback_path(n_src, n_dst, allow_vias, src_layers=n_src_layers, dst_layers=n_dst_layers)
         width_used_n = width_mm
         forced_n = True
@@ -792,6 +836,12 @@ def main():
     print(f"Loading board: {PCB_PATH}")
     board = pcbnew.LoadBoard(str(PCB_PATH))
 
+    if SELECTED_NETS and REMOVE_SELECTED:
+        doomed = [item for item in board.GetTracks() if item.GetNetname() in SELECTED_NETS]
+        for item in doomed:
+            board.Remove(item)
+        print(f"Removed {len(doomed)} existing items on selected nets")
+
     fps = board.GetFootprints()
     pads_by_net = {}
     for fp in fps:
@@ -803,6 +853,8 @@ def main():
 
     zone_nets = {z.GetNetname() for z in board.Zones()}
     signal_nets = {n: p for n, p in pads_by_net.items() if len(p) >= 2 and n not in zone_nets}
+    if SELECTED_NETS:
+        signal_nets = {name: pads for name, pads in signal_nets.items() if name in SELECTED_NETS}
     if RF50_ONLY:
         from export_rf50_dsn import RF50_NETS
         signal_nets = {name: pads for name, pads in signal_nets.items() if name in RF50_NETS}
@@ -840,6 +892,11 @@ def main():
                 or n.endswith("_3V3") or n.endswith("_5V"))
 
     def sort_key(n):
+        if SELECTED_NET_ORDER:
+            try:
+                return (-1, SELECTED_NET_ORDER.index(n))
+            except ValueError:
+                pass
         if is_power_net(n):
             return (0, -len(signal_nets[n]))
         return (1, is_noisy_digital_net(n), not is_analog_net(n), len(signal_nets[n]))
@@ -869,7 +926,7 @@ def main():
             break
 
         width_mm, is_pair_member, gap_mm = net_electrical_class(name)
-        allow_vias = not is_rf_net(name)
+        allow_vias = FORCE_ALLOW_VIAS or not is_rf_net(name)
         if RF50_ONLY:
             width_mm = TRACK_WIDTH_RF_50OHM_MM
             allow_vias = False
@@ -883,7 +940,7 @@ def main():
             net_n = net_boards[name_n]
             if net_p is None or net_n is None:
                 continue
-            allow_vias_pair = not is_rf_net(name) and not is_rf_net(name_n)
+            allow_vias_pair = FORCE_ALLOW_VIAS or (not is_rf_net(name) and not is_rf_net(name_n))
             nt, nv, forced_p, forced_n = route_diff_pair(
                 obstacles, board, net_p, net_n, pads_p[0], pads_p[1], pads_n[0], pads_n[1],
                 name, name_n, allow_vias_pair, width_mm, gap_mm)
@@ -923,6 +980,10 @@ def main():
             if path is None:
                 if RF50_ONLY:
                     print(f"  SAFE-FAIL {name}: no clearance-respecting F.Cu path")
+                    net_ok = False
+                    continue
+                if SAFE_ONLY:
+                    print(f"  SAFE-FAIL {name}: no clearance-respecting path")
                     net_ok = False
                     continue
                 # absolute last resort for the legacy all-net mode only.
