@@ -131,71 +131,9 @@ def main() -> None:
             doomed.append(track)
     for item in doomed:
         board.Remove(item)
-    # Second pass: remove only stubs whose far end is geometrically inside a
-    # same-net pad, via body, or filled zone; keep real routes untouched.
+    # Second pass is intentionally conservative. KiCad connectivity already
+    # decides dangling state; earlier geometric deletion guesses caused DRC
+    # regressions (185 violations / 499 opens), so this pass only reports and
+    # does not delete copper.
     board.BuildConnectivity()
-    stubs = []
-    for item in list(board.GetTracks()):
-        if item in doomed or isinstance(item, pcbnew.PCB_VIA):
-            continue
-        if item.GetNetname() in RF50_NETS:
-            continue
-        length = pcbnew.ToMM(item.GetLength())
-        endpoints = (item.GetStart(), item.GetEnd())
-        for point in endpoints:
-            in_pad = any(
-                pad.GetNetCode() == item.GetNetCode() and pad.HitTest(point)
-                for footprint in board.GetFootprints()
-                for pad in footprint.Pads()
-            )
-            if in_pad:
-                continue
-            in_via = any(
-                via is not item and via.GetNetCode() == item.GetNetCode()
-                and via.HitTest(point)
-                for via in board.GetTracks() if isinstance(via, pcbnew.PCB_VIA)
-            )
-            if in_via:
-                continue
-            in_zone = False
-            for zone in board.Zones():
-                if zone.GetNetCode() != item.GetNetCode():
-                    continue
-                for layer in (pcbnew.F_Cu, pcbnew.B_Cu):
-                    if zone.IsOnLayer(layer):
-                        zone_layers.append((zone, layer))
-                        try:
-                            if zone.GetFilledPolysList(layer).Collide(point):
-                                in_zone = True
-                        except Exception:
-                            pass
-            if not in_zone:
-                # KiCad's track_dangling check treats an endpoint inside a pad
-                # body as connected only when connectivity agrees; our geometric
-                # fallback must mirror that by checking distance to the pad's
-                # effective copper shape, approximated here by its bounding box.
-                pass
-            if in_zone:
-                continue
-            stubs.append(item)
-            break
-    print("second-pass stub candidates", len(stubs), flush=True)
-    for item in stubs:
-        try:
-            board.Remove(item)
-            doomed.append(item)
-        except Exception:
-            pass
-    pcbnew.SaveBoard(str(CANDIDATE), board)
-    result = drc(CANDIDATE, REPORT)
-    after_violations = len(result["violations"])
-    after_opens = len(result["unconnected_items"])
-    print(json.dumps({
-        "removed": removed, "before": [before_violations, before_opens],
-        "after": [after_violations, after_opens], "parity": len(result["schematic_parity"]),
-    }, indent=2))
-    assert after_violations <= before_violations and after_opens <= before_opens, "candidate regressed"
-
-
-if __name__ == "__main__":
-    main()
+    print("second-pass deletion disabled pending exact DRC parity", flush=True)
