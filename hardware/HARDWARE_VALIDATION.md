@@ -218,15 +218,17 @@ normal receiver operating mode.
 
 V2 is a 99 x 99 mm (98.01 cm2), single-sided-assembly, four-layer board. The
 checked-in PCB has all 49 RF50 nets routed; the remaining power, digital and
-slow nets are intentionally left for the subsequent full-board route:
+slow nets require completion before fabrication:
 
-`F.Cu / 0.13 mm prepreg / solid In1 GND / 1.20 mm core / solid In2 GND /
+`F.Cu / 0.13 mm prepreg / solid In1 GND / 1.20 mm core / split In2 power /
 0.13 mm prepreg / B.Cu`
 
 The finish is ENIG. RF uses nominal 0.23 mm, 50-ohm microstrip on F.Cu
-referenced to the uninterrupted In1 plane. Four nets use short B.Cu sections
-for unavoidable crossings, referenced to solid In2; each layer transition has
-a nearby ground-return via. The protected corridors are reserved so the later
+referenced to the uninterrupted In1 plane. In2 is actually split between
+`+3V3_ANA` and `+3V3_DIG`; it is not a solid ground plane. Existing B.Cu RF and
+clock/LO sections therefore require explicit return-path review and correction,
+including any crossing of the power-plane split, before release. The protected
+corridors are reserved so the later
 power/digital route cannot run parallel beside or cross beneath them. RGMII,
 ADC data, clocks and USB still require continuous reference and controlled
 geometry. No noisy digital route may share a corridor with a protected

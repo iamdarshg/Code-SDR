@@ -23,8 +23,8 @@ from freerouting_contract import BoardSnapshot, PairMeasurement, compare_preserv
 
 
 OFFICIAL_ROUTER_URL = (
-    "https://github.com/freerouting/freerouting/releases/download/v2.2.4/"
-    "freerouting-2.2.4.jar"
+    "https://github.com/freerouting/freerouting/releases/download/v2.3.0/"
+    "freerouting-2.3.0.jar"
 )
 KICAD_PYTHON = Path(r"C:\Program Files\KiCad\9.0\bin\python.exe")
 _router_invoked = False
@@ -62,14 +62,34 @@ def _copy_inputs(board_path: Path, project_path: Path, run_dir: Path) -> tuple[P
     candidate_dir = run_dir / "candidate"
     checkpoint_dir.mkdir()
     candidate_dir.mkdir()
-    checkpoint = checkpoint_dir / "source.kicad_pcb"
-    checkpoint_project = checkpoint_dir / "source.kicad_pro"
-    candidate = candidate_dir / "candidate.kicad_pcb"
-    candidate_project = candidate_dir / "candidate.kicad_pro"
+    checkpoint = checkpoint_dir / board_path.name
+    checkpoint_project = checkpoint_dir / project_path.name
+    candidate = candidate_dir / board_path.name
+    candidate_project = candidate_dir / project_path.name
     shutil.copy2(board_path, checkpoint)
     shutil.copy2(project_path, checkpoint_project)
     shutil.copy2(checkpoint, candidate)
     shutil.copy2(checkpoint_project, candidate_project)
+    # DRC/parity and library checks require the complete project context in
+    # each isolated directory. A board/project pair alone silently drops the
+    # custom .dru, local libraries, hierarchy, and schematic parity source.
+    source_root = board_path.resolve().parent
+    sidecar_files = [
+        board_path.with_suffix(".kicad_dru"),
+        board_path.with_suffix(".kicad_sch"),
+        source_root / "fp-lib-table",
+        source_root / "sym-lib-table",
+        source_root / "CodeSDR.kicad_sym",
+    ]
+    for source in sidecar_files:
+        if source.is_file():
+            shutil.copy2(source, checkpoint_dir / source.name)
+            shutil.copy2(source, candidate_dir / source.name)
+    for name in ("sheets", "CodeSDR.pretty"):
+        source = source_root / name
+        if source.is_dir():
+            shutil.copytree(source, checkpoint_dir / name)
+            shutil.copytree(source, candidate_dir / name)
     (run_dir / "input-hashes.json").write_text(
         json.dumps(
             {
@@ -98,7 +118,7 @@ def _export_transformed_dsn(
 
 
 def _download_router(run_dir: Path) -> Path:
-    jar = run_dir / "freerouting-2.2.4.jar"
+    jar = run_dir / "freerouting-2.3.0.jar"
     urllib.request.urlretrieve(OFFICIAL_ROUTER_URL, jar)
     (run_dir / "router.json").write_text(
         json.dumps({"url": OFFICIAL_ROUTER_URL, "sha256": _sha256(jar)}, indent=2), encoding="utf-8"
@@ -119,11 +139,22 @@ def _invoke_router_once(
     )
     command = [
         "java", "-Xmx2600m", "-jar", str(router_jar), "-de", str(dsn_path), "-do", str(ses_path),
-        "-mp", "1", "-mt", "1", "-is", "Sequential", "-da", "-dct", "1", "--gui.enabled=false",
+        "-mp", "1", "-mt", "0", "-is", "prioritized", "--gui.enabled=false",
     ]
     _router_invoked = True
-    completed = subprocess.run(command, cwd=run_dir, text=True, capture_output=True, timeout=router_timeout)
     (run_dir / "router-command.json").write_text(json.dumps(command, indent=2), encoding="utf-8")
+    try:
+        completed = subprocess.run(
+            command, cwd=run_dir, text=True, capture_output=True, timeout=router_timeout
+        )
+    except subprocess.TimeoutExpired as exc:
+        (run_dir / "router-stdout.log").write_text(exc.stdout or "", encoding="utf-8")
+        (run_dir / "router-stderr.log").write_text(exc.stderr or "", encoding="utf-8")
+        (run_dir / "router-result.json").write_text(
+            json.dumps({"timed_out": True, "timeout_seconds": router_timeout, "invocations": 1}, indent=2),
+            encoding="utf-8",
+        )
+        raise RuntimeError(f"Freerouting timed out after {router_timeout} seconds; see {run_dir}") from exc
     (run_dir / "router-stdout.log").write_text(completed.stdout, encoding="utf-8")
     (run_dir / "router-stderr.log").write_text(completed.stderr, encoding="utf-8")
     (run_dir / "router-result.json").write_text(
@@ -146,11 +177,19 @@ def _import_ses(candidate: Path, ses_path: Path) -> None:
 
 
 def _run_drc(board_path: Path, report_path: Path) -> dict:
+    board_path = board_path.resolve()
+    report_path = report_path.resolve()
     command = [
         "kicad-cli", "pcb", "drc", str(board_path), "--format", "json", "--severity-all",
         "--all-track-errors", "--schematic-parity", "--units", "mm", "-o", str(report_path),
     ]
-    subprocess.run(command, text=True, capture_output=True, check=False, timeout=180)
+    # KiCad resolves the project-local .kicad_dru and fp-lib-table from the
+    # project directory. Running from an isolated build directory silently
+    # drops those rules and reports a different DRC contract.
+    subprocess.run(
+        command, cwd=board_path.parent, text=True, capture_output=True,
+        check=False, timeout=180,
+    )
     if not report_path.is_file():
         raise RuntimeError(f"KiCad DRC did not write {report_path}")
     return json.loads(report_path.read_text(encoding="utf-8"))
@@ -248,8 +287,22 @@ def run_one_pass(
         quality_errors.append("candidate adds KiCad DRC violations")
     if _issue_count(after_drc, "schematic_parity") > _issue_count(before_drc, "schematic_parity"):
         quality_errors.append("candidate adds schematic parity issues")
-    if after_opens >= before_opens:
-        quality_errors.append(f"unconnected items did not reduce ({before_opens} -> {after_opens})")
+    before_editable_inner = sum(
+        count for signature, count in before.internal_items.items()
+        if signature[1] in editable_nets
+    )
+    after_editable_inner = sum(
+        count for signature, count in after.internal_items.items()
+        if signature[1] in editable_nets
+    )
+    # A correction pass may reroute an already-connected signal off a reserved
+    # reference plane without changing the ratsnest count. Treat that as a
+    # real electrical improvement, while still rejecting no-op candidates.
+    if after_opens >= before_opens and after_editable_inner >= before_editable_inner:
+        quality_errors.append(
+            f"neither unconnected items ({before_opens} -> {after_opens}) nor "
+            f"editable inner-layer segments ({before_editable_inner} -> {after_editable_inner}) improved"
+        )
     accepted = not preservation_errors and not quality_errors
     if accepted:
         shutil.copy2(candidate, board_path)

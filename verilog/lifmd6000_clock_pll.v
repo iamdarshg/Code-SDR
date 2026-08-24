@@ -13,7 +13,6 @@
 module lifmd6000_clock_pll (
     input  wire clk_in,
     input  wire reset_n,
-    output wire clk_105m_adc,
     output wire clk_125m_eth,
     output wire locked
 );

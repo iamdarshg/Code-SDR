@@ -407,13 +407,15 @@ def add_ground_zone(board: pcbnew.BOARD, net: pcbnew.NETINFO_ITEM, layer: int, m
     zone.SetPadConnection(pcbnew.ZONE_CONNECTION_FULL)
     zone.SetLocalClearance(pcbnew.FromMM(0.15))
     zone.SetMinThickness(pcbnew.FromMM(0.12))
-    polygon = zone.Outline()
-    polygon.NewOutline()
+    # Build the outline through the owned ZONE API. Returning/modifying the
+    # raw Outline() SWIG pointer is not safe in current KiCad 9 builds.
+    polygon = pcbnew.VECTOR_VECTOR2I()
     for x, y in [
         (margin, margin), (W - margin, margin),
         (W - margin, H - margin), (margin, H - margin),
     ]:
-        polygon.Append(pcbnew.FromMM(x), pcbnew.FromMM(y))
+        polygon.append(pcbnew.VECTOR2I(pcbnew.FromMM(x), pcbnew.FromMM(y)))
+    zone.AddPolygon(polygon)
     board.Add(zone)
 
 

@@ -1,7 +1,7 @@
 // ============================================================================
 // LIF-MD6000-6UMG64I FPGA Processing Pipeline - Top Level Module
 // ============================================================================
-// Issue #12 receive path: 105 MHz ADC domain -> DDC/window/1024 FFT ->
+// Issue #12 receive path: 100 MHz ADC domain -> DDC/window/1024 FFT ->
 // packetized UDP application stream across an async FIFO into 125 MHz Ethernet.
 // ============================================================================
 
@@ -40,7 +40,7 @@ module fpga_processing_pipeline (
     output wire [31:0] packet_counter
 );
 
-    wire clk_105m_adc;
+    wire clk_100m_adc;
     wire clk_125m_eth;
     wire clk_250m_unused;
     wire clk_600m_unused;
@@ -54,7 +54,7 @@ module fpga_processing_pipeline (
         .clk_1200m_fft(clk_fft_unused),
         .clk_125m_eth(clk_125m_eth),
         .clk_250m_eth(clk_250m_unused),
-        .clk_105m_adc(clk_105m_adc),
+        .clk_100m_adc(clk_100m_adc),
         .reset_n(reset_n),
         .locked(pll_locked)
     );
@@ -87,7 +87,7 @@ module fpga_processing_pipeline (
     wire adc_overflow_detect;
 
     adc_interface u_adc_interface (
-        .clk_adc(clk_105m_adc),
+        .clk_adc(clk_100m_adc),
         .rst_n(reset_n),
         .adc_data(adc_data),
         .adc_valid(adc_valid),
@@ -102,7 +102,7 @@ module fpga_processing_pipeline (
     wire nco_valid;
 
     nco_generator u_nco_generator (
-        .clk(clk_105m_adc),
+        .clk(clk_100m_adc),
         .rst_n(reset_n),
         .frequency_word(frequency_word),
         .enable(enable_control),
@@ -116,7 +116,7 @@ module fpga_processing_pipeline (
     wire ddc_valid;
 
     digital_downconverter u_ddc (
-        .clk(clk_105m_adc),
+        .clk(clk_100m_adc),
         .rst_n(reset_n),
         .adc_data(adc_samples),
         .data_valid(adc_sample_valid),
@@ -138,7 +138,7 @@ module fpga_processing_pipeline (
         .DATA_WIDTH(24),
         .FFT_SIZE(1024)
     ) u_hamming_window_i (
-        .clk(clk_105m_adc),
+        .clk(clk_100m_adc),
         .rst_n(reset_n),
         .data_in(ddc_i_data[23:0]),
         .data_valid(ddc_valid),
@@ -150,7 +150,7 @@ module fpga_processing_pipeline (
         .DATA_WIDTH(24),
         .FFT_SIZE(1024)
     ) u_hamming_window_q (
-        .clk(clk_105m_adc),
+        .clk(clk_100m_adc),
         .rst_n(reset_n),
         .data_in(ddc_q_data[23:0]),
         .data_valid(ddc_valid),
@@ -170,7 +170,7 @@ module fpga_processing_pipeline (
         .FFT_SIZE(1024),
         .DATA_WIDTH(24)
     ) u_fft_processor (
-        .clk(clk_105m_adc),
+        .clk(clk_100m_adc),
         .rst_n(reset_n),
         .real_in(windowed_i_data),
         .imag_in(windowed_q_data),
@@ -201,7 +201,7 @@ module fpga_processing_pipeline (
                                (active_modulation_type == 8'h02) ? fm_audio :
                                (active_modulation_type == 8'h03) ? fsk_audio : 16'h0000;
 
-    always @(posedge clk_105m_adc or negedge reset_n) begin
+    always @(posedge clk_100m_adc or negedge reset_n) begin
         if (!reset_n) begin
             ddc_i_prev <= 32'd0;
             ddc_q_prev <= 32'd0;
@@ -226,7 +226,7 @@ module fpga_processing_pipeline (
         .BINS_PER_SUBFRAME(256),
         .DATA_WIDTH(24)
     ) u_fft_packetizer (
-        .fft_clk(clk_105m_adc),
+        .fft_clk(clk_100m_adc),
         .eth_clk(clk_125m_eth),
         .rst_n(reset_n),
         .fft_real(fft_real_data),
@@ -256,7 +256,7 @@ module fpga_processing_pipeline (
     wire iq_audio_fifo_empty;
 
     app_stream_cdc u_iq_audio_stream_cdc (
-        .wr_clk(clk_105m_adc),
+        .wr_clk(clk_100m_adc),
         .rd_clk(clk_125m_eth),
         .rst_n(reset_n),
         .wr_data(iq_or_audio_data),

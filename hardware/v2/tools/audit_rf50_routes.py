@@ -1,4 +1,4 @@
-"""Independent connectivity and copper-scope audit for the RF50-only route."""
+"""Independent connectivity and geometry audit for protected RF50 copper."""
 
 from __future__ import annotations
 
@@ -24,9 +24,11 @@ def main() -> None:
     widths: Counter[float] = Counter()
     for item in tracks:
         name = item.GetNetname()
+        # The fabrication board contains power, digital and slow-control
+        # copper. Those nets are outside this protected-RF audit.
+        if name not in RF50_NETS:
+            continue
         if isinstance(item, pcbnew.PCB_VIA):
-            if name not in RF50_NETS and name != "GND":
-                problems.append(f"non-RF50 via on {name}")
             diameter = pcbnew.ToMM(item.GetWidth(pcbnew.F_Cu))
             drill = pcbnew.ToMM(item.GetDrillValue())
             if abs(diameter - TARGET_VIA_DIAMETER_MM) > 1e-6 or abs(drill - TARGET_VIA_DRILL_MM) > 1e-6:
@@ -34,8 +36,6 @@ def main() -> None:
             continue
         width = round(pcbnew.ToMM(item.GetWidth()), 6)
         widths[width] += 1
-        if name not in RF50_NETS:
-            problems.append(f"non-RF50 track on {name}")
         if item.GetLayer() not in {pcbnew.F_Cu, pcbnew.B_Cu}:
             problems.append(f"unsupported track layer on {name}")
         if abs(width - TARGET_WIDTH_MM) > 1e-6:

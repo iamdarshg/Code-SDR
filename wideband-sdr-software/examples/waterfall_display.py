@@ -180,7 +180,7 @@ class WaterfallDisplay:
         ax_rate = plt.axes([0.1, 0.10, 0.8, 0.03])
         self.rate_slider = Slider(
             ax_rate, 'Sample Rate (MSPS)', 
-            0.001, 105, valinit=self.sample_rate/1e6, valfmt='%.3f'
+            0.001, 100, valinit=self.sample_rate/1e6, valfmt='%.3f'
         )
         self.rate_slider.on_changed(self.on_sample_rate_change)
         

@@ -1,5 +1,5 @@
 param(
-    [string]$ReleaseName = "Code-SDR-V2-final"
+    [string]$ReleaseName = "final"
 )
 
 $ErrorActionPreference = "Stop"
@@ -15,13 +15,27 @@ function Invoke-KiCad {
 $v2Root = [IO.Path]::GetFullPath((Join-Path $PSScriptRoot ".."))
 $repoRoot = [IO.Path]::GetFullPath((Join-Path $v2Root "..\.."))
 $releaseRoot = [IO.Path]::GetFullPath((Join-Path $v2Root "release"))
-$packageRoot = [IO.Path]::GetFullPath((Join-Path $releaseRoot $ReleaseName))
+$finalPackageRoot = [IO.Path]::GetFullPath((Join-Path $releaseRoot $ReleaseName))
+$packageRoot = [IO.Path]::GetFullPath((Join-Path $releaseRoot ".$ReleaseName.staging"))
 $expectedPrefix = $releaseRoot.TrimEnd([IO.Path]::DirectorySeparatorChar) + [IO.Path]::DirectorySeparatorChar
-if (-not $packageRoot.StartsWith($expectedPrefix, [StringComparison]::OrdinalIgnoreCase)) {
+if (-not $packageRoot.StartsWith($expectedPrefix, [StringComparison]::OrdinalIgnoreCase) -or
+    -not $finalPackageRoot.StartsWith($expectedPrefix, [StringComparison]::OrdinalIgnoreCase)) {
     throw "Refusing to replace a release directory outside $releaseRoot"
 }
 if (Test-Path -LiteralPath $packageRoot) {
     Remove-Item -LiteralPath $packageRoot -Recurse -Force
+}
+$locationPushed = $false
+trap {
+    $caughtError = $_
+    if ($locationPushed) {
+        Pop-Location
+        $locationPushed = $false
+    }
+    if (Test-Path -LiteralPath $packageRoot) {
+        Remove-Item -LiteralPath $packageRoot -Recurse -Force
+    }
+    throw $caughtError
 }
 
 $gerberDir = Join-Path $packageRoot "manufacturing\gerbers"
@@ -37,6 +51,11 @@ $renderDir = Join-Path $packageRoot "renders"
 $board = Join-Path $v2Root "Code-SDR-V2.kicad_pcb"
 $schematic = Join-Path $v2Root "Code-SDR-V2.kicad_sch"
 
+# KiCad resolves project-local design rules and library tables from the current
+# project directory. Without this, CLI DRC silently uses a different rule set.
+Push-Location -LiteralPath $v2Root
+$locationPushed = $true
+
 Invoke-KiCad sch erc --format json --severity-all --exit-code-violations `
     -o (Join-Path $validationDir "erc.json") $schematic
 Invoke-KiCad pcb drc --format json --severity-all --all-track-errors `
@@ -50,6 +69,9 @@ if ($drcReport.violations.Count -ne 0) {
 }
 if ($drcReport.schematic_parity.Count -ne 0) {
     throw "Release DRC contains $($drcReport.schematic_parity.Count) schematic parity issue(s)"
+}
+if ($drcReport.unconnected_items.Count -ne 0) {
+    throw "Release DRC contains $($drcReport.unconnected_items.Count) unconnected item(s)"
 }
 
 $kicadCli = (Get-Command kicad-cli -ErrorAction Stop).Source
@@ -115,7 +137,11 @@ if (Test-Path -LiteralPath $toolCache) {
 Copy-Item -LiteralPath (Join-Path $repoRoot "hardware\HARDWARE_VALIDATION.md"),
     (Join-Path $repoRoot "hardware\recommendations.md"),
     (Join-Path $repoRoot "documentation\INTEGRATION_SPECIFICATIONS.md"),
-    (Join-Path $repoRoot "documentation\FPGA_ARCHITECTURE.md") -Destination $docsDir
+    (Join-Path $repoRoot "documentation\FPGA_ARCHITECTURE.md"),
+    (Join-Path $repoRoot "verilog\V2_HARDWARE_COMPATIBILITY.md") -Destination $docsDir
+Copy-Item -LiteralPath (Join-Path $v2Root "FIRST_ARTICLE_VALIDATION.md"),
+    (Join-Path $v2Root "FABRICATOR_IMPEDANCE_NOTE.md"),
+    (Join-Path $v2Root "STACKUP_DRAWING.md") -Destination $docsDir
 Copy-Item -LiteralPath (Join-Path $repoRoot "hardware\redesign\FREQUENCY_PLAN.csv"),
     (Join-Path $repoRoot "hardware\redesign\FILTER_RESPONSE.csv"),
     (Join-Path $repoRoot "hardware\redesign\NOISE_BUDGET.csv"),
@@ -132,21 +158,18 @@ if (Test-Path -LiteralPath (Join-Path $v2Root "build\ROUTE_STATISTICS.csv")) {
     Copy-Item -LiteralPath (Join-Path $v2Root "build\ROUTE_STATISTICS.csv") -Destination $validationDir
 }
 
-$handoffNotice = @"
-CODE-SDR V2 RF50 ROUTING HANDOFF
+$releaseNotice = @"
+CODE-SDR V2 FIRST-ARTICLE FABRICATION PACKAGE
 
-All 49 RF50 controlled-impedance nets are routed and independently audited.
-The remaining $($drcReport.unconnected_items.Count) power, digital and slow-net
-connections are intentionally unrouted per the requested scope.  The included
-Gerbers are inspection artifacts only and MUST NOT be sent for fabrication
-until the remaining nets are routed and KiCad reports zero unconnected items.
-
-The board house must field-solve/tune the nominal 0.23 mm outer-layer traces
-for its actual 0.13 mm prepreg, copper plating, solder mask and dielectric Dk.
+This package was generated only after KiCad reported zero DRC violations,
+zero schematic-parity issues, and zero unconnected items.  The board house
+must field-solve/tune the controlled-impedance geometries against its actual
+laminate Dk, pressed dielectric thickness, finished copper, and solder mask.
+First-article RF characterization remains mandatory after assembly.
 "@
 [IO.File]::WriteAllText(
-    (Join-Path $packageRoot "NOT-FABRICATION-READY.txt"),
-    $handoffNotice,
+    (Join-Path $packageRoot "README.txt"),
+    $releaseNotice,
     [Text.UTF8Encoding]::new($false)
 )
 
@@ -167,6 +190,11 @@ $zipPath = Join-Path $releaseRoot "$ReleaseName.zip"
 if (Test-Path -LiteralPath $zipPath) {
     Remove-Item -LiteralPath $zipPath -Force
 }
-Compress-Archive -LiteralPath $packageRoot -DestinationPath $zipPath -CompressionLevel Optimal
-Remove-Item -LiteralPath $packageRoot -Recurse -Force
+if (Test-Path -LiteralPath $finalPackageRoot) {
+    Remove-Item -LiteralPath $finalPackageRoot -Recurse -Force
+}
+Move-Item -LiteralPath $packageRoot -Destination $finalPackageRoot
+Compress-Archive -LiteralPath $finalPackageRoot -DestinationPath $zipPath -CompressionLevel Optimal
+Pop-Location
+$locationPushed = $false
 Write-Output $zipPath

@@ -70,7 +70,7 @@ def main() -> None:
             rows[key]["length_mm"] = float(rows[key]["length_mm"]) + pcbnew.ToMM(
                 item.GetLength()
             )
-            if item.GetLayer() in (pcbnew.In1_Cu, pcbnew.In4_Cu):
+            if item.GetLayer() in (pcbnew.In1_Cu, pcbnew.In2_Cu):
                 forbidden_plane_items.append(net_name)
             if route_class in protected_analog_classes and item.GetLayer() != pcbnew.F_Cu:
                 critical_wrong_layers.append(f"{net_name}:{layer_name}")
@@ -100,7 +100,7 @@ def main() -> None:
 
     if forbidden_plane_items:
         raise AssertionError(
-            "Signal routing exists on solid In1/In4 ground plane: "
+            "Signal routing exists on solid In1/In2 ground plane: "
             + ", ".join(sorted(set(forbidden_plane_items)))
         )
     if critical_vias:

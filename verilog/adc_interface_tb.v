@@ -32,7 +32,7 @@ module adc_interface_tb;
     // Clock generation
     initial begin
         clk_adc = 0;
-        forever #9.52 clk_adc = ~clk_adc; // ~105 MHz
+        forever #5.0 clk_adc = ~clk_adc; // 100 MHz
     end
 
     // Test sequence

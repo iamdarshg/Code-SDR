@@ -27,7 +27,7 @@ class SDRConfig:
     host_port: int = 10001
     mode: StreamingMode = StreamingMode.PROCESSED
     bandwidth_limit: int = 80  # Percentage (0-100)
-    sample_rate: float = 105e6  # 105 MSPS
+    sample_rate: float = 100e6  # 100 MSPS hardware contract
     fft_size: int = 1024
 
 class SDRInterface:
@@ -263,7 +263,7 @@ class ComputerSideProcessor:
         self.sdr = sdr_interface
         self.fft_buffer = []
         self.fft_size = 1024
-        self.sample_rate = 105e6
+        self.sample_rate = 100e6
         
     def setup_fft_processing(self, fft_size: int = 1024, window: str = 'hamming'):
         """Setup FFT processing parameters"""
@@ -353,7 +353,7 @@ def example_usage():
         host_port=10001,
         mode=StreamingMode.DIRECT,  # Use direct streaming mode
         bandwidth_limit=80,          # Limit to 80% of 1 Gbit/s
-        sample_rate=105e6,
+        sample_rate=100e6,
         fft_size=1024
     )
     

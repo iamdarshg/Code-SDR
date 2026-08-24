@@ -155,7 +155,7 @@ class WidebandSDR:
     MIN_FREQUENCY = 1_000_000    # 1 MHz
     MAX_FREQUENCY = 10_000_000_000  # 10 GHz
     MIN_SAMPLE_RATE = 1_000      # 1 kSPS
-    MAX_SAMPLE_RATE = 105_000_000  # 105 MSPS
+    MAX_SAMPLE_RATE = 100_000_000  # 100 MSPS hardware contract
     MIN_GAIN = 0
     MAX_GAIN = 63
     

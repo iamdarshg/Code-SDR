@@ -170,7 +170,11 @@ def _rewrite_classes(source: str, editable_nets: set[str], route_only: bool = Fa
     header_end = scope.find("\n")
     if header_end < 0:
         raise ValueError("malformed kicad_default class")
-    header, body = scope[:header_end], scope[header_end:]
+    # KiCad wraps the class net list across many lines, so the editable-net
+    # removal must cover the entire net-list region before the first nested
+    # scope, not only the first physical line of the class declaration.
+    first_nested = scope.find("(", 1)
+    header, body = scope[:first_nested], scope[first_nested:]
     if route_only:
         header = "(class kicad_default"
     else:

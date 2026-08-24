@@ -8,7 +8,7 @@
 `timescale 1ns/1ps
 
 module adc_interface (
-    input  wire        clk_adc,         // 105 MHz ADC clock
+    input  wire        clk_adc,         // 100 MHz ADC clock
     input  wire        rst_n,           // Reset (active low)
     input  wire [9:0]  adc_data,        // 10-bit parallel ADC data
     input  wire        adc_valid,       // ADC data valid flag

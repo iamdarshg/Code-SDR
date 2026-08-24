@@ -34,7 +34,8 @@ kicad-cli pcb drc --format json --all-track-errors -o hardware/v2/build/drc.json
 ```
 
 Regeneration intentionally replaces the PCB with the clean placement baseline:
-344 footprints, four copper layers, and the two internal ground-reference zones.
+344 footprints, four copper layers, a solid In1 ground zone, and split In2
+analog/digital power zones.
 Do not run `generate_pcb.py` after beginning a manual route unless that route
 is meant to be discarded.
 
@@ -44,7 +45,7 @@ Freerouting must write its completed session to
 `build/Code-SDR-V2-routed.ses`. Then run:
 
 ```powershell
-java -Xmx2600m -jar freerouting-2.2.4.jar `
+java -Xmx2600m -jar freerouting-2.3.0.jar `
   -de hardware/v2/build/Code-SDR-V2.dsn `
   -do hardware/v2/build/Code-SDR-V2-routed.ses `
   -mp 1 -mt 0 -da -dct 1 --gui.enabled=false
@@ -57,13 +58,14 @@ python hardware/v2/tools/sanitize_route_session.py
 powershell -ExecutionPolicy Bypass -File hardware/v2/tools/export_release.ps1
 ```
 
-The four-layer routing contract is `F.Cu / solid In1 GND / solid In2 GND /
-B.Cu`. The 49 RF50 nets are routed as nominal 50-ohm microstrip on the two
-outer layers using 0.23 mm traces over a 0.13 mm dielectric. F.Cu is preferred;
-B.Cu is used only for four unavoidable crossings, with a nearby ground-return
-via at every layer transition. All remaining digital, power and slow nets are
-intentionally unrouted for completion in KiCad. No signal trace may cut either
-internal reference plane.
+The actual four-layer routing contract is `F.Cu / solid In1 GND / split In2
+power / B.Cu`. In2 is split between `+3V3_ANA` and `+3V3_DIG`; it is not a
+ground plane. The 49 RF50 nets are routed as nominal controlled-impedance
+traces on the outer layers using 0.23 mm geometry over the 0.13 mm outer
+dielectric. F.Cu signals reference solid In1 GND. B.Cu controlled signals need
+an explicitly reviewed return path because their adjacent In2 reference is a
+split power plane. No signal trace may be placed on In1 or cross an In2 split
+without a deliberate, documented return-path treatment.
 Use one persisted pass at a time: import each normally completed session,
 run DRC, export the routed board with `export_route_checkpoint.py`, and repeat
 until KiCad reports no opens. `-mt 0` lets Freerouting select the available

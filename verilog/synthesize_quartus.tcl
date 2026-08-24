@@ -61,7 +61,7 @@ set_global_assignment -name VERILOG_FILE rp2040_interface.v
 set_global_assignment -name SDC_FILE fpga_timing_constraints.sdc
 
 # Hardware clock-manager path. The committed lifmd6000_clock_pll.v is a wrapper
-# for the vendor-generated 100 MHz -> 105/125 MHz PLL IP.
+# for the vendor-generated 100 MHz -> 125 MHz PLL IP.
 set_global_assignment -name VERILOG_MACRO "USE_LIFMD6000_PLL=1"
 
 # Add PLL IP cores for clock generation
@@ -112,8 +112,8 @@ execute_module -tool asm
 
 puts "Quartus Synthesis completed successfully for LIF-MD6000-6UMG64I!"
 puts "Clock targets:"
-puts "  ADC/DSP/FFT Clock: 105MHz"
+puts "  ADC/DSP/FFT Clock: 100MHz"
 puts "  Ethernet Clock: 125MHz"
-puts "  ADC Clock: 105MHz"
+puts "  ADC Clock: 100MHz"
 puts ""
 puts "Check timing reports for fMAX achievement."
