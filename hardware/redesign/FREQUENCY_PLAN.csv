@@ -1,7 +1,8 @@
-path,rf_min_mhz,rf_max_mhz,first_if_mhz,first_lo_mode,first_lo_min_mhz,first_lo_max_mhz,image_expression,first_mixer,rf_preselector,second_lo_mhz,second_if_mhz,useful_bw_mhz
-LOW,100,2500,2436.25,high-side,2536.25,4936.25,RF+4872.5,ADL5801,2.5 GHz LPF,2410,26.25,40
-HIGH_A,2300,4200,2436.25,high-side,4736.25,6636.25,RF+4872.5,LTC5548,band-matched A LNA plus optional external filter,2410,26.25,40
-HIGH_B,4200,6800,2436.25,high-side,6636.25,9236.25,RF+4872.5,LTC5548,band-matched B LNA plus optional external filter,2410,26.25,40
-HIGH_C_HIGH_SIDE,6800,7350,2436.25,high-side,9236.25,9786.25,RF+4872.5,LTC5548,band-matched C LNA plus optional external filter,2410,26.25,40
-HIGH_C_LOW_SIDE,7150,9200,2436.25,low-side,4713.75,6763.75,RF-4872.5,LTC5548,band-matched C LNA plus optional external filter,2410,26.25,40
-HIGH_D,8000,10000,2436.25,low-side,5563.75,7563.75,RF-4872.5,LTC5548,band-matched D LNA plus optional external filter,2410,26.25,40
+path,rf_min_mhz,rf_max_mhz,first_if_mhz,first_lo_mode,first_lo_min_mhz,first_lo_max_mhz,image_expression,first_mixer,rf_preselector,second_lo_mhz,second_if_mhz,useful_bw_mhz,population,population_notes
+LOW,100,2500,2426.25,high-side,2526.25,4926.25,RF+4852.5,ADL5801,2.5 GHz LPF,2400,26.25,40,default,GRF4001 enabled; C208/C210 fit; R153/R156 DNP
+LOW_HF_OPTION,10,2500,2426.25,high-side,2436.25,4926.25,RF+4852.5,ADL5801,2.5 GHz LPF plus optional external HF preselector,2400,26.25,40,hf_bypass,R153/R156 fit 0 ohm; C208/C210 DNP; U50 disabled; C211/C212 retain 1 nF; separate gain/noise calibration
+HIGH_A,2300,4200,2426.25,high-side,4726.25,6626.25,RF+4852.5,LTC5548,band-matched A LNA plus optional external filter,2400,26.25,40,shared,Retained in default and HF bypass assembly
+HIGH_B,4200,6800,2426.25,high-side,6626.25,9226.25,RF+4852.5,LTC5548,band-matched B LNA plus optional external filter,2400,26.25,40,shared,Retained in default and HF bypass assembly
+HIGH_C_HIGH_SIDE,6800,7350,2426.25,high-side,9226.25,9776.25,RF+4852.5,LTC5548,band-matched C LNA plus optional external filter,2400,26.25,40,shared,Retained in default and HF bypass assembly
+HIGH_C_LOW_SIDE,7150,9200,2426.25,low-side,4723.75,6773.75,RF-4852.5,LTC5548,band-matched C LNA plus optional external filter,2400,26.25,40,shared,Retained in default and HF bypass assembly
+HIGH_D,8000,10000,2426.25,low-side,5573.75,7573.75,RF-4852.5,LTC5548,band-matched D LNA plus optional external filter,2400,26.25,40,shared,Retained in default and HF bypass assembly

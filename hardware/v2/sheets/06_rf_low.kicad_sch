@@ -5,7 +5,7 @@
 	(uuid "3da8fdc0-21ee-4cc7-95fe-b59e86e9abf6")
 	(paper "A1")
 	(title_block
-		(title "06 - 100 MHz to 2.5 GHz low-band front end")
+		(title "06 - 10 MHz to 2.5 GHz low-band front end with HF population option")
 		(rev "2.0")
 		(company "Code-SDR")
 		(comment 1 "Every IC pad is named; DNC/NC pins are explicitly marked.")
@@ -368,7 +368,7 @@
 					) hide
 				)
 			)
-			(property "Description" "LTCC low-pass preselector; 0.1-2.5 GHz receive path"
+			(property "Description" "LTCC low-pass preselector specified DC-2.5 GHz; shared by amplified and passive HF populations"
 				(at 0 0 0)
 				(effects
 					(font
@@ -1115,7 +1115,7 @@
 					) hide
 				)
 			)
-			(property "Description" "Low-band first mixer; differential 2.43625 GHz IF"
+			(property "Description" "Low-band first mixer; differential 2.42625 GHz IF"
 				(at 0 0 0)
 				(effects
 					(font
@@ -1777,7 +1777,7 @@
 				(justify left)
 			)
 		)
-		(property "Value" "RF_LOW_0.1_2.5GHz"
+		(property "Value" "RF_LOW_0.01_2.5GHz_OPTION"
 			(at 72.771 90.17 90)
 			(effects
 				(font
@@ -1804,7 +1804,7 @@
 				(hide yes)
 			)
 		)
-		(property "Description" "Dedicated 100 MHz to 2.5 GHz edge-launch RF input"
+		(property "Description" "100 MHz-2.5 GHz amplified input; optional passive HF population extends coverage to 10 MHz"
 			(at 69.85 90.17 0)
 			(effects
 				(font
@@ -1944,7 +1944,7 @@
 				(hide yes)
 			)
 		)
-		(property "Description" "LTCC low-pass preselector; 0.1-2.5 GHz receive path"
+		(property "Description" "LTCC low-pass preselector specified DC-2.5 GHz; shared by amplified and passive HF populations"
 			(at 289.56 90.17 0)
 			(effects
 				(font
@@ -2595,7 +2595,7 @@
 				(hide yes)
 			)
 		)
-		(property "Description" "Low-band first mixer; differential 2.43625 GHz IF"
+		(property "Description" "Low-band first mixer; differential 2.42625 GHz IF"
 			(at 510.54 142.24 0)
 			(effects
 				(font
@@ -3408,7 +3408,7 @@
 		(at 642.62 189.23)
 		(uuid "0823b4eb-1cc6-4203-9b15-f9c79595460e")
 	)
-	(text "100 MHz to 2.5 GHz low-band front end\nSee HARDWARE_VALIDATION.md and hardware/v2/README.md for design limits."
+	(text "10 MHz to 2.5 GHz low-band front end with HF population option\nSee HARDWARE_VALIDATION.md and hardware/v2/README.md for design limits."
 		(exclude_from_sim no)
 		(at 150 25 0.0000)
 		(effects
@@ -4794,4 +4794,53 @@
 			)
 		)
 	)
+
+	(symbol (lib_id "Device:R_Small") (at 180.3400 246.3800 0) (unit 1)
+	(exclude_from_sim no) (in_bom yes) (on_board yes)
+	(dnp yes)
+	(fields_autoplaced no)
+	(uuid "8cf133da-9f75-4043-898f-c137da45d219")
+	(property "Reference" "R153" (at 185.4200 243.8400 0) (effects (font (size 1.27 1.27)) (justify left)))
+	(property "Value" "0R" (at 185.4200 248.9200 0) (effects (font (size 1.27 1.27)) (justify left)))
+	(property "Footprint" "Resistor_SMD:R_0402_1005Metric" (at 185.4200 248.9200 0) (effects (font (size 1.27 1.27)) (justify left) (hide yes)))
+	(property "Datasheet" "" (at 185.4200 248.9200 0) (effects (font (size 1.27 1.27)) (justify left) (hide yes)))
+	(property "Description" "HF option only: fit R153/R156, omit C208/C210, disable U50. Passive 10 MHz-2.5 GHz coverage trades LNA gain/noise performance for bandwidth. Both endpoint links are omitted in the standard amplified population." (at 185.4200 248.9200 0) (effects (font (size 1.27 1.27)) (justify left) (hide yes)))
+	(pin "1" (uuid "aad6b7b0-e0d1-451e-a0b2-ca4cc56580b0"))
+	(pin "2" (uuid "413260d6-47c6-4772-93d2-82e8313d137d"))
+	(instances (project "Code-SDR-V2" (path "/b04744a4-fe39-4740-81de-d5e094f9e157/9f4cb928-74e2-4548-bd64-90561ef0b956" (reference "R153") (unit 1))))
+)
+	(symbol (lib_id "Device:R_Small") (at 289.5600 246.3800 0) (unit 1)
+	(exclude_from_sim no) (in_bom yes) (on_board yes)
+	(dnp yes)
+	(fields_autoplaced no)
+	(uuid "f5ed93af-bfa3-43d8-9dbd-a5b2660f9d68")
+	(property "Reference" "R156" (at 294.6400 243.8400 0) (effects (font (size 1.27 1.27)) (justify left)))
+	(property "Value" "0R" (at 294.6400 248.9200 0) (effects (font (size 1.27 1.27)) (justify left)))
+	(property "Footprint" "Resistor_SMD:R_0402_1005Metric" (at 294.6400 248.9200 0) (effects (font (size 1.27 1.27)) (justify left) (hide yes)))
+	(property "Datasheet" "" (at 294.6400 248.9200 0) (effects (font (size 1.27 1.27)) (justify left) (hide yes)))
+	(property "Description" "HF option only: fit R153/R156, omit C208/C210, disable U50. Passive 10 MHz-2.5 GHz coverage trades LNA gain/noise performance for bandwidth. Both endpoint links are omitted in the standard amplified population." (at 294.6400 248.9200 0) (effects (font (size 1.27 1.27)) (justify left) (hide yes)))
+	(pin "1" (uuid "c3e83faa-140b-4f80-91b4-2bac9e03bbe9"))
+	(pin "2" (uuid "a59b2447-0fa8-444a-a5dd-7005187bc46b"))
+	(instances (project "Code-SDR-V2" (path "/b04744a4-fe39-4740-81de-d5e094f9e157/9f4cb928-74e2-4548-bd64-90561ef0b956" (reference "R156") (unit 1))))
+)
+	(symbol (lib_id "Device:L_Small") (at 400.0500 246.3800 0) (unit 1)
+	(exclude_from_sim no) (in_bom yes) (on_board yes)
+	(dnp no)
+	(fields_autoplaced no)
+	(uuid "3229b2ea-ea97-4b79-be7f-c3e31a5c3423")
+	(property "Reference" "L98" (at 405.1300 243.8400 0) (effects (font (size 1.27 1.27)) (justify left)))
+	(property "Value" "2.7nH" (at 405.1300 248.9200 0) (effects (font (size 1.27 1.27)) (justify left)))
+	(property "Footprint" "Inductor_SMD:L_0402_1005Metric" (at 405.1300 248.9200 0) (effects (font (size 1.27 1.27)) (justify left) (hide yes)))
+	(property "Datasheet" "" (at 405.1300 248.9200 0) (effects (font (size 1.27 1.27)) (justify left) (hide yes)))
+	(property "Description" "ADL5801 Figure 99 differential shunt L3; Coilcraft 0402HP-2N7XGRW starting value; tune on actual board" (at 405.1300 248.9200 0) (effects (font (size 1.27 1.27)) (justify left) (hide yes)))
+	(pin "1" (uuid "7ebdb7d6-80e2-48f0-ba6a-402afb3e7cc0"))
+	(pin "2" (uuid "f62cf257-c7d7-4f90-8067-6fe2ed3fab54"))
+	(instances (project "Code-SDR-V2" (path "/b04744a4-fe39-4740-81de-d5e094f9e157/9f4cb928-74e2-4548-bd64-90561ef0b956" (reference "L98") (unit 1))))
+)
+	(global_label "RF_LOW_FILT" (shape bidirectional) (at 180.3400 243.8400 0) (fields_autoplaced yes) (effects (font (size 1.27 1.27)) (justify left)) (uuid "c301acfd-421d-4d89-968c-73ef57261c4d") (property "Intersheetrefs" "${INTERSHEET_REFS}" (at 182.8800 243.8400 0) (effects (font (size 1.27 1.27)) (justify left) (hide yes))))
+	(global_label "HF_BYPASS" (shape bidirectional) (at 180.3400 248.9200 0) (fields_autoplaced yes) (effects (font (size 1.27 1.27)) (justify left)) (uuid "2bfb440d-d548-489d-9f5a-611bf6fe2645") (property "Intersheetrefs" "${INTERSHEET_REFS}" (at 182.8800 248.9200 0) (effects (font (size 1.27 1.27)) (justify left) (hide yes))))
+	(global_label "HF_BYPASS" (shape bidirectional) (at 289.5600 243.8400 0) (fields_autoplaced yes) (effects (font (size 1.27 1.27)) (justify left)) (uuid "138f0b4c-c976-4642-8f10-177c93b5ff42") (property "Intersheetrefs" "${INTERSHEET_REFS}" (at 292.1000 243.8400 0) (effects (font (size 1.27 1.27)) (justify left) (hide yes))))
+	(global_label "RF_LOW_LNA_OUT" (shape bidirectional) (at 289.5600 248.9200 0) (fields_autoplaced yes) (effects (font (size 1.27 1.27)) (justify left)) (uuid "76cfe8a1-d5c8-47eb-8b93-cb90d8872ffd") (property "Intersheetrefs" "${INTERSHEET_REFS}" (at 292.1000 248.9200 0) (effects (font (size 1.27 1.27)) (justify left) (hide yes))))
+	(global_label "IF_LOW_P" (shape bidirectional) (at 400.0500 243.8400 0) (fields_autoplaced yes) (effects (font (size 1.27 1.27)) (justify left)) (uuid "c6986415-f56e-4b80-b584-1311032abfd6") (property "Intersheetrefs" "${INTERSHEET_REFS}" (at 402.5900 243.8400 0) (effects (font (size 1.27 1.27)) (justify left) (hide yes))))
+	(global_label "IF_LOW_N" (shape bidirectional) (at 400.0500 248.9200 0) (fields_autoplaced yes) (effects (font (size 1.27 1.27)) (justify left)) (uuid "0504bf5b-20cf-4e94-a8ea-e1469481ff77") (property "Intersheetrefs" "${INTERSHEET_REFS}" (at 402.5900 248.9200 0) (effects (font (size 1.27 1.27)) (justify left) (hide yes))))
 )

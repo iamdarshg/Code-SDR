@@ -73,7 +73,7 @@ def main() -> None:
     root = ksa.create_schematic("Code-SDR-V2")
     root.set_paper_size("A3")
     root.set_title_block(
-        title="Code-SDR V2 - 100 MHz to 10 GHz Cost-First Receiver",
+        title="Code-SDR V2 - 10 MHz to 10 GHz Receiver with HF Population Option",
         rev="2.0",
         company="Code-SDR",
         comments={
@@ -162,6 +162,11 @@ def main() -> None:
         path_map["sheets"][sheet] = sheet_uuids[sheet]
 
     MAP_PATH.write_text(json.dumps(path_map, indent=2) + "\n", encoding="utf-8")
+    # The API serializer has no native DNP field. Apply the same raw,
+    # UUID-preserving synchronization used for routed-board recovery so
+    # optional population links remain genuinely DNP after regeneration.
+    from sync_recovery_schematic import sync
+    sync(ROOT, write=True)
     print(f"Generated root and {len(SHEETS)} child schematics; {len(path_map['components'])} components")
 
 

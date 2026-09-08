@@ -3114,7 +3114,7 @@
 				(justify left)
 			)
 		)
-		(property "Value" "120R@100MHz"
+		(property "Value" "BLM21SN300SN1D"
 			(at 514.35 90.17 90)
 			(effects
 				(font
@@ -3123,7 +3123,7 @@
 				(justify left)
 			)
 		)
-		(property "Footprint" "Inductor_SMD:L_0402_1005Metric"
+		(property "Footprint" "Inductor_SMD:L_0805_2012Metric"
 			(at 508.762 90.17 90)
 			(effects
 				(font
@@ -3141,7 +3141,7 @@
 				(hide yes)
 			)
 		)
-		(property "Description" ""
+		(property "Description" "Murata 30R@100MHz, 5mOhm maximum DCR after test; 0.5A core allocation, total distribution drop at most 10mV"
 			(at 510.54 90.17 0)
 			(effects
 				(font
@@ -6034,7 +6034,7 @@
 				(hide yes)
 			)
 		)
-		(property "Description" "ADC_REFB local bypass"
+		(property "Description" "AD9215 Figure 36 direct REFT-to-REFB bulk reference capacitor"
 			(at 289.56 402.59 0)
 			(effects
 				(font
@@ -6077,7 +6077,7 @@
 				(justify left)
 			)
 		)
-		(property "Value" "10uF"
+		(property "Value" "100nF"
 			(at 400.304 400.558 0.0000)
 			(effects
 				(font
@@ -6086,7 +6086,7 @@
 				(justify left)
 			)
 		)
-		(property "Footprint" "Capacitor_SMD:C_0805_2012Metric"
+		(property "Footprint" "Capacitor_SMD:C_0402_1005Metric"
 			(at 400.05 402.59 0.0000)
 			(effects
 				(font
@@ -6104,7 +6104,7 @@
 				(hide yes)
 			)
 		)
-		(property "Description" "ADC_REFT local bypass"
+		(property "Description" "AD9215 Figure 36 direct reference bypass; place at pins 25 and 26"
 			(at 400.05 402.59 0)
 			(effects
 				(font
@@ -9412,7 +9412,7 @@
 			)
 		)
 	)
-	(global_label "ADC_REFB"
+	(global_label "ADC_REFT"
 		(shape bidirectional)
 		(at 289.5600 400.0500 0)
 		(fields_autoplaced yes)
@@ -9430,7 +9430,7 @@
 			)
 		)
 	)
-	(global_label "GND"
+	(global_label "ADC_REFB"
 		(shape bidirectional)
 		(at 289.5600 405.1300 0)
 		(fields_autoplaced yes)
@@ -9466,7 +9466,7 @@
 			)
 		)
 	)
-	(global_label "GND"
+	(global_label "ADC_REFB"
 		(shape bidirectional)
 		(at 400.0500 405.1300 0)
 		(fields_autoplaced yes)

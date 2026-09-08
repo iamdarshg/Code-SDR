@@ -28,6 +28,7 @@ class Component:
     datasheet: str = ""
     symbol: str | None = None
     pin_names: Dict[str, str] = field(default_factory=dict)
+    dnp: bool = False
 
     @property
     def symbol_name(self) -> str:
@@ -39,10 +40,10 @@ SHEETS = [
     ("02_controller", "RP2040 control, flash, USB and debug"),
     ("03_fpga_adc", "CrossLink FPGA, AD9215 and shared 100 MHz sampling clock"),
     ("04_ethernet", "KSZ9031 RGMII and integrated-magnetics RJ45"),
-    ("05_reference_lo", "100 MHz reference, LMX2592 and fixed 2.410 GHz LO"),
-    ("06_rf_low", "100 MHz to 2.5 GHz low-band front end"),
+    ("05_reference_lo", "100 MHz reference, LMX2592 and fixed 2.400 GHz LO"),
+    ("06_rf_low", "10 MHz to 2.5 GHz low-band front end with HF population option"),
     ("07_rf_high", "2.3 GHz to 10 GHz four-port high-band front end"),
-    ("08_if_chain", "2.43625 GHz IF, DSA, second mixer and ADC driver"),
+    ("08_if_chain", "2.42625 GHz IF, DSA, second mixer and ADC driver"),
 ]
 
 
@@ -124,6 +125,7 @@ def cap(
         "0603": "Capacitor_SMD:C_0603_1608Metric",
         "0805": "Capacitor_SMD:C_0805_2012Metric",
         "1206": "Capacitor_SMD:C_1206_3216Metric",
+        "1210": "Capacitor_SMD:C_1210_3225Metric",
     }[size]
     return two_pin(
         sheet,
@@ -255,8 +257,8 @@ add(
     pin_names={"1": "EN", "2": "GND", "3": "SW", "4": "VIN", "5": "FB"},
 )
 inductor("01_power", "L1", "2.2uH_2.5A", "SW_3V3", "+3V3_DIG", (57, 91))
-resistor("01_power", "R1", "453k_1%", "+3V3_DIG", "FB_3V3", (55, 87))
-resistor("01_power", "R2", "100k_1%", "FB_3V3", "GND", (59, 87))
+resistor("01_power", "R1", "453k_0.1%", "+3V3_DIG", "FB_3V3", (55, 87))
+resistor("01_power", "R2", "100k_0.1%", "FB_3V3", "GND", (59, 87))
 cap("01_power", "C3", "10uF", "VIN_FUSED", (48, 95), size="0805")
 cap("01_power", "C4", "22uF", "+3V3_DIG", (62, 91), size="0805")
 cap("01_power", "C5", "100nF", "+3V3_DIG", (65, 91))
@@ -266,15 +268,15 @@ add(
     "U2",
     "TLV62569DBVR",
     "Package_TO_SOT_SMD:SOT-23-5",
-    {"1": "VIN_FUSED", "2": "GND", "3": "SW_1V2", "4": "VIN_FUSED", "5": "FB_1V2"},
+    {"1": "CORE_EN", "2": "GND", "3": "SW_1V2", "4": "VIN_FUSED", "5": "FB_1V2"},
     (50, 81),
     description="2 A synchronous 1.2 V core buck",
     datasheet="https://www.ti.com/lit/ds/symlink/tlv62569.pdf",
     pin_names={"1": "EN", "2": "GND", "3": "SW", "4": "VIN", "5": "FB"},
 )
 inductor("01_power", "L2", "2.2uH_2.5A", "SW_1V2", "+1V2_CORE", (57, 81))
-resistor("01_power", "R3", "100k_1%", "+1V2_CORE", "FB_1V2", (55, 77))
-resistor("01_power", "R4", "100k_1%", "FB_1V2", "GND", (59, 77))
+resistor("01_power", "R3", "101k_0.1%", "+1V2_CORE", "FB_1V2", (55, 77))
+resistor("01_power", "R4", "100k_0.1%", "FB_1V2", "GND", (59, 77))
 cap("01_power", "C6", "10uF", "VIN_FUSED", (48, 85), size="0805")
 cap("01_power", "C7", "22uF", "+1V2_CORE", (62, 81), size="0805")
 cap("01_power", "C8", "100nF", "+1V2_CORE", (65, 81))
@@ -284,7 +286,7 @@ add(
     "U3",
     "TLV75525PDBVR",
     "Package_TO_SOT_SMD:SOT-23-5",
-    {"1": "+3V3_DIG", "2": "GND", "3": "+3V3_DIG", "4": None, "5": "+2V5_AUX"},
+    {"1": "+3V3_DIG", "2": "GND", "3": "AUX_EN", "4": None, "5": "+2V5_AUX"},
     (72, 87),
     description="500 mA high-PSRR 2.5 V auxiliary LDO",
     datasheet="https://www.ti.com/lit/ds/symlink/tlv755p.pdf",
@@ -296,25 +298,60 @@ cap("01_power", "C10", "2.2uF", "+2V5_AUX", (76, 82), size="0603")
 add(
     "01_power",
     "U4",
-    "TLV76733DRVR",
-    "Package_SON:WSON-6-1EP_2x2mm_P0.65mm_EP1x1.6mm_ThermalVias",
+    "TPS7A8300ARGWT",
+    "Package_DFN_QFN:Texas_RGW0020A_VQFN-20-1EP_5x5mm_P0.65mm_EP3.15x3.15mm_ThermalVias",
     {
         "1": "+3V3_ANA",
-        "2": "+3V3_ANA",
-        "3": "GND",
-        "4": "VIN_FUSED",
-        "5": "GND",
-        "6": "VIN_FUSED",
-        "7": "GND",
+        "2": None, "3": "FB_ANA", "4": None,
+        "5": None, "6": None, "7": None, "8": "GND",
+        "9": None, "10": None, "11": None, "12": "GND",
+        "13": "ANA_NR_SS", "14": "VIN_FUSED", "15": "VIN_FUSED",
+        "16": "VIN_FUSED", "17": "VIN_FUSED", "18": "GND",
+        "19": "+3V3_ANA", "20": "+3V3_ANA", "21": "GND",
     },
     (85, 87),
-    description="1 A low-noise/high-PSRR 3.3 V analog LDO",
-    datasheet="https://www.ti.com/lit/ds/symlink/tlv767.pdf",
-    pin_names={"1": "OUT", "2": "SNS", "3": "GND", "4": "EN", "5": "GND", "6": "IN", "7": "EP"},
+    description="2 A low-noise analog LDO adjusted to 3.224 V; 1 A thermal design envelope at 50 C; +3V3_ANA legacy net name, 25 mV distribution/ripple budget",
+    datasheet="https://www.ti.com/lit/ds/symlink/tps7a83a.pdf",
+    pin_names={"1": "OUT", "2": "SNS", "3": "FB", "4": "PG", "5": "50mV",
+               "6": "100mV", "7": "200mV", "8": "GND", "9": "400mV", "10": "800mV",
+               "11": "1.6V", "12": "BIAS", "13": "NR_SS", "14": "EN",
+               "15": "IN", "16": "IN", "17": "IN", "18": "GND",
+               "19": "OUT", "20": "OUT", "21": "EP"},
 )
-cap("01_power", "C11", "4.7uF", "VIN_FUSED", (81, 82), size="0805")
-cap("01_power", "C12", "4.7uF", "+3V3_ANA", (89, 82), size="0805")
+cap("01_power", "C11", "22uF_10V_X7R", "VIN_FUSED", (81, 82), size="1206").description = "Required MPN Murata GRM31CR71A226KE15L; retain at least 5uF effective at 5.25V"
+cap("01_power", "C12", "47uF_10V_X7R", "+3V3_ANA", (89, 82), size="1210").description = "Required MPN Murata GRM32ER71A476KE15L; paired with C346 for at least 25uF effective output bypass"
+cap("01_power", "C346", "47uF_10V_X7R", "+3V3_ANA", (94, 82), size="1210").description = "Required MPN Murata GRM32ER71A476KE15L; X7R temperature rating for analog regulator region"
+cap("01_power", "C347", "100nF", "ANA_NR_SS", (94, 87))
+two_pin("01_power", "C348", "10nF", "+3V3_ANA", "FB_ANA", (94, 91),
+        footprint="Capacitor_SMD:C_0402_1005Metric", symbol="Device:C_Small",
+        description="Analog regulator feed-forward capacitor; output ceramics require >=25uF total effective capacitance")
 resistor("01_power", "R5", "0", "GND", "CHASSIS_GND", (28, 84), size="0603")
+resistor("01_power", "R154", "30.3k_0.1%", "+3V3_ANA", "FB_ANA", (87, 88))
+resistor("01_power", "R155", "10k_0.1%", "FB_ANA", "GND", (87, 91))
+
+# Threshold-qualified cold-start sequence: all three filtered FPGA I/O rails
+# precede core; AUX follows a valid core. A separate supervisor holds the PHY
+# reset after its own filtered core rail becomes valid. Full external power
+# removal is required after a partial-rail POR fault (CrossLink datasheet 4.5).
+for index, (sense, reset, value, ct) in enumerate([
+    ("FPGA_VCCIO0_3V3", "CORE_EN", "TPS389033DSER", None),
+    ("FPGA_VCCIO1_3V3", "CORE_EN", "TPS389033DSER", None),
+    ("FPGA_VCCIO2_3V3", "CORE_EN", "TPS389033DSER", None),
+    ("FPGA_VCC_1V2", "AUX_EN", "TPS389012DSER", None),
+    ("PHY_AVDDL_1V2", "PHY_RESET_N", "TPS389012DSER", "PHY_RESET_CT"),
+], start=5):
+    add("01_power", f"U{index}", value,
+        "Package_SON:WSON-6_1.5x1.5mm_P0.5mm",
+        {"1": sense, "2": "GND", "3": "+3V3_DIG", "4": "+3V3_DIG",
+         "5": ct, "6": reset}, (45 + (index-5)*10, 105),
+        description=f"Cold-start supervisor for {sense}; open-drain {reset}",
+        datasheet="https://www.ti.com/lit/ds/symlink/tps3890.pdf",
+        pin_names={"1": "SENSE", "2": "GND", "3": "MR_N", "4": "VDD", "5": "CT", "6": "RESET_N"})
+    cap("01_power", f"C{335+index}", "100nF", "+3V3_DIG", (45+(index-5)*10, 111))
+resistor("01_power", "R157", "120k_1%", "+3V3_DIG", "CORE_EN", (50, 117))
+resistor("01_power", "R158", "100k_1%", "CORE_EN", "GND", (56, 117))
+resistor("01_power", "R159", "120k_1%", "+3V3_DIG", "AUX_EN", (72, 117))
+cap("01_power", "C345", "20nF_C0G_5%", "PHY_RESET_CT", (85, 117), size="0805")
 
 
 # ---------------------------------------------------------------------------
@@ -347,7 +384,7 @@ rp_pins.update({
     "31": "HSW_V1", "32": "HSW_V2", "34": "ADC_PDWN",
     "35": "LNA_EN_H4", "36": "MIXER_EN_HIGH",
     "37": "PHY_RESET_N", "38": "LMX_LOCK", "39": "ADF_LOCK", "40": "ADC_OR", "41": "FPGA_CDONE",
-    "19": "GND", "20": "RP_XIN", "21": "RP_XOUT", "24": "SWD_CLK", "25": "SWD_IO",
+    "19": "GND", "20": "RP_XIN", "21": "RP_XOUT_DRIVE", "24": "SWD_CLK", "25": "SWD_IO",
     "26": "RP_RUN", "45": "RP_CORE", "46": "USB_DM", "47": "USB_DP",
     "51": "QSPI_SD3", "52": "QSPI_SCLK", "53": "QSPI_SD0", "54": "QSPI_SD2",
     "55": "QSPI_SD1", "56": "QSPI_SS_N", "57": "GND",
@@ -366,7 +403,7 @@ add(
 add(
     "02_controller",
     "U11",
-    "W25Q16JVSSIQ",
+    "W25Q16JVSNIQ",
     "Package_SO:SOIC-8_3.9x4.9mm_P1.27mm",
     {"1": "QSPI_SS_N", "2": "QSPI_SD1", "3": "QSPI_SD2", "4": "GND", "5": "QSPI_SD0",
      "6": "QSPI_SCLK", "7": "QSPI_SD3", "8": "+3V3_DIG"},
@@ -393,6 +430,9 @@ add(
 cap("02_controller", "C20", "15pF_C0G", "RP_XIN", (21, 31))
 cap("02_controller", "C21", "15pF_C0G", "RP_XOUT", (27, 31))
 cap("02_controller", "C22", "1uF", "RP_CORE", (34, 27), size="0603")
+resistor("02_controller", "R150", "1k", "RP_XOUT_DRIVE", "RP_XOUT", (29, 34), size="0201")
+cap("02_controller", "C330", "100nF", "RP_CORE", (33, 30))
+cap("02_controller", "C331", "100nF", "RP_CORE", (39, 30))
 for index, x in enumerate([29, 32, 35, 38, 41, 44], start=23):
     cap("02_controller", f"C{index}", "100nF", "+3V3_DIG", (x, 25))
 # RP2040's IOVDD bypasses above do not replace the local VREG_VIN,
@@ -400,7 +440,7 @@ for index, x in enumerate([29, 32, 35, 38, 41, 44], start=23):
 for ref, x, y in [
     ("C306", 32, 29), ("C307", 38, 29), ("C308", 44, 29), ("C309", 52, 31),
 ]:
-    cap("02_controller", ref, "100nF", "+3V3_DIG", (x, y))
+    cap("02_controller", ref, "1uF" if ref == "C306" else "100nF", "+3V3_DIG", (x, y))
 
 add(
     "02_controller",
@@ -440,9 +480,10 @@ add(
     symbol="Connector_Generic:Conn_02x05_Odd_Even",
 )
 two_pin(
-    "02_controller", "SW1", "BOOTSEL", "QSPI_SS_N", "GND", (48, 48),
+    "02_controller", "SW1", "BOOTSEL", "BOOTSEL_SWITCH", "GND", (48, 48),
     footprint="Button_Switch_SMD:SW_SPST_TL3342", symbol="Switch:SW_Push",
 )
+resistor("02_controller", "R151", "1k", "QSPI_SS_N", "BOOTSEL_SWITCH", (45, 48))
 two_pin(
     "02_controller", "SW2", "RESET", "RP_RUN", "GND", (48, 53),
     footprint="Button_Switch_SMD:SW_SPST_TL3342", symbol="Switch:SW_Push",
@@ -527,7 +568,7 @@ resistor("03_fpga_adc", "R30", "4.7k", "FPGA_VCCIO0_3V3", "FPGA_RESET_N", (78, 4
 resistor("03_fpga_adc", "R33", "4.7k", "FPGA_VCCIO0_3V3", "FPGA_CDONE", (82, 46))
 resistor("03_fpga_adc", "R148", "4.7k", "FPGA_VCCIO0_3V3", "FPGA_SPI_CS_N", (86, 46))
 for ref, value, source, island, x in [
-    ("FB33", "120R@100MHz", "+1V2_CORE", "FPGA_VCC_1V2", 72),
+    ("FB33", "BLM21SN300SN1D", "+1V2_CORE", "FPGA_VCC_1V2", 72),
     ("FB34", "220R@100MHz", "+1V2_CORE", "FPGA_PLL_1V2", 76),
     ("FB35", "120R@100MHz", "+3V3_DIG", "FPGA_VCCIO0_3V3", 80),
     ("FB36", "120R@100MHz", "+3V3_DIG", "FPGA_VCCIO1_3V3", 84),
@@ -536,8 +577,9 @@ for ref, value, source, island, x in [
 ]:
     two_pin(
         "03_fpga_adc", ref, value, source, island, (x, 20),
-        footprint="Inductor_SMD:L_0402_1005Metric",
+        footprint="Inductor_SMD:L_0805_2012Metric" if ref == "FB33" else "Inductor_SMD:L_0402_1005Metric",
         symbol="Device:FerriteBead",
+        description="Murata 30R@100MHz, 5mOhm maximum DCR after test; 0.5A core allocation, total distribution drop at most 10mV" if ref == "FB33" else "",
     )
 for ref, value, rail, x, y, size in [
     ("C310", "10uF", "FPGA_VCC_1V2", 72, 24, "0805"),
@@ -604,8 +646,12 @@ cap("03_fpga_adc", "C48", "100nF", "ADC_REFT", (124, 49))
 resistor("03_fpga_adc", "R32", "0R", "ADC_SENSE", "GND", (121, 42))
 resistor("03_fpga_adc", "R147", "10k", "ADC_PDWN", "GND", (125, 42))
 cap("03_fpga_adc", "C159", "10uF", "ADC_VREF", (116, 53), size="0805")
-cap("03_fpga_adc", "C154", "10uF", "ADC_REFB", (120, 53), size="0805")
-cap("03_fpga_adc", "C155", "10uF", "ADC_REFT", (124, 53), size="0805")
+two_pin("03_fpga_adc", "C154", "10uF", "ADC_REFT", "ADC_REFB", (120, 53),
+        footprint="Capacitor_SMD:C_0805_2012Metric", symbol="Device:C_Small",
+        description="AD9215 Figure 36 direct REFT-to-REFB bulk reference capacitor")
+two_pin("03_fpga_adc", "C155", "100nF", "ADC_REFT", "ADC_REFB", (124, 53),
+        footprint="Capacitor_SMD:C_0402_1005Metric", symbol="Device:C_Small",
+        description="AD9215 Figure 36 direct reference bypass; place at pins 25 and 26")
 resistor("03_fpga_adc", "R90", "2.00k_1%", "+3V3_ANA", "ADC_MODE", (115, 42))
 resistor("03_fpga_adc", "R91", "1.00k_1%", "ADC_MODE", "GND", (118, 42))
 cap("03_fpga_adc", "C156", "10nF", "ADC_MODE", (118, 46))
@@ -775,7 +821,7 @@ add(
     "05_reference_lo",
     "U42",
     "CDCLVC1104PWR",
-    "Package_SO:TSSOP-8_3x3mm_P0.65mm",
+    "Package_SO:TSSOP-8_4.4x3mm_P0.65mm",
     {
         "1": "REF_100M_OSC", "2": "+3V3_ANA", "3": "REF_100M_ADC", "4": "GND",
         "5": "REF_100M_ADF", "6": "+3V3_ANA", "7": None, "8": "REF_100M_LMX",
@@ -786,7 +832,8 @@ add(
     pin_names={"1": "CLKIN", "2": "1G", "3": "Y0", "4": "GND", "5": "Y2",
                "6": "VDD", "7": "Y3", "8": "Y1"},
 )
-resistor("05_reference_lo", "R50", "33R", "REF_100M_LMX", "LMX_REF_PRE", (132, 87))
+resistor("05_reference_lo", "R50", "150R_1%", "REF_100M_LMX", "LMX_REF_PRE", (132, 87))
+resistor("05_reference_lo", "R152", "150R_1%", "LMX_REF_PRE", "GND", (133, 84))
 resistor("05_reference_lo", "R51", "33R", "REF_100M_ADF", "ADF_REF", (132, 90))
 cap("05_reference_lo", "C60", "100nF", "+3V3_ANA", (119, 93))
 cap("05_reference_lo", "C61", "10uF", "+3V3_ANA", (123, 93), size="0805")
@@ -816,7 +863,7 @@ for p in ["7", "11", "15", "21", "26", "37"]:
     lmx_pins[p] = "+3V3_ANA"
 lmx_pins.update({
     "1": "LMX_CE", "3": "LMX_VBIAS1", "8": "LMX_REF", "9": "LMX_REF_N", "10": "LMX_VREG_IN",
-    "12": "LMX_CPOUT", "16": "SYNTH_SCK", "17": "SYNTH_SDI", "18": "LMX_LO_HIGH_N_RAW",
+    "12": "LMX_VTUNE", "16": "SYNTH_SCK", "17": "SYNTH_SDI", "18": "LMX_LO_HIGH_N_RAW",
     "19": "LMX_LO_HIGH_P_RAW", "20": "LMX_LOCK", "22": "LMX_LO_LOW_N_RAW",
     "23": "LMX_LO_LOW_P_RAW", "24": "LMX_CSB",
     "27": "LMX_VBIAS2", "29": "LMX_VREF2", "33": "LMX_VARAC", "35": "LMX_VTUNE",
@@ -868,9 +915,9 @@ for ref, raw, net, x, y in [
         description="LMX2592 RF-output DC block",
     )
 resistor("05_reference_lo", "R92", "50R", "LO_HIGH_N_TERM", "GND", (152, 102), size="0201")
-cap("05_reference_lo", "C70", "4.7nF_C0G", "LMX_CPOUT", (136, 96))
-resistor("05_reference_lo", "R56", "68R_1%", "LMX_CPOUT", "LMX_VTUNE", (141, 96))
-cap("05_reference_lo", "C71", "100nF", "LMX_VTUNE", (146, 96))
+cap("05_reference_lo", "C70", "4.7nF_C0G", "LMX_VTUNE", (136, 96))
+resistor("05_reference_lo", "R56", "220R_1%", "LMX_VTUNE", "LMX_LF_DAMP", (141, 96))
+cap("05_reference_lo", "C71", "100nF_C0G", "LMX_LF_DAMP", (146, 96), size="1206")
 
 adf_names = {
     "1": "CPGND", "2": "AVDD", "3": "AGND", "4": "RFOUTA", "5": "RFOUTB", "6": "VVCO",
@@ -892,7 +939,7 @@ add(
     "Package_CSP:LFCSP-24-1EP_4x4mm_P0.5mm_EP2.5x2.5mm_ThermalVias",
     adf_pins,
     (165, 88),
-    description="Fixed 2.410 GHz integer-N second LO: 100 MHz/R20, P16, B30, A2",
+    description="Fixed 2.400 GHz integer-N second LO: 100 MHz/R20, P16, B30, A0",
     datasheet="https://www.analog.com/media/en/technical-documentation/data-sheets/adf4360-1.pdf",
     pin_names=adf_names,
 )
@@ -903,11 +950,11 @@ two_pin(
     description="ADF4360-1 CN compensation capacitor to VVCO",
 )
 resistor("05_reference_lo", "R58", "4.7k_1%", "ADF_RSET", "GND", (158, 96))
-cap("05_reference_lo", "C74", "1nF_C0G", "ADF_CPOUT", (155, 96))
-resistor("05_reference_lo", "R59", "620R_1%", "ADF_CPOUT", "ADF_LF1", (161, 96))
-cap("05_reference_lo", "C75", "3.3nF_C0G", "ADF_LF1", (164, 100))
-resistor("05_reference_lo", "R93", "51R", "ADF_LF1", "ADF_VTUNE", (168, 100))
-cap("05_reference_lo", "C205", "15nF_C0G", "ADF_VTUNE", (172, 100))
+cap("05_reference_lo", "C74", "470pF_C0G", "ADF_CPOUT", (155, 96))
+resistor("05_reference_lo", "R59", "1k_1%", "ADF_CPOUT", "ADF_LF1", (161, 96))
+cap("05_reference_lo", "C75", "22nF_C0G", "ADF_LF1", (164, 100), size="0805")
+resistor("05_reference_lo", "R93", "220R_1%", "ADF_CPOUT", "ADF_VTUNE", (168, 100))
+cap("05_reference_lo", "C205", "470pF_C0G", "ADF_VTUNE", (172, 100))
 resistor("05_reference_lo", "R94", "51R", "+3V3_ANA", "ADF_LO2_P_RAW", (158, 104))
 resistor("05_reference_lo", "R95", "51R", "+3V3_ANA", "ADF_LO2_N_RAW", (163, 104))
 for ref, raw, net, x in [
@@ -929,12 +976,12 @@ for ref, net, x in [("C76", "+3V3_ANA", 158), ("C77", "+3V3_ANA", 161), ("C78", 
 add(
     "06_rf_low",
     "J50",
-    "RF_LOW_0.1_2.5GHz",
+    "RF_LOW_0.01_2.5GHz_OPTION",
     "Connector_Coaxial:SMA_Molex_73251-1153_EdgeMount_Horizontal",
     {"1": "RF_LOW_IN", "2": "GND"},
     (5, 63),
     symbol="Connector:Conn_Coaxial",
-    description="Dedicated 100 MHz to 2.5 GHz edge-launch RF input",
+    description="100 MHz-2.5 GHz amplified input; optional passive HF population extends coverage to 10 MHz",
     datasheet="https://www.molex.com/pdm_docs/sd/732511153_sd.pdf",
 )
 two_pin(
@@ -950,7 +997,7 @@ add(
     "CodeSDR:MiniCircuits_FV1206",
     {"1": "RF_LOW_IN", "2": "GND", "3": "RF_LOW_FILT", "4": "GND"},
     (20, 63),
-    description="LTCC low-pass preselector; 0.1-2.5 GHz receive path",
+    description="LTCC low-pass preselector specified DC-2.5 GHz; shared by amplified and passive HF populations",
     datasheet="https://www.minicircuits.com/pdfs/LFCN-2500+.pdf",
     pin_names={"1": "IN", "2": "GND", "3": "OUT", "4": "GND"},
 )
@@ -979,6 +1026,17 @@ two_pin(
     footprint="Capacitor_SMD:C_0201_0603Metric", symbol="Device:C_Small",
     description="GRF4001 output DC block",
 )
+for ref, a, b, xy in [
+    ("R153", "RF_LOW_FILT", "HF_BYPASS", (25, 66)),
+    ("R156", "HF_BYPASS", "RF_LOW_LNA_OUT", (36, 66)),
+]:
+    option = resistor("06_rf_low", ref, "0R", a, b, xy)
+    option.dnp = True
+    option.description = (
+        "HF option only: fit R153/R156, omit C208/C210, disable U50. "
+        "Passive 10 MHz-2.5 GHz coverage trades LNA gain/noise performance for bandwidth. "
+        "Both endpoint links are omitted in the standard amplified population."
+    )
 resistor("06_rf_low", "R60", "0R", "LNA_EN_LOW", "LNA_EN_LOW_IC", (30, 72))
 cap("06_rf_low", "C80", "100pF_C0G", "+3V3_ANA", (34, 72))
 cap("06_rf_low", "C81", "100nF", "+3V3_ANA", (37, 72))
@@ -995,7 +1053,7 @@ add(
         "22": None, "23": "GND", "24": "+5V_RF", "25": "GND",
     },
     (48, 63),
-    description="Low-band first mixer; differential 2.43625 GHz IF",
+    description="Low-band first mixer; differential 2.42625 GHz IF",
     datasheet="https://www.analog.com/en/products/adl5801.html",
     pin_names={str(i): name for i, name in enumerate([
         "GND", "GND", "LOIP", "LOIN", "GND", "GND", "VPLO", "GND", "ENBL_N", "VSET", "DETO",
@@ -1027,6 +1085,9 @@ add(
 )
 cap("06_rf_low", "C282", "100pF_C0G", "+5V_RF", (58, 58))
 cap("06_rf_low", "C283", "100nF", "+5V_RF", (61, 58))
+adl_if_match = inductor("06_rf_low", "L98", "2.7nH", "IF_LOW_P", "IF_LOW_N", (48, 59), size="0402")
+adl_if_match.footprint = "Inductor_SMD:L_0402_1005Metric"
+adl_if_match.description = "ADL5801 Figure 99 differential shunt L3; Coilcraft 0402HP-2N7XGRW starting value; tune on actual board"
 
 
 # ---------------------------------------------------------------------------
@@ -1168,13 +1229,13 @@ add(
         "5": "RF_HC_LNA_OUT", "6": "GND", "7": "GND", "8": "RF_HA_LNA_OUT",
         "9": "GND", "10": "GND", "11": "RF_HB_LNA_OUT", "12": "GND",
         "13": "GND", "14": "RF_HD_LNA_OUT", "15": "GND", "16": "+3V3_ANA",
-        "17": "HSW_V1", "18": "HSW_V2", "19": "GND", "20": "GND",
+        "17": "HSW_V1_CHIP", "18": "HSW_V2_CHIP", "19": "GND", "20": "GND",
         "21": "GND", "22": "RF_HIGH_SWITCHED", "23": "GND", "24": "GND",
         "25": "GND",
     },
     (40, 86),
     description=(
-        "50 MHz to 12 GHz high-isolation SP4T after the branch LNAs; "
+        "50 MHz to 10 GHz high-isolation SP4T after the branch LNAs; "
         "LC0/LC1 low select 1.8 V logic and V3/VSS are grounded"
     ),
     datasheet="https://www.qorvo.com/products/d/da010159",
@@ -1188,8 +1249,10 @@ add(
 )
 cap("07_rf_high", "C260", "100nF", "+3V3_ANA", (41, 91), size="0402")
 cap("07_rf_high", "C261", "10uF", "+3V3_ANA", (45, 91), size="0805")
-resistor("07_rf_high", "R144", "100k", "HSW_V1", "GND", (41, 95))
-resistor("07_rf_high", "R145", "100k", "HSW_V2", "GND", (45, 95))
+resistor("07_rf_high", "R144", "10k_1%", "HSW_V1_CHIP", "GND", (41, 95))
+resistor("07_rf_high", "R145", "10k_1%", "HSW_V2_CHIP", "GND", (45, 95))
+resistor("07_rf_high", "R160", "1k_1%", "HSW_V1", "HSW_V1_CHIP", (41, 99))
+resistor("07_rf_high", "R161", "1k_1%", "HSW_V2", "HSW_V2_CHIP", (45, 99))
 
 add(
     "07_rf_high",
@@ -1245,7 +1308,7 @@ add(
     "CodeSDR:Infineon_TSNP6_1.1x0.7mm",
     {"1": "IF_HIGH_SE", "2": "GND", "3": "IF_LOW_SE", "4": "+3V3_DIG", "5": "IF_SELECTED", "6": "IF_PATH_SEL"},
     (73, 67),
-    description="First-IF low/high path selector at 2.43625 GHz",
+    description="First-IF low/high path selector at 2.42625 GHz",
     datasheet="https://www.infineon.com/assets/row/public/documents/24/49/infineon-bgs12wn6-datasheet-en.pdf",
     pin_names={"1": "RF2", "2": "GND", "3": "RF1", "4": "VDD", "5": "RFC", "6": "CTRL"},
 )
@@ -1385,10 +1448,10 @@ add(
     "U73",
     "LT5560EDD",
     "Package_DFN_QFN:DFN-8-1EP_3x3mm_P0.5mm_EP1.65x2.38mm_ThermalVias",
-    {"1": "LO2_N", "2": "+3V3_DIG", "3": "LT_IN_P", "4": "LT_IN_N", "5": "IF2_N",
+    {"1": "LO2_N", "2": "+3V3_ANA", "3": "LT_IN_P", "4": "LT_IN_N", "5": "IF2_N",
      "6": "IF2_P", "7": "+3V3_ANA", "8": "LO2_P", "9": "GND"},
     (110, 67),
-    description="2.410 GHz second mixer producing 26.25 MHz center IF",
+    description="2.400 GHz second mixer producing 26.25 MHz center IF",
     datasheet="https://www.analog.com/en/products/lt5560.html",
     pin_names={"1": "LO-", "2": "EN", "3": "IN+", "4": "IN-", "5": "OUT-", "6": "OUT+",
                "7": "VCC", "8": "LO+", "9": "EP"},
@@ -1414,10 +1477,10 @@ for index, (value, net_a_p, net_b_p, net_a_n, net_b_n, x) in enumerate(filter_se
     inductor("08_if_chain", f"L{87 + index * 2}", value, net_a_p, net_b_p, (x, 65), size="0603")
     inductor("08_if_chain", f"L{88 + index * 2}", value, net_a_n, net_b_n, (x, 69), size="0603")
 for index, (value, net_p, net_n, x) in enumerate([
-    ("100pF_C0G", "IF2_F1_P", "IF2_F1_N", 120),
-    ("110pF_C0G", "IF2_F2_P", "IF2_F2_N", 124),
-    ("110pF_C0G", "IF2_F3_P", "IF2_F3_N", 128),
-    ("100pF_C0G", "IF2_F4_P", "IF2_F4_N", 132),
+    ("51pF_C0G", "IF2_F1_P", "IF2_F1_N", 120),
+    ("56pF_C0G", "IF2_F2_P", "IF2_F2_N", 124),
+    ("56pF_C0G", "IF2_F3_P", "IF2_F3_N", 128),
+    ("51pF_C0G", "IF2_F4_P", "IF2_F4_N", 132),
 ]):
     two_pin(
         "08_if_chain", f"C{262 + index * 2}", value, net_p, net_n, (x, 67),

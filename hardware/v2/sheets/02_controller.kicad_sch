@@ -2746,6 +2746,211 @@
 			)
 			(embedded_fonts no)
 		)
+	
+		(symbol "CodeSDR:W25Q16JVSNIQ"
+			(exclude_from_sim no)
+			(in_bom yes)
+			(on_board yes)
+			(property "Reference" "U"
+				(at 0 15.24 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "Value" "W25Q16JVSNIQ"
+				(at 0 -15.24 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "Footprint" "Package_SO:SOIC-8_3.9x4.9mm_P1.27mm"
+				(at 0 0 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					) hide
+				)
+			)
+			(property "Datasheet" "https://www.winbond.com/hq/support/documentation/downloadV2022.jsp?__locale=en&xmlPath=/support/resources/.content/item/DA00-W25Q16JV_1.html&level=1"
+				(at 0 0 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					) hide
+				)
+			)
+			(property "Description" "16 Mbit QSPI boot flash"
+				(at 0 0 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					) hide
+				)
+			)
+			(symbol "W25Q16JVSNIQ_0_1"
+				(rectangle
+					(start -17.78 12.7)
+					(end 17.78 -12.7)
+					(stroke
+						(width 0.254)
+						(type default)
+					)
+					(fill
+						(type background)
+					)
+				)
+			)
+			(symbol "W25Q16JVSNIQ_1_1"
+				(pin passive line
+					(at -22.86 10.16 0)
+					(length 5.08)
+					(name "CS_N"
+						(effects
+							(font
+								(size 1 1)
+							)
+						)
+					)
+					(number "1"
+						(effects
+							(font
+								(size 1 1)
+							)
+						)
+					)
+				)
+				(pin passive line
+					(at -22.86 7.62 0)
+					(length 5.08)
+					(name "DO_IO1"
+						(effects
+							(font
+								(size 1 1)
+							)
+						)
+					)
+					(number "2"
+						(effects
+							(font
+								(size 1 1)
+							)
+						)
+					)
+				)
+				(pin passive line
+					(at -22.86 5.08 0)
+					(length 5.08)
+					(name "WP_N_IO2"
+						(effects
+							(font
+								(size 1 1)
+							)
+						)
+					)
+					(number "3"
+						(effects
+							(font
+								(size 1 1)
+							)
+						)
+					)
+				)
+				(pin passive line
+					(at -22.86 2.54 0)
+					(length 5.08)
+					(name "GND"
+						(effects
+							(font
+								(size 1 1)
+							)
+						)
+					)
+					(number "4"
+						(effects
+							(font
+								(size 1 1)
+							)
+						)
+					)
+				)
+				(pin passive line
+					(at 22.86 10.16 180)
+					(length 5.08)
+					(name "DI_IO0"
+						(effects
+							(font
+								(size 1 1)
+							)
+						)
+					)
+					(number "5"
+						(effects
+							(font
+								(size 1 1)
+							)
+						)
+					)
+				)
+				(pin passive line
+					(at 22.86 7.62 180)
+					(length 5.08)
+					(name "CLK"
+						(effects
+							(font
+								(size 1 1)
+							)
+						)
+					)
+					(number "6"
+						(effects
+							(font
+								(size 1 1)
+							)
+						)
+					)
+				)
+				(pin passive line
+					(at 22.86 5.08 180)
+					(length 5.08)
+					(name "HOLD_N_IO3"
+						(effects
+							(font
+								(size 1 1)
+							)
+						)
+					)
+					(number "7"
+						(effects
+							(font
+								(size 1 1)
+							)
+						)
+					)
+				)
+				(pin passive line
+					(at 22.86 2.54 180)
+					(length 5.08)
+					(name "VCC"
+						(effects
+							(font
+								(size 1 1)
+							)
+						)
+					)
+					(number "8"
+						(effects
+							(font
+								(size 1 1)
+							)
+						)
+					)
+				)
+			)
+		)
 	)
 	(symbol
 		(lib_id "CodeSDR:RP2040")
@@ -2983,7 +3188,7 @@
 		)
 	)
 	(symbol
-		(lib_id "CodeSDR:W25Q16JVSSIQ")
+		(lib_id "CodeSDR:W25Q16JVSNIQ")
 		(at 180.34 90.17 0)
 		(unit 1)
 		(exclude_from_sim no)
@@ -3001,7 +3206,7 @@
 				(justify left)
 			)
 		)
-		(property "Value" "W25Q16JVSSIQ"
+		(property "Value" "W25Q16JVSNIQ"
 			(at 180.34 74.93 0.0000)
 			(effects
 				(font
@@ -3795,7 +4000,7 @@
 				(justify left)
 			)
 		)
-		(property "Value" "100nF"
+		(property "Value" "1uF"
 			(at 620.014 140.208 0.0000)
 			(effects
 				(font
@@ -5268,7 +5473,7 @@
 			)
 		)
 	)
-	(global_label "RP_XOUT"
+	(global_label "RP_XOUT_DRIVE"
 		(shape bidirectional)
 		(at 46.9900 104.1400 0)
 		(fields_autoplaced yes)
@@ -7086,7 +7291,7 @@
 			)
 		)
 	)
-	(global_label "QSPI_SS_N"
+	(global_label "BOOTSEL_SWITCH"
 		(shape bidirectional)
 		(at 284.4800 246.3800 0)
 		(fields_autoplaced yes)
@@ -7230,4 +7435,69 @@
 			)
 		)
 	)
+
+	(symbol (lib_id "Device:R_Small") (at 730.2500 246.3800 0) (unit 1)
+	(exclude_from_sim no) (in_bom yes) (on_board yes)
+	(dnp no)
+	(fields_autoplaced no)
+	(uuid "e83d26f9-9af8-4bd2-8beb-c03d4cabe09a")
+	(property "Reference" "R150" (at 735.3300 243.8400 0) (effects (font (size 1.27 1.27)) (justify left)))
+	(property "Value" "1k" (at 735.3300 248.9200 0) (effects (font (size 1.27 1.27)) (justify left)))
+	(property "Footprint" "Resistor_SMD:R_0201_0603Metric" (at 735.3300 248.9200 0) (effects (font (size 1.27 1.27)) (justify left) (hide yes)))
+	(property "Datasheet" "" (at 735.3300 248.9200 0) (effects (font (size 1.27 1.27)) (justify left) (hide yes)))
+	(property "Description" "" (at 735.3300 248.9200 0) (effects (font (size 1.27 1.27)) (justify left) (hide yes)))
+	(pin "1" (uuid "a90d132e-52b8-4421-8b5e-5f9fd0615ce2"))
+	(pin "2" (uuid "c36c71d3-83db-4810-9f51-ee8d8905aa90"))
+	(instances (project "Code-SDR-V2" (path "/b04744a4-fe39-4740-81de-d5e094f9e157/7e81e054-bf24-46f6-919f-d12f5f0aa95a" (reference "R150") (unit 1))))
+)
+	(symbol (lib_id "Device:C_Small") (at 69.8500 298.4500 0) (unit 1)
+	(exclude_from_sim no) (in_bom yes) (on_board yes)
+	(dnp no)
+	(fields_autoplaced no)
+	(uuid "849c9697-238f-45a6-aa38-e1cfda9d0b20")
+	(property "Reference" "C330" (at 74.9300 295.9100 0) (effects (font (size 1.27 1.27)) (justify left)))
+	(property "Value" "100nF" (at 74.9300 300.9900 0) (effects (font (size 1.27 1.27)) (justify left)))
+	(property "Footprint" "Capacitor_SMD:C_0402_1005Metric" (at 74.9300 300.9900 0) (effects (font (size 1.27 1.27)) (justify left) (hide yes)))
+	(property "Datasheet" "" (at 74.9300 300.9900 0) (effects (font (size 1.27 1.27)) (justify left) (hide yes)))
+	(property "Description" "RP_CORE local bypass" (at 74.9300 300.9900 0) (effects (font (size 1.27 1.27)) (justify left) (hide yes)))
+	(pin "1" (uuid "84a3e99b-ddb7-41bb-b5dd-46fc8dbca5a1"))
+	(pin "2" (uuid "80d5ed68-f398-4c95-abf9-a2306b973bdf"))
+	(instances (project "Code-SDR-V2" (path "/b04744a4-fe39-4740-81de-d5e094f9e157/7e81e054-bf24-46f6-919f-d12f5f0aa95a" (reference "C330") (unit 1))))
+)
+	(symbol (lib_id "Device:C_Small") (at 180.3400 298.4500 0) (unit 1)
+	(exclude_from_sim no) (in_bom yes) (on_board yes)
+	(dnp no)
+	(fields_autoplaced no)
+	(uuid "05319f66-5074-44aa-af17-715934ae2261")
+	(property "Reference" "C331" (at 185.4200 295.9100 0) (effects (font (size 1.27 1.27)) (justify left)))
+	(property "Value" "100nF" (at 185.4200 300.9900 0) (effects (font (size 1.27 1.27)) (justify left)))
+	(property "Footprint" "Capacitor_SMD:C_0402_1005Metric" (at 185.4200 300.9900 0) (effects (font (size 1.27 1.27)) (justify left) (hide yes)))
+	(property "Datasheet" "" (at 185.4200 300.9900 0) (effects (font (size 1.27 1.27)) (justify left) (hide yes)))
+	(property "Description" "RP_CORE local bypass" (at 185.4200 300.9900 0) (effects (font (size 1.27 1.27)) (justify left) (hide yes)))
+	(pin "1" (uuid "dc782d2f-c59a-4c59-b787-f1589e4f29ab"))
+	(pin "2" (uuid "d8c71e6b-1f2c-4afd-8dab-53254a9ae1e5"))
+	(instances (project "Code-SDR-V2" (path "/b04744a4-fe39-4740-81de-d5e094f9e157/7e81e054-bf24-46f6-919f-d12f5f0aa95a" (reference "C331") (unit 1))))
+)
+	(symbol (lib_id "Device:R_Small") (at 289.5600 298.4500 0) (unit 1)
+	(exclude_from_sim no) (in_bom yes) (on_board yes)
+	(dnp no)
+	(fields_autoplaced no)
+	(uuid "8dfbdb13-2d47-415a-b2d8-bd3dc865f7ec")
+	(property "Reference" "R151" (at 294.6400 295.9100 0) (effects (font (size 1.27 1.27)) (justify left)))
+	(property "Value" "1k" (at 294.6400 300.9900 0) (effects (font (size 1.27 1.27)) (justify left)))
+	(property "Footprint" "Resistor_SMD:R_0402_1005Metric" (at 294.6400 300.9900 0) (effects (font (size 1.27 1.27)) (justify left) (hide yes)))
+	(property "Datasheet" "" (at 294.6400 300.9900 0) (effects (font (size 1.27 1.27)) (justify left) (hide yes)))
+	(property "Description" "" (at 294.6400 300.9900 0) (effects (font (size 1.27 1.27)) (justify left) (hide yes)))
+	(pin "1" (uuid "ff0665b5-66a6-4d77-88d1-908699f1d2f5"))
+	(pin "2" (uuid "f870b8d6-360e-40df-a9f5-4caa288a4d9d"))
+	(instances (project "Code-SDR-V2" (path "/b04744a4-fe39-4740-81de-d5e094f9e157/7e81e054-bf24-46f6-919f-d12f5f0aa95a" (reference "R151") (unit 1))))
+)
+	(global_label "RP_XOUT_DRIVE" (shape bidirectional) (at 730.2500 243.8400 0) (fields_autoplaced yes) (effects (font (size 1.27 1.27)) (justify left)) (uuid "ad6bcd6f-12b1-421a-9938-2204ee224f5a") (property "Intersheetrefs" "${INTERSHEET_REFS}" (at 732.7900 243.8400 0) (effects (font (size 1.27 1.27)) (justify left) (hide yes))))
+	(global_label "RP_XOUT" (shape bidirectional) (at 730.2500 248.9200 0) (fields_autoplaced yes) (effects (font (size 1.27 1.27)) (justify left)) (uuid "9030164d-ff89-4c94-bf76-6d19a527b3da") (property "Intersheetrefs" "${INTERSHEET_REFS}" (at 732.7900 248.9200 0) (effects (font (size 1.27 1.27)) (justify left) (hide yes))))
+	(global_label "RP_CORE" (shape bidirectional) (at 69.8500 295.9100 0) (fields_autoplaced yes) (effects (font (size 1.27 1.27)) (justify left)) (uuid "88284a6c-52ae-4d6f-9547-bd34ff62d7ea") (property "Intersheetrefs" "${INTERSHEET_REFS}" (at 72.3900 295.9100 0) (effects (font (size 1.27 1.27)) (justify left) (hide yes))))
+	(global_label "GND" (shape bidirectional) (at 69.8500 300.9900 0) (fields_autoplaced yes) (effects (font (size 1.27 1.27)) (justify left)) (uuid "47950519-b953-4628-9377-4a747f2fa4a1") (property "Intersheetrefs" "${INTERSHEET_REFS}" (at 72.3900 300.9900 0) (effects (font (size 1.27 1.27)) (justify left) (hide yes))))
+	(global_label "RP_CORE" (shape bidirectional) (at 180.3400 295.9100 0) (fields_autoplaced yes) (effects (font (size 1.27 1.27)) (justify left)) (uuid "db0f0955-958a-4489-a168-8de31d3b544f") (property "Intersheetrefs" "${INTERSHEET_REFS}" (at 182.8800 295.9100 0) (effects (font (size 1.27 1.27)) (justify left) (hide yes))))
+	(global_label "GND" (shape bidirectional) (at 180.3400 300.9900 0) (fields_autoplaced yes) (effects (font (size 1.27 1.27)) (justify left)) (uuid "3e9704a1-8050-462a-9045-f8c7d90563ee") (property "Intersheetrefs" "${INTERSHEET_REFS}" (at 182.8800 300.9900 0) (effects (font (size 1.27 1.27)) (justify left) (hide yes))))
+	(global_label "QSPI_SS_N" (shape bidirectional) (at 289.5600 295.9100 0) (fields_autoplaced yes) (effects (font (size 1.27 1.27)) (justify left)) (uuid "da279078-0b27-492b-8029-55ab4891915c") (property "Intersheetrefs" "${INTERSHEET_REFS}" (at 292.1000 295.9100 0) (effects (font (size 1.27 1.27)) (justify left) (hide yes))))
+	(global_label "BOOTSEL_SWITCH" (shape bidirectional) (at 289.5600 300.9900 0) (fields_autoplaced yes) (effects (font (size 1.27 1.27)) (justify left)) (uuid "76a0f035-d91a-4e49-8bda-f21b80305873") (property "Intersheetrefs" "${INTERSHEET_REFS}" (at 292.1000 300.9900 0) (effects (font (size 1.27 1.27)) (justify left) (hide yes))))
 )

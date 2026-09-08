@@ -5,7 +5,7 @@
 	(uuid "02bfae30-fb64-4210-9207-bf500096efe5")
 	(paper "A1")
 	(title_block
-		(title "05 - 100 MHz reference, LMX2592 and fixed 2.410 GHz LO")
+		(title "05 - 100 MHz reference, LMX2592 and fixed 2.400 GHz LO")
 		(rev "2.0")
 		(company "Code-SDR")
 		(comment 1 "Every IC pad is named; DNC/NC pins are explicitly marked.")
@@ -164,7 +164,7 @@
 					)
 				)
 			)
-			(property "Footprint" "Package_SO:TSSOP-8_3x3mm_P0.65mm"
+			(property "Footprint" "Package_SO:TSSOP-8_4.4x3mm_P0.65mm"
 				(at 0 0 0)
 				(effects
 					(font
@@ -1447,7 +1447,7 @@
 					) hide
 				)
 			)
-			(property "Description" "Fixed 2.410 GHz integer-N second LO: 100 MHz/R20, P16, B30, A2"
+			(property "Description" "Fixed 2.400 GHz integer-N second LO: 100 MHz/R20, P16, B30, A0"
 				(at 0 0 0)
 				(effects
 					(font
@@ -2026,7 +2026,7 @@
 				(justify left)
 			)
 		)
-		(property "Footprint" "Package_SO:TSSOP-8_3x3mm_P0.65mm"
+		(property "Footprint" "Package_SO:TSSOP-8_4.4x3mm_P0.65mm"
 			(at 180.34 90.17 0.0000)
 			(effects
 				(font
@@ -2105,7 +2105,7 @@
 				(justify left)
 			)
 		)
-		(property "Value" "33R"
+		(property "Value" "150R_1%"
 			(at 291.338 90.17 90)
 			(effects
 				(font
@@ -4769,7 +4769,7 @@
 				(hide yes)
 			)
 		)
-		(property "Description" "LMX_CPOUT local bypass"
+		(property "Description" "LMX_VTUNE local bypass"
 			(at 400.05 350.52 0)
 			(effects
 				(font
@@ -4812,7 +4812,7 @@
 				(justify left)
 			)
 		)
-		(property "Value" "68R_1%"
+		(property "Value" "220R_1%"
 			(at 512.318 350.52 90)
 			(effects
 				(font
@@ -4882,7 +4882,7 @@
 				(justify left)
 			)
 		)
-		(property "Value" "100nF"
+		(property "Value" "100nF_C0G"
 			(at 620.014 348.488 0.0000)
 			(effects
 				(font
@@ -4891,7 +4891,7 @@
 				(justify left)
 			)
 		)
-		(property "Footprint" "Capacitor_SMD:C_0402_1005Metric"
+		(property "Footprint" "Capacitor_SMD:C_1206_3216Metric"
 			(at 619.76 350.52 0.0000)
 			(effects
 				(font
@@ -4909,7 +4909,7 @@
 				(hide yes)
 			)
 		)
-		(property "Description" "LMX_VTUNE local bypass"
+		(property "Description" "LMX_LF_DAMP local bypass"
 			(at 619.76 350.52 0)
 			(effects
 				(font
@@ -4979,7 +4979,7 @@
 				(hide yes)
 			)
 		)
-		(property "Description" "Fixed 2.410 GHz integer-N second LO: 100 MHz/R20, P16, B30, A2"
+		(property "Description" "Fixed 2.400 GHz integer-N second LO: 100 MHz/R20, P16, B30, A0"
 			(at 730.25 350.52 0)
 			(effects
 				(font
@@ -5301,7 +5301,7 @@
 				(justify left)
 			)
 		)
-		(property "Value" "1nF_C0G"
+		(property "Value" "470pF_C0G"
 			(at 400.304 400.558 0.0000)
 			(effects
 				(font
@@ -5371,7 +5371,7 @@
 				(justify left)
 			)
 		)
-		(property "Value" "620R_1%"
+		(property "Value" "1k_1%"
 			(at 512.318 402.59 90)
 			(effects
 				(font
@@ -5441,7 +5441,7 @@
 				(justify left)
 			)
 		)
-		(property "Value" "3.3nF_C0G"
+		(property "Value" "22nF_C0G"
 			(at 620.014 400.558 0.0000)
 			(effects
 				(font
@@ -5450,7 +5450,7 @@
 				(justify left)
 			)
 		)
-		(property "Footprint" "Capacitor_SMD:C_0402_1005Metric"
+		(property "Footprint" "Capacitor_SMD:C_0805_2012Metric"
 			(at 619.76 402.59 0.0000)
 			(effects
 				(font
@@ -5511,7 +5511,7 @@
 				(justify left)
 			)
 		)
-		(property "Value" "51R"
+		(property "Value" "220R_1%"
 			(at 732.028 402.59 90)
 			(effects
 				(font
@@ -5581,7 +5581,7 @@
 				(justify left)
 			)
 		)
-		(property "Value" "15nF_C0G"
+		(property "Value" "470pF_C0G"
 			(at 70.104 451.358 0.0000)
 			(effects
 				(font
@@ -6142,7 +6142,7 @@
 		(at 422.91 140.97)
 		(uuid "889245c4-f6c0-4932-a71a-049a893cf0ad")
 	)
-	(text "100 MHz reference, LMX2592 and fixed 2.410 GHz LO\nSee HARDWARE_VALIDATION.md and hardware/v2/README.md for design limits."
+	(text "100 MHz reference, LMX2592 and fixed 2.400 GHz LO\nSee HARDWARE_VALIDATION.md and hardware/v2/README.md for design limits."
 		(exclude_from_sim no)
 		(at 150 25 0.0000)
 		(effects
@@ -6826,7 +6826,7 @@
 			)
 		)
 	)
-	(global_label "LMX_CPOUT"
+	(global_label "LMX_VTUNE"
 		(shape bidirectional)
 		(at 377.1900 143.5100 0)
 		(fields_autoplaced yes)
@@ -8284,7 +8284,7 @@
 			)
 		)
 	)
-	(global_label "LMX_CPOUT"
+	(global_label "LMX_VTUNE"
 		(shape bidirectional)
 		(at 400.0500 347.9800 0)
 		(fields_autoplaced yes)
@@ -8320,7 +8320,7 @@
 			)
 		)
 	)
-	(global_label "LMX_CPOUT"
+	(global_label "LMX_VTUNE"
 		(shape bidirectional)
 		(at 510.5400 347.9800 0)
 		(fields_autoplaced yes)
@@ -8338,7 +8338,7 @@
 			)
 		)
 	)
-	(global_label "LMX_VTUNE"
+	(global_label "LMX_LF_DAMP"
 		(shape bidirectional)
 		(at 510.5400 353.0600 0)
 		(fields_autoplaced yes)
@@ -8356,7 +8356,7 @@
 			)
 		)
 	)
-	(global_label "LMX_VTUNE"
+	(global_label "LMX_LF_DAMP"
 		(shape bidirectional)
 		(at 619.7600 347.9800 0)
 		(fields_autoplaced yes)
@@ -9058,7 +9058,7 @@
 			)
 		)
 	)
-	(global_label "ADF_LF1"
+	(global_label "ADF_CPOUT"
 		(shape bidirectional)
 		(at 730.2500 400.0500 0)
 		(fields_autoplaced yes)
@@ -9382,4 +9382,21 @@
 			)
 		)
 	)
+
+	(symbol (lib_id "Device:R_Small") (at 180.3400 505.4600 0) (unit 1)
+	(exclude_from_sim no) (in_bom yes) (on_board yes)
+	(dnp no)
+	(fields_autoplaced no)
+	(uuid "7c158567-f50b-4f83-979c-192c706c7562")
+	(property "Reference" "R152" (at 185.4200 502.9200 0) (effects (font (size 1.27 1.27)) (justify left)))
+	(property "Value" "150R_1%" (at 185.4200 508.0000 0) (effects (font (size 1.27 1.27)) (justify left)))
+	(property "Footprint" "Resistor_SMD:R_0402_1005Metric" (at 185.4200 508.0000 0) (effects (font (size 1.27 1.27)) (justify left) (hide yes)))
+	(property "Datasheet" "" (at 185.4200 508.0000 0) (effects (font (size 1.27 1.27)) (justify left) (hide yes)))
+	(property "Description" "" (at 185.4200 508.0000 0) (effects (font (size 1.27 1.27)) (justify left) (hide yes)))
+	(pin "1" (uuid "79fa887a-3b91-4f74-9bf9-3a43e68b6bb7"))
+	(pin "2" (uuid "8e8bb453-9b38-4ad0-84a2-2ec4edf00b3e"))
+	(instances (project "Code-SDR-V2" (path "/b04744a4-fe39-4740-81de-d5e094f9e157/9a37ff5a-0b61-4e4c-bd9a-14ccc376e131" (reference "R152") (unit 1))))
+)
+	(global_label "LMX_REF_PRE" (shape bidirectional) (at 180.3400 502.9200 0) (fields_autoplaced yes) (effects (font (size 1.27 1.27)) (justify left)) (uuid "3bf99fe6-db62-4612-be72-4d8d5fa09aa9") (property "Intersheetrefs" "${INTERSHEET_REFS}" (at 182.8800 502.9200 0) (effects (font (size 1.27 1.27)) (justify left) (hide yes))))
+	(global_label "GND" (shape bidirectional) (at 180.3400 508.0000 0) (fields_autoplaced yes) (effects (font (size 1.27 1.27)) (justify left)) (uuid "1b6dcd1d-eb40-4586-bef1-158cb40f2db3") (property "Intersheetrefs" "${INTERSHEET_REFS}" (at 182.8800 508.0000 0) (effects (font (size 1.27 1.27)) (justify left) (hide yes))))
 )

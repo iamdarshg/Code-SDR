@@ -5,7 +5,7 @@
 	(uuid "ad33cfe9-9b39-4dab-b2f3-872034db6664")
 	(paper "A1")
 	(title_block
-		(title "08 - 2.43625 GHz IF, DSA, second mixer and ADC driver")
+		(title "08 - 2.42625 GHz IF, DSA, second mixer and ADC driver")
 		(rev "2.0")
 		(company "Code-SDR")
 		(comment 1 "Every IC pad is named; DNC/NC pins are explicitly marked.")
@@ -173,7 +173,7 @@
 					) hide
 				)
 			)
-			(property "Description" "First-IF low/high path selector at 2.43625 GHz"
+			(property "Description" "First-IF low/high path selector at 2.42625 GHz"
 				(at 0 0 0)
 				(effects
 					(font
@@ -1587,7 +1587,7 @@
 					) hide
 				)
 			)
-			(property "Description" "2.410 GHz second mixer producing 26.25 MHz center IF"
+			(property "Description" "2.400 GHz second mixer producing 26.25 MHz center IF"
 				(at 0 0 0)
 				(effects
 					(font
@@ -2130,7 +2130,7 @@
 				(hide yes)
 			)
 		)
-		(property "Description" "First-IF low/high path selector at 2.43625 GHz"
+		(property "Description" "First-IF low/high path selector at 2.42625 GHz"
 			(at 180.34 90.17 0)
 			(effects
 				(font
@@ -3790,7 +3790,7 @@
 				(hide yes)
 			)
 		)
-		(property "Description" "2.410 GHz second mixer producing 26.25 MHz center IF"
+		(property "Description" "2.400 GHz second mixer producing 26.25 MHz center IF"
 			(at 289.56 246.38 0)
 			(effects
 				(font
@@ -4974,7 +4974,7 @@
 				(justify left)
 			)
 		)
-		(property "Value" "100pF_C0G"
+		(property "Value" "51pF_C0G"
 			(at 620.014 348.488 0.0000)
 			(effects
 				(font
@@ -5044,7 +5044,7 @@
 				(justify left)
 			)
 		)
-		(property "Value" "110pF_C0G"
+		(property "Value" "56pF_C0G"
 			(at 730.504 348.488 0.0000)
 			(effects
 				(font
@@ -5114,7 +5114,7 @@
 				(justify left)
 			)
 		)
-		(property "Value" "110pF_C0G"
+		(property "Value" "56pF_C0G"
 			(at 70.104 400.558 0.0000)
 			(effects
 				(font
@@ -5184,7 +5184,7 @@
 				(justify left)
 			)
 		)
-		(property "Value" "100pF_C0G"
+		(property "Value" "51pF_C0G"
 			(at 180.594 400.558 0.0000)
 			(effects
 				(font
@@ -6103,7 +6103,7 @@
 		(at 753.11 189.23)
 		(uuid "d1ce7c42-8d6e-48e3-8351-859028cb34f9")
 	)
-	(text "2.43625 GHz IF, DSA, second mixer and ADC driver\nSee HARDWARE_VALIDATION.md and hardware/v2/README.md for design limits."
+	(text "2.42625 GHz IF, DSA, second mixer and ADC driver\nSee HARDWARE_VALIDATION.md and hardware/v2/README.md for design limits."
 		(exclude_from_sim no)
 		(at 150 25 0.0000)
 		(effects
@@ -7669,7 +7669,7 @@
 			)
 		)
 	)
-	(global_label "+3V3_DIG"
+	(global_label "+3V3_ANA"
 		(shape bidirectional)
 		(at 266.7000 238.7600 0)
 		(fields_autoplaced yes)

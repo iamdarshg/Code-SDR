@@ -1169,7 +1169,7 @@
 					) hide
 				)
 			)
-			(property "Description" "50 MHz to 12 GHz high-isolation SP4T after the branch LNAs; LC0/LC1 low select 1.8 V logic and V3/VSS are grounded"
+			(property "Description" "50 MHz to 10 GHz high-isolation SP4T after the branch LNAs; LC0/LC1 low select 1.8 V logic and V3/VSS are grounded"
 				(at 0 0 0)
 				(effects
 					(font
@@ -5149,7 +5149,7 @@
 				(hide yes)
 			)
 		)
-		(property "Description" "50 MHz to 12 GHz high-isolation SP4T after the branch LNAs; LC0/LC1 low select 1.8 V logic and V3/VSS are grounded"
+		(property "Description" "50 MHz to 10 GHz high-isolation SP4T after the branch LNAs; LC0/LC1 low select 1.8 V logic and V3/VSS are grounded"
 			(at 69.85 402.59 0)
 			(effects
 				(font
@@ -5401,7 +5401,7 @@
 				(justify left)
 			)
 		)
-		(property "Value" "100k"
+		(property "Value" "10k_1%"
 			(at 401.828 402.59 90)
 			(effects
 				(font
@@ -5471,7 +5471,7 @@
 				(justify left)
 			)
 		)
-		(property "Value" "100k"
+		(property "Value" "10k_1%"
 			(at 512.318 402.59 90)
 			(effects
 				(font
@@ -8256,7 +8256,7 @@
 			)
 		)
 	)
-	(global_label "HSW_V1"
+	(global_label "HSW_V1_CHIP"
 		(shape bidirectional)
 		(at 92.7100 393.7000 0)
 		(fields_autoplaced yes)
@@ -8274,7 +8274,7 @@
 			)
 		)
 	)
-	(global_label "HSW_V2"
+	(global_label "HSW_V2_CHIP"
 		(shape bidirectional)
 		(at 92.7100 396.2400 0)
 		(fields_autoplaced yes)
@@ -8490,7 +8490,7 @@
 			)
 		)
 	)
-	(global_label "HSW_V1"
+	(global_label "HSW_V1_CHIP"
 		(shape bidirectional)
 		(at 400.0500 400.0500 0)
 		(fields_autoplaced yes)
@@ -8526,7 +8526,7 @@
 			)
 		)
 	)
-	(global_label "HSW_V2"
+	(global_label "HSW_V2_CHIP"
 		(shape bidirectional)
 		(at 510.5400 400.0500 0)
 		(fields_autoplaced yes)
@@ -9012,4 +9012,37 @@
 			)
 		)
 	)
+
+	(symbol (lib_id "Device:R_Small") (at 510.5400 453.3900 0) (unit 1)
+	(exclude_from_sim no) (in_bom yes) (on_board yes)
+	(dnp no)
+	(fields_autoplaced no)
+	(uuid "3c306f29-b605-4858-8481-587a6774c089")
+	(property "Reference" "R160" (at 515.6200 450.8500 0) (effects (font (size 1.27 1.27)) (justify left)))
+	(property "Value" "1k_1%" (at 515.6200 455.9300 0) (effects (font (size 1.27 1.27)) (justify left)))
+	(property "Footprint" "Resistor_SMD:R_0402_1005Metric" (at 515.6200 455.9300 0) (effects (font (size 1.27 1.27)) (justify left) (hide yes)))
+	(property "Datasheet" "" (at 515.6200 455.9300 0) (effects (font (size 1.27 1.27)) (justify left) (hide yes)))
+	(property "Description" "" (at 515.6200 455.9300 0) (effects (font (size 1.27 1.27)) (justify left) (hide yes)))
+	(pin "1" (uuid "f214d995-498d-46c2-b771-fcb0160175f1"))
+	(pin "2" (uuid "63548bdd-1baf-46de-ad4c-ce6c9a38960e"))
+	(instances (project "Code-SDR-V2" (path "/b04744a4-fe39-4740-81de-d5e094f9e157/04d9fde5-a5d7-4580-9575-937060eadc46" (reference "R160") (unit 1))))
+)
+	(symbol (lib_id "Device:R_Small") (at 619.7600 453.3900 0) (unit 1)
+	(exclude_from_sim no) (in_bom yes) (on_board yes)
+	(dnp no)
+	(fields_autoplaced no)
+	(uuid "ec1dbe22-439b-4306-87f3-7cfc01be84f0")
+	(property "Reference" "R161" (at 624.8400 450.8500 0) (effects (font (size 1.27 1.27)) (justify left)))
+	(property "Value" "1k_1%" (at 624.8400 455.9300 0) (effects (font (size 1.27 1.27)) (justify left)))
+	(property "Footprint" "Resistor_SMD:R_0402_1005Metric" (at 624.8400 455.9300 0) (effects (font (size 1.27 1.27)) (justify left) (hide yes)))
+	(property "Datasheet" "" (at 624.8400 455.9300 0) (effects (font (size 1.27 1.27)) (justify left) (hide yes)))
+	(property "Description" "" (at 624.8400 455.9300 0) (effects (font (size 1.27 1.27)) (justify left) (hide yes)))
+	(pin "1" (uuid "7570d3e0-a492-4291-9e41-27f446c972d8"))
+	(pin "2" (uuid "1de92087-e37e-4540-a0b7-59a861a1789b"))
+	(instances (project "Code-SDR-V2" (path "/b04744a4-fe39-4740-81de-d5e094f9e157/04d9fde5-a5d7-4580-9575-937060eadc46" (reference "R161") (unit 1))))
+)
+	(global_label "HSW_V1" (shape bidirectional) (at 510.5400 450.8500 0) (fields_autoplaced yes) (effects (font (size 1.27 1.27)) (justify left)) (uuid "e277aea6-d44a-499a-85dc-eac48574c810") (property "Intersheetrefs" "${INTERSHEET_REFS}" (at 513.0800 450.8500 0) (effects (font (size 1.27 1.27)) (justify left) (hide yes))))
+	(global_label "HSW_V1_CHIP" (shape bidirectional) (at 510.5400 455.9300 0) (fields_autoplaced yes) (effects (font (size 1.27 1.27)) (justify left)) (uuid "8a809a2d-cc9f-4ca6-8d02-5d3d6d23d6cb") (property "Intersheetrefs" "${INTERSHEET_REFS}" (at 513.0800 455.9300 0) (effects (font (size 1.27 1.27)) (justify left) (hide yes))))
+	(global_label "HSW_V2" (shape bidirectional) (at 619.7600 450.8500 0) (fields_autoplaced yes) (effects (font (size 1.27 1.27)) (justify left)) (uuid "e1e19a45-6774-4501-b0c6-7a25a7605de9") (property "Intersheetrefs" "${INTERSHEET_REFS}" (at 622.3000 450.8500 0) (effects (font (size 1.27 1.27)) (justify left) (hide yes))))
+	(global_label "HSW_V2_CHIP" (shape bidirectional) (at 619.7600 455.9300 0) (fields_autoplaced yes) (effects (font (size 1.27 1.27)) (justify left)) (uuid "d4c5460e-f506-4d34-b4ac-54d8d2597541") (property "Intersheetrefs" "${INTERSHEET_REFS}" (at 622.3000 455.9300 0) (effects (font (size 1.27 1.27)) (justify left) (hide yes))))
 )

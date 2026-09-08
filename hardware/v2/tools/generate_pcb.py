@@ -244,6 +244,7 @@ def prepare_footprint(item, net_items: dict[str, pcbnew.NETINFO_ITEM]) -> pcbnew
     footprint = load_footprint(item.footprint)
     footprint.SetReference(item.ref)
     footprint.SetValue(item.value)
+    footprint.SetDNP(bool(item.dnp))
     library, name = item.footprint.split(":", 1)
     footprint.SetFPID(pcbnew.LIB_ID(library, name))
     if item.ref not in PATH_MAP:

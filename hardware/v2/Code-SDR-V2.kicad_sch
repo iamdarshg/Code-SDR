@@ -5,7 +5,7 @@
 	(uuid "b04744a4-fe39-4740-81de-d5e094f9e157")
 	(paper "A3")
 	(title_block
-		(title "Code-SDR V2 - 100 MHz to 10 GHz Cost-First Receiver")
+		(title "Code-SDR V2 - 10 MHz to 10 GHz Receiver with HF Population Option")
 		(rev "2.0")
 		(company "Code-SDR")
 		(comment 1 "Modular reference design; controlled RF stackup and bench VNA validation required.")
@@ -52,7 +52,7 @@
 		)
 		(uuid "7b6b2ea6-04d8-4e58-88e8-302ad829d414")
 	)
-	(text "05_reference_lo: 100 MHz reference, LMX2592 and fixed 2.410 GHz LO"
+	(text "05_reference_lo: 100 MHz reference, LMX2592 and fixed 2.400 GHz LO"
 		(exclude_from_sim no)
 		(at 75 133 0.0000)
 		(effects
@@ -62,7 +62,7 @@
 		)
 		(uuid "f6115611-94ea-4073-8627-aab7c59c5e5a")
 	)
-	(text "06_rf_low: 100 MHz to 2.5 GHz low-band front end"
+	(text "06_rf_low: 10 MHz to 2.5 GHz low-band front end with HF population option"
 		(exclude_from_sim no)
 		(at 195 133 0.0000)
 		(effects
@@ -82,7 +82,7 @@
 		)
 		(uuid "8a6f9835-60b4-4eb3-b501-3e4f21da2717")
 	)
-	(text "08_if_chain: 2.43625 GHz IF, DSA, second mixer and ADC driver"
+	(text "08_if_chain: 2.42625 GHz IF, DSA, second mixer and ADC driver"
 		(exclude_from_sim no)
 		(at 195 178 0.0000)
 		(effects
@@ -276,7 +276,7 @@
 			(color 0 0 0 0.0000)
 		)
 		(uuid "9a37ff5a-0b61-4e4c-bd9a-14ccc376e131")
-		(property "Sheetname" "100 MHz reference, LMX2592 and fixed 2.410 GHz LO"
+		(property "Sheetname" "100 MHz reference, LMX2592 and fixed 2.400 GHz LO"
 			(at 25 114.2884 0)
 			(effects
 				(font
@@ -318,7 +318,7 @@
 			(color 0 0 0 0.0000)
 		)
 		(uuid "9f4cb928-74e2-4548-bd64-90561ef0b956")
-		(property "Sheetname" "100 MHz to 2.5 GHz low-band front end"
+		(property "Sheetname" "10 MHz to 2.5 GHz low-band front end with HF population option"
 			(at 145 114.2884 0)
 			(effects
 				(font
@@ -402,7 +402,7 @@
 			(color 0 0 0 0.0000)
 		)
 		(uuid "0af245b7-f158-46df-9233-8f0fa5c7b37a")
-		(property "Sheetname" "2.43625 GHz IF, DSA, second mixer and ADC driver"
+		(property "Sheetname" "2.42625 GHz IF, DSA, second mixer and ADC driver"
 			(at 145 159.2884 0)
 			(effects
 				(font
