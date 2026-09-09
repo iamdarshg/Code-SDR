@@ -32,6 +32,7 @@ class Copper:
         self.nodes = {}
         self.by_layer = defaultdict(list)
         self.pad_shapes = []
+        self.pad_nets = []
         self.holes = []
         self.routes = []
         self.bounds = Polygon([(data['bounds'][0], data['bounds'][1]),
@@ -44,6 +45,7 @@ class Copper:
                 shape_by_layer = {int(l): union_all(polygons(poly)) for l, poly in item['shapes'].items()}
                 if shape_by_layer:
                     self.pad_shapes.append(union_all(list(shape_by_layer.values())))
+                    self.pad_nets.append(item['net'])
                 dx, dy = item['drill']
                 if max(dx, dy) > 0:
                     # Conservative circle encloses an oval drill.
@@ -52,9 +54,13 @@ class Copper:
                 if item['kind'] == 'via':
                     shape = Point(item['start']).buffer(item['width'] / 2, quad_segs=16)
                     self.holes.append(Point(item['start']).buffer(item['drill'] / 2, quad_segs=16))
+                    # A through via spans the entire stack: its barrel blocks
+                    # every layer, not just start/end.  Without this, inner
+                    # layer routing happily crosses F-B vias and DRC shorts.
+                    shape_by_layer = {l: shape for l in self.layers}
                 else:
                     shape = LineString([item['start'], item['end']]).buffer(item['width'] / 2, quad_segs=8)
-                shape_by_layer = {l: shape for l in item['layers']}
+                    shape_by_layer = {l: shape for l in item['layers']}
             self.add_node(item['uuid'], item['net'], item['kind'], shape_by_layer, item)
         for zone in data['zones']:
             for i, poly in enumerate(polygons(zone['polygons'])):
@@ -125,10 +131,14 @@ class Copper:
 
     def via_clear(self, xy, net, diameter=.45, drill=.2):
         shape = Point(xy).buffer(diameter/2, quad_segs=16)
+        # Copper covered by a same-net pad creates no new clearance need;
+        # exclude it before checking (enables standard via-in-pad escapes).
+        for h in self.pad_tree.query(shape.buffer(1e-9), predicate='intersects'):
+            if self.pad_nets[h] == net:
+                shape = shape.difference(self.pad_shapes[h])
         if any(not self.copper_clear(shape, l, net) for l in self.layers):
             return False
-        # Keep drilled vias outside assembly lands, including same-net lands.
-        if len(self.pad_tree.query(shape.buffer(.06), predicate='intersects')):
+        if shape.is_empty:
             return False
         hole = Point(xy).buffer(drill/2 + .115, quad_segs=16)
         if len(self.hole_tree.query(hole, predicate='intersects')):

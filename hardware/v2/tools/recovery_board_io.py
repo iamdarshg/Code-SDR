@@ -65,7 +65,7 @@ def export_board(board_path, output):
     print(json.dumps(dict(items=len(result['items']), zones=len(result['zones']), output=str(output))), flush=True)
 
 
-def import_plan(board_path, plan_path, output):
+def import_plan(board_path, plan_path, output, refill=False):
     plan = json.loads(plan_path.read_text(encoding='utf-8'))
     actual = hashlib.sha256(board_path.read_bytes()).hexdigest()
     if plan['source_sha256'] != actual:
@@ -94,7 +94,8 @@ def import_plan(board_path, plan_path, output):
             v.SetNet(net)
             b.Add(v)
     b.BuildConnectivity()
-    p.ZONE_FILLER(b).Fill(b.Zones())
+    if refill:
+        p.ZONE_FILLER(b).Fill(b.Zones())
     p.SaveBoard(str(output), b)
     print(json.dumps(dict(routes=len(plan['routes']), output=str(output))), flush=True)
 
@@ -105,8 +106,10 @@ if __name__ == '__main__':
     ap.add_argument('board', type=Path)
     ap.add_argument('output', type=Path)
     ap.add_argument('--plan', type=Path)
+    ap.add_argument('--refill', action='store_true',
+                    help='Refill zones after import (default: keep existing fills)')
     args = ap.parse_args()
     if args.action == 'export':
         export_board(args.board, args.output)
     else:
-        import_plan(args.board, args.plan, args.output)
+        import_plan(args.board, args.plan, args.output, refill=args.refill)
