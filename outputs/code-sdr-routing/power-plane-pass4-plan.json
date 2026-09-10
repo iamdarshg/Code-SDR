@@ -1,0 +1,364 @@
+{
+  "source_sha256": "b99c5d74aba11cf21d66ec79ae260568b5c9217548b2f23a15935fdccb2cb534",
+  "routes": [
+    {
+      "net": "+3V3_DIG",
+      "reason": "connect isolated conductor to existing inner plane",
+      "from_group": [
+        "bf3b4343-cf53-4df5-8ede-e619180910af",
+        "9915f302-0d0d-4198-bcca-8df6f28b1cf6",
+        "8c5e45d4-ec86-49cc-bb26-352221df302a",
+        "313a8c2f-cfe8-48c2-a509-b374658bf817",
+        "669d8949-b22d-430a-a7dc-ce55ed7b9627",
+        "6c6d6632-7080-42ae-961e-3dfa1a066448",
+        "9a69ace1-c6bb-42d2-915a-0a87388a8b69",
+        "b78c83c9-52e9-45ae-8182-d38916f24bb3",
+        "d7ab44c5-2cea-4a3d-a149-e7fdd632c552",
+        "3863d704-31e0-4748-8240-bde52f7bf3ad",
+        "a2af7de9-9503-4ffe-9dbd-8216c1d5c747",
+        "fadceba2-8365-4e60-b1a5-1fd8c7bca23c",
+        "3e9c3b7e-326f-4a06-8420-4d2b67794a9d:1"
+      ],
+      "segments": [
+        {
+          "start": [
+            24.727677669529665,
+            76.07232233047034
+          ],
+          "end": [
+            23.47795,
+            76.59
+          ],
+          "layer": 0,
+          "width": 0.3
+        }
+      ],
+      "vias": [
+        {
+          "pos": [
+            23.47795,
+            76.59
+          ],
+          "diameter": 0.45,
+          "drill": 0.2
+        }
+      ]
+    },
+    {
+      "net": "+3V3_DIG",
+      "reason": "connect isolated conductor to existing inner plane",
+      "from_group": [
+        "c66dd355-1616-4a3a-a50c-7e942b604509"
+      ],
+      "segments": [
+        {
+          "start": [
+            82.88779849637808,
+            79.43450137030713
+          ],
+          "end": [
+            82.92,
+            79.49641
+          ],
+          "layer": 0,
+          "width": 0.3
+        }
+      ],
+      "vias": [
+        {
+          "pos": [
+            82.92,
+            79.49641
+          ],
+          "diameter": 0.45,
+          "drill": 0.2
+        }
+      ]
+    },
+    {
+      "net": "+3V3_DIG",
+      "reason": "connect isolated conductor to existing inner plane",
+      "from_group": [
+        "bfb0ff17-6ac6-4e27-a4b1-06a47226ff6f"
+      ],
+      "segments": [
+        {
+          "start": [
+            91.684999500037,
+            74.38000806680503
+          ],
+          "end": [
+            94.4,
+            74.38
+          ],
+          "layer": 0,
+          "width": 0.3
+        }
+      ],
+      "vias": [
+        {
+          "pos": [
+            94.4,
+            74.38
+          ],
+          "diameter": 0.45,
+          "drill": 0.2
+        }
+      ]
+    },
+    {
+      "net": "+3V3_DIG",
+      "reason": "connect isolated conductor to existing inner plane",
+      "from_group": [
+        "a2df670c-7e2d-4898-a579-c87023d972fd"
+      ],
+      "segments": [
+        {
+          "start": [
+            6.635,
+            75.3
+          ],
+          "end": [
+            6.79,
+            75.3
+          ],
+          "layer": 0,
+          "width": 0.3
+        }
+      ],
+      "vias": [
+        {
+          "pos": [
+            6.79,
+            75.3
+          ],
+          "diameter": 0.45,
+          "drill": 0.2
+        }
+      ]
+    },
+    {
+      "net": "+3V3_DIG",
+      "reason": "connect isolated conductor to existing inner plane",
+      "from_group": [
+        "7a059f23-09b7-428b-a3e8-969b0023e197"
+      ],
+      "segments": [
+        {
+          "start": [
+            13.635,
+            84.75
+          ],
+          "end": [
+            13.79,
+            84.75
+          ],
+          "layer": 0,
+          "width": 0.3
+        }
+      ],
+      "vias": [
+        {
+          "pos": [
+            13.79,
+            84.75
+          ],
+          "diameter": 0.45,
+          "drill": 0.2
+        }
+      ]
+    },
+    {
+      "net": "+3V3_DIG",
+      "reason": "connect isolated conductor to existing inner plane",
+      "from_group": [
+        "2d153e61-e048-4687-a9e7-43499600ecec"
+      ],
+      "segments": [
+        {
+          "start": [
+            44.78450137030713,
+            72.64779849637809
+          ],
+          "end": [
+            44.84641,
+            72.68
+          ],
+          "layer": 0,
+          "width": 0.3
+        }
+      ],
+      "vias": [
+        {
+          "pos": [
+            44.84641,
+            72.68
+          ],
+          "diameter": 0.45,
+          "drill": 0.2
+        }
+      ]
+    },
+    {
+      "net": "+3V3_DIG",
+      "reason": "connect isolated conductor to existing inner plane",
+      "from_group": [
+        "479cb7c6-b2ec-4528-ade8-90881f6659d4"
+      ],
+      "segments": [],
+      "vias": [
+        {
+          "pos": [
+            64.3,
+            63.4
+          ],
+          "diameter": 0.45,
+          "drill": 0.2
+        }
+      ]
+    },
+    {
+      "net": "+3V3_DIG",
+      "reason": "connect isolated conductor to existing inner plane",
+      "from_group": [
+        "de0c7f91-0344-4315-a6be-591e6cdcdffc"
+      ],
+      "segments": [],
+      "vias": [
+        {
+          "pos": [
+            91.95,
+            72.54641
+          ],
+          "diameter": 0.45,
+          "drill": 0.2
+        }
+      ]
+    },
+    {
+      "net": "+3V3_DIG",
+      "reason": "connect isolated conductor to existing inner plane",
+      "from_group": [
+        "5fbc28cf-1550-40ce-a7e1-bca9b2e4505c"
+      ],
+      "segments": [
+        {
+          "start": [
+            64.01549862969287,
+            68.58779849637808
+          ],
+          "end": [
+            63.95359,
+            68.62
+          ],
+          "layer": 0,
+          "width": 0.3
+        }
+      ],
+      "vias": [
+        {
+          "pos": [
+            63.95359,
+            68.62
+          ],
+          "diameter": 0.45,
+          "drill": 0.2
+        }
+      ]
+    },
+    {
+      "net": "+3V3_DIG",
+      "reason": "connect isolated conductor to existing inner plane",
+      "from_group": [
+        "fa17e8a7-7296-493a-a828-a1950e55669e"
+      ],
+      "segments": [
+        {
+          "start": [
+            90.05000067078936,
+            67.36500049999928
+          ],
+          "end": [
+            90.05,
+            67.07
+          ],
+          "layer": 0,
+          "width": 0.3
+        }
+      ],
+      "vias": [
+        {
+          "pos": [
+            90.05,
+            67.07
+          ],
+          "diameter": 0.45,
+          "drill": 0.2
+        }
+      ]
+    }
+  ],
+  "summary": {
+    "+3V3_DIG": {
+      "groups": 11,
+      "added_connections": 10,
+      "unresolved_groups": []
+    },
+    "+3V3_ANA": {
+      "groups": 11,
+      "added_connections": 0,
+      "unresolved_groups": [
+        [
+          "U21",
+          "U21",
+          "016bb274-fb01-45d7-b395-7a78a7266b42",
+          "12e1ead4-cdce-4832-b065-a0b493d17568",
+          "4b5b0e53-7310-40b4-8532-2ac049001458",
+          "7074c93d-1aeb-4bb8-a489-973fd1c2c48b",
+          "87e9a25c-3001-4008-90f8-05c5c4d45ad7",
+          "89afad1c-460d-439b-80e1-63ec5c5aa6d4"
+        ],
+        [
+          "C348",
+          "R154",
+          "57c012bb-8815-46b1-a754-762bd81a3db2",
+          "60329869-8f60-4958-8d0f-ec17ecfe8494",
+          "7d64b9a1-b216-4870-9c4b-43300a43e2ac",
+          "f9266e0e-4709-40c3-b9c3-269722af60f6",
+          "51ce1ebc-8586-4e0e-8df4-6ce92330b2cd",
+          "66560558-b6d9-43b5-bd92-f02339b113ab"
+        ],
+        [
+          "R90",
+          "19ebedd8-dd9f-4450-a0b0-8065885fb8b5",
+          "71bfce04-b224-4f1d-9833-16e1be110d6d",
+          "7aeb83f5-2d2e-4878-9ba3-e73e1e8b3845",
+          "9a6eb285-dad3-4f87-8e9c-f42f2438041e",
+          "bbaf9302-7dbf-49a1-9c27-971f2e4a337f",
+          "214220d4-4efb-4772-a8ba-11178449b6d3"
+        ],
+        [
+          "U42"
+        ],
+        [
+          "U42"
+        ],
+        [
+          "C41"
+        ],
+        [
+          "C44"
+        ],
+        [
+          "C45"
+        ],
+        [
+          "C346"
+        ],
+        [
+          "C40"
+        ]
+      ]
+    }
+  }
+}
