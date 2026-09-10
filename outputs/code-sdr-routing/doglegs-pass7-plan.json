@@ -1,0 +1,185 @@
+{
+  "source_sha256": "6a234fd18ac0f1db14eeab76ce2745c34f0dff1df1e1c1b8c968d3668bd096dc",
+  "routes": [
+    {
+      "net": "ADC_REFB",
+      "reason": "DRC-gated localized two-segment dogleg between disconnected outer-layer conductors",
+      "segments": [
+        {
+          "start": [
+            72.5,
+            69.02
+          ],
+          "end": [
+            72.5,
+            69.3261
+          ],
+          "layer": 0,
+          "width": 0.1
+        },
+        {
+          "start": [
+            72.5,
+            69.3261
+          ],
+          "end": [
+            73.2391,
+            69.32615
+          ],
+          "layer": 0,
+          "width": 0.1
+        }
+      ],
+      "vias": [],
+      "source_endpoints": [
+        "Pad 1 [ADC_REFB] of C47 on F.Cu",
+        "Via [ADC_REFB] on F.Cu - B.Cu"
+      ],
+      "straight_distance_mm": 0.7999978953097262
+    },
+    {
+      "net": "ADC_VREF",
+      "reason": "DRC-gated localized two-segment dogleg between disconnected outer-layer conductors",
+      "segments": [
+        {
+          "start": [
+            67.84818,
+            71.57993
+          ],
+          "end": [
+            67.8482,
+            72.55
+          ],
+          "layer": 0,
+          "width": 0.1
+        },
+        {
+          "start": [
+            67.8482,
+            72.55
+          ],
+          "end": [
+            68.25,
+            72.55
+          ],
+          "layer": 0,
+          "width": 0.1
+        }
+      ],
+      "vias": [],
+      "source_endpoints": [
+        "Via [ADC_VREF] on F.Cu - B.Cu",
+        "Pad 1 [ADC_VREF] of C159 on F.Cu"
+      ],
+      "straight_distance_mm": 1.049997674902181
+    },
+    {
+      "net": "ADC_REFT",
+      "reason": "DRC-gated localized two-segment dogleg between disconnected outer-layer conductors",
+      "segments": [
+        {
+          "start": [
+            75.0,
+            67.0
+          ],
+          "end": [
+            74.5982,
+            67.0
+          ],
+          "layer": 0,
+          "width": 0.1
+        },
+        {
+          "start": [
+            74.5982,
+            67.0
+          ],
+          "end": [
+            74.59818,
+            65.82993
+          ],
+          "layer": 0,
+          "width": 0.1
+        }
+      ],
+      "vias": [],
+      "source_endpoints": [
+        "Pad 1 [ADC_REFT] of C154 on F.Cu",
+        "Via [ADC_REFT] on F.Cu - B.Cu"
+      ],
+      "straight_distance_mm": 1.2371431272492242
+    },
+    {
+      "net": "PHY_INT_N",
+      "reason": "DRC-gated localized two-segment dogleg between disconnected outer-layer conductors",
+      "segments": [
+        {
+          "start": [
+            88.012236,
+            69.84584
+          ],
+          "end": [
+            88.8291,
+            70.0415
+          ],
+          "layer": 0,
+          "width": 0.1
+        },
+        {
+          "start": [
+            88.8291,
+            70.0415
+          ],
+          "end": [
+            88.88,
+            70.88
+          ],
+          "layer": 0,
+          "width": 0.1
+        }
+      ],
+      "vias": [],
+      "source_endpoints": [
+        "Via [PHY_INT_N] on F.Cu - B.Cu",
+        "Pad 38 [PHY_INT_N] of U30 on F.Cu"
+      ],
+      "straight_distance_mm": 1.3500004686280629
+    },
+    {
+      "net": "ADC_SENSE",
+      "reason": "DRC-gated localized two-segment dogleg between disconnected outer-layer conductors",
+      "segments": [
+        {
+          "start": [
+            66.88048,
+            75.451373
+          ],
+          "end": [
+            66.8805,
+            73.5314
+          ],
+          "layer": 0,
+          "width": 0.1
+        },
+        {
+          "start": [
+            66.8805,
+            73.5314
+          ],
+          "end": [
+            68.64048,
+            73.531373
+          ],
+          "layer": 0,
+          "width": 0.1
+        }
+      ],
+      "vias": [],
+      "source_endpoints": [
+        "Track [ADC_SENSE] on F.Cu, length 2.0000 mm",
+        "Track [ADC_SENSE] on F.Cu, length 0.1131 mm"
+      ],
+      "straight_distance_mm": 2.604611295375948
+    }
+  ]
+}
