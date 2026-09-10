@@ -1,0 +1,185 @@
+{
+  "source_sha256": "ce00140cfc43ffa7c312c0ff49a9859ad8d70259e74b72c593d8bbffa4203e68",
+  "routes": [
+    {
+      "net": "ADC_D4",
+      "reason": "DRC-gated localized two-segment dogleg between disconnected outer-layer conductors",
+      "segments": [
+        {
+          "start": [
+            58.47,
+            69.51
+          ],
+          "end": [
+            58.77,
+            69.51
+          ],
+          "layer": 0,
+          "width": 0.15
+        },
+        {
+          "start": [
+            58.77,
+            69.51
+          ],
+          "end": [
+            58.77,
+            69.31
+          ],
+          "layer": 0,
+          "width": 0.15
+        }
+      ],
+      "vias": [],
+      "source_endpoints": [
+        "Track [ADC_D4] on F.Cu, length 0.2000 mm",
+        "Track [ADC_D4] on F.Cu, length 0.1414 mm"
+      ],
+      "straight_distance_mm": 0.36055512754640406
+    },
+    {
+      "net": "ADC_D9",
+      "reason": "DRC-gated localized two-segment dogleg between disconnected outer-layer conductors",
+      "segments": [
+        {
+          "start": [
+            56.87,
+            72.1975
+          ],
+          "end": [
+            56.87,
+            71.9975
+          ],
+          "layer": 0,
+          "width": 0.15
+        },
+        {
+          "start": [
+            56.87,
+            71.9975
+          ],
+          "end": [
+            57.37,
+            71.9975
+          ],
+          "layer": 0,
+          "width": 0.15
+        }
+      ],
+      "vias": [],
+      "source_endpoints": [
+        "Track [ADC_D9] on F.Cu, length 0.2000 mm",
+        "Track [ADC_D9] on F.Cu, length 0.2000 mm"
+      ],
+      "straight_distance_mm": 0.5385164807134515
+    },
+    {
+      "net": "ADC_OR",
+      "reason": "DRC-gated localized two-segment dogleg between disconnected outer-layer conductors",
+      "segments": [
+        {
+          "start": [
+            52.6975,
+            74.46
+          ],
+          "end": [
+            52.6975,
+            74.86
+          ],
+          "layer": 0,
+          "width": 0.15
+        },
+        {
+          "start": [
+            52.6975,
+            74.86
+          ],
+          "end": [
+            51.6975,
+            74.86
+          ],
+          "layer": 0,
+          "width": 0.15
+        }
+      ],
+      "vias": [],
+      "source_endpoints": [
+        "Track [ADC_OR] on F.Cu, length 0.1414 mm",
+        "Track [ADC_OR] on F.Cu, length 0.1000 mm"
+      ],
+      "straight_distance_mm": 1.077032961426903
+    },
+    {
+      "net": "REF_100M_LMX",
+      "reason": "DRC-gated localized two-segment dogleg between disconnected outer-layer conductors",
+      "segments": [
+        {
+          "start": [
+            8.64,
+            56.85
+          ],
+          "end": [
+            7.9524,
+            56.215
+          ],
+          "layer": 0,
+          "width": 0.15
+        },
+        {
+          "start": [
+            7.9524,
+            56.215
+          ],
+          "end": [
+            7.0625,
+            55.925
+          ],
+          "layer": 0,
+          "width": 0.15
+        }
+      ],
+      "vias": [],
+      "source_endpoints": [
+        "Pad 1 [REF_100M_LMX] of R50 on F.Cu",
+        "Pad 8 [REF_100M_LMX] of U42 on F.Cu"
+      ],
+      "straight_distance_mm": 1.828696598673495
+    },
+    {
+      "net": "REF_100M_OSC",
+      "reason": "DRC-gated localized two-segment dogleg between disconnected outer-layer conductors",
+      "segments": [
+        {
+          "start": [
+            3.55525,
+            58.87
+          ],
+          "end": [
+            3.5553,
+            55.925
+          ],
+          "layer": 0,
+          "width": 0.15
+        },
+        {
+          "start": [
+            3.5553,
+            55.925
+          ],
+          "end": [
+            1.3375,
+            55.925
+          ],
+          "layer": 0,
+          "width": 0.15
+        }
+      ],
+      "vias": [],
+      "source_endpoints": [
+        "Via [REF_100M_OSC] on F.Cu - B.Cu",
+        "Pad 1 [REF_100M_OSC] of U42 on F.Cu"
+      ],
+      "straight_distance_mm": 3.6866570307664914
+    }
+  ]
+}

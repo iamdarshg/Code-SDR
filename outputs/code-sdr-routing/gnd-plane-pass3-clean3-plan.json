@@ -1,0 +1,1128 @@
+{
+  "source_sha256": "8eea988650c62cba17bb01829447e9cf1db73907145aa4237c86ce5b500506f2",
+  "routes": [
+    {
+      "net": "GND",
+      "reason": "connect isolated conductor to existing inner plane",
+      "from_group": [
+        "2e34ee86-2d9c-4e5b-b1e7-c45191e69885",
+        "391e6c84-5cf8-444b-a4d6-612d5e9c6f17",
+        "de3ff53a-2357-4f84-9360-ad152d01ecb4",
+        "5de61a1a-c1e2-4c07-90c9-7786d4e13d6c",
+        "a1bfa57e-ffea-472f-972d-386510c62eef",
+        "29fe2ad9-73e2-4289-a28d-3e089fc6725a",
+        "2cd423b3-4828-4402-a2db-38b0c939c8ef",
+        "3bb7961f-8658-4c06-902f-4207c523db4e",
+        "411f5640-5c82-4cc4-b326-447320208390",
+        "54fb3037-1c98-4aca-b944-4d713fafa929",
+        "5f12c156-b8d0-4820-abe4-845199cb12f6",
+        "66884c67-445c-463a-aa10-9230cc3973f4",
+        "8aeb83a6-87c2-4066-975c-ca2e305a7fb0",
+        "8ff3f9ef-c2bc-4e22-9883-687d2a3f4e32",
+        "90f5394f-849f-4f23-bff3-d3c3e8042ffd",
+        "9c553427-f3be-496b-b0cf-422a0e0f8d37",
+        "b13d45e4-1723-405a-b7ed-00b10de1dc9c",
+        "bc054262-3b0d-491c-b352-9f62173692fe",
+        "bdc5459f-091f-49e6-b7e4-606d37cb4ed6",
+        "daddf847-de4e-4076-a3b5-70c450871db0",
+        "df1f7fdb-e460-4c71-91c0-fc14aa87c6bf",
+        "39f6c99a-8972-4d81-971c-44ce5acbf9a3",
+        "5dd66b7f-3f00-466b-826e-a0bcf20e3839",
+        "7bf26278-caed-4774-857a-6c98480c314a",
+        "80ae6fea-c6f2-4e8e-8695-868b4990f444",
+        "850800f3-67ee-4144-a37a-bbce714cdfd1",
+        "92f422cf-e483-44b4-afba-98a6631ef28b",
+        "a4df8393-e45c-41da-9aa4-533a0f16ec27",
+        "e6af8f8b-58c8-4ec7-a48e-b65d2d68de43",
+        "e91c916c-9fc4-4217-8fda-af189101c691",
+        "f10e34c3-9fe4-4cd0-88f2-d714bfc7292e",
+        "f44e52d9-e438-4203-8f4d-36e07e145033",
+        "fdd56763-24ba-4a95-b318-f517006ac0f7",
+        "6b81a630-b63a-4886-aab7-07d02e468428:1"
+      ],
+      "segments": [
+        {
+          "start": [
+            55.580029969024565,
+            64.10122274551507
+          ],
+          "end": [
+            56.58,
+            64.1
+          ],
+          "layer": 0,
+          "width": 0.25
+        }
+      ],
+      "vias": [
+        {
+          "pos": [
+            56.58,
+            64.1
+          ],
+          "diameter": 0.45,
+          "drill": 0.2
+        }
+      ]
+    },
+    {
+      "net": "GND",
+      "reason": "connect isolated conductor to existing inner plane",
+      "from_group": [
+        "d05c8f03-5296-4492-af49-9cb19f68b79d"
+      ],
+      "segments": [
+        {
+          "start": [
+            48.423716691322085,
+            70.60495477729843
+          ],
+          "end": [
+            48.09378,
+            70.77
+          ],
+          "layer": 0,
+          "width": 0.25
+        }
+      ],
+      "vias": [
+        {
+          "pos": [
+            48.09378,
+            70.77
+          ],
+          "diameter": 0.45,
+          "drill": 0.2
+        }
+      ]
+    },
+    {
+      "net": "GND",
+      "reason": "connect isolated conductor to existing inner plane",
+      "from_group": [
+        "7575cee3-b779-4d56-a21c-1c2f95db3569"
+      ],
+      "segments": [
+        {
+          "start": [
+            68.07077773696875,
+            71.12654859766444
+          ],
+          "end": [
+            68.57942,
+            71.38
+          ],
+          "layer": 0,
+          "width": 0.25
+        }
+      ],
+      "vias": [
+        {
+          "pos": [
+            68.57942,
+            71.38
+          ],
+          "diameter": 0.45,
+          "drill": 0.2
+        }
+      ]
+    },
+    {
+      "net": "GND",
+      "reason": "connect isolated conductor to existing inner plane",
+      "from_group": [
+        "732b2a97-584c-41ae-a3e9-d9197d359277"
+      ],
+      "segments": [
+        {
+          "start": [
+            83.68000026989456,
+            78.86500050000066
+          ],
+          "end": [
+            83.68,
+            78.75
+          ],
+          "layer": 0,
+          "width": 0.25
+        }
+      ],
+      "vias": [
+        {
+          "pos": [
+            83.68,
+            78.75
+          ],
+          "diameter": 0.45,
+          "drill": 0.2
+        }
+      ]
+    },
+    {
+      "net": "GND",
+      "reason": "connect isolated conductor to existing inner plane",
+      "from_group": [
+        "07d18d31-32af-4bbc-b385-37c119d3a56a"
+      ],
+      "segments": [
+        {
+          "start": [
+            73.68499949999934,
+            66.28000026989456
+          ],
+          "end": [
+            73.8,
+            66.28
+          ],
+          "layer": 0,
+          "width": 0.25
+        }
+      ],
+      "vias": [
+        {
+          "pos": [
+            73.8,
+            66.28
+          ],
+          "diameter": 0.45,
+          "drill": 0.2
+        }
+      ]
+    },
+    {
+      "net": "GND",
+      "reason": "connect isolated conductor to existing inner plane",
+      "from_group": [
+        "ec9451aa-5164-43e1-8327-d4047c4ac7fa"
+      ],
+      "segments": [
+        {
+          "start": [
+            93.63499949999955,
+            75.0000002981293
+          ],
+          "end": [
+            93.78,
+            75.0
+          ],
+          "layer": 0,
+          "width": 0.25
+        }
+      ],
+      "vias": [
+        {
+          "pos": [
+            93.78,
+            75.0
+          ],
+          "diameter": 0.45,
+          "drill": 0.2
+        }
+      ]
+    },
+    {
+      "net": "GND",
+      "reason": "connect isolated conductor to existing inner plane",
+      "from_group": [
+        "2b27ff02-8f56-4cdd-aab9-8b70b1a28e80",
+        "482660cc-5a2f-4d73-91e6-29bc3b6336cc",
+        "f0a34fe4-3af9-42a7-b64e-b5aeefba6996",
+        "f2a25199-b4c6-4670-9d23-48f5c8a10be0",
+        "ec9e5836-6812-466a-965b-fea65558f6ea:10",
+        "6b81a630-b63a-4886-aab7-07d02e468428:3"
+      ],
+      "segments": [],
+      "vias": [
+        {
+          "pos": [
+            39.77614,
+            32.20667
+          ],
+          "diameter": 0.45,
+          "drill": 0.2
+        }
+      ]
+    },
+    {
+      "net": "GND",
+      "reason": "connect isolated conductor to existing inner plane",
+      "from_group": [
+        "7ade75d3-c5df-4545-82b2-fd70c532a5a0"
+      ],
+      "segments": [
+        {
+          "start": [
+            81.11999973010545,
+            72.38499949999934
+          ],
+          "end": [
+            81.12,
+            72.5
+          ],
+          "layer": 0,
+          "width": 0.25
+        }
+      ],
+      "vias": [
+        {
+          "pos": [
+            81.12,
+            72.5
+          ],
+          "diameter": 0.45,
+          "drill": 0.2
+        }
+      ]
+    },
+    {
+      "net": "GND",
+      "reason": "connect isolated conductor to existing inner plane",
+      "from_group": [
+        "11d95f6d-87ec-4c1c-ae3a-710c5b8d4f38"
+      ],
+      "segments": [
+        {
+          "start": [
+            81.86220150362192,
+            72.86549862969287
+          ],
+          "end": [
+            81.83,
+            72.80359
+          ],
+          "layer": 0,
+          "width": 0.25
+        }
+      ],
+      "vias": [
+        {
+          "pos": [
+            81.83,
+            72.80359
+          ],
+          "diameter": 0.45,
+          "drill": 0.2
+        }
+      ]
+    },
+    {
+      "net": "GND",
+      "reason": "connect isolated conductor to existing inner plane",
+      "from_group": [
+        "4d386a4d-dec0-40a6-a74c-d2833ac68865"
+      ],
+      "segments": [],
+      "vias": [
+        {
+          "pos": [
+            79.6,
+            70.5
+          ],
+          "diameter": 0.45,
+          "drill": 0.2
+        }
+      ]
+    },
+    {
+      "net": "GND",
+      "reason": "connect isolated conductor to existing inner plane",
+      "from_group": [
+        "11c76bc0-8531-4984-a5ff-095311a97d15"
+      ],
+      "segments": [
+        {
+          "start": [
+            48.83450137030713,
+            68.23779849637809
+          ],
+          "end": [
+            48.89641,
+            68.27
+          ],
+          "layer": 0,
+          "width": 0.25
+        }
+      ],
+      "vias": [
+        {
+          "pos": [
+            48.89641,
+            68.27
+          ],
+          "diameter": 0.45,
+          "drill": 0.2
+        }
+      ]
+    },
+    {
+      "net": "GND",
+      "reason": "connect isolated conductor to existing inner plane",
+      "from_group": [
+        "16e5a376-642d-4edf-943a-077f9e62cb42"
+      ],
+      "segments": [
+        {
+          "start": [
+            89.98499949999955,
+            69.50000029812931
+          ],
+          "end": [
+            90.13,
+            69.5
+          ],
+          "layer": 0,
+          "width": 0.25
+        }
+      ],
+      "vias": [
+        {
+          "pos": [
+            90.13,
+            69.5
+          ],
+          "diameter": 0.45,
+          "drill": 0.2
+        }
+      ]
+    },
+    {
+      "net": "GND",
+      "reason": "connect isolated conductor to existing inner plane",
+      "from_group": [
+        "2cfbd69d-2c27-44e2-a831-b04ea197e750"
+      ],
+      "segments": [],
+      "vias": [
+        {
+          "pos": [
+            93.4,
+            80.59641
+          ],
+          "diameter": 0.45,
+          "drill": 0.2
+        }
+      ]
+    },
+    {
+      "net": "GND",
+      "reason": "connect isolated conductor to existing inner plane",
+      "from_group": [
+        "a2119d58-d629-4f7e-8335-6c78e6f61c10"
+      ],
+      "segments": [
+        {
+          "start": [
+            91.53779849637809,
+            76.28450137030713
+          ],
+          "end": [
+            91.57,
+            76.34641
+          ],
+          "layer": 0,
+          "width": 0.25
+        }
+      ],
+      "vias": [
+        {
+          "pos": [
+            91.57,
+            76.34641
+          ],
+          "diameter": 0.45,
+          "drill": 0.2
+        }
+      ]
+    },
+    {
+      "net": "GND",
+      "reason": "connect isolated conductor to existing inner plane",
+      "from_group": [
+        "eccf45ac-b13a-4f1c-8411-d4373fe978f5"
+      ],
+      "segments": [
+        {
+          "start": [
+            73.14779849637809,
+            67.93450137030713
+          ],
+          "end": [
+            73.18,
+            67.99641
+          ],
+          "layer": 0,
+          "width": 0.25
+        }
+      ],
+      "vias": [
+        {
+          "pos": [
+            73.18,
+            67.99641
+          ],
+          "diameter": 0.45,
+          "drill": 0.2
+        }
+      ]
+    },
+    {
+      "net": "GND",
+      "reason": "connect isolated conductor to existing inner plane",
+      "from_group": [
+        "a531d79d-ea50-489a-be61-9b3d532e89d9"
+      ],
+      "segments": [],
+      "vias": [
+        {
+          "pos": [
+            1.3375,
+            57.875
+          ],
+          "diameter": 0.45,
+          "drill": 0.2
+        }
+      ]
+    },
+    {
+      "net": "GND",
+      "reason": "connect isolated conductor to existing inner plane",
+      "from_group": [
+        "ad3aabf0-81fa-48f0-8ef8-3a57bf1fe5cb"
+      ],
+      "segments": [
+        {
+          "start": [
+            72.78499949999934,
+            69.98000026989456
+          ],
+          "end": [
+            72.9,
+            69.98
+          ],
+          "layer": 0,
+          "width": 0.25
+        }
+      ],
+      "vias": [
+        {
+          "pos": [
+            72.9,
+            69.98
+          ],
+          "diameter": 0.45,
+          "drill": 0.2
+        }
+      ]
+    },
+    {
+      "net": "GND",
+      "reason": "connect isolated conductor to existing inner plane",
+      "from_group": [
+        "b883b124-cb9c-49d6-9df2-96c011b665b3"
+      ],
+      "segments": [],
+      "vias": [
+        {
+          "pos": [
+            71.85,
+            60.5
+          ],
+          "diameter": 0.45,
+          "drill": 0.2
+        }
+      ]
+    },
+    {
+      "net": "GND",
+      "reason": "connect isolated conductor to existing inner plane",
+      "from_group": [
+        "0cfeed29-ce27-4b3b-b33c-7cf5b8c074af"
+      ],
+      "segments": [
+        {
+          "start": [
+            48.719997331053065,
+            65.88499850000895
+          ],
+          "end": [
+            48.72,
+            66.8
+          ],
+          "layer": 0,
+          "width": 0.25
+        }
+      ],
+      "vias": [
+        {
+          "pos": [
+            48.72,
+            66.8
+          ],
+          "diameter": 0.45,
+          "drill": 0.2
+        }
+      ]
+    },
+    {
+      "net": "GND",
+      "reason": "connect isolated conductor to existing inner plane",
+      "from_group": [
+        "335551d5-885e-4884-80b0-28dd63167ecd",
+        "7eab5685-6c13-4081-bac8-68fbb9115101"
+      ],
+      "segments": [],
+      "vias": [
+        {
+          "pos": [
+            17.68,
+            69.0
+          ],
+          "diameter": 0.45,
+          "drill": 0.2
+        }
+      ]
+    },
+    {
+      "net": "GND",
+      "reason": "connect isolated conductor to existing inner plane",
+      "from_group": [
+        "193eb52d-c467-455a-acfb-65daf32cb35e"
+      ],
+      "segments": [
+        {
+          "start": [
+            41.18450137030713,
+            71.68779849637808
+          ],
+          "end": [
+            41.24641,
+            71.72
+          ],
+          "layer": 0,
+          "width": 0.25
+        }
+      ],
+      "vias": [
+        {
+          "pos": [
+            41.24641,
+            71.72
+          ],
+          "diameter": 0.45,
+          "drill": 0.2
+        }
+      ]
+    },
+    {
+      "net": "GND",
+      "reason": "connect isolated conductor to existing inner plane",
+      "from_group": [
+        "ef65e4e3-50b2-408b-875f-588b13ebe1b1"
+      ],
+      "segments": [
+        {
+          "start": [
+            48.9150004999856,
+            73.32999613153137
+          ],
+          "end": [
+            47.6,
+            73.33
+          ],
+          "layer": 0,
+          "width": 0.25
+        }
+      ],
+      "vias": [
+        {
+          "pos": [
+            47.6,
+            73.33
+          ],
+          "diameter": 0.45,
+          "drill": 0.2
+        }
+      ]
+    },
+    {
+      "net": "GND",
+      "reason": "connect isolated conductor to existing inner plane",
+      "from_group": [
+        "8b4afac4-360e-44d1-a3d2-20f5539b3704"
+      ],
+      "segments": [],
+      "vias": [
+        {
+          "pos": [
+            43.0,
+            72.62141
+          ],
+          "diameter": 0.45,
+          "drill": 0.2
+        }
+      ]
+    },
+    {
+      "net": "GND",
+      "reason": "connect isolated conductor to existing inner plane",
+      "from_group": [
+        "7ba24d88-84c6-4973-97c4-2862b56df208"
+      ],
+      "segments": [
+        {
+          "start": [
+            57.63499949999933,
+            67.98000026989456
+          ],
+          "end": [
+            57.75,
+            67.98
+          ],
+          "layer": 0,
+          "width": 0.25
+        }
+      ],
+      "vias": [
+        {
+          "pos": [
+            57.75,
+            67.98
+          ],
+          "diameter": 0.45,
+          "drill": 0.2
+        }
+      ]
+    },
+    {
+      "net": "GND",
+      "reason": "connect isolated conductor to existing inner plane",
+      "from_group": [
+        "0661ca37-14eb-4d24-a97f-d26fc6a1ad27"
+      ],
+      "segments": [
+        {
+          "start": [
+            72.68042642392852,
+            65.79628168392107
+          ],
+          "end": [
+            72.87631,
+            65.895
+          ],
+          "layer": 0,
+          "width": 0.25
+        }
+      ],
+      "vias": [
+        {
+          "pos": [
+            72.87631,
+            65.895
+          ],
+          "diameter": 0.45,
+          "drill": 0.2
+        }
+      ]
+    },
+    {
+      "net": "GND",
+      "reason": "connect isolated conductor to existing inner plane",
+      "from_group": [
+        "ea6bb21f-9b2e-41fc-9ddf-e10380c54973"
+      ],
+      "segments": [
+        {
+          "start": [
+            44.78450137030713,
+            71.68779849637808
+          ],
+          "end": [
+            44.84641,
+            71.72
+          ],
+          "layer": 0,
+          "width": 0.25
+        }
+      ],
+      "vias": [
+        {
+          "pos": [
+            44.84641,
+            71.72
+          ],
+          "diameter": 0.45,
+          "drill": 0.2
+        }
+      ]
+    },
+    {
+      "net": "GND",
+      "reason": "connect isolated conductor to existing inner plane",
+      "from_group": [
+        "bc91eb42-0d76-4b2c-a6d3-7d3496704320"
+      ],
+      "segments": [
+        {
+          "start": [
+            83.16166240030002,
+            69.57609871187823
+          ],
+          "end": [
+            83.07359,
+            69.6
+          ],
+          "layer": 0,
+          "width": 0.25
+        }
+      ],
+      "vias": [
+        {
+          "pos": [
+            83.07359,
+            69.6
+          ],
+          "diameter": 0.45,
+          "drill": 0.2
+        }
+      ]
+    },
+    {
+      "net": "GND",
+      "reason": "connect isolated conductor to existing inner plane",
+      "from_group": [
+        "2b5eba79-0105-4008-a649-94f5407fffa3"
+      ],
+      "segments": [],
+      "vias": [
+        {
+          "pos": [
+            20.0,
+            92.7
+          ],
+          "diameter": 0.45,
+          "drill": 0.2
+        }
+      ]
+    },
+    {
+      "net": "GND",
+      "reason": "connect isolated conductor to existing inner plane",
+      "from_group": [
+        "c3afa56a-8271-4dff-8147-60f64e7fcecc"
+      ],
+      "segments": [],
+      "vias": [
+        {
+          "pos": [
+            71.2,
+            73.29641
+          ],
+          "diameter": 0.45,
+          "drill": 0.2
+        }
+      ]
+    },
+    {
+      "net": "GND",
+      "reason": "connect isolated conductor to existing inner plane",
+      "from_group": [
+        "bd595396-580c-4b71-8962-1d53b3401b6b"
+      ],
+      "segments": [
+        {
+          "start": [
+            6.635,
+            76.3
+          ],
+          "end": [
+            6.79,
+            76.3
+          ],
+          "layer": 0,
+          "width": 0.25
+        }
+      ],
+      "vias": [
+        {
+          "pos": [
+            6.79,
+            76.3
+          ],
+          "diameter": 0.45,
+          "drill": 0.2
+        }
+      ]
+    },
+    {
+      "net": "GND",
+      "reason": "connect isolated conductor to existing inner plane",
+      "from_group": [
+        "54ef7b96-9271-44c7-8c5f-374cde6b0a6f"
+      ],
+      "segments": [
+        {
+          "start": [
+            46.33504522270162,
+            70.07628330867796
+          ],
+          "end": [
+            46.17,
+            70.40622
+          ],
+          "layer": 0,
+          "width": 0.25
+        }
+      ],
+      "vias": [
+        {
+          "pos": [
+            46.17,
+            70.40622
+          ],
+          "diameter": 0.45,
+          "drill": 0.2
+        }
+      ]
+    },
+    {
+      "net": "GND",
+      "reason": "connect isolated conductor to existing inner plane",
+      "from_group": [
+        "58f7a5cb-2394-4644-a1db-78e89c4e37bb"
+      ],
+      "segments": [
+        {
+          "start": [
+            52.365793910985374,
+            75.53710986550706
+          ],
+          "end": [
+            53.83205,
+            76.33
+          ],
+          "layer": 0,
+          "width": 0.25
+        }
+      ],
+      "vias": [
+        {
+          "pos": [
+            53.83205,
+            76.33
+          ],
+          "diameter": 0.45,
+          "drill": 0.2
+        }
+      ]
+    },
+    {
+      "net": "GND",
+      "reason": "connect isolated conductor to existing inner plane",
+      "from_group": [
+        "f86b6b3e-f6fd-4195-9beb-6f055bbf1d47"
+      ],
+      "segments": [],
+      "vias": [
+        {
+          "pos": [
+            62.4,
+            63.4
+          ],
+          "diameter": 0.45,
+          "drill": 0.2
+        }
+      ]
+    },
+    {
+      "net": "GND",
+      "reason": "connect isolated conductor to existing inner plane",
+      "from_group": [
+        "2ed8c391-9ae2-4ce4-8829-fa872d45e72d"
+      ],
+      "segments": [],
+      "vias": [
+        {
+          "pos": [
+            91.95,
+            70.64641
+          ],
+          "diameter": 0.45,
+          "drill": 0.2
+        }
+      ]
+    },
+    {
+      "net": "GND",
+      "reason": "connect isolated conductor to existing inner plane",
+      "from_group": [
+        "79248993-27b6-4bdf-b944-84260b144eec"
+      ],
+      "segments": [
+        {
+          "start": [
+            73.33499950000254,
+            64.10000020884341
+          ],
+          "end": [
+            73.48,
+            64.1
+          ],
+          "layer": 0,
+          "width": 0.25
+        }
+      ],
+      "vias": [
+        {
+          "pos": [
+            73.48,
+            64.1
+          ],
+          "diameter": 0.45,
+          "drill": 0.2
+        }
+      ]
+    },
+    {
+      "net": "GND",
+      "reason": "connect isolated conductor to existing inner plane",
+      "from_group": [
+        "dfcf0a93-104f-4616-8fe4-a3424c443b40"
+      ],
+      "segments": [],
+      "vias": [
+        {
+          "pos": [
+            68.45,
+            74.79641
+          ],
+          "diameter": 0.45,
+          "drill": 0.2
+        }
+      ]
+    },
+    {
+      "net": "GND",
+      "reason": "connect isolated conductor to existing inner plane",
+      "from_group": [
+        "d3c5bcc5-9f8a-478f-b702-79cc179db5ac"
+      ],
+      "segments": [
+        {
+          "start": [
+            55.66579391098537,
+            65.17710986550706
+          ],
+          "end": [
+            56.43923,
+            65.57
+          ],
+          "layer": 0,
+          "width": 0.25
+        }
+      ],
+      "vias": [
+        {
+          "pos": [
+            56.43923,
+            65.57
+          ],
+          "diameter": 0.45,
+          "drill": 0.2
+        }
+      ]
+    },
+    {
+      "net": "GND",
+      "reason": "connect isolated conductor to existing inner plane",
+      "from_group": [
+        "190db3bf-7612-4de2-bbf0-5e353b778238"
+      ],
+      "segments": [
+        {
+          "start": [
+            43.912201503621915,
+            82.48450137030713
+          ],
+          "end": [
+            43.88,
+            82.54641
+          ],
+          "layer": 0,
+          "width": 0.25
+        }
+      ],
+      "vias": [
+        {
+          "pos": [
+            43.88,
+            82.54641
+          ],
+          "diameter": 0.45,
+          "drill": 0.2
+        }
+      ]
+    },
+    {
+      "net": "GND",
+      "reason": "connect isolated conductor to existing inner plane",
+      "from_group": [
+        "90b0c0a3-3aae-4a7b-b909-6b0645a7b63a"
+      ],
+      "segments": [
+        {
+          "start": [
+            92.43499949999955,
+            77.05000029812929
+          ],
+          "end": [
+            92.58,
+            77.05
+          ],
+          "layer": 0,
+          "width": 0.25
+        }
+      ],
+      "vias": [
+        {
+          "pos": [
+            92.58,
+            77.05
+          ],
+          "diameter": 0.45,
+          "drill": 0.2
+        }
+      ]
+    },
+    {
+      "net": "GND",
+      "reason": "connect isolated conductor to existing inner plane",
+      "from_group": [
+        "8d64da24-890a-49da-9aa2-82f5b2d2b025"
+      ],
+      "segments": [
+        {
+          "start": [
+            90.0499997018707,
+            68.83499949999955
+          ],
+          "end": [
+            90.05,
+            68.98
+          ],
+          "layer": 0,
+          "width": 0.25
+        }
+      ],
+      "vias": [
+        {
+          "pos": [
+            90.05,
+            68.98
+          ],
+          "diameter": 0.45,
+          "drill": 0.2
+        }
+      ]
+    }
+  ]
+}
