@@ -1,0 +1,1945 @@
+{
+  "requested_uuid_count": 241,
+  "removed_count": 241,
+  "missing_already_removed_count": 0,
+  "missing_already_removed": [],
+  "removed": [
+    {
+      "uuid": "1dd6a722-82df-42cf-aa73-e03ed8ec5f84",
+      "net": "+1V2_CORE",
+      "kind": "PCB_TRACK",
+      "reasons": [
+        "placement blocker for C51"
+      ]
+    },
+    {
+      "uuid": "7325ba08-a77c-4c79-b2f1-12868de4854b",
+      "net": "+1V2_CORE",
+      "kind": "PCB_TRACK",
+      "reasons": [
+        "placement blocker for C51"
+      ]
+    },
+    {
+      "uuid": "8870b96b-f20e-4113-94ee-8aa018d217de",
+      "net": "+1V2_CORE",
+      "kind": "PCB_TRACK",
+      "reasons": [
+        "placement blocker for C51"
+      ]
+    },
+    {
+      "uuid": "06873a8e-239e-46c9-a360-97c72362d0db",
+      "net": "+1V2_CORE",
+      "kind": "PCB_TRACK",
+      "reasons": [
+        "retained: changed terminal contacts segment interior"
+      ]
+    },
+    {
+      "uuid": "22cb65d1-3b34-46a1-b7d7-2068044a2e7e",
+      "net": "+1V2_CORE",
+      "kind": "PCB_TRACK",
+      "reasons": [
+        "retained: changed terminal contacts segment interior"
+      ]
+    },
+    {
+      "uuid": "2fb1a1d4-e6d6-4e9c-ad91-10a62aed6ff1",
+      "net": "+1V2_CORE",
+      "kind": "PCB_TRACK",
+      "reasons": [
+        "retained: interior track contact requires manual review"
+      ]
+    },
+    {
+      "uuid": "42a343f8-9fd2-4062-b1a4-396bf0653498",
+      "net": "+1V2_CORE",
+      "kind": "PCB_TRACK",
+      "reasons": [
+        "retained: changed terminal contacts segment interior"
+      ]
+    },
+    {
+      "uuid": "5106f827-fc35-449e-9182-d374eb8639e7",
+      "net": "+1V2_CORE",
+      "kind": "PCB_TRACK",
+      "reasons": [
+        "retained: changed terminal contacts segment interior"
+      ]
+    },
+    {
+      "uuid": "51e67cd0-a6e6-4aa9-9f12-1c792c5b83cc",
+      "net": "+1V2_CORE",
+      "kind": "PCB_TRACK",
+      "reasons": [
+        "retained: changed terminal contacts segment interior"
+      ]
+    },
+    {
+      "uuid": "64160831-b45d-40c4-94f0-3445f67ff32f",
+      "net": "+1V2_CORE",
+      "kind": "PCB_TRACK",
+      "reasons": [
+        "retained: changed terminal contacts segment interior"
+      ]
+    },
+    {
+      "uuid": "794669ba-ebab-4e7d-9bc3-bd02d658689a",
+      "net": "+1V2_CORE",
+      "kind": "PCB_TRACK",
+      "reasons": [
+        "retained: changed terminal contacts segment interior"
+      ]
+    },
+    {
+      "uuid": "8ed3dc09-3b81-4955-82db-29b48f60b99e",
+      "net": "+1V2_CORE",
+      "kind": "PCB_TRACK",
+      "reasons": [
+        "retained: changed terminal contacts segment interior"
+      ]
+    },
+    {
+      "uuid": "9a309cf8-62d9-4e45-a6fa-403075d9ea1e",
+      "net": "+1V2_CORE",
+      "kind": "PCB_TRACK",
+      "reasons": [
+        "retained: changed terminal contacts segment interior"
+      ]
+    },
+    {
+      "uuid": "a8ea3222-8923-4958-9f47-07da24171cd2",
+      "net": "+1V2_CORE",
+      "kind": "PCB_TRACK",
+      "reasons": [
+        "retained: interior track contact requires manual review"
+      ]
+    },
+    {
+      "uuid": "b3a948bf-0626-476a-83cc-8241126f1f21",
+      "net": "+1V2_CORE",
+      "kind": "PCB_TRACK",
+      "reasons": [
+        "retained: changed terminal contacts segment interior"
+      ]
+    },
+    {
+      "uuid": "b69eb0c3-133d-4292-947c-a2a8dcfc8b3c",
+      "net": "+1V2_CORE",
+      "kind": "PCB_TRACK",
+      "reasons": [
+        "retained: possible interior via/arc contact requires manual review"
+      ]
+    },
+    {
+      "uuid": "083527fe-bb35-49e8-a94e-666bca8cb65c",
+      "net": "+3V3_ANA",
+      "kind": "PCB_TRACK",
+      "reasons": [
+        "retained: changed terminal contacts segment interior"
+      ]
+    },
+    {
+      "uuid": "0f93a051-bf85-43eb-a506-5025f4e17388",
+      "net": "+3V3_ANA",
+      "kind": "PCB_TRACK",
+      "reasons": [
+        "retained: changed terminal contacts segment interior"
+      ]
+    },
+    {
+      "uuid": "1199418c-92a8-4fc8-8b0b-cf825471e443",
+      "net": "+3V3_ANA",
+      "kind": "PCB_TRACK",
+      "reasons": [
+        "retained: changed terminal contacts segment interior"
+      ]
+    },
+    {
+      "uuid": "1d89aa60-7560-4fad-a83d-3b04b0c9ca6a",
+      "net": "+3V3_ANA",
+      "kind": "PCB_TRACK",
+      "reasons": [
+        "retained: changed terminal contacts segment interior"
+      ]
+    },
+    {
+      "uuid": "2bc9ee77-77d0-4f23-a52e-eb3c0a63dcf9",
+      "net": "+3V3_ANA",
+      "kind": "PCB_TRACK",
+      "reasons": [
+        "retained: changed terminal contacts segment interior"
+      ]
+    },
+    {
+      "uuid": "5a631d2d-30fe-4162-a93c-f5a9e68befb7",
+      "net": "+3V3_ANA",
+      "kind": "PCB_TRACK",
+      "reasons": [
+        "retained: changed terminal contacts segment interior"
+      ]
+    },
+    {
+      "uuid": "6ee0a263-3486-4fb4-b94a-f149278a4d5b",
+      "net": "+3V3_ANA",
+      "kind": "PCB_TRACK",
+      "reasons": [
+        "retained: changed terminal contacts segment interior"
+      ]
+    },
+    {
+      "uuid": "6f699bb5-6a5e-4a17-b617-b16eb715865d",
+      "net": "+3V3_ANA",
+      "kind": "PCB_TRACK",
+      "reasons": [
+        "retained: changed terminal contacts segment interior"
+      ]
+    },
+    {
+      "uuid": "91a9ea73-26ac-440d-9cd1-f350acecb241",
+      "net": "+3V3_ANA",
+      "kind": "PCB_TRACK",
+      "reasons": [
+        "retained: changed terminal contacts segment interior"
+      ]
+    },
+    {
+      "uuid": "9828d126-cdd7-439e-aeee-0b639b34c8ac",
+      "net": "+3V3_ANA",
+      "kind": "PCB_TRACK",
+      "reasons": [
+        "retained: changed terminal contacts segment interior"
+      ]
+    },
+    {
+      "uuid": "a681c135-b81e-4526-be4c-b4353dfa26b7",
+      "net": "+3V3_ANA",
+      "kind": "PCB_TRACK",
+      "reasons": [
+        "retained: changed terminal contacts segment interior"
+      ]
+    },
+    {
+      "uuid": "abe42b45-65ab-432f-868e-e64b60567aab",
+      "net": "+3V3_ANA",
+      "kind": "PCB_TRACK",
+      "reasons": [
+        "retained: interior track contact requires manual review"
+      ]
+    },
+    {
+      "uuid": "c9adc0e7-fbc4-4ee0-88e6-aa15ded5ec87",
+      "net": "+3V3_ANA",
+      "kind": "PCB_TRACK",
+      "reasons": [
+        "retained: changed terminal contacts segment interior"
+      ]
+    },
+    {
+      "uuid": "d1c86add-a564-4905-93b5-60ffdf53392b",
+      "net": "+3V3_ANA",
+      "kind": "PCB_TRACK",
+      "reasons": [
+        "retained: changed terminal contacts segment interior"
+      ]
+    },
+    {
+      "uuid": "d2b744ad-5c66-4881-b130-68e2e34b5a76",
+      "net": "+3V3_ANA",
+      "kind": "PCB_TRACK",
+      "reasons": [
+        "retained: changed terminal contacts segment interior"
+      ]
+    },
+    {
+      "uuid": "d57fe7c6-25e7-462c-af7f-19fd60c77c29",
+      "net": "+3V3_ANA",
+      "kind": "PCB_TRACK",
+      "reasons": [
+        "retained: changed terminal contacts segment interior"
+      ]
+    },
+    {
+      "uuid": "0afe00ce-ae49-4073-a226-b4fef656633a",
+      "net": "ADC_D0",
+      "kind": "PCB_TRACK",
+      "reasons": [
+        "placement blocker for C312"
+      ]
+    },
+    {
+      "uuid": "0f55b5ab-5e0f-4933-ae70-de41781def19",
+      "net": "ADC_D0",
+      "kind": "PCB_TRACK",
+      "reasons": [
+        "placement blocker for C322"
+      ]
+    },
+    {
+      "uuid": "14a9afa7-dfda-4e17-ac44-e78a3a7662eb",
+      "net": "ADC_D0",
+      "kind": "PCB_TRACK",
+      "reasons": [
+        "placement blocker for C312"
+      ]
+    },
+    {
+      "uuid": "1c8ccb05-1831-4b6d-94b9-ffd8f349b855",
+      "net": "ADC_D0",
+      "kind": "PCB_TRACK",
+      "reasons": [
+        "placement blocker for C312"
+      ]
+    },
+    {
+      "uuid": "33895dcb-cf9a-489f-835f-d69437e40e88",
+      "net": "ADC_D0",
+      "kind": "PCB_TRACK",
+      "reasons": [
+        "placement blocker for C312"
+      ]
+    },
+    {
+      "uuid": "88bd4f51-22de-40c6-9f16-e32e7f77b7d9",
+      "net": "ADC_D0",
+      "kind": "PCB_TRACK",
+      "reasons": [
+        "placement blocker for C322"
+      ]
+    },
+    {
+      "uuid": "9993da3d-d66e-45b4-a5f7-a136b1a7ab82",
+      "net": "ADC_D0",
+      "kind": "PCB_TRACK",
+      "reasons": [
+        "placement blocker for C312"
+      ]
+    },
+    {
+      "uuid": "a0d89da4-e291-48c1-aedb-5ac53290a6cd",
+      "net": "ADC_D0",
+      "kind": "PCB_TRACK",
+      "reasons": [
+        "placement blocker for C312"
+      ]
+    },
+    {
+      "uuid": "c2b9c7df-1d12-46c6-8adc-019e2b9c81de",
+      "net": "ADC_D0",
+      "kind": "PCB_TRACK",
+      "reasons": [
+        "placement blocker for C312"
+      ]
+    },
+    {
+      "uuid": "c2ffd6f4-c26c-49f6-948a-301ae6be7556",
+      "net": "ADC_D0",
+      "kind": "PCB_TRACK",
+      "reasons": [
+        "placement blocker for C312"
+      ]
+    },
+    {
+      "uuid": "fb8144de-7ffb-49ac-bb5a-9ee7633a9810",
+      "net": "ADC_D0",
+      "kind": "PCB_TRACK",
+      "reasons": [
+        "placement blocker for C322"
+      ]
+    },
+    {
+      "uuid": "2e285aa2-d7a4-4923-8f51-54a995b11d2c",
+      "net": "ADC_D2",
+      "kind": "PCB_TRACK",
+      "reasons": [
+        "placement blocker for C312"
+      ]
+    },
+    {
+      "uuid": "37ba5474-c8c4-42cb-882b-f7c64f410221",
+      "net": "ADC_D2",
+      "kind": "PCB_TRACK",
+      "reasons": [
+        "placement blocker for C312"
+      ]
+    },
+    {
+      "uuid": "3f590b04-4943-46f2-bacf-8ccd95d16276",
+      "net": "ADC_D2",
+      "kind": "PCB_TRACK",
+      "reasons": [
+        "placement blocker for C312"
+      ]
+    },
+    {
+      "uuid": "3fbaca5d-0340-4bf0-88e7-033841498b56",
+      "net": "ADC_D2",
+      "kind": "PCB_TRACK",
+      "reasons": [
+        "placement blocker for C312"
+      ]
+    },
+    {
+      "uuid": "45134d65-26be-40e3-a63e-dbb29898496a",
+      "net": "ADC_D2",
+      "kind": "PCB_TRACK",
+      "reasons": [
+        "placement blocker for C312"
+      ]
+    },
+    {
+      "uuid": "845e1e92-bad7-482e-940b-d7ad83b1e77b",
+      "net": "ADC_D2",
+      "kind": "PCB_TRACK",
+      "reasons": [
+        "placement blocker for C312"
+      ]
+    },
+    {
+      "uuid": "8922a9a5-5bd1-4ea3-a97f-c3f82ebd6900",
+      "net": "ADC_D2",
+      "kind": "PCB_TRACK",
+      "reasons": [
+        "placement blocker for C312"
+      ]
+    },
+    {
+      "uuid": "943d6282-8635-45b7-9f4b-817dafdc9a2a",
+      "net": "ADC_D2",
+      "kind": "PCB_TRACK",
+      "reasons": [
+        "placement blocker for C312"
+      ]
+    },
+    {
+      "uuid": "ad75a604-cc27-4e00-883c-fc1d8c6b5422",
+      "net": "ADC_D2",
+      "kind": "PCB_TRACK",
+      "reasons": [
+        "placement blocker for C312"
+      ]
+    },
+    {
+      "uuid": "b80e16c8-c994-48a3-b7f4-2dd66aa6178f",
+      "net": "ADC_D2",
+      "kind": "PCB_TRACK",
+      "reasons": [
+        "placement blocker for C312"
+      ]
+    },
+    {
+      "uuid": "bdebaf9e-0094-4004-b91c-064031abbd18",
+      "net": "ADC_D2",
+      "kind": "PCB_TRACK",
+      "reasons": [
+        "placement blocker for C312"
+      ]
+    },
+    {
+      "uuid": "c005cba8-ad23-4bd0-82ab-4b3247a4fc46",
+      "net": "ADC_D2",
+      "kind": "PCB_TRACK",
+      "reasons": [
+        "placement blocker for C312"
+      ]
+    },
+    {
+      "uuid": "cb612e03-d854-4d1c-8566-80ece5dc4013",
+      "net": "ADC_D2",
+      "kind": "PCB_TRACK",
+      "reasons": [
+        "placement blocker for C312"
+      ]
+    },
+    {
+      "uuid": "cca0727e-86ff-41b8-a931-2b9d6145c9b0",
+      "net": "ADC_D2",
+      "kind": "PCB_TRACK",
+      "reasons": [
+        "placement blocker for C312"
+      ]
+    },
+    {
+      "uuid": "deb2622f-a901-479f-9cc3-08d182af9364",
+      "net": "ADC_D2",
+      "kind": "PCB_TRACK",
+      "reasons": [
+        "placement blocker for C312"
+      ]
+    },
+    {
+      "uuid": "4c585170-9d32-43b1-ae47-8231cf9b4080",
+      "net": "ADC_D4",
+      "kind": "PCB_TRACK",
+      "reasons": [
+        "placement blocker for C321"
+      ]
+    },
+    {
+      "uuid": "bcd2004b-b49d-4778-ab85-ec6cb5eab2ad",
+      "net": "ADC_D4",
+      "kind": "PCB_TRACK",
+      "reasons": [
+        "placement blocker for C312"
+      ]
+    },
+    {
+      "uuid": "c547bb73-8902-45d4-a5dd-12684d30700b",
+      "net": "ADC_D4",
+      "kind": "PCB_TRACK",
+      "reasons": [
+        "placement blocker for C312"
+      ]
+    },
+    {
+      "uuid": "d4d53db9-888c-4a12-945b-e50c25e5d9ef",
+      "net": "ADC_D4",
+      "kind": "PCB_TRACK",
+      "reasons": [
+        "placement blocker for C321"
+      ]
+    },
+    {
+      "uuid": "13b7b2ba-5213-4728-8630-eddfa352f03e",
+      "net": "ADC_D6",
+      "kind": "PCB_TRACK",
+      "reasons": [
+        "placement blocker for C321"
+      ]
+    },
+    {
+      "uuid": "156fd606-768b-46dc-87d2-43439805040c",
+      "net": "ADC_D6",
+      "kind": "PCB_TRACK",
+      "reasons": [
+        "placement blocker for C321"
+      ]
+    },
+    {
+      "uuid": "21a75ff1-06bc-49d4-90e9-254cd82a3115",
+      "net": "ADC_D6",
+      "kind": "PCB_TRACK",
+      "reasons": [
+        "placement blocker for C321"
+      ]
+    },
+    {
+      "uuid": "239de036-5ef1-4489-98b3-00fd93cfea00",
+      "net": "ADC_D6",
+      "kind": "PCB_TRACK",
+      "reasons": [
+        "placement blocker for C321"
+      ]
+    },
+    {
+      "uuid": "400a3934-2fbd-45d9-bf6b-258f61de5c11",
+      "net": "ADC_D6",
+      "kind": "PCB_TRACK",
+      "reasons": [
+        "placement blocker for C42"
+      ]
+    },
+    {
+      "uuid": "44455ac4-f1ca-4609-a6d8-670de461064c",
+      "net": "ADC_D6",
+      "kind": "PCB_TRACK",
+      "reasons": [
+        "placement blocker for C321"
+      ]
+    },
+    {
+      "uuid": "458e3526-d6af-4f50-b913-70004904e7fd",
+      "net": "ADC_D6",
+      "kind": "PCB_TRACK",
+      "reasons": [
+        "placement blocker for C321"
+      ]
+    },
+    {
+      "uuid": "498be311-7b7e-490e-896b-b63859b35418",
+      "net": "ADC_D6",
+      "kind": "PCB_TRACK",
+      "reasons": [
+        "placement blocker for C321"
+      ]
+    },
+    {
+      "uuid": "6e036649-072a-4043-9489-6ddeea962d0e",
+      "net": "ADC_D6",
+      "kind": "PCB_TRACK",
+      "reasons": [
+        "placement blocker for C321"
+      ]
+    },
+    {
+      "uuid": "7c67bd53-ecf8-4530-aad0-afb41b0d9ece",
+      "net": "ADC_D6",
+      "kind": "PCB_TRACK",
+      "reasons": [
+        "placement blocker for C321"
+      ]
+    },
+    {
+      "uuid": "9fbc8423-5ed6-4c09-b4d1-e9aed3c4e9c4",
+      "net": "ADC_D6",
+      "kind": "PCB_TRACK",
+      "reasons": [
+        "placement blocker for C321"
+      ]
+    },
+    {
+      "uuid": "da520f04-2e3a-43da-b709-46855d8fbe97",
+      "net": "ADC_D6",
+      "kind": "PCB_TRACK",
+      "reasons": [
+        "placement blocker for C321"
+      ]
+    },
+    {
+      "uuid": "e2c9315b-143b-4f10-af89-8bea533b9a66",
+      "net": "ADC_D6",
+      "kind": "PCB_TRACK",
+      "reasons": [
+        "placement blocker for C321"
+      ]
+    },
+    {
+      "uuid": "e8c5f82b-91ee-42ae-b0fa-d45ca900acb8",
+      "net": "ADC_D6",
+      "kind": "PCB_TRACK",
+      "reasons": [
+        "placement blocker for C321"
+      ]
+    },
+    {
+      "uuid": "f47ef5df-2702-495e-aeb5-a50aee1481f6",
+      "net": "ADC_D6",
+      "kind": "PCB_TRACK",
+      "reasons": [
+        "placement blocker for C321"
+      ]
+    },
+    {
+      "uuid": "3e254b25-c26b-4595-a456-4f0d35e19d1a",
+      "net": "ADC_D9",
+      "kind": "PCB_TRACK",
+      "reasons": [
+        "placement blocker for C317"
+      ]
+    },
+    {
+      "uuid": "932a9ee4-af3a-4cb2-b8ab-44ce8a72700a",
+      "net": "ADC_D9",
+      "kind": "PCB_TRACK",
+      "reasons": [
+        "placement blocker for C317"
+      ]
+    },
+    {
+      "uuid": "e11b3cd3-2b20-43a3-96b4-727181e24b18",
+      "net": "ADC_D9",
+      "kind": "PCB_TRACK",
+      "reasons": [
+        "placement blocker for C317"
+      ]
+    },
+    {
+      "uuid": "887695bb-f373-4eda-bf3a-a13c041e5d33",
+      "net": "ADC_MODE",
+      "kind": "PCB_TRACK",
+      "reasons": [
+        "retained: interior track contact requires manual review"
+      ]
+    },
+    {
+      "uuid": "921f41a8-6960-42fb-97b6-249fa1459d91",
+      "net": "ADC_MODE",
+      "kind": "PCB_TRACK",
+      "reasons": [
+        "retained: changed terminal contacts segment interior"
+      ]
+    },
+    {
+      "uuid": "1f4bfc54-77d8-48bd-8596-4e162ee5a28a",
+      "net": "ADC_OR",
+      "kind": "PCB_TRACK",
+      "reasons": [
+        "placement blocker for C319"
+      ]
+    },
+    {
+      "uuid": "3a10338c-942d-4a86-83b0-b2b1d7256399",
+      "net": "ADC_OR",
+      "kind": "PCB_TRACK",
+      "reasons": [
+        "placement blocker for C156"
+      ]
+    },
+    {
+      "uuid": "4f9aeb68-2b9e-48b0-b568-9b9f510cab47",
+      "net": "ADC_OR",
+      "kind": "PCB_TRACK",
+      "reasons": [
+        "placement blocker for C319"
+      ]
+    },
+    {
+      "uuid": "5ff0fb10-40b6-4cba-a67c-00393dc94c2a",
+      "net": "ADC_OR",
+      "kind": "PCB_TRACK",
+      "reasons": [
+        "placement blocker for C319"
+      ]
+    },
+    {
+      "uuid": "74374f48-450d-4cf1-84da-83dd31c1f822",
+      "net": "ADC_OR",
+      "kind": "PCB_TRACK",
+      "reasons": [
+        "placement blocker for C156"
+      ]
+    },
+    {
+      "uuid": "870d3596-171d-4f94-8eee-3059c5b53bab",
+      "net": "ADC_OR",
+      "kind": "PCB_TRACK",
+      "reasons": [
+        "placement blocker for C319"
+      ]
+    },
+    {
+      "uuid": "b122b2d2-c7ee-42a1-a1f0-4acde089e8af",
+      "net": "ADC_OR",
+      "kind": "PCB_TRACK",
+      "reasons": [
+        "placement blocker for C319"
+      ]
+    },
+    {
+      "uuid": "c2cffea2-2e18-4769-951f-34d27d91af02",
+      "net": "ADC_OR",
+      "kind": "PCB_TRACK",
+      "reasons": [
+        "placement blocker for C319"
+      ]
+    },
+    {
+      "uuid": "e15b923f-82e2-418a-b1c9-5917c60cde09",
+      "net": "ADC_OR",
+      "kind": "PCB_TRACK",
+      "reasons": [
+        "placement blocker for C319"
+      ]
+    },
+    {
+      "uuid": "f1345b25-1584-4f0b-9869-475e3c4a6fbf",
+      "net": "ADC_OR",
+      "kind": "PCB_TRACK",
+      "reasons": [
+        "placement blocker for C319"
+      ]
+    },
+    {
+      "uuid": "f741b41a-5b07-43d4-a8db-14d8c6fc8ac3",
+      "net": "ADC_OR",
+      "kind": "PCB_TRACK",
+      "reasons": [
+        "placement blocker for C156"
+      ]
+    },
+    {
+      "uuid": "d9d58f97-2e3e-4188-986c-da7c0f2e8146",
+      "net": "ADC_REFB",
+      "kind": "PCB_TRACK",
+      "reasons": [
+        "retained: changed terminal contacts segment interior"
+      ]
+    },
+    {
+      "uuid": "e0230371-51ec-4d44-9743-0596bbb59582",
+      "net": "ADC_REFB",
+      "kind": "PCB_TRACK",
+      "reasons": [
+        "retained: changed terminal contacts segment interior"
+      ]
+    },
+    {
+      "uuid": "1326851c-8d40-40e4-937f-e96bdb4930c8",
+      "net": "ADC_REFT",
+      "kind": "PCB_TRACK",
+      "reasons": [
+        "placement blocker for C46"
+      ]
+    },
+    {
+      "uuid": "7872a79d-01e6-40a6-bc6e-f46bb9f2b177",
+      "net": "ADC_REFT",
+      "kind": "PCB_TRACK",
+      "reasons": [
+        "retained: changed terminal contacts segment interior"
+      ]
+    },
+    {
+      "uuid": "343717d2-55de-4901-a310-44e21155de5a",
+      "net": "ADC_SENSE",
+      "kind": "PCB_TRACK",
+      "reasons": [
+        "placement blocker for C159"
+      ]
+    },
+    {
+      "uuid": "3a312835-c942-458a-9e7c-2cfc90f1361e",
+      "net": "ADC_SENSE",
+      "kind": "PCB_TRACK",
+      "reasons": [
+        "placement blocker for C159"
+      ]
+    },
+    {
+      "uuid": "3dff7a89-1777-4a3d-83f8-5fff355a7b94",
+      "net": "ADC_SENSE",
+      "kind": "PCB_TRACK",
+      "reasons": [
+        "placement blocker for C159"
+      ]
+    },
+    {
+      "uuid": "43f445fe-9ff8-44ad-b65d-3ca5f0554cf3",
+      "net": "ADC_SENSE",
+      "kind": "PCB_TRACK",
+      "reasons": [
+        "placement blocker for C159"
+      ]
+    },
+    {
+      "uuid": "7e382676-7665-444a-b82c-e815c54ed853",
+      "net": "ADC_SENSE",
+      "kind": "PCB_TRACK",
+      "reasons": [
+        "placement blocker for C159"
+      ]
+    },
+    {
+      "uuid": "959cea16-9ce3-4900-bc5a-7cff3beb1884",
+      "net": "ADC_SENSE",
+      "kind": "PCB_TRACK",
+      "reasons": [
+        "placement blocker for C159"
+      ]
+    },
+    {
+      "uuid": "99d892ee-3112-4a6b-8856-c094b52c5f35",
+      "net": "ADC_SENSE",
+      "kind": "PCB_TRACK",
+      "reasons": [
+        "placement blocker for C159"
+      ]
+    },
+    {
+      "uuid": "a01bb875-7a0d-4abd-94e2-ab9160b25036",
+      "net": "ADC_SENSE",
+      "kind": "PCB_TRACK",
+      "reasons": [
+        "placement blocker for C159"
+      ]
+    },
+    {
+      "uuid": "a3ef3fb2-8fcd-472b-a67e-7dc8dddcf323",
+      "net": "ADC_SENSE",
+      "kind": "PCB_TRACK",
+      "reasons": [
+        "placement blocker for C155",
+        "placement blocker for C159"
+      ]
+    },
+    {
+      "uuid": "ac7f4a9b-de21-44cb-85bd-55df7f4a231b",
+      "net": "ADC_SENSE",
+      "kind": "PCB_TRACK",
+      "reasons": [
+        "placement blocker for C159"
+      ]
+    },
+    {
+      "uuid": "d38bc77f-34fa-4751-aa28-b205b6c899aa",
+      "net": "ADC_SENSE",
+      "kind": "PCB_TRACK",
+      "reasons": [
+        "placement blocker for C159"
+      ]
+    },
+    {
+      "uuid": "fdb2de89-4700-42fc-b078-292473f6848f",
+      "net": "ADC_SENSE",
+      "kind": "PCB_TRACK",
+      "reasons": [
+        "placement blocker for C159"
+      ]
+    },
+    {
+      "uuid": "3670b150-bef2-4382-837e-a1ddcbdc2eff",
+      "net": "ADC_VIN_N",
+      "kind": "PCB_TRACK",
+      "reasons": [
+        "placement blocker for C41"
+      ]
+    },
+    {
+      "uuid": "8fefd06f-597f-4bdf-bbc4-2c5b7d2a3e6a",
+      "net": "ADC_VIN_P",
+      "kind": "PCB_TRACK",
+      "reasons": [
+        "placement blocker for C41"
+      ]
+    },
+    {
+      "uuid": "b0324a9f-f19b-42d3-9af7-70ff4beef506",
+      "net": "ADC_VREF",
+      "kind": "PCB_TRACK",
+      "reasons": [
+        "retained: changed terminal contacts segment interior"
+      ]
+    },
+    {
+      "uuid": "9641be76-ca97-46bc-aa11-17ceb4f708d7",
+      "net": "FB_3V3",
+      "kind": "PCB_TRACK",
+      "reasons": [
+        "placement blocker for R159"
+      ]
+    },
+    {
+      "uuid": "a3690c60-4694-4e15-95ab-e5270b4a8c6d",
+      "net": "FB_3V3",
+      "kind": "PCB_TRACK",
+      "reasons": [
+        "placement blocker for R159"
+      ]
+    },
+    {
+      "uuid": "38b90f47-5ae6-4ba7-b977-94a7b3d5f696",
+      "net": "FPGA_AUX_2V5",
+      "kind": "PCB_TRACK",
+      "reasons": [
+        "placement blocker for C310"
+      ]
+    },
+    {
+      "uuid": "726aa679-cc16-4a04-9ff7-9fa94c14df84",
+      "net": "FPGA_AUX_2V5",
+      "kind": "PCB_TRACK",
+      "reasons": [
+        "placement blocker for C310"
+      ]
+    },
+    {
+      "uuid": "e3d43ba5-003e-45fb-9d89-7e96f78cf7a3",
+      "net": "FPGA_AUX_2V5",
+      "kind": "PCB_TRACK",
+      "reasons": [
+        "placement blocker for C310"
+      ]
+    },
+    {
+      "uuid": "0203d5b3-b643-4e19-9fac-864680dc5859",
+      "net": "FPGA_VCCIO0_3V3",
+      "kind": "PCB_TRACK",
+      "reasons": [
+        "placement blocker for C311",
+        "placement blocker for C316"
+      ]
+    },
+    {
+      "uuid": "3e11bf59-162d-44fd-a9ca-312d2723e3f5",
+      "net": "FPGA_VCCIO0_3V3",
+      "kind": "PCB_TRACK",
+      "reasons": [
+        "placement blocker for C318"
+      ]
+    },
+    {
+      "uuid": "4358ae6c-4978-4dfe-a281-34bd1e5ac733",
+      "net": "FPGA_VCCIO0_3V3",
+      "kind": "PCB_TRACK",
+      "reasons": [
+        "placement blocker for C318"
+      ]
+    },
+    {
+      "uuid": "86e20e94-1a3e-47b1-adb8-1cf97845d784",
+      "net": "FPGA_VCCIO0_3V3",
+      "kind": "PCB_TRACK",
+      "reasons": [
+        "placement blocker for C318"
+      ]
+    },
+    {
+      "uuid": "8b1892c5-0498-49b0-b3f0-5b4d58c3b35d",
+      "net": "FPGA_VCCIO0_3V3",
+      "kind": "PCB_TRACK",
+      "reasons": [
+        "placement blocker for C311",
+        "placement blocker for C318"
+      ]
+    },
+    {
+      "uuid": "915b2bbd-7462-46a1-9e3f-b518c7703bc4",
+      "net": "FPGA_VCCIO0_3V3",
+      "kind": "PCB_TRACK",
+      "reasons": [
+        "placement blocker for C311",
+        "placement blocker for C318"
+      ]
+    },
+    {
+      "uuid": "9800674f-7690-4c32-bf5e-edb01e83bfe8",
+      "net": "FPGA_VCCIO0_3V3",
+      "kind": "PCB_TRACK",
+      "reasons": [
+        "placement blocker for C318"
+      ]
+    },
+    {
+      "uuid": "db4e5094-c717-4519-9e46-f79c79ed600c",
+      "net": "FPGA_VCCIO0_3V3",
+      "kind": "PCB_TRACK",
+      "reasons": [
+        "placement blocker for C323"
+      ]
+    },
+    {
+      "uuid": "f473e030-f8a1-4dd0-80f7-6e67a7cf55ad",
+      "net": "FPGA_VCCIO0_3V3",
+      "kind": "PCB_TRACK",
+      "reasons": [
+        "placement blocker for C311"
+      ]
+    },
+    {
+      "uuid": "09bab6d7-cdb5-4a43-8046-ce5109e6917c",
+      "net": "FPGA_VCCIO0_3V3",
+      "kind": "PCB_TRACK",
+      "reasons": [
+        "retained: changed terminal contacts segment interior"
+      ]
+    },
+    {
+      "uuid": "a27c4b33-fb20-4aba-a00f-698383ddabf8",
+      "net": "FPGA_VCCIO0_3V3",
+      "kind": "PCB_TRACK",
+      "reasons": [
+        "retained: changed terminal contacts segment interior"
+      ]
+    },
+    {
+      "uuid": "8a9f2016-9f90-4a49-8984-329c43440713",
+      "net": "FPGA_VCCIO2_3V3",
+      "kind": "PCB_TRACK",
+      "reasons": [
+        "retained: changed terminal contacts segment interior"
+      ]
+    },
+    {
+      "uuid": "bb5b3798-84e1-4922-b490-f031e244cc15",
+      "net": "FPGA_VCC_1V2",
+      "kind": "PCB_VIA",
+      "reasons": [
+        "retained: via attached to changed terminal"
+      ]
+    },
+    {
+      "uuid": "36a0b53f-bcb6-45ac-a191-cb902ca96fa1",
+      "net": "FPGA_VCC_1V2",
+      "kind": "PCB_TRACK",
+      "reasons": [
+        "retained: changed terminal contacts segment interior"
+      ]
+    },
+    {
+      "uuid": "66039aa1-ee0b-43b3-a301-dce5983783d4",
+      "net": "FPGA_VCC_1V2",
+      "kind": "PCB_TRACK",
+      "reasons": [
+        "retained: changed terminal contacts segment interior"
+      ]
+    },
+    {
+      "uuid": "7b478051-3326-4796-894a-025403a1317a",
+      "net": "FPGA_VCC_1V2",
+      "kind": "PCB_TRACK",
+      "reasons": [
+        "retained: changed terminal contacts segment interior"
+      ]
+    },
+    {
+      "uuid": "8ab467f5-44ae-4818-990b-435825db4060",
+      "net": "FPGA_VCC_1V2",
+      "kind": "PCB_TRACK",
+      "reasons": [
+        "retained: changed terminal contacts segment interior"
+      ]
+    },
+    {
+      "uuid": "8b28a003-b378-4b3a-8c6e-3cc534959314",
+      "net": "FPGA_VCC_1V2",
+      "kind": "PCB_TRACK",
+      "reasons": [
+        "retained: changed terminal contacts segment interior"
+      ]
+    },
+    {
+      "uuid": "aee7958f-e3ec-4d7d-9327-d8635f4fa587",
+      "net": "GND",
+      "kind": "PCB_TRACK",
+      "reasons": [
+        "placement blocker for C346"
+      ]
+    },
+    {
+      "uuid": "67f43dff-4412-4f4b-8ec3-da20d940f9a5",
+      "net": "GND",
+      "kind": "PCB_VIA",
+      "reasons": [
+        "retained: via attached to changed terminal"
+      ]
+    },
+    {
+      "uuid": "41b7f2b8-3ace-4c06-8659-c3b23d576f9a",
+      "net": "GND",
+      "kind": "PCB_TRACK",
+      "reasons": [
+        "retained: changed terminal contacts segment interior"
+      ]
+    },
+    {
+      "uuid": "d1cb158f-b6f0-4aa5-ade0-a95942fcfa54",
+      "net": "GND",
+      "kind": "PCB_TRACK",
+      "reasons": [
+        "retained: possible interior via/arc contact requires manual review"
+      ]
+    },
+    {
+      "uuid": "dd1ac103-f59b-406c-8425-293e0ba7ef42",
+      "net": "GND",
+      "kind": "PCB_TRACK",
+      "reasons": [
+        "retained: possible interior pad contact requires manual review"
+      ]
+    },
+    {
+      "uuid": "02a00d5b-cf6b-477d-9af3-55e3f1513e54",
+      "net": "MDIO",
+      "kind": "PCB_TRACK",
+      "reasons": [
+        "placement blocker for C45"
+      ]
+    },
+    {
+      "uuid": "26c070c6-e1ad-4477-8e5f-7b4625d9f8e2",
+      "net": "MDIO",
+      "kind": "PCB_TRACK",
+      "reasons": [
+        "placement blocker for C159"
+      ]
+    },
+    {
+      "uuid": "4b66c7c4-63ce-4c73-bd24-977be97be41f",
+      "net": "MDIO",
+      "kind": "PCB_TRACK",
+      "reasons": [
+        "placement blocker for C45"
+      ]
+    },
+    {
+      "uuid": "50a5fbb0-5baa-45c4-8f42-1c4c8c1cac41",
+      "net": "MDIO",
+      "kind": "PCB_TRACK",
+      "reasons": [
+        "placement blocker for C159"
+      ]
+    },
+    {
+      "uuid": "517f1356-ed57-45fc-bbd5-d9ef03003420",
+      "net": "MDIO",
+      "kind": "PCB_TRACK",
+      "reasons": [
+        "placement blocker for C159"
+      ]
+    },
+    {
+      "uuid": "96cc801a-b544-4990-9492-682fc58820b6",
+      "net": "MDIO",
+      "kind": "PCB_TRACK",
+      "reasons": [
+        "placement blocker for C159"
+      ]
+    },
+    {
+      "uuid": "aad8ee5a-dd94-42cc-b822-fefbed4fe00e",
+      "net": "MDIO",
+      "kind": "PCB_TRACK",
+      "reasons": [
+        "placement blocker for C45"
+      ]
+    },
+    {
+      "uuid": "bcd0d7e1-da15-42b4-9c67-e82c052b8a9a",
+      "net": "MDIO",
+      "kind": "PCB_TRACK",
+      "reasons": [
+        "placement blocker for C159"
+      ]
+    },
+    {
+      "uuid": "e15efaea-7f35-4c89-957c-878f244cc280",
+      "net": "MDIO",
+      "kind": "PCB_TRACK",
+      "reasons": [
+        "placement blocker for C45"
+      ]
+    },
+    {
+      "uuid": "9e5207b1-3610-4bf9-9f6f-b59520be43fa",
+      "net": "MDI_A_N",
+      "kind": "PCB_TRACK",
+      "reasons": [
+        "placement blocker for C299"
+      ]
+    },
+    {
+      "uuid": "47bee600-16b4-4a19-9c4b-9aa73944977f",
+      "net": "MDI_A_P",
+      "kind": "PCB_TRACK",
+      "reasons": [
+        "placement blocker for C299"
+      ]
+    },
+    {
+      "uuid": "e0043a9b-c4a0-47c1-a994-ca0829a65268",
+      "net": "MDI_A_P",
+      "kind": "PCB_TRACK",
+      "reasons": [
+        "placement blocker for C299"
+      ]
+    },
+    {
+      "uuid": "15e101f6-dfe9-48e5-9d00-9881e67e9fcc",
+      "net": "MDI_B_P",
+      "kind": "PCB_TRACK",
+      "reasons": [
+        "placement blocker for C298"
+      ]
+    },
+    {
+      "uuid": "265a7e4b-2dc5-4cdc-af31-02682e3f3488",
+      "net": "MDI_B_P",
+      "kind": "PCB_TRACK",
+      "reasons": [
+        "placement blocker for C300"
+      ]
+    },
+    {
+      "uuid": "2d0ddbbf-3167-49f7-bab0-f853b6039e4d",
+      "net": "MDI_B_P",
+      "kind": "PCB_TRACK",
+      "reasons": [
+        "placement blocker for C298"
+      ]
+    },
+    {
+      "uuid": "4562281d-c564-40dd-b5c8-6f7b54fc3f19",
+      "net": "MDI_B_P",
+      "kind": "PCB_TRACK",
+      "reasons": [
+        "placement blocker for C296",
+        "placement blocker for C300"
+      ]
+    },
+    {
+      "uuid": "660d6a71-9e5a-44ae-a2c5-54d02e5bd764",
+      "net": "MDI_D_N",
+      "kind": "PCB_TRACK",
+      "reasons": [
+        "placement blocker for C296"
+      ]
+    },
+    {
+      "uuid": "2b4ea2a6-4f72-443e-b2d3-5b3073db88e1",
+      "net": "MDI_D_P",
+      "kind": "PCB_TRACK",
+      "reasons": [
+        "placement blocker for C300"
+      ]
+    },
+    {
+      "uuid": "79fb19d8-e27e-496a-9fcf-184c1371ec0c",
+      "net": "MDI_D_P",
+      "kind": "PCB_TRACK",
+      "reasons": [
+        "placement blocker for C296",
+        "placement blocker for C300"
+      ]
+    },
+    {
+      "uuid": "873b48cb-a8ac-4b77-881a-7194f035a14c",
+      "net": "PHY_AVDDH_3V3",
+      "kind": "PCB_TRACK",
+      "reasons": [
+        "placement blocker for C295"
+      ]
+    },
+    {
+      "uuid": "0524e114-b073-484f-a30e-e883d3e37e70",
+      "net": "PHY_AVDDH_3V3",
+      "kind": "PCB_TRACK",
+      "reasons": [
+        "retained: changed terminal contacts segment interior"
+      ]
+    },
+    {
+      "uuid": "ba5abeed-5b07-4531-b1da-82b2d7a721f9",
+      "net": "PHY_AVDDH_3V3",
+      "kind": "PCB_TRACK",
+      "reasons": [
+        "retained: changed terminal contacts segment interior"
+      ]
+    },
+    {
+      "uuid": "c538cc04-40a6-4da0-955f-cd8d48082515",
+      "net": "PHY_AVDDH_3V3",
+      "kind": "PCB_TRACK",
+      "reasons": [
+        "retained: possible interior via/arc contact requires manual review"
+      ]
+    },
+    {
+      "uuid": "0fea5f0e-3227-4465-9c7c-e8b37877410e",
+      "net": "PHY_AVDDL_1V2",
+      "kind": "PCB_TRACK",
+      "reasons": [
+        "placement blocker for C298"
+      ]
+    },
+    {
+      "uuid": "6a7b660e-0b8d-47ff-90db-dfbf9104c18e",
+      "net": "PHY_AVDDL_1V2",
+      "kind": "PCB_TRACK",
+      "reasons": [
+        "placement blocker for C297"
+      ]
+    },
+    {
+      "uuid": "7e49cbea-3345-4dc2-afb4-3c70539d1e7b",
+      "net": "PHY_AVDDL_1V2",
+      "kind": "PCB_TRACK",
+      "reasons": [
+        "placement blocker for C58"
+      ]
+    },
+    {
+      "uuid": "c45ef277-bcfc-4b37-b277-eb1150add853",
+      "net": "PHY_AVDDL_1V2",
+      "kind": "PCB_TRACK",
+      "reasons": [
+        "placement blocker for C297"
+      ]
+    },
+    {
+      "uuid": "6e504fca-6ef0-49fd-98c7-3a47ec839924",
+      "net": "PHY_AVDDL_1V2",
+      "kind": "PCB_TRACK",
+      "reasons": [
+        "retained: interior track contact requires manual review"
+      ]
+    },
+    {
+      "uuid": "b64f74d2-91eb-4618-a397-5c38ed1f67bb",
+      "net": "PHY_AVDDL_1V2",
+      "kind": "PCB_TRACK",
+      "reasons": [
+        "retained: changed terminal contacts segment interior"
+      ]
+    },
+    {
+      "uuid": "69bfffe0-f7fe-4a67-ada3-a5c11fbefa16",
+      "net": "PHY_INT_N",
+      "kind": "PCB_TRACK",
+      "reasons": [
+        "placement blocker for C305"
+      ]
+    },
+    {
+      "uuid": "a330ade2-15b7-43a9-a02a-1e2769dd0f4f",
+      "net": "PHY_INT_N",
+      "kind": "PCB_TRACK",
+      "reasons": [
+        "placement blocker for C305"
+      ]
+    },
+    {
+      "uuid": "0987944a-395a-4d9b-9700-4b288914c1fd",
+      "net": "PHY_ISET",
+      "kind": "PCB_TRACK",
+      "reasons": [
+        "placement blocker for C55"
+      ]
+    },
+    {
+      "uuid": "14b28311-18f9-40e8-a79b-08cbc2feae3f",
+      "net": "PHY_LED2",
+      "kind": "PCB_TRACK",
+      "reasons": [
+        "placement blocker for C50"
+      ]
+    },
+    {
+      "uuid": "4e3a6119-ff28-4a63-9ff0-5a1722b01e3d",
+      "net": "PHY_LED2",
+      "kind": "PCB_TRACK",
+      "reasons": [
+        "placement blocker for C50"
+      ]
+    },
+    {
+      "uuid": "6288dc60-8147-4556-97e1-70cba8bc90ba",
+      "net": "PHY_LED2",
+      "kind": "PCB_TRACK",
+      "reasons": [
+        "placement blocker for C50"
+      ]
+    },
+    {
+      "uuid": "65560cbf-7510-4e3b-b844-3bba4c3b563e",
+      "net": "PHY_LED2",
+      "kind": "PCB_TRACK",
+      "reasons": [
+        "placement blocker for C50"
+      ]
+    },
+    {
+      "uuid": "82797bf4-7814-4ab6-b27e-17c371181c31",
+      "net": "PHY_LED2",
+      "kind": "PCB_TRACK",
+      "reasons": [
+        "placement blocker for C50"
+      ]
+    },
+    {
+      "uuid": "8a3ffe88-3ec4-4120-91e1-a1d2ef7d68de",
+      "net": "PHY_LED2",
+      "kind": "PCB_TRACK",
+      "reasons": [
+        "placement blocker for C50"
+      ]
+    },
+    {
+      "uuid": "c64fbc5f-7a78-4f77-ac8b-eb03bd85d18e",
+      "net": "PHY_LED2",
+      "kind": "PCB_TRACK",
+      "reasons": [
+        "placement blocker for C297"
+      ]
+    },
+    {
+      "uuid": "d4aaf037-befb-4d50-a9d7-7b2ab0199347",
+      "net": "PHY_LED2",
+      "kind": "PCB_TRACK",
+      "reasons": [
+        "placement blocker for C297"
+      ]
+    },
+    {
+      "uuid": "df434213-c385-4b55-8325-8f9d42e8c8d8",
+      "net": "PHY_LED2",
+      "kind": "PCB_TRACK",
+      "reasons": [
+        "placement blocker for C50"
+      ]
+    },
+    {
+      "uuid": "f0848640-9514-49d1-ae2d-e03729697528",
+      "net": "PHY_PLL_1V2",
+      "kind": "PCB_TRACK",
+      "reasons": [
+        "retained: changed terminal contacts segment interior"
+      ]
+    },
+    {
+      "uuid": "8844b730-5ecc-4ea5-b09f-38cd8ed3b6cb",
+      "net": "PHY_XI",
+      "kind": "PCB_TRACK",
+      "reasons": [
+        "placement blocker for C55"
+      ]
+    },
+    {
+      "uuid": "abf9b706-157c-46d8-88c3-0cab785a8a69",
+      "net": "PHY_XI",
+      "kind": "PCB_TRACK",
+      "reasons": [
+        "placement blocker for C55"
+      ]
+    },
+    {
+      "uuid": "c4e39cf9-54e7-4c57-841b-886b0507e449",
+      "net": "PHY_XI",
+      "kind": "PCB_TRACK",
+      "reasons": [
+        "placement blocker for C55"
+      ]
+    },
+    {
+      "uuid": "d94d4f90-7a55-490a-8345-ff6bd5741329",
+      "net": "PHY_XI",
+      "kind": "PCB_TRACK",
+      "reasons": [
+        "placement blocker for C55"
+      ]
+    },
+    {
+      "uuid": "16e1338e-9586-44a4-ab06-84d3c3371e1a",
+      "net": "QSPI_SD3",
+      "kind": "PCB_TRACK",
+      "reasons": [
+        "placement blocker for C331"
+      ]
+    },
+    {
+      "uuid": "6e7c38e1-fb68-4840-b5ab-0ace5268a9a6",
+      "net": "QSPI_SD3",
+      "kind": "PCB_TRACK",
+      "reasons": [
+        "placement blocker for C331"
+      ]
+    },
+    {
+      "uuid": "802f19b0-3d39-4a06-948b-cff938ca5cdc",
+      "net": "QSPI_SD3",
+      "kind": "PCB_TRACK",
+      "reasons": [
+        "placement blocker for C331"
+      ]
+    },
+    {
+      "uuid": "90f15587-2f4e-488d-b157-dc47681f5f36",
+      "net": "QSPI_SD3",
+      "kind": "PCB_TRACK",
+      "reasons": [
+        "placement blocker for C331"
+      ]
+    },
+    {
+      "uuid": "14783bb4-0b22-4b0c-abcf-32d7732057e7",
+      "net": "REF_100M_ADF",
+      "kind": "PCB_VIA",
+      "reasons": [
+        "retained: via attached to changed terminal"
+      ]
+    },
+    {
+      "uuid": "b1efd701-e45e-4708-a4df-852f7457c7af",
+      "net": "REF_100M_LMX",
+      "kind": "PCB_VIA",
+      "reasons": [
+        "retained: via attached to changed terminal"
+      ]
+    },
+    {
+      "uuid": "c31319b0-8a39-41b1-8eb2-c8a2b94dd31c",
+      "net": "REF_100M_OSC",
+      "kind": "PCB_TRACK",
+      "reasons": [
+        "retained: changed terminal contacts segment interior"
+      ]
+    },
+    {
+      "uuid": "2b35da23-68bf-4521-872a-d62e17232433",
+      "net": "RGMII_RXC_FPGA",
+      "kind": "PCB_TRACK",
+      "reasons": [
+        "placement blocker for C47"
+      ]
+    },
+    {
+      "uuid": "2f83b199-cf43-4e28-9c1d-fd800107a950",
+      "net": "RGMII_RXC_FPGA",
+      "kind": "PCB_TRACK",
+      "reasons": [
+        "placement blocker for C313",
+        "placement blocker for C314"
+      ]
+    },
+    {
+      "uuid": "3418fed4-b79c-457b-9efa-cc8d8a05a93d",
+      "net": "RGMII_RXC_FPGA",
+      "kind": "PCB_TRACK",
+      "reasons": [
+        "placement blocker for C47"
+      ]
+    },
+    {
+      "uuid": "a16a6969-26fc-48e8-98e2-35189d0abadc",
+      "net": "RGMII_RXC_FPGA",
+      "kind": "PCB_TRACK",
+      "reasons": [
+        "placement blocker for C45"
+      ]
+    },
+    {
+      "uuid": "a8946b8b-7c3a-40db-b691-67c10f086a33",
+      "net": "RGMII_RXC_FPGA",
+      "kind": "PCB_TRACK",
+      "reasons": [
+        "placement blocker for C154"
+      ]
+    },
+    {
+      "uuid": "ae61cae2-b49c-41d5-b183-52f6d42e5bd6",
+      "net": "RGMII_RXC_FPGA",
+      "kind": "PCB_TRACK",
+      "reasons": [
+        "placement blocker for C47"
+      ]
+    },
+    {
+      "uuid": "b17fdb63-7bf8-4b4c-9da9-095938495f9b",
+      "net": "RGMII_RXC_FPGA",
+      "kind": "PCB_TRACK",
+      "reasons": [
+        "placement blocker for C47"
+      ]
+    },
+    {
+      "uuid": "b7738f50-9a1f-483f-b9c6-3a72e7067de5",
+      "net": "RGMII_RXC_FPGA",
+      "kind": "PCB_TRACK",
+      "reasons": [
+        "placement blocker for C47"
+      ]
+    },
+    {
+      "uuid": "e2a38956-b5fd-4264-a338-41d675e8594a",
+      "net": "RGMII_RXC_FPGA",
+      "kind": "PCB_TRACK",
+      "reasons": [
+        "placement blocker for C47"
+      ]
+    },
+    {
+      "uuid": "e48e19df-5ca2-4370-b551-cb30e126330f",
+      "net": "RGMII_RXC_FPGA",
+      "kind": "PCB_TRACK",
+      "reasons": [
+        "placement blocker for C154"
+      ]
+    },
+    {
+      "uuid": "e8f70343-50b1-48ae-bdf2-5beddbc5446c",
+      "net": "RGMII_RXC_FPGA",
+      "kind": "PCB_TRACK",
+      "reasons": [
+        "placement blocker for C47"
+      ]
+    },
+    {
+      "uuid": "ad187323-0161-4569-a1b6-568bad0255a9",
+      "net": "RGMII_RXD0",
+      "kind": "PCB_TRACK",
+      "reasons": [
+        "placement blocker for C58"
+      ]
+    },
+    {
+      "uuid": "2a6f08ce-8aa0-44b2-bc94-a909dd7c2684",
+      "net": "RGMII_RXD1",
+      "kind": "PCB_TRACK",
+      "reasons": [
+        "placement blocker for C56"
+      ]
+    },
+    {
+      "uuid": "d27e107a-6a24-47fa-ae7b-851f6abda678",
+      "net": "RGMII_RXD1",
+      "kind": "PCB_TRACK",
+      "reasons": [
+        "placement blocker for C56"
+      ]
+    },
+    {
+      "uuid": "281fa77c-4d44-4c1d-8421-2abf26353093",
+      "net": "RGMII_RXD2",
+      "kind": "PCB_TRACK",
+      "reasons": [
+        "placement blocker for C302",
+        "placement blocker for C56"
+      ]
+    },
+    {
+      "uuid": "9c4da78c-bf72-47f9-825a-7ba00956f788",
+      "net": "RGMII_RXD2",
+      "kind": "PCB_TRACK",
+      "reasons": [
+        "placement blocker for C302"
+      ]
+    },
+    {
+      "uuid": "0f956836-a7e8-4c79-9dc8-6764c1eb115e",
+      "net": "RGMII_RXD2_FPGA",
+      "kind": "PCB_TRACK",
+      "reasons": [
+        "placement blocker for C317"
+      ]
+    },
+    {
+      "uuid": "21e1e91f-c3cb-446b-826a-7b2852161207",
+      "net": "RGMII_RXD2_FPGA",
+      "kind": "PCB_TRACK",
+      "reasons": [
+        "placement blocker for C317"
+      ]
+    },
+    {
+      "uuid": "4677cee6-0395-4123-9933-6acb3608eac4",
+      "net": "RGMII_RXD2_FPGA",
+      "kind": "PCB_TRACK",
+      "reasons": [
+        "placement blocker for C317"
+      ]
+    },
+    {
+      "uuid": "4a05d4d9-804f-462a-8d49-6c1f8dc5a4f4",
+      "net": "RGMII_RXD2_FPGA",
+      "kind": "PCB_TRACK",
+      "reasons": [
+        "placement blocker for C317"
+      ]
+    },
+    {
+      "uuid": "4e5f00d1-69a3-43b6-b96e-2b88af1f1b89",
+      "net": "RGMII_RXD2_FPGA",
+      "kind": "PCB_TRACK",
+      "reasons": [
+        "placement blocker for C317"
+      ]
+    },
+    {
+      "uuid": "5bde65ea-6b99-466a-8c18-483150860ca6",
+      "net": "RGMII_RXD2_FPGA",
+      "kind": "PCB_TRACK",
+      "reasons": [
+        "placement blocker for C317"
+      ]
+    },
+    {
+      "uuid": "9e46c0c2-ca32-4739-bf69-34a333f45f49",
+      "net": "RGMII_RXD2_FPGA",
+      "kind": "PCB_TRACK",
+      "reasons": [
+        "placement blocker for C317"
+      ]
+    },
+    {
+      "uuid": "b0f1e3e8-874c-4c73-976a-e843376a34f8",
+      "net": "RGMII_RXD2_FPGA",
+      "kind": "PCB_TRACK",
+      "reasons": [
+        "placement blocker for C317"
+      ]
+    },
+    {
+      "uuid": "c165e2d0-7c0e-4eb3-9c2e-c5f4c28da1ca",
+      "net": "RGMII_RXD2_FPGA",
+      "kind": "PCB_TRACK",
+      "reasons": [
+        "placement blocker for C317"
+      ]
+    },
+    {
+      "uuid": "ccf3ad58-9665-418d-b2af-2b6d065e7e5e",
+      "net": "RGMII_RXD2_FPGA",
+      "kind": "PCB_TRACK",
+      "reasons": [
+        "placement blocker for C317"
+      ]
+    },
+    {
+      "uuid": "cf0feb27-70bc-42bd-9170-2c17f84b7d75",
+      "net": "RGMII_RXD2_FPGA",
+      "kind": "PCB_TRACK",
+      "reasons": [
+        "placement blocker for C317"
+      ]
+    },
+    {
+      "uuid": "e2f7a76f-26be-4513-a2a3-2c45eb472de1",
+      "net": "RGMII_RXD2_FPGA",
+      "kind": "PCB_TRACK",
+      "reasons": [
+        "placement blocker for C317"
+      ]
+    },
+    {
+      "uuid": "f67d282e-675e-4441-beb0-0ab4c30771d3",
+      "net": "RGMII_RXD2_FPGA",
+      "kind": "PCB_TRACK",
+      "reasons": [
+        "placement blocker for C317"
+      ]
+    },
+    {
+      "uuid": "574bb2c5-25b6-4ea3-a155-7eb64f0a5d00",
+      "net": "RGMII_RXD3",
+      "kind": "PCB_TRACK",
+      "reasons": [
+        "placement blocker for C54"
+      ]
+    },
+    {
+      "uuid": "8051d34d-19e0-4cbc-bcef-eaf8a9e7ec5e",
+      "net": "RGMII_RXD3",
+      "kind": "PCB_TRACK",
+      "reasons": [
+        "placement blocker for C54"
+      ]
+    },
+    {
+      "uuid": "eaeee08b-d73c-455e-ba8e-3ca0346f480e",
+      "net": "RGMII_RXD3",
+      "kind": "PCB_TRACK",
+      "reasons": [
+        "placement blocker for C54"
+      ]
+    },
+    {
+      "uuid": "79b69552-ad5e-470b-ba68-dad2da714c3b",
+      "net": "RGMII_TXD2",
+      "kind": "PCB_TRACK",
+      "reasons": [
+        "placement blocker for C53"
+      ]
+    },
+    {
+      "uuid": "dc8ffcb5-1664-4592-a73e-93e6de4a4935",
+      "net": "RGMII_TXD3",
+      "kind": "PCB_TRACK",
+      "reasons": [
+        "placement blocker for C53"
+      ]
+    },
+    {
+      "uuid": "916d505b-8497-4e31-a84e-66dd4f27918a",
+      "net": "RGMII_TX_EN",
+      "kind": "PCB_TRACK",
+      "reasons": [
+        "placement blocker for C53"
+      ]
+    },
+    {
+      "uuid": "e0b53b71-80d6-4836-9eee-978de5bb9035",
+      "net": "RGMII_TX_EN",
+      "kind": "PCB_TRACK",
+      "reasons": [
+        "placement blocker for C53"
+      ]
+    },
+    {
+      "uuid": "5239fb44-c976-4d6b-950f-ecfd757859d1",
+      "net": "RP_CORE",
+      "kind": "PCB_TRACK",
+      "reasons": [
+        "retained: possible interior via/arc contact requires manual review"
+      ]
+    },
+    {
+      "uuid": "76f8886f-10ed-4438-ab49-8db4760b6653",
+      "net": "RP_CORE",
+      "kind": "PCB_TRACK",
+      "reasons": [
+        "retained: changed terminal contacts segment interior"
+      ]
+    },
+    {
+      "uuid": "dfc3f590-ea8b-452b-a052-8aeed6cb08d0",
+      "net": "RP_CORE",
+      "kind": "PCB_TRACK",
+      "reasons": [
+        "retained: changed terminal contacts segment interior"
+      ]
+    },
+    {
+      "uuid": "f6dce085-5e90-4a69-b9c9-7aae9bc40944",
+      "net": "RP_CORE",
+      "kind": "PCB_TRACK",
+      "reasons": [
+        "retained: possible interior via/arc contact requires manual review"
+      ]
+    },
+    {
+      "uuid": "b404a059-2838-488f-8faa-7264a041d947",
+      "net": "SW_1V2",
+      "kind": "PCB_TRACK",
+      "reasons": [
+        "placement blocker for R157",
+        "placement blocker for R158"
+      ]
+    },
+    {
+      "uuid": "c89889b5-d975-4208-b996-cfdcfc078918",
+      "net": "AUX_EN",
+      "kind": "PCB_TRACK",
+      "reasons": [
+        "placement blocker for C331"
+      ]
+    },
+    {
+      "uuid": "c9957c05-d93b-490f-82a2-103c557c83f8",
+      "net": "AUX_EN",
+      "kind": "PCB_TRACK",
+      "reasons": [
+        "retained: changed terminal contacts segment interior"
+      ]
+    },
+    {
+      "uuid": "0bb6002f-855d-4808-b83b-eb2b6cfe6494",
+      "net": "CORE_EN",
+      "kind": "PCB_TRACK",
+      "reasons": [
+        "retained: possible interior via/arc contact requires manual review"
+      ]
+    },
+    {
+      "uuid": "2613551c-16db-46e5-b74f-c5652bdd40d4",
+      "net": "CORE_EN",
+      "kind": "PCB_TRACK",
+      "reasons": [
+        "retained: changed terminal contacts segment interior"
+      ]
+    },
+    {
+      "uuid": "a2215da8-cbf0-4892-b5e6-41d499bc0dd4",
+      "net": "CORE_EN",
+      "kind": "PCB_TRACK",
+      "reasons": [
+        "retained: changed terminal contacts segment interior"
+      ]
+    },
+    {
+      "uuid": "5ee88075-5046-4b4f-8cc6-cfd5ffb5a291",
+      "net": "FB_ANA",
+      "kind": "PCB_TRACK",
+      "reasons": [
+        "retained: changed terminal contacts segment interior"
+      ]
+    },
+    {
+      "uuid": "7c7fe781-e22f-49e8-a6b6-b890ea62549a",
+      "net": "FB_ANA",
+      "kind": "PCB_TRACK",
+      "reasons": [
+        "retained: possible interior via/arc contact requires manual review"
+      ]
+    }
+  ]
+}

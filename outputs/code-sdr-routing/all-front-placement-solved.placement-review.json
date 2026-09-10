@@ -1,0 +1,856 @@
+{
+  "geometry_sha256": "15a495a0df137d52c5dd0d6e4128b657a8893ca02e2b104617d0b3633d5d44c9",
+  "components": {
+    "U42": {
+      "status": "reserved",
+      "placement": [
+        4.2,
+        56.9,
+        0.0,
+        "F.Cu"
+      ],
+      "displacement_mm": 5.249761137423396,
+      "reroute_track_uuids": []
+    },
+    "C346": {
+      "status": "reserved",
+      "placement": [
+        23.9,
+        93.1,
+        0.0,
+        "F.Cu"
+      ],
+      "displacement_mm": 7.602631123499279,
+      "reroute_track_uuids": [
+        "aee7958f-e3ec-4d7d-9327-d8635f4fa587"
+      ]
+    },
+    "C297": {
+      "status": "reserved",
+      "placement": [
+        78.25,
+        70.5,
+        0.0,
+        "F.Cu"
+      ],
+      "displacement_mm": 0.0,
+      "reroute_track_uuids": [
+        "6a7b660e-0b8d-47ff-90db-dfbf9104c18e",
+        "c45ef277-bcfc-4b37-b277-eb1150add853",
+        "c64fbc5f-7a78-4f77-ac8b-eb03bd85d18e",
+        "d4aaf037-befb-4d50-a9d7-7b2ab0199347"
+      ]
+    },
+    "C310": {
+      "status": "reserved",
+      "placement": [
+        52.0,
+        65.6,
+        0.0,
+        "F.Cu"
+      ],
+      "displacement_mm": 0.4000000000000057,
+      "reroute_track_uuids": [
+        "38b90f47-5ae6-4ba7-b977-94a7b3d5f696",
+        "726aa679-cc16-4a04-9ff7-9fa94c14df84",
+        "e3d43ba5-003e-45fb-9d89-7e96f78cf7a3"
+      ]
+    },
+    "C300": {
+      "status": "reserved",
+      "placement": [
+        79.75,
+        76.25,
+        -90.0,
+        "F.Cu"
+      ],
+      "displacement_mm": 0.0,
+      "reroute_track_uuids": [
+        "265a7e4b-2dc5-4cdc-af31-02682e3f3488",
+        "2b4ea2a6-4f72-443e-b2d3-5b3073db88e1",
+        "4562281d-c564-40dd-b5c8-6f7b54fc3f19",
+        "79fb19d8-e27e-496a-9fcf-184c1371ec0c"
+      ]
+    },
+    "C154": {
+      "status": "reserved",
+      "placement": [
+        75.0,
+        67.95,
+        -90.0,
+        "F.Cu"
+      ],
+      "displacement_mm": 0.20000000000000284,
+      "reroute_track_uuids": [
+        "a8946b8b-7c3a-40db-b691-67c10f086a33",
+        "e48e19df-5ca2-4370-b551-cb30e126330f"
+      ]
+    },
+    "C58": {
+      "status": "reserved",
+      "placement": [
+        85.15,
+        60.8,
+        90.0,
+        "F.Cu"
+      ],
+      "displacement_mm": 5.2153619241621225,
+      "reroute_track_uuids": [
+        "7e49cbea-3345-4dc2-afb4-3c70539d1e7b",
+        "ad187323-0161-4569-a1b6-568bad0255a9"
+      ]
+    },
+    "C56": {
+      "status": "reserved",
+      "placement": [
+        91.75,
+        71.25,
+        90.0,
+        "F.Cu"
+      ],
+      "displacement_mm": 0.0,
+      "reroute_track_uuids": [
+        "281fa77c-4d44-4c1d-8421-2abf26353093",
+        "2a6f08ce-8aa0-44b2-bc94-a909dd7c2684",
+        "d27e107a-6a24-47fa-ae7b-851f6abda678"
+      ]
+    },
+    "C159": {
+      "status": "reserved",
+      "placement": [
+        68.25,
+        73.5,
+        -90.0,
+        "F.Cu"
+      ],
+      "displacement_mm": 0.0,
+      "reroute_track_uuids": [
+        "26c070c6-e1ad-4477-8e5f-7b4625d9f8e2",
+        "343717d2-55de-4901-a310-44e21155de5a",
+        "3a312835-c942-458a-9e7c-2cfc90f1361e",
+        "3dff7a89-1777-4a3d-83f8-5fff355a7b94",
+        "43f445fe-9ff8-44ad-b65d-3ca5f0554cf3",
+        "50a5fbb0-5baa-45c4-8f42-1c4c8c1cac41",
+        "517f1356-ed57-45fc-bbd5-d9ef03003420",
+        "7e382676-7665-444a-b82c-e815c54ed853",
+        "959cea16-9ce3-4900-bc5a-7cff3beb1884",
+        "96cc801a-b544-4990-9492-682fc58820b6",
+        "99d892ee-3112-4a6b-8856-c094b52c5f35",
+        "a01bb875-7a0d-4abd-94e2-ab9160b25036",
+        "a3ef3fb2-8fcd-472b-a67e-7dc8dddcf323",
+        "ac7f4a9b-de21-44cb-85bd-55df7f4a231b",
+        "bcd0d7e1-da15-42b4-9c67-e82c052b8a9a",
+        "d38bc77f-34fa-4751-aa28-b205b6c899aa",
+        "fdb2de89-4700-42fc-b078-292473f6848f"
+      ]
+    },
+    "C43": {
+      "status": "reserved",
+      "placement": [
+        62.95,
+        63.4,
+        180.0,
+        "F.Cu"
+      ],
+      "displacement_mm": 0.9999999999999986,
+      "reroute_track_uuids": []
+    },
+    "C45": {
+      "status": "reserved",
+      "placement": [
+        71.0,
+        72.0,
+        -90.0,
+        "F.Cu"
+      ],
+      "displacement_mm": 0.0,
+      "reroute_track_uuids": [
+        "02a00d5b-cf6b-477d-9af3-55e3f1513e54",
+        "4b66c7c4-63ce-4c73-bd24-977be97be41f",
+        "a16a6969-26fc-48e8-98e2-35189d0abadc",
+        "aad8ee5a-dd94-42cc-b822-fefbed4fe00e",
+        "e15efaea-7f35-4c89-957c-878f244cc280"
+      ]
+    },
+    "C57": {
+      "status": "reserved",
+      "placement": [
+        93.2,
+        79.3,
+        -90.0,
+        "F.Cu"
+      ],
+      "displacement_mm": 6.1057350089895035,
+      "reroute_track_uuids": []
+    },
+    "C41": {
+      "status": "reserved",
+      "placement": [
+        70.5,
+        60.5,
+        0.0,
+        "F.Cu"
+      ],
+      "displacement_mm": 0.0,
+      "reroute_track_uuids": [
+        "3670b150-bef2-4382-837e-a1ddcbdc2eff",
+        "8fefd06f-597f-4bdf-bbc4-2c5b7d2a3e6a"
+      ]
+    },
+    "C22": {
+      "status": "reserved",
+      "placement": [
+        43.2,
+        71.5,
+        270.0,
+        "F.Cu"
+      ],
+      "displacement_mm": 0.282842712474623,
+      "reroute_track_uuids": []
+    },
+    "R158": {
+      "status": "reserved",
+      "placement": [
+        6.9,
+        76.3,
+        180.0,
+        "F.Cu"
+      ],
+      "displacement_mm": 1.8439088914585813,
+      "reroute_track_uuids": [
+        "b404a059-2838-488f-8faa-7264a041d947"
+      ]
+    },
+    "R157": {
+      "status": "reserved",
+      "placement": [
+        6.9,
+        75.3,
+        0.0,
+        "F.Cu"
+      ],
+      "displacement_mm": 1.8439088914585813,
+      "reroute_track_uuids": [
+        "b404a059-2838-488f-8faa-7264a041d947"
+      ]
+    },
+    "R159": {
+      "status": "reserved",
+      "placement": [
+        13.9,
+        84.75,
+        0.0,
+        "F.Cu"
+      ],
+      "displacement_mm": 0.1999999999999993,
+      "reroute_track_uuids": [
+        "9641be76-ca97-46bc-aa11-17ceb4f708d7",
+        "a3690c60-4694-4e15-95ab-e5270b4a8c6d"
+      ]
+    },
+    "C314": {
+      "status": "reserved",
+      "placement": [
+        55.7,
+        74.4,
+        0.0,
+        "F.Cu"
+      ],
+      "displacement_mm": 4.049691346263324,
+      "reroute_track_uuids": [
+        "2f83b199-cf43-4e28-9c1d-fd800107a950"
+      ]
+    },
+    "C348": {
+      "status": "reserved",
+      "placement": [
+        19.7,
+        88.7,
+        180.0,
+        "F.Cu"
+      ],
+      "displacement_mm": 2.8071337695236407,
+      "reroute_track_uuids": []
+    },
+    "C305": {
+      "status": "reserved",
+      "placement": [
+        89.25,
+        69.5,
+        0.0,
+        "F.Cu"
+      ],
+      "displacement_mm": 0.0,
+      "reroute_track_uuids": [
+        "69bfffe0-f7fe-4a67-ada3-a5c11fbefa16",
+        "a330ade2-15b7-43a9-a02a-1e2769dd0f4f"
+      ]
+    },
+    "C50": {
+      "status": "reserved",
+      "placement": [
+        83.2,
+        79.15,
+        0.0,
+        "F.Cu"
+      ],
+      "displacement_mm": 2.280350850198277,
+      "reroute_track_uuids": [
+        "14b28311-18f9-40e8-a79b-08cbc2feae3f",
+        "4e3a6119-ff28-4a63-9ff0-5a1722b01e3d",
+        "6288dc60-8147-4556-97e1-70cba8bc90ba",
+        "65560cbf-7510-4e3b-b844-3bba4c3b563e",
+        "82797bf4-7814-4ab6-b27e-17c371181c31",
+        "8a3ffe88-3ec4-4120-91e1-a1d2ef7d68de",
+        "df434213-c385-4b55-8325-8f9d42e8c8d8"
+      ]
+    },
+    "C55": {
+      "status": "reserved",
+      "placement": [
+        83.9,
+        69.4,
+        180.0,
+        "F.Cu"
+      ],
+      "displacement_mm": 2.262741699796944,
+      "reroute_track_uuids": [
+        "0987944a-395a-4d9b-9700-4b288914c1fd",
+        "8844b730-5ecc-4ea5-b09f-38cd8ed3b6cb",
+        "abf9b706-157c-46d8-88c3-0cab785a8a69",
+        "c4e39cf9-54e7-4c57-841b-886b0507e449",
+        "d94d4f90-7a55-490a-8345-ff6bd5741329"
+      ]
+    },
+    "C52": {
+      "status": "reserved",
+      "placement": [
+        81.5,
+        78.3,
+        -90.0,
+        "F.Cu"
+      ],
+      "displacement_mm": 2.0099751242241783,
+      "reroute_track_uuids": []
+    },
+    "C298": {
+      "status": "reserved",
+      "placement": [
+        81.55,
+        73.15,
+        0.0,
+        "F.Cu"
+      ],
+      "displacement_mm": 2.280350850198277,
+      "reroute_track_uuids": [
+        "0fea5f0e-3227-4465-9c7c-e8b37877410e",
+        "15e101f6-dfe9-48e5-9d00-9881e67e9fcc",
+        "2d0ddbbf-3167-49f7-bab0-f853b6039e4d"
+      ]
+    },
+    "C156": {
+      "status": "reserved",
+      "placement": [
+        67.8,
+        70.45,
+        -90.0,
+        "F.Cu"
+      ],
+      "displacement_mm": 1.2165525060596472,
+      "reroute_track_uuids": [
+        "3a10338c-942d-4a86-83b0-b2b1d7256399",
+        "74374f48-450d-4cf1-84da-83dd31c1f822",
+        "f741b41a-5b07-43d4-a8db-14d8c6fc8ac3"
+      ]
+    },
+    "C317": {
+      "status": "reserved",
+      "placement": [
+        57.8,
+        72.5,
+        0.0,
+        "F.Cu"
+      ],
+      "displacement_mm": 0.7999999999999972,
+      "reroute_track_uuids": [
+        "0f956836-a7e8-4c79-9dc8-6764c1eb115e",
+        "21e1e91f-c3cb-446b-826a-7b2852161207",
+        "3e254b25-c26b-4595-a456-4f0d35e19d1a",
+        "4677cee6-0395-4123-9933-6acb3608eac4",
+        "4a05d4d9-804f-462a-8d49-6c1f8dc5a4f4",
+        "4e5f00d1-69a3-43b6-b96e-2b88af1f1b89",
+        "5bde65ea-6b99-466a-8c18-483150860ca6",
+        "932a9ee4-af3a-4cb2-b8ab-44ce8a72700a",
+        "9e46c0c2-ca32-4739-bf69-34a333f45f49",
+        "b0f1e3e8-874c-4c73-976a-e843376a34f8",
+        "c165e2d0-7c0e-4eb3-9c2e-c5f4c28da1ca",
+        "ccf3ad58-9665-418d-b2af-2b6d065e7e5e",
+        "cf0feb27-70bc-42bd-9170-2c17f84b7d75",
+        "e11b3cd3-2b20-43a3-96b4-727181e24b18",
+        "e2f7a76f-26be-4513-a2a3-2c45eb472de1",
+        "f67d282e-675e-4441-beb0-0ab4c30771d3"
+      ]
+    },
+    "C46": {
+      "status": "reserved",
+      "placement": [
+        72.5,
+        67.65,
+        0.0,
+        "F.Cu"
+      ],
+      "displacement_mm": 2.561249694973136,
+      "reroute_track_uuids": [
+        "1326851c-8d40-40e4-937f-e96bdb4930c8"
+      ]
+    },
+    "C331": {
+      "status": "reserved",
+      "placement": [
+        40.9,
+        72.0,
+        90.0,
+        "F.Cu"
+      ],
+      "displacement_mm": 0.0,
+      "reroute_track_uuids": [
+        "16e1338e-9586-44a4-ab06-84d3c3371e1a",
+        "6e7c38e1-fb68-4840-b5ab-0ace5268a9a6",
+        "802f19b0-3d39-4a06-948b-cff938ca5cdc",
+        "90f15587-2f4e-488d-b157-dc47681f5f36",
+        "c89889b5-d975-4208-b996-cfdcfc078918"
+      ]
+    },
+    "C315": {
+      "status": "reserved",
+      "placement": [
+        47.0,
+        69.8,
+        180.0,
+        "F.Cu"
+      ],
+      "displacement_mm": 1.280624847486568,
+      "reroute_track_uuids": []
+    },
+    "C322": {
+      "status": "reserved",
+      "placement": [
+        57.35,
+        67.5,
+        270.0,
+        "F.Cu"
+      ],
+      "displacement_mm": 1.886796226411322,
+      "reroute_track_uuids": [
+        "0f55b5ab-5e0f-4933-ae70-de41781def19",
+        "88bd4f51-22de-40c6-9f16-e32e7f77b7d9",
+        "fb8144de-7ffb-49ac-bb5a-9ee7633a9810"
+      ]
+    },
+    "C47": {
+      "status": "reserved",
+      "placement": [
+        72.5,
+        69.5,
+        -90.0,
+        "F.Cu"
+      ],
+      "displacement_mm": 0.0,
+      "reroute_track_uuids": [
+        "2b35da23-68bf-4521-872a-d62e17232433",
+        "3418fed4-b79c-457b-9efa-cc8d8a05a93d",
+        "ae61cae2-b49c-41d5-b183-52f6d42e5bd6",
+        "b17fdb63-7bf8-4b4c-9da9-095938495f9b",
+        "b7738f50-9a1f-483f-b9c6-3a72e7067de5",
+        "e2a38956-b5fd-4264-a338-41d675e8594a",
+        "e8f70343-50b1-48ae-bdf2-5beddbc5446c"
+      ]
+    },
+    "C306": {
+      "status": "reserved",
+      "placement": [
+        44.5,
+        72.0,
+        90.0,
+        "F.Cu"
+      ],
+      "displacement_mm": 0.0,
+      "reroute_track_uuids": []
+    },
+    "C316": {
+      "status": "reserved",
+      "placement": [
+        49.2,
+        72.85,
+        -90.0,
+        "F.Cu"
+      ],
+      "displacement_mm": 1.897366596101023,
+      "reroute_track_uuids": [
+        "0203d5b3-b643-4e19-9fac-864680dc5859"
+      ]
+    },
+    "C321": {
+      "status": "reserved",
+      "placement": [
+        57.7,
+        70.55,
+        180.0,
+        "F.Cu"
+      ],
+      "displacement_mm": 1.2165525060596472,
+      "reroute_track_uuids": [
+        "13b7b2ba-5213-4728-8630-eddfa352f03e",
+        "156fd606-768b-46dc-87d2-43439805040c",
+        "21a75ff1-06bc-49d4-90e9-254cd82a3115",
+        "239de036-5ef1-4489-98b3-00fd93cfea00",
+        "44455ac4-f1ca-4609-a6d8-670de461064c",
+        "458e3526-d6af-4f50-b913-70004904e7fd",
+        "498be311-7b7e-490e-896b-b63859b35418",
+        "4c585170-9d32-43b1-ae47-8231cf9b4080",
+        "6e036649-072a-4043-9489-6ddeea962d0e",
+        "7c67bd53-ecf8-4530-aad0-afb41b0d9ece",
+        "9fbc8423-5ed6-4c09-b4d1-e9aed3c4e9c4",
+        "d4d53db9-888c-4a12-945b-e50c25e5d9ef",
+        "da520f04-2e3a-43da-b709-46855d8fbe97",
+        "e2c9315b-143b-4f10-af89-8bea533b9a66",
+        "e8c5f82b-91ee-42ae-b0fa-d45ca900acb8",
+        "f47ef5df-2702-495e-aeb5-a50aee1481f6"
+      ]
+    },
+    "C301": {
+      "status": "reserved",
+      "placement": [
+        82.35,
+        69.5,
+        270.0,
+        "F.Cu"
+      ],
+      "displacement_mm": 3.4000000000000057,
+      "reroute_track_uuids": []
+    },
+    "C313": {
+      "status": "reserved",
+      "placement": [
+        57.7,
+        74.7,
+        180.0,
+        "F.Cu"
+      ],
+      "displacement_mm": 1.2165525060596472,
+      "reroute_track_uuids": [
+        "2f83b199-cf43-4e28-9c1d-fd800107a950"
+      ]
+    },
+    "C330": {
+      "status": "reserved",
+      "placement": [
+        43.6,
+        82.2,
+        0.0,
+        "F.Cu"
+      ],
+      "displacement_mm": 0.0,
+      "reroute_track_uuids": []
+    },
+    "C302": {
+      "status": "reserved",
+      "placement": [
+        91.4,
+        73.9,
+        90.0,
+        "F.Cu"
+      ],
+      "displacement_mm": 2.7784887978899686,
+      "reroute_track_uuids": [
+        "281fa77c-4d44-4c1d-8421-2abf26353093",
+        "9c4da78c-bf72-47f9-825a-7ba00956f788"
+      ]
+    },
+    "C303": {
+      "status": "reserved",
+      "placement": [
+        91.85,
+        76.0,
+        180.0,
+        "F.Cu"
+      ],
+      "displacement_mm": 2.5999999999999943,
+      "reroute_track_uuids": []
+    },
+    "C312": {
+      "status": "reserved",
+      "placement": [
+        57.8,
+        69.0,
+        0.0,
+        "F.Cu"
+      ],
+      "displacement_mm": 3.9293765408776973,
+      "reroute_track_uuids": [
+        "0afe00ce-ae49-4073-a226-b4fef656633a",
+        "14a9afa7-dfda-4e17-ac44-e78a3a7662eb",
+        "1c8ccb05-1831-4b6d-94b9-ffd8f349b855",
+        "2e285aa2-d7a4-4923-8f51-54a995b11d2c",
+        "33895dcb-cf9a-489f-835f-d69437e40e88",
+        "37ba5474-c8c4-42cb-882b-f7c64f410221",
+        "3f590b04-4943-46f2-bacf-8ccd95d16276",
+        "3fbaca5d-0340-4bf0-88e7-033841498b56",
+        "45134d65-26be-40e3-a63e-dbb29898496a",
+        "845e1e92-bad7-482e-940b-d7ad83b1e77b",
+        "8922a9a5-5bd1-4ea3-a97f-c3f82ebd6900",
+        "943d6282-8635-45b7-9f4b-817dafdc9a2a",
+        "9993da3d-d66e-45b4-a5f7-a136b1a7ab82",
+        "a0d89da4-e291-48c1-aedb-5ac53290a6cd",
+        "ad75a604-cc27-4e00-883c-fc1d8c6b5422",
+        "b80e16c8-c994-48a3-b7f4-2dd66aa6178f",
+        "bcd2004b-b49d-4778-ab85-ec6cb5eab2ad",
+        "bdebaf9e-0094-4004-b91c-064031abbd18",
+        "c005cba8-ad23-4bd0-82ab-4b3247a4fc46",
+        "c2b9c7df-1d12-46c6-8adc-019e2b9c81de",
+        "c2ffd6f4-c26c-49f6-948a-301ae6be7556",
+        "c547bb73-8902-45d4-a5dd-12684d30700b",
+        "cb612e03-d854-4d1c-8566-80ece5dc4013",
+        "cca0727e-86ff-41b8-a931-2b9d6145c9b0",
+        "deb2622f-a901-479f-9cc3-08d182af9364"
+      ]
+    },
+    "C320": {
+      "status": "reserved",
+      "placement": [
+        55.4,
+        65.45,
+        90.0,
+        "F.Cu"
+      ],
+      "displacement_mm": 0.8944271909999127,
+      "reroute_track_uuids": []
+    },
+    "C44": {
+      "status": "reserved",
+      "placement": [
+        72.4,
+        66.1,
+        90.0,
+        "F.Cu"
+      ],
+      "displacement_mm": 1.4560219778561108,
+      "reroute_track_uuids": []
+    },
+    "C299": {
+      "status": "reserved",
+      "placement": [
+        81.6,
+        72.1,
+        180.0,
+        "F.Cu"
+      ],
+      "displacement_mm": 4.16173040933697,
+      "reroute_track_uuids": [
+        "47bee600-16b4-4a19-9c4b-9aa73944977f",
+        "9e5207b1-3610-4bf9-9f6f-b59520be43fa",
+        "e0043a9b-c4a0-47c1-a994-ca0829a65268"
+      ]
+    },
+    "C311": {
+      "status": "reserved",
+      "placement": [
+        48.7,
+        70.9,
+        90.0,
+        "F.Cu"
+      ],
+      "displacement_mm": 4.049691346263317,
+      "reroute_track_uuids": [
+        "0203d5b3-b643-4e19-9fac-864680dc5859",
+        "8b1892c5-0498-49b0-b3f0-5b4d58c3b35d",
+        "915b2bbd-7462-46a1-9e3f-b518c7703bc4",
+        "f473e030-f8a1-4dd0-80f7-6e67a7cf55ad"
+      ]
+    },
+    "C295": {
+      "status": "reserved",
+      "placement": [
+        81.55,
+        71.05,
+        180.0,
+        "F.Cu"
+      ],
+      "displacement_mm": 1.697056274847718,
+      "reroute_track_uuids": [
+        "873b48cb-a8ac-4b77-881a-7194f035a14c"
+      ]
+    },
+    "C318": {
+      "status": "reserved",
+      "placement": [
+        48.55,
+        68.55,
+        90.0,
+        "F.Cu"
+      ],
+      "displacement_mm": 2.2090722034374553,
+      "reroute_track_uuids": [
+        "3e11bf59-162d-44fd-a9ca-312d2723e3f5",
+        "4358ae6c-4978-4dfe-a281-34bd1e5ac733",
+        "86e20e94-1a3e-47b1-adb8-1cf97845d784",
+        "8b1892c5-0498-49b0-b3f0-5b4d58c3b35d",
+        "915b2bbd-7462-46a1-9e3f-b518c7703bc4",
+        "9800674f-7690-4c32-bf5e-edb01e83bfe8"
+      ]
+    },
+    "C40": {
+      "status": "reserved",
+      "placement": [
+        72.6,
+        64.1,
+        0.0,
+        "F.Cu"
+      ],
+      "displacement_mm": 1.64924225024706,
+      "reroute_track_uuids": []
+    },
+    "C323": {
+      "status": "reserved",
+      "placement": [
+        49.2,
+        65.6,
+        180.0,
+        "F.Cu"
+      ],
+      "displacement_mm": 1.4142135623731011,
+      "reroute_track_uuids": [
+        "db4e5094-c717-4519-9e46-f79c79ed600c"
+      ]
+    },
+    "C42": {
+      "status": "reserved",
+      "placement": [
+        64.3,
+        68.9,
+        -90.0,
+        "F.Cu"
+      ],
+      "displacement_mm": 1.2649110640673562,
+      "reroute_track_uuids": [
+        "400a3934-2fbd-45d9-bf6b-258f61de5c11"
+      ]
+    },
+    "C48": {
+      "status": "reserved",
+      "placement": [
+        73.4,
+        65.8,
+        270.0,
+        "F.Cu"
+      ],
+      "displacement_mm": 1.2649110640673562,
+      "reroute_track_uuids": []
+    },
+    "C53": {
+      "status": "reserved",
+      "placement": [
+        88.35,
+        78.95,
+        0.0,
+        "F.Cu"
+      ],
+      "displacement_mm": 1.6124515496597047,
+      "reroute_track_uuids": [
+        "79b69552-ad5e-470b-ba68-dad2da714c3b",
+        "916d505b-8497-4e31-a84e-66dd4f27918a",
+        "dc8ffcb5-1664-4592-a73e-93e6de4a4935",
+        "e0b53b71-80d6-4836-9eee-978de5bb9035"
+      ]
+    },
+    "C54": {
+      "status": "reserved",
+      "placement": [
+        91.7,
+        77.05,
+        0.0,
+        "F.Cu"
+      ],
+      "displacement_mm": 2.2090722034374553,
+      "reroute_track_uuids": [
+        "574bb2c5-25b6-4ea3-a155-7eb64f0a5d00",
+        "8051d34d-19e0-4cbc-bcef-eaf8a9e7ec5e",
+        "eaeee08b-d73c-455e-ba8e-3ca0346f480e"
+      ]
+    },
+    "C296": {
+      "status": "reserved",
+      "placement": [
+        79.95,
+        78.7,
+        180.0,
+        "F.Cu"
+      ],
+      "displacement_mm": 3.5608987629529705,
+      "reroute_track_uuids": [
+        "4562281d-c564-40dd-b5c8-6f7b54fc3f19",
+        "660d6a71-9e5a-44ae-a2c5-54d02e5bd764",
+        "79fb19d8-e27e-496a-9fcf-184c1371ec0c"
+      ]
+    },
+    "C51": {
+      "status": "reserved",
+      "placement": [
+        90.05,
+        68.1,
+        270.0,
+        "F.Cu"
+      ],
+      "displacement_mm": 3.6878177829171563,
+      "reroute_track_uuids": [
+        "1dd6a722-82df-42cf-aa73-e03ed8ec5f84",
+        "7325ba08-a77c-4c79-b2f1-12868de4854b",
+        "8870b96b-f20e-4113-94ee-8aa018d217de"
+      ]
+    },
+    "C155": {
+      "status": "reserved",
+      "placement": [
+        69.5,
+        70.35,
+        -90.0,
+        "F.Cu"
+      ],
+      "displacement_mm": 2.785677655436819,
+      "reroute_track_uuids": [
+        "a3ef3fb2-8fcd-472b-a67e-7dc8dddcf323"
+      ]
+    },
+    "C319": {
+      "status": "reserved",
+      "placement": [
+        52.1,
+        74.85,
+        -90.0,
+        "F.Cu"
+      ],
+      "displacement_mm": 0.7211102550927924,
+      "reroute_track_uuids": [
+        "1f4bfc54-77d8-48bd-8596-4e162ee5a28a",
+        "4f9aeb68-2b9e-48b0-b568-9b9f510cab47",
+        "5ff0fb10-40b6-4cba-a67c-00393dc94c2a",
+        "870d3596-171d-4f94-8eee-3059c5b53bab",
+        "b122b2d2-c7ee-42a1-a1f0-4acde089e8af",
+        "c2cffea2-2e18-4769-951f-34d27d91af02",
+        "e15b923f-82e2-418a-b1c9-5917c60cde09",
+        "f1345b25-1584-4f0b-9869-475e3c4a6fbf"
+      ]
+    },
+    "C304": {
+      "status": "reserved",
+      "placement": [
+        92.9,
+        75.0,
+        0.0,
+        "F.Cu"
+      ],
+      "displacement_mm": 2.4000000000000057,
+      "reroute_track_uuids": []
+    }
+  }
+}
