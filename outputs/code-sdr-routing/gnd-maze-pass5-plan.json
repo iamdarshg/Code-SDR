@@ -1,0 +1,534 @@
+{
+  "source_sha256": "c2b5a658eea8d47496c493371421ffa1674c3dce301dd4217fe674a6f66a3057",
+  "routes": [
+    {
+      "net": "GND",
+      "reason": "outer-layer maze route between disconnected conductors",
+      "segments": [
+        {
+          "start": [
+            56.380001,
+            74.608242
+          ],
+          "end": [
+            56.540001,
+            74.608242
+          ],
+          "layer": 0,
+          "width": 0.25
+        },
+        {
+          "start": [
+            56.540001,
+            74.608242
+          ],
+          "end": [
+            56.620001,
+            74.688242
+          ],
+          "layer": 0,
+          "width": 0.25
+        },
+        {
+          "start": [
+            56.620001,
+            74.688242
+          ],
+          "end": [
+            56.700001,
+            74.688242
+          ],
+          "layer": 0,
+          "width": 0.25
+        },
+        {
+          "start": [
+            56.700001,
+            74.688242
+          ],
+          "end": [
+            56.940001,
+            74.928242
+          ],
+          "layer": 0,
+          "width": 0.25
+        },
+        {
+          "start": [
+            56.940001,
+            74.928242
+          ],
+          "end": [
+            57.020001,
+            74.928242
+          ],
+          "layer": 0,
+          "width": 0.25
+        },
+        {
+          "start": [
+            57.020001,
+            74.928242
+          ],
+          "end": [
+            57.100001,
+            75.008242
+          ],
+          "layer": 0,
+          "width": 0.25
+        },
+        {
+          "start": [
+            57.100001,
+            75.008242
+          ],
+          "end": [
+            57.15929047006879,
+            75.08452121552442
+          ],
+          "layer": 0,
+          "width": 0.25
+        }
+      ],
+      "vias": []
+    },
+    {
+      "net": "GND",
+      "reason": "outer-layer maze route between disconnected conductors",
+      "segments": [
+        {
+          "start": [
+            79.225015,
+            77.66
+          ],
+          "end": [
+            79.225015,
+            77.9
+          ],
+          "layer": 0,
+          "width": 0.25
+        },
+        {
+          "start": [
+            79.225015,
+            77.9
+          ],
+          "end": [
+            79.2665183004496,
+            77.98775135605261
+          ],
+          "layer": 0,
+          "width": 0.25
+        }
+      ],
+      "vias": []
+    },
+    {
+      "net": "GND",
+      "reason": "outer-layer maze route between disconnected conductors",
+      "segments": [
+        {
+          "start": [
+            58.02814074791907,
+            72.70302921705634
+          ],
+          "end": [
+            58.0,
+            72.716713
+          ],
+          "layer": 0,
+          "width": 0.25
+        },
+        {
+          "start": [
+            58.0,
+            72.716713
+          ],
+          "end": [
+            57.92,
+            72.716713
+          ],
+          "layer": 0,
+          "width": 0.25
+        },
+        {
+          "start": [
+            57.92,
+            72.716713
+          ],
+          "end": [
+            57.92,
+            72.876713
+          ],
+          "layer": 0,
+          "width": 0.25
+        },
+        {
+          "start": [
+            57.92,
+            72.876713
+          ],
+          "end": [
+            57.84,
+            72.876713
+          ],
+          "layer": 0,
+          "width": 0.25
+        },
+        {
+          "start": [
+            57.84,
+            72.876713
+          ],
+          "end": [
+            57.84,
+            72.956713
+          ],
+          "layer": 0,
+          "width": 0.25
+        },
+        {
+          "start": [
+            57.84,
+            72.956713
+          ],
+          "end": [
+            57.76,
+            72.956713
+          ],
+          "layer": 0,
+          "width": 0.25
+        },
+        {
+          "start": [
+            57.76,
+            72.956713
+          ],
+          "end": [
+            57.76654952714224,
+            73.04009305939725
+          ],
+          "layer": 0,
+          "width": 0.25
+        }
+      ],
+      "vias": []
+    },
+    {
+      "net": "GND",
+      "reason": "outer-layer maze route between disconnected conductors",
+      "segments": [
+        {
+          "start": [
+            91.616713,
+            73.62
+          ],
+          "end": [
+            91.696713,
+            73.7
+          ],
+          "layer": 0,
+          "width": 0.25
+        },
+        {
+          "start": [
+            91.696713,
+            73.7
+          ],
+          "end": [
+            93.696713,
+            73.7
+          ],
+          "layer": 0,
+          "width": 0.25
+        }
+      ],
+      "vias": [
+        {
+          "pos": [
+            93.696713,
+            73.7
+          ],
+          "diameter": 0.45,
+          "drill": 0.2
+        }
+      ]
+    },
+    {
+      "net": "GND",
+      "reason": "outer-layer maze route between disconnected conductors",
+      "segments": [
+        {
+          "start": [
+            57.42,
+            70.813287
+          ],
+          "end": [
+            57.45913316228234,
+            70.85646379099136
+          ],
+          "layer": 0,
+          "width": 0.25
+        }
+      ],
+      "vias": []
+    },
+    {
+      "net": "GND",
+      "reason": "outer-layer maze route between disconnected conductors",
+      "segments": [
+        {
+          "start": [
+            85.76975,
+            60.27
+          ],
+          "end": [
+            85.84975,
+            60.35
+          ],
+          "layer": 0,
+          "width": 0.25
+        },
+        {
+          "start": [
+            85.84975,
+            60.35
+          ],
+          "end": [
+            85.84975,
+            60.51
+          ],
+          "layer": 0,
+          "width": 0.25
+        },
+        {
+          "start": [
+            85.84975,
+            60.51
+          ],
+          "end": [
+            85.92975,
+            60.59
+          ],
+          "layer": 0,
+          "width": 0.25
+        }
+      ],
+      "vias": [
+        {
+          "pos": [
+            85.92975,
+            60.59
+          ],
+          "diameter": 0.45,
+          "drill": 0.2
+        }
+      ]
+    },
+    {
+      "net": "GND",
+      "reason": "outer-layer maze route between disconnected conductors",
+      "segments": [
+        {
+          "start": [
+            82.58774826503041,
+            69.74511360408974
+          ],
+          "end": [
+            82.613287,
+            69.7
+          ],
+          "layer": 0,
+          "width": 0.25
+        },
+        {
+          "start": [
+            82.613287,
+            69.7
+          ],
+          "end": [
+            82.853287,
+            69.7
+          ],
+          "layer": 0,
+          "width": 0.25
+        },
+        {
+          "start": [
+            82.853287,
+            69.7
+          ],
+          "end": [
+            82.89141553719006,
+            69.68196654495283
+          ],
+          "layer": 0,
+          "width": 0.25
+        }
+      ],
+      "vias": []
+    },
+    {
+      "net": "GND",
+      "reason": "outer-layer maze route between disconnected conductors",
+      "segments": [
+        {
+          "start": [
+            81.763287,
+            78.98
+          ],
+          "end": [
+            81.763287,
+            79.14
+          ],
+          "layer": 0,
+          "width": 0.25
+        },
+        {
+          "start": [
+            81.763287,
+            79.14
+          ],
+          "end": [
+            81.7656346880116,
+            79.18778828731371
+          ],
+          "layer": 0,
+          "width": 0.25
+        }
+      ],
+      "vias": []
+    },
+    {
+      "net": "GND",
+      "reason": "outer-layer maze route between disconnected conductors",
+      "segments": [
+        {
+          "start": [
+            80.87,
+            71.313287
+          ],
+          "end": [
+            80.87,
+            71.793287
+          ],
+          "layer": 0,
+          "width": 0.25
+        },
+        {
+          "start": [
+            80.87,
+            71.793287
+          ],
+          "end": [
+            80.91203916952966,
+            71.83532616952967
+          ],
+          "layer": 0,
+          "width": 0.25
+        }
+      ],
+      "vias": []
+    },
+    {
+      "net": "GND",
+      "reason": "outer-layer maze route between disconnected conductors",
+      "segments": [
+        {
+          "start": [
+            64.02591739466229,
+            69.19106316146616
+          ],
+          "end": [
+            64.003287,
+            69.18
+          ],
+          "layer": 0,
+          "width": 0.25
+        },
+        {
+          "start": [
+            64.003287,
+            69.18
+          ],
+          "end": [
+            63.683287,
+            69.18
+          ],
+          "layer": 0,
+          "width": 0.25
+        },
+        {
+          "start": [
+            63.683287,
+            69.18
+          ],
+          "end": [
+            63.603287,
+            69.1
+          ],
+          "layer": 0,
+          "width": 0.25
+        },
+        {
+          "start": [
+            63.603287,
+            69.1
+          ],
+          "end": [
+            63.523287,
+            69.1
+          ],
+          "layer": 0,
+          "width": 0.25
+        },
+        {
+          "start": [
+            63.523287,
+            69.1
+          ],
+          "end": [
+            63.443287,
+            69.02
+          ],
+          "layer": 0,
+          "width": 0.25
+        },
+        {
+          "start": [
+            63.443287,
+            69.02
+          ],
+          "end": [
+            63.363287,
+            69.02
+          ],
+          "layer": 0,
+          "width": 0.25
+        },
+        {
+          "start": [
+            63.363287,
+            69.02
+          ],
+          "end": [
+            63.283287,
+            68.94
+          ],
+          "layer": 0,
+          "width": 0.25
+        }
+      ],
+      "vias": [
+        {
+          "pos": [
+            63.283287,
+            68.94
+          ],
+          "diameter": 0.45,
+          "drill": 0.2
+        }
+      ]
+    }
+  ]
+}
