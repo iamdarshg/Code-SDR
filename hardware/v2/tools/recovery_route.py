@@ -270,8 +270,13 @@ class Copper:
         def foreign(l):
             return [s for u,s in nearby[l] if self.nodes[u]['net']!=net and self.nodes[u]['kind']!='zone']
         clearance=.115+pitch*.55 if clearance is None else clearance
+        # Route on every copper layer. Inner planes remain refillable zones, so
+        # a localized signal track creates a clearance channel without treating
+        # the entire pour as a fixed wall. Fixed copper and through-vias still
+        # block every layer and the final candidate must pass whole-board DRC.
+        routing_layers=self.layers
         blocked=[]
-        for l in self.outer:
+        for l in routing_layers:
             blocked.append(mask([s.buffer(width/2+clearance) for s in foreign(l)]))
         # Via masks cover copper on EVERY layer and drill-to-drill spacing.
         vg=[]
@@ -280,17 +285,17 @@ class Copper:
         vg.extend(s.buffer(.285+pitch*.55) for s in self.pad_shapes if s.intersects(clip))
         vg.extend(s.buffer(.215+pitch*.55) for s in self.holes if s.intersects(clip))
         via_blocked=mask(vg)
-        starts=[mask([source[l].buffer(-.015)]) & ~blocked[i] for i,l in enumerate(self.outer)]
-        goals_real=[mask([target[l].buffer(-.015)]) & ~blocked[i] for i,l in enumerate(self.outer)]
-        plane_target=union_all([s for l,s in target.items() if l not in self.outer])
-        projected=mask([plane_target.buffer(-.08)]) & ~via_blocked
-        goals=[g | (projected & ~blocked[i]) for i,g in enumerate(goals_real)]
+        starts=[mask([source[l].buffer(-.015)]) & ~blocked[i] for i,l in enumerate(routing_layers)]
+        goals_real=[mask([target[l].buffer(-.015)]) & ~blocked[i] for i,l in enumerate(routing_layers)]
+        goals=goals_real
         if not any(s.any() for s in starts) or not any(g.any() for g in goals):
             return None
-        heuristic=distance_transform_edt(~(goals[0]|goals[1])).astype(np.float32)
+        goal_union=np.logical_or.reduce(goals)
+        heuristic=distance_transform_edt(~goal_union).astype(np.float32)
         size=nx*ny
-        dist=np.full(2*size,np.inf,dtype=np.float32)
-        prev=np.full(2*size,-1,dtype=np.int32)
+        layer_count=len(routing_layers)
+        dist=np.full(layer_count*size,np.inf,dtype=np.float32)
+        prev=np.full(layer_count*size,-1,dtype=np.int32)
         queue=[]
         for l,s in enumerate(starts):
             for j,i in zip(*np.nonzero(s)):
@@ -316,11 +321,15 @@ class Copper:
                 if new<dist[kk]-1e-3:
                     dist[kk]=new;prev[kk]=k
                     heapq.heappush(queue,(new+heuristic[jj,ii],new,kk))
-            if not via_blocked[j,i] and not blocked[1-l][j,i]:
-                kk=(1-l)*size+cell;new=cost+2.5/pitch
-                if new<dist[kk]-1e-3:
-                    dist[kk]=new;prev[kk]=k
-                    heapq.heappush(queue,(new+heuristic[j,i],new,kk))
+            if not via_blocked[j,i]:
+                for ll in range(layer_count):
+                    if ll==l or blocked[ll][j,i]:
+                        continue
+                    kk=ll*size+cell
+                    new=cost+(2.5+0.35*abs(ll-l))/pitch
+                    if new<dist[kk]-1e-3:
+                        dist[kk]=new;prev[kk]=k
+                        heapq.heappush(queue,(new+heuristic[j,i],new,kk))
         if found is None:
             return None
         path=[];k=found
@@ -336,7 +345,7 @@ class Copper:
                 continue
             compact.append(p1)
         compact.append(path[-1])
-        route=dict(net=net,reason='outer-layer maze route between disconnected conductors',segments=[],vias=[])
+        route=dict(net=net,reason='all-layer maze route between disconnected conductors',segments=[],vias=[])
         # Raster masks select cells, not exact copper points. Anchor the route
         # inside the real source/target polygon; otherwise a rounded cell at a
         # pad corner can leave a microscopic open and repeated empty routes.
@@ -350,21 +359,17 @@ class Copper:
                 end=list(xy if at_start else exact),layer=layer,width=width))
             return True
         first=path[0]
-        if not anchor(first[:2],self.outer[first[2]],source[self.outer[first[2]]],True): return None
+        if not anchor(first[:2],routing_layers[first[2]],source[routing_layers[first[2]]],True): return None
         for a,b in zip(compact,compact[1:]):
             if a[2]!=b[2]:
                 if not self.via_clear(a[:2],net):return None
                 route['vias'].append(dict(pos=list(a[:2]),diameter=.45,drill=.2))
             elif math.dist(a[:2],b[:2])>.001:
-                layer=self.outer[a[2]]
+                layer=routing_layers[a[2]]
                 if not self.line_clear(a[:2],b[:2],layer,net,width):return None
                 route['segments'].append(dict(start=list(a[:2]),end=list(b[:2]),layer=layer,width=width))
         l,cell=divmod(found,size);j,i=divmod(cell,nx)
-        if not goals_real[l][j,i]:
-            xy=list(path[-1][:2])
-            if not self.via_clear(xy,net):return None
-            route['vias'].append(dict(pos=xy,diameter=.45,drill=.2))
-        elif not anchor(path[-1][:2],self.outer[l],target[self.outer[l]],False):
+        if not anchor(path[-1][:2],routing_layers[l],target[routing_layers[l]],False):
             return None
         if not route['segments'] and not route['vias']: return None
         return route

@@ -1,0 +1,165 @@
+{
+  "source_sha256": "f12c0001d344224cf14b771b42c19d4c506d51ff6a7e84127dd243954bf6c714",
+  "routes": [
+    {
+      "net": "GND",
+      "reason": "connect isolated conductor to existing inner plane",
+      "from_group": [
+        "7575cee3-b779-4d56-a21c-1c2f95db3569",
+        "07d18d31-32af-4bbc-b385-37c119d3a56a",
+        "5f97d608-7b7e-4734-91ef-c93f3f79679e",
+        "126f8806-bd1a-4aaa-a2d5-48efbe009c5a",
+        "1a93c3a6-0de7-4e01-90af-8de9c66ead96",
+        "768a2ab9-3683-44f8-a55d-93caada2233f",
+        "e8013ce1-3512-472e-92ae-4693bca8cd18",
+        "5c3401e9-d7dd-49ed-9768-242e58f5cc30",
+        "e4b11b6e-d92e-49ef-86f4-ed52031ac8fd",
+        "54dd31ef-df4d-4989-b391-bff3b17016d3",
+        "9bf654f7-769f-4b92-8e3c-dca7651f5087",
+        "f41a54cc-9281-4de9-a694-6a46bcdf5b7f",
+        "d6e2ef9d-432c-45da-a40e-9d83ff82bba2",
+        "0d87d761-51cb-4a51-9657-cae0fcc64f92",
+        "35f9a1b0-85ac-4181-8dcd-3ffb8cebfb81",
+        "fb5462fc-3527-4e10-807b-0c24e501708b",
+        "eccf45ac-b13a-4f1c-8411-d4373fe978f5",
+        "ad3aabf0-81fa-48f0-8ef8-3a57bf1fe5cb",
+        "f29806d0-66c4-4be7-88ad-025ad63bb732",
+        "0661ca37-14eb-4d24-a97f-d26fc6a1ad27",
+        "79248993-27b6-4bdf-b944-84260b144eec",
+        "dfcf0a93-104f-4616-8fe4-a3424c443b40",
+        "00c8f5a3-a468-4ee0-956e-b6d75cf424fa",
+        "258eeb69-0fa8-4b6a-840e-e37970f02b4f",
+        "2cc20805-6494-4552-8a5d-56eeb2f3398d",
+        "2e50e67e-4dff-41c4-a2dc-d18ba4a6ffef",
+        "393c2140-b797-4e12-8f75-922d333f8134",
+        "67419730-1a29-49a6-8457-ce9e285c543e",
+        "95e79494-40d5-4f82-addd-f66c24d8b547",
+        "b98302b9-7b0e-4612-b4cb-79fa5f00ecbb",
+        "dc3d874e-8856-4375-84a5-272712040e47",
+        "edaed759-df6d-412b-b6c8-fa1fd1a29c34",
+        "05085c6c-3301-42ab-9324-8a83e5043d10",
+        "1045a4a2-a91f-4e0e-85f8-8bfa449f5c23",
+        "2e5e45d7-67d9-45a6-9838-3f1fec13db3d",
+        "3aa78d2f-7c1f-47b2-8848-a0c198f7e0e7",
+        "3f0de8bb-e0e2-45b5-9207-a51b95b8b2a0",
+        "43d10944-1250-4bed-a9c2-00e14ad691d7",
+        "4c1e6e68-4e99-492d-96a5-94891020bd91",
+        "56507ce5-b9c0-4b7a-b001-e6a4203807d7",
+        "7596d050-e0ed-40de-bc13-8040346be069",
+        "866ed196-4506-4179-b9b4-e2a8cec8f792",
+        "9eef7c2d-ac56-439f-a1d1-2f32fd836713",
+        "b3c3122d-ab4d-45bd-9dfb-93ecd5e4cf22",
+        "b64da1c9-b05e-4c09-9a9d-510254e3fe7e",
+        "e85c4c5c-e156-408a-8a6d-ebe01a6d827a",
+        "ec8355cb-7da6-4ab9-88af-975bf8315064",
+        "f39d8332-f583-4d91-b46d-4805541d0f1f",
+        "6b81a630-b63a-4886-aab7-07d02e468428:2"
+      ],
+      "segments": [
+        {
+          "start": [
+            73.41498490045474,
+            70.38141540132284
+          ],
+          "end": [
+            74.27833,
+            70.88615
+          ],
+          "layer": 0,
+          "width": 0.25
+        }
+      ],
+      "vias": [
+        {
+          "pos": [
+            74.27833,
+            70.88615
+          ],
+          "diameter": 0.45,
+          "drill": 0.2
+        }
+      ]
+    },
+    {
+      "net": "GND",
+      "reason": "connect isolated conductor to existing inner plane",
+      "from_group": [
+        "16cce310-a43a-4e5f-a4f9-62955f98d34f",
+        "577ebcf9-ba9d-482d-9d17-77b4fcee7d19",
+        "960e3096-0c34-43c0-a889-dbb479fd3b43",
+        "58f7a5cb-2394-4644-a1db-78e89c4e37bb",
+        "3e5889f8-859b-49e5-8146-f6d2e4218fec",
+        "091d8d96-91bf-4740-80d5-f00b7f61156d",
+        "0ad584bc-c2f7-4698-aba6-a00ee262d191",
+        "0d253311-364a-4740-8f08-43a8ecb2014b",
+        "0fd69d74-76ce-4e9d-b4eb-8d3200f3a4d8",
+        "2300b79b-4709-4c86-85ee-190728e3ed45",
+        "4fef5fab-2d04-4670-bac9-e4a4596c52e6",
+        "5a72f7ff-aa86-4274-a92a-165fe845b337",
+        "5e1fa2de-82b3-4130-b077-e0ca9c72c79c",
+        "66646b0f-938b-4d2f-bd75-23529ae4ace9",
+        "68a2f0af-4e72-4b8d-8f79-60fbad2167a8",
+        "77e5171a-883d-40b8-aa6e-51d73fd888ce",
+        "81da4d90-7eeb-44f6-b551-80371cc31b78",
+        "85d7cf8d-df95-47c0-a33f-e376d1f8210b",
+        "abb17d5c-abe3-45fa-a239-e7e48fc6a353",
+        "b31c35f4-24be-472c-80a2-e6ac35bcfb3f",
+        "b5b151aa-a73d-4517-a443-5b6dddbcf604",
+        "c09ba85a-082a-420a-a0e1-4900a05098b4",
+        "dc70afed-e0e1-44b2-b1bd-b9f087a96331",
+        "df897da4-85f1-4149-8af4-50d69c31273c",
+        "e46e6ffc-85f2-41e1-952a-d095e0a43191",
+        "e9722f23-7fe9-40a9-96e1-3fc984d06942",
+        "eb1cf942-5dea-4afe-93ba-06975265efca",
+        "242dfb66-825f-4331-ba4d-146cfaa9efd7",
+        "5c389ff8-d7d4-43f8-b325-7997dcdca56b",
+        "ec8b898b-d830-4139-8477-95f4409bc027",
+        "f9aeafe4-5b3a-430d-9d55-c05225801b85",
+        "fac8ddab-9423-4ecf-acd4-0d45590b003c",
+        "6b81a630-b63a-4886-aab7-07d02e468428:1",
+        "6b81a630-b63a-4886-aab7-07d02e468428:3"
+      ],
+      "segments": [
+        {
+          "start": [
+            54.00793490045474,
+            76.42526540132283
+          ],
+          "end": [
+            56.43013,
+            77.83
+          ],
+          "layer": 2,
+          "width": 0.25
+        }
+      ],
+      "vias": [
+        {
+          "pos": [
+            56.43013,
+            77.83
+          ],
+          "diameter": 0.45,
+          "drill": 0.2
+        }
+      ]
+    }
+  ],
+  "summary": {
+    "GND": {
+      "groups": 6,
+      "added_connections": 2,
+      "unresolved_groups": [
+        [
+          "C312"
+        ],
+        [
+          "C53"
+        ],
+        [
+          "U20"
+        ]
+      ]
+    }
+  }
+}
