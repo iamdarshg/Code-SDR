@@ -1,0 +1,365 @@
+{
+  "source_sha256": "2c122ab71e8ba33fcb814ecdacf01aeca5e594a0be0eb14cc99fbfd2ce6d7357",
+  "routes": [
+    {
+      "net": "FPGA_AUX_2V5",
+      "reason": "DRC-gated localized two-segment dogleg between disconnected outer-layer conductors",
+      "segments": [
+        {
+          "start": [
+            50.342476,
+            65.094202
+          ],
+          "end": [
+            50.3425,
+            64.7742
+          ],
+          "layer": 0,
+          "width": 0.1
+        },
+        {
+          "start": [
+            50.3425,
+            64.7742
+          ],
+          "end": [
+            50.502476,
+            64.774203
+          ],
+          "layer": 0,
+          "width": 0.1
+        }
+      ],
+      "vias": [],
+      "source_endpoints": [
+        "Track [FPGA_AUX_2V5] on F.Cu, length 0.0800 mm",
+        "Track [FPGA_AUX_2V5] on F.Cu, length 0.1131 mm"
+      ],
+      "straight_distance_mm": 0.35776998197305265
+    },
+    {
+      "net": "PHY_PLL_1V2",
+      "reason": "DRC-gated localized two-segment dogleg between disconnected outer-layer conductors",
+      "segments": [
+        {
+          "start": [
+            84.38,
+            69.4
+          ],
+          "end": [
+            84.38,
+            69.6739
+          ],
+          "layer": 0,
+          "width": 0.1
+        },
+        {
+          "start": [
+            84.38,
+            69.6739
+          ],
+          "end": [
+            85.0109,
+            69.67385
+          ],
+          "layer": 0,
+          "width": 0.1
+        }
+      ],
+      "vias": [],
+      "source_endpoints": [
+        "Pad 1 [PHY_PLL_1V2] of C55 on F.Cu",
+        "Via [PHY_PLL_1V2] on F.Cu - B.Cu"
+      ],
+      "straight_distance_mm": 0.687770770315235
+    },
+    {
+      "net": "ADC_REFB",
+      "reason": "DRC-gated localized two-segment dogleg between disconnected outer-layer conductors",
+      "segments": [
+        {
+          "start": [
+            75.40182,
+            69.67007
+          ],
+          "end": [
+            75.4018,
+            68.9
+          ],
+          "layer": 0,
+          "width": 0.1
+        },
+        {
+          "start": [
+            75.4018,
+            68.9
+          ],
+          "end": [
+            75.0,
+            68.9
+          ],
+          "layer": 0,
+          "width": 0.1
+        }
+      ],
+      "vias": [],
+      "source_endpoints": [
+        "Via [ADC_REFB] on F.Cu - B.Cu",
+        "Pad 2 [ADC_REFB] of C154 on F.Cu"
+      ],
+      "straight_distance_mm": 0.8686006661867034
+    },
+    {
+      "net": "CORE_EN",
+      "reason": "DRC-gated localized two-segment dogleg between disconnected outer-layer conductors",
+      "segments": [
+        {
+          "start": [
+            7.41,
+            75.3
+          ],
+          "end": [
+            7.21,
+            75.8
+          ],
+          "layer": 0,
+          "width": 0.1
+        },
+        {
+          "start": [
+            7.21,
+            75.8
+          ],
+          "end": [
+            7.41,
+            76.3
+          ],
+          "layer": 0,
+          "width": 0.1
+        }
+      ],
+      "vias": [],
+      "source_endpoints": [
+        "Pad 2 [CORE_EN] of R157 on F.Cu",
+        "Pad 1 [CORE_EN] of R158 on F.Cu"
+      ],
+      "straight_distance_mm": 1.0
+    },
+    {
+      "net": "ADC_REFT",
+      "reason": "DRC-gated localized two-segment dogleg between disconnected outer-layer conductors",
+      "segments": [
+        {
+          "start": [
+            74.5982,
+            67.0
+          ],
+          "end": [
+            74.0336,
+            67.2455
+          ],
+          "layer": 0,
+          "width": 0.1
+        },
+        {
+          "start": [
+            74.0336,
+            67.2455
+          ],
+          "end": [
+            73.7391,
+            67.78615
+          ],
+          "layer": 0,
+          "width": 0.1
+        }
+      ],
+      "vias": [],
+      "source_endpoints": [
+        "Track [ADC_REFT] on F.Cu, length 1.1701 mm",
+        "Via [ADC_REFT] on F.Cu - B.Cu"
+      ],
+      "straight_distance_mm": 1.1645104690383985
+    },
+    {
+      "net": "GND",
+      "reason": "DRC-gated localized two-segment dogleg between disconnected outer-layer conductors",
+      "segments": [
+        {
+          "start": [
+            53.92007,
+            66.40182
+          ],
+          "end": [
+            52.95,
+            66.4018
+          ],
+          "layer": 0,
+          "width": 0.1
+        },
+        {
+          "start": [
+            52.95,
+            66.4018
+          ],
+          "end": [
+            52.95,
+            65.599999
+          ],
+          "layer": 0,
+          "width": 0.1
+        }
+      ],
+      "vias": [],
+      "source_endpoints": [
+        "Via [GND] on F.Cu - B.Cu",
+        "Pad 2 [GND] of C310 on F.Cu"
+      ],
+      "straight_distance_mm": 1.2585518348248537
+    },
+    {
+      "net": "FB_ANA",
+      "reason": "DRC-gated localized two-segment dogleg between disconnected outer-layer conductors",
+      "segments": [
+        {
+          "start": [
+            21.14,
+            88.65
+          ],
+          "end": [
+            20.1618,
+            87.9752
+          ],
+          "layer": 0,
+          "width": 0.1
+        },
+        {
+          "start": [
+            20.1618,
+            87.9752
+          ],
+          "end": [
+            19.22,
+            88.7
+          ],
+          "layer": 0,
+          "width": 0.1
+        }
+      ],
+      "vias": [],
+      "source_endpoints": [
+        "Pad 1 [FB_ANA] of R155 on F.Cu",
+        "Pad 2 [FB_ANA] of C348 on F.Cu"
+      ],
+      "straight_distance_mm": 1.9206509313251083
+    },
+    {
+      "net": "FPGA_PLL_1V2",
+      "reason": "DRC-gated localized two-segment dogleg between disconnected outer-layer conductors",
+      "segments": [
+        {
+          "start": [
+            56.32615,
+            75.2391
+          ],
+          "end": [
+            57.5323,
+            75.9298
+          ],
+          "layer": 0,
+          "width": 0.1
+        },
+        {
+          "start": [
+            57.5323,
+            75.9298
+          ],
+          "end": [
+            58.18,
+            74.7
+          ],
+          "layer": 0,
+          "width": 0.1
+        }
+      ],
+      "vias": [],
+      "source_endpoints": [
+        "Via [FPGA_PLL_1V2] on F.Cu - B.Cu",
+        "Pad 1 [FPGA_PLL_1V2] of C313 on F.Cu"
+      ],
+      "straight_distance_mm": 1.9306446157954589
+    },
+    {
+      "net": "PHY_AVDDH_3V3",
+      "reason": "DRC-gated localized two-segment dogleg between disconnected outer-layer conductors",
+      "segments": [
+        {
+          "start": [
+            83.18,
+            77.08
+          ],
+          "end": [
+            83.9691,
+            77.08
+          ],
+          "layer": 0,
+          "width": 0.1
+        },
+        {
+          "start": [
+            83.9691,
+            77.08
+          ],
+          "end": [
+            83.9691,
+            74.94385
+          ],
+          "layer": 0,
+          "width": 0.1
+        }
+      ],
+      "vias": [],
+      "source_endpoints": [
+        "Track [PHY_AVDDH_3V3] on F.Cu, length 0.0600 mm",
+        "Track [PHY_AVDDH_3V3] on F.Cu, length 1.2500 mm"
+      ],
+      "straight_distance_mm": 2.2772385980612544
+    },
+    {
+      "net": "SW_1V2",
+      "reason": "DRC-gated localized two-segment dogleg between disconnected outer-layer conductors",
+      "segments": [
+        {
+          "start": [
+            8.775,
+            75.88
+          ],
+          "end": [
+            7.0925,
+            72.88
+          ],
+          "layer": 0,
+          "width": 0.1
+        },
+        {
+          "start": [
+            7.0925,
+            72.88
+          ],
+          "end": [
+            5.41,
+            75.88
+          ],
+          "layer": 0,
+          "width": 0.1
+        }
+      ],
+      "vias": [],
+      "source_endpoints": [
+        "Pad 1 [SW_1V2] of L2 on F.Cu",
+        "Track [SW_1V2] on F.Cu, length 0.7863 mm"
+      ],
+      "straight_distance_mm": 3.365
+    }
+  ]
+}
