@@ -1,0 +1,113 @@
+{
+  "source_sha256": "b85199ca73a6cf2f0f67028cf5335532fdf9c9942ea118422291e46aa601bc79",
+  "routes": [
+    {
+      "net": "ADC_REFB",
+      "reason": "DRC-gated localized two-segment dogleg between disconnected outer-layer conductors",
+      "segments": [
+        {
+          "start": [
+            72.5,
+            69.02
+          ],
+          "end": [
+            71.2391,
+            69.02
+          ],
+          "layer": 0,
+          "width": 0.1
+        },
+        {
+          "start": [
+            71.2391,
+            69.02
+          ],
+          "end": [
+            71.2391,
+            68.53615
+          ],
+          "layer": 0,
+          "width": 0.1
+        }
+      ],
+      "vias": [],
+      "source_endpoints": [
+        "Track [ADC_REFB] on F.Cu, length 0.3061 mm",
+        "Via [ADC_REFB] on F.Cu - B.Cu"
+      ],
+      "straight_distance_mm": 1.3505479008535783
+    },
+    {
+      "net": "PHY_AVDDH_3V3",
+      "reason": "DRC-gated localized two-segment dogleg between disconnected outer-layer conductors",
+      "segments": [
+        {
+          "start": [
+            80.17007,
+            70.90182
+          ],
+          "end": [
+            80.8351,
+            70.4752
+          ],
+          "layer": 0,
+          "width": 0.1
+        },
+        {
+          "start": [
+            80.8351,
+            70.4752
+          ],
+          "end": [
+            81.623895,
+            70.428885
+          ],
+          "layer": 0,
+          "width": 0.1
+        }
+      ],
+      "vias": [],
+      "source_endpoints": [
+        "Via [PHY_AVDDH_3V3] on F.Cu - B.Cu",
+        "Track [PHY_AVDDH_3V3] on F.Cu, length 1.3576 mm"
+      ],
+      "straight_distance_mm": 1.528814784350947
+    },
+    {
+      "net": "ADC_REFT",
+      "reason": "DRC-gated localized two-segment dogleg between disconnected outer-layer conductors",
+      "segments": [
+        {
+          "start": [
+            74.5982,
+            67.0
+          ],
+          "end": [
+            74.5982,
+            65.32
+          ],
+          "layer": 0,
+          "width": 0.1
+        },
+        {
+          "start": [
+            74.5982,
+            65.32
+          ],
+          "end": [
+            73.4,
+            65.32
+          ],
+          "layer": 0,
+          "width": 0.1
+        }
+      ],
+      "vias": [],
+      "source_endpoints": [
+        "Track [ADC_REFT] on F.Cu, length 1.1701 mm",
+        "Pad 1 [ADC_REFT] of C48 on F.Cu"
+      ],
+      "straight_distance_mm": 2.063512355184728
+    }
+  ]
+}
