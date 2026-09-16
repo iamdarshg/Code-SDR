@@ -15,9 +15,7 @@ VERILOG_SOURCES += $(CURDIR)/../../verilog/udp_ip_stack.v
 VERILOG_SOURCES += $(CURDIR)/../../verilog/rp2040_interface.v
 VERILOG_SOURCES += $(CURDIR)/../../verilog/digital_downconverter.v
 VERILOG_SOURCES += $(CURDIR)/../../verilog/compensation_filter.v
-VERILOG_SOURCES += $(CURDIR)/../../verilog/dma_engine.v
 VERILOG_SOURCES += $(CURDIR)/../../verilog/adaptive_gain_scaler.v
-VERILOG_SOURCES += $(CURDIR)/../../verilog/average_power_detector.v
 VERILOG_SOURCES += $(CURDIR)/../../verilog/clock_manager.v
 VERILOG_SOURCES += $(CURDIR)/../../verilog/fpga_processing_pipeline.v
 

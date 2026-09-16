@@ -19,7 +19,6 @@ add_files async_fifo.v
 add_files digital_downconverter.v
 add_files compensation_filter.v
 add_files adaptive_gain_scaler.v
-add_files average_power_detector.v
 add_files nco_generator.v
 add_files cic_decimator.v
 add_files hamming_window.v
@@ -31,7 +30,7 @@ add_files ethernet_mac.v
 add_files rp2040_interface.v
 
 # Add constraints
-add_files fpga_timing_constraints.xdc
+add_files fpga_timing_constraints.sdc
 
 # Set synthesis properties
 set_property verilog_define {USE_LIFMD6000_PLL=1} [current_fileset]
