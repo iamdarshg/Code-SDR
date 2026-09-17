@@ -45,6 +45,10 @@ module app_stream_cdc (
     reg rd_valid_reg;
     reg rd_pending;
 
+    // Issue #58: with the old prioritisation, a consumer holding rd_ready while
+    // another word was available got the SAME word twice - `fifo_rd_en` won the
+    // priority and rd_valid_reg was never cleared. Retire the consumed word and
+    // fetch into the freed slot instead, so each word is presented exactly once.
     assign fifo_rd_en = !rd_empty && !rd_pending && (!rd_valid_reg || rd_ready);
 
     always @(posedge rd_clk or negedge rst_n) begin
@@ -52,16 +56,19 @@ module app_stream_cdc (
             rd_word <= 48'd0;
             rd_valid_reg <= 1'b0;
             rd_pending <= 1'b0;
-        end else begin
-            if (fifo_rd_en) begin
-                rd_pending <= 1'b1;
-            end else if (rd_pending) begin
-                rd_word <= fifo_dout;
-                rd_valid_reg <= 1'b1;
-                rd_pending <= 1'b0;
-            end else if (rd_ready) begin
+        end else if (rd_pending) begin
+            // the fetched word arrives and is presented
+            rd_word      <= fifo_dout;
+            rd_valid_reg <= 1'b1;
+            rd_pending   <= 1'b0;
+        end else if (fifo_rd_en) begin
+            rd_pending <= 1'b1;
+            // mark the currently-presented word consumed in the same cycle, so
+            // it cannot be handed out a second time
+            if (rd_valid_reg && rd_ready)
                 rd_valid_reg <= 1'b0;
-            end
+        end else if (rd_valid_reg && rd_ready) begin
+            rd_valid_reg <= 1'b0;
         end
     end
 

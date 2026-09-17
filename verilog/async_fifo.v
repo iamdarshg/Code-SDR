@@ -50,8 +50,14 @@ module async_fifo #(
     endfunction
     
     // Binary counter increment
+    // The pointer update is gated by !full (below), but `full` itself must not
+    // depend on a gated pointer or it becomes combinational. Compute the
+    // "increment by one" gray code unconditionally and derive full from that.
     assign wr_ptr_bin_next = wr_ptr_bin + {{ADDR_WIDTH{1'b0}}, (wr_en && !full)};
     assign wr_ptr_gray_next = bin_to_gray(wr_ptr_bin_next);
+
+    wire [ADDR_WIDTH:0] wr_ptr_bin_inc  = wr_ptr_bin + {{ADDR_WIDTH{1'b0}}, 1'b1};
+    wire [ADDR_WIDTH:0] wr_ptr_gray_inc = bin_to_gray(wr_ptr_bin_inc);
     
     always @(posedge wr_clk or negedge wr_rst_n) begin
         if (!wr_rst_n) begin
@@ -129,29 +135,18 @@ module async_fifo #(
     reg full_reg;
     reg empty_reg;
 
-    wire full_raw = (wr_ptr_gray_next == (rd_ptr_gray_sync2 ^ FULL_MASK));
+    // Combinational full/empty. `full_reg` was registered, which asserts one
+    // cycle late and lets a write land after the last free slot, overwriting
+    // unread data (issue #57).
+    //
+    // Both compares must avoid a combinational loop: full uses an UNGATED next
+    // write pointer, empty uses the REGISTERED read pointer (not a gated "next"
+    // one). Gating either on the flag it produces loops back on itself.
+    wire full_raw  = (wr_ptr_gray_inc == (rd_ptr_gray_sync2 ^ FULL_MASK));
+    wire empty_raw = (rd_ptr_gray == wr_ptr_gray_sync2);
 
-
-    wire empty_raw = (wr_ptr_gray_sync2 == rd_ptr_gray_next);
-
-    always @(posedge wr_clk or negedge wr_rst_n) begin
-        if (!wr_rst_n) begin
-            full_reg <= 1'b0;
-        end else begin
-            full_reg <= full_raw;
-        end
-    end
-
-    always @(posedge rd_clk or negedge rd_rst_n) begin
-        if (!rd_rst_n) begin
-            empty_reg <= 1'b1;  // Empty at reset
-        end else begin
-            empty_reg <= empty_raw;
-        end
-    end
-
-    assign full = full_reg;
-    assign empty = empty_reg;
+    assign full  = full_raw;
+    assign empty = empty_raw;
     
     // ========================================================================
     // Memory array (block RAM)

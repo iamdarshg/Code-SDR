@@ -73,26 +73,25 @@ module adc_interface (
     // DC offset correction (optional)
     // ========================================================================
     
-    // DC offset estimation using running average
-    reg [31:0] dc_offset;
-    reg [15:0] avg_count;
-    
+    // DC offset estimation.
+    // Issue #59: the old code accumulated a raw SUM and subtracted it directly
+    // from every sample, so the "correction" grew without bound. Use a one-pole
+    // (exponential) average instead - dc += (sample - dc) >> SHIFT - which is a
+    // true mean estimate, needs no divider, and tracks drift.
+    localparam integer DC_SHIFT = 4;          // time constant 2^DC_SHIFT samples
+    wire signed [31:0] adc_signed = {{22{adc_data_reg[9]}}, adc_data_reg};
+    reg  signed [31:0] dc_offset;
+
     always @(posedge clk_adc or negedge rst_n) begin
-        if (!rst_n) begin
-            dc_offset <= 32'd0;
-            avg_count <= 16'd0;
-        end else if (adc_valid_reg) begin
-            // Simple DC offset estimation over 65536 samples
-            if (avg_count < 16'd65535) begin
-                avg_count <= avg_count + 1;
-                dc_offset <= dc_offset + {{22{adc_data_reg[9]}}, adc_data_reg};
-            end
-        end
+        if (!rst_n)
+            dc_offset <= 32'sd0;
+        else if (adc_valid_reg)
+            dc_offset <= dc_offset + ((adc_signed - dc_offset) >>> DC_SHIFT);
     end
-    
-    // Apply DC offset correction when stable
-    wire [31:0] dc_corrected;
-    assign dc_corrected = {{22{adc_data_reg[9]}}, adc_data_reg} - dc_offset;
+
+    // Apply DC offset correction (dc_offset is a mean, not a sum)
+    wire signed [31:0] dc_corrected;
+    assign dc_corrected = adc_signed - dc_offset;
     
     // ========================================================================
     // Sample rate conversion and synchronization

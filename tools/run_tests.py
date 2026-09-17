@@ -39,6 +39,8 @@ TESTS = [
     ("v2_fft1024_tb",          ["verilog/v2_fft1024_tb.v", "verilog/v2_fft1024.v"]),
     ("v2_fft_packetizer_tb",   ["verilog/v2_fft_packetizer_tb.v", "verilog/v2_fft_packetizer.v"]),
     ("v2_rgmii_tb",            ["verilog/v2_rgmii_tb.v", "verilog/v2_rgmii.v"]),
+    ("app_stream_cdc_tb",      ["verilog/app_stream_cdc_tb.v", "verilog/app_stream_cdc.v",
+                                "verilog/async_fifo.v"]),
     ("v2_top_tb",              ["verilog/v2_top_tb.v", "verilog/v2_top.v",
                                 "verilog/v2_clock_pll.v", "verilog/v2_phy_manager.v",
                                 "verilog/v2_mdio_master.v", "verilog/v2_rgmii.v",
