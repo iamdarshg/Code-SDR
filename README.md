@@ -13,6 +13,11 @@ A high-performance, FPGA-accelerated Software Defined Radio (SDR) system with re
 > a 100 MSPS ADC/RGMII interface and remains separate from any ESC. Older
 > 105 MSPS/GMII passages below describe legacy RTL and must not be used as V2
 > pin or clock constraints.
+>
+> PCB-derived hardware and coding-interface descriptor:
+> [`HARDWARE.md`](HARDWARE.md). It is parsed from
+> `hardware/v2/Code-SDR-V2.kicad_pcb` and supersedes all
+> 105 MSPS / GMII / UMG64I / dsPIC33 passages anywhere else in this repo.
 
 ## 🚀 Quick Start
 

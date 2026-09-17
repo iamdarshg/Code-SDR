@@ -1,0 +1,77 @@
+# ============================================================================
+# Code-SDR V2 - Lattice Diamond pin constraints (LIF-MD6000-6JMG80I)
+#
+# Every SITE below is taken from HARDWARE.md, which is parsed from the placed
+# footprints and pad nets of hardware/v2/Code-SDR-V2.kicad_pcb. Nothing here is
+# inferred from the legacy RTL.
+#
+# I/O standard: LVCMOS33 for all digital pins (3V3 digital rail). The RGMII and
+# ADC pins may need LVCMOS25 or dedicated DDR cells depending on bank voltage;
+# confirm against the schematic before place-and-route (see the note at the end).
+#
+# Usage:  prj_set_pdc / add this file to the Diamond project as an .lpf.
+# ============================================================================
+
+# ---------------------------------------------------------------- clocks
+LOCATE COMP "clk_100m_in" SITE "D7";      # ADC_CLK (100 MHz tree -> U20.D7)
+IOBUF PORT "clk_100m_in" IO_TYPE=LVCMOS33;
+
+# ---------------------------------------------------------------- reset
+LOCATE COMP "rst_n" SITE "H2";            # FPGA_RESET_N (from RP2040 U10.29)
+IOBUF PORT "rst_n" IO_TYPE=LVCMOS33;
+
+# ---------------------------------------------------------------- ADC (AD9215)
+# ADC_D0..D9 -> D10,E9,E10,F9,F10,G9,G10,H9,H10,J10
+LOCATE COMP "adc_data[0]" SITE "D10";  IOBUF PORT "adc_data[0]" IO_TYPE=LVCMOS33;
+LOCATE COMP "adc_data[1]" SITE "E9";   IOBUF PORT "adc_data[1]" IO_TYPE=LVCMOS33;
+LOCATE COMP "adc_data[2]" SITE "E10";  IOBUF PORT "adc_data[2]" IO_TYPE=LVCMOS33;
+LOCATE COMP "adc_data[3]" SITE "F9";   IOBUF PORT "adc_data[3]" IO_TYPE=LVCMOS33;
+LOCATE COMP "adc_data[4]" SITE "F10";  IOBUF PORT "adc_data[4]" IO_TYPE=LVCMOS33;
+LOCATE COMP "adc_data[5]" SITE "G9";   IOBUF PORT "adc_data[5]" IO_TYPE=LVCMOS33;
+LOCATE COMP "adc_data[6]" SITE "G10";  IOBUF PORT "adc_data[6]" IO_TYPE=LVCMOS33;
+LOCATE COMP "adc_data[7]" SITE "H9";   IOBUF PORT "adc_data[7]" IO_TYPE=LVCMOS33;
+LOCATE COMP "adc_data[8]" SITE "H10";  IOBUF PORT "adc_data[8]" IO_TYPE=LVCMOS33;
+LOCATE COMP "adc_data[9]" SITE "J10";  IOBUF PORT "adc_data[9]" IO_TYPE=LVCMOS33;
+LOCATE COMP "adc_ovr"     SITE "K9";   IOBUF PORT "adc_ovr"     IO_TYPE=LVCMOS33;  # ADC_OR
+
+# ---------------------------------------------------------------- Ethernet RGMII
+# TXD0..TXD3 -> E1,E2,F1,F2 ; TX_EN -> J3 ; TXC -> J7
+LOCATE COMP "rgmii_txd[0]" SITE "E1";  IOBUF PORT "rgmii_txd[0]" IO_TYPE=LVCMOS33;
+LOCATE COMP "rgmii_txd[1]" SITE "E2";  IOBUF PORT "rgmii_txd[1]" IO_TYPE=LVCMOS33;
+LOCATE COMP "rgmii_txd[2]" SITE "F1";  IOBUF PORT "rgmii_txd[2]" IO_TYPE=LVCMOS33;
+LOCATE COMP "rgmii_txd[3]" SITE "F2";  IOBUF PORT "rgmii_txd[3]" IO_TYPE=LVCMOS33;
+LOCATE COMP "rgmii_tx_ctl" SITE "J3";  IOBUF PORT "rgmii_tx_ctl" IO_TYPE=LVCMOS33;
+LOCATE COMP "rgmii_txc"    SITE "J7";  IOBUF PORT "rgmii_txc"    IO_TYPE=LVCMOS33;
+# RXD0..RXD3 -> K8,J5,K10,K4 ; RX_DV -> K5 ; RXC -> K6
+LOCATE COMP "rgmii_rxd[0]" SITE "K8";  IOBUF PORT "rgmii_rxd[0]" IO_TYPE=LVCMOS33;
+LOCATE COMP "rgmii_rxd[1]" SITE "J5";  IOBUF PORT "rgmii_rxd[1]" IO_TYPE=LVCMOS33;
+LOCATE COMP "rgmii_rxd[2]" SITE "K10"; IOBUF PORT "rgmii_rxd[2]" IO_TYPE=LVCMOS33;
+LOCATE COMP "rgmii_rxd[3]" SITE "K4";  IOBUF PORT "rgmii_rxd[3]" IO_TYPE=LVCMOS33;
+LOCATE COMP "rgmii_rx_ctl" SITE "K5";  IOBUF PORT "rgmii_rx_ctl" IO_TYPE=LVCMOS33;
+LOCATE COMP "rgmii_rxc"    SITE "K6";  IOBUF PORT "rgmii_rxc"    IO_TYPE=LVCMOS33;
+
+# ---------------------------------------------------------------- MDIO / PHY
+LOCATE COMP "mdc"       SITE "J6";  IOBUF PORT "mdc"       IO_TYPE=LVCMOS33;  # U20.J6
+LOCATE COMP "mdio"      SITE "K7";  IOBUF PORT "mdio"      IO_TYPE=LVCMOS33;  # U20.K7
+LOCATE COMP "phy_int_n" SITE "K2";  IOBUF PORT "phy_int_n" IO_TYPE=LVCMOS33;  # U20.K2
+
+# ---------------------------------------------------------------- RP2040 SPI
+LOCATE COMP "spi_mosi" SITE "G1";  IOBUF PORT "spi_mosi" IO_TYPE=LVCMOS33;  # FPGA_SPI_MOSI
+LOCATE COMP "spi_miso" SITE "K1";  IOBUF PORT "spi_miso" IO_TYPE=LVCMOS33;  # FPGA_SPI_MISO
+LOCATE COMP "spi_cs_n" SITE "H1";  IOBUF PORT "spi_cs_n" IO_TYPE=LVCMOS33;  # FPGA_SPI_CS_N
+LOCATE COMP "spi_clk"  SITE "J1";  IOBUF PORT "spi_clk"  IO_TYPE=LVCMOS33;  # FPGA_SPI_SCK
+
+# ============================================================================
+# UNVERIFIED / TODO before a releasable bitstream:
+#  1. IO_TYPE: confirm each bank's VCCO (3V3 vs 2V5) from the schematic. RGMII
+#     and ADC pins in particular may need LVCMOS25 or dedicated DDR cells.
+#  2. RGMII RX/TX DDR: replace the behavioural RGMII process in v2_rgmii.v with
+#     the LIF-MD6000 DDR input/output cells and add input/output delay
+#     constraints. The KSZ9031 internal delay registers (programmed by
+#     v2_phy_manager) handle the clock/data skew, so no deliberate FPGA skew is
+#     added here - confirm on hardware.
+#  3. Timing: create_clock for clk_100m_in (10 ns) and the PLL's 125 MHz output,
+#     plus the RGMII output/input delays.
+#  4. FPGA_CDONE (J2) and PHY_RESET_N are configuration/RP2040-owned pins and are
+#     deliberately not user I/O here.
+# ============================================================================

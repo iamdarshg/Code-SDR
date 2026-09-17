@@ -27,7 +27,13 @@ module async_fifo #(
     // Parameter calculations
     // ========================================================================
     
-    localparam ADDR_WIDTH = $clog2(DEPTH);
+    localparam ADDR_WIDTH = (DEPTH >= 2) ? $clog2(DEPTH) : 1;
+    localparam [ADDR_WIDTH:0] FULL_MASK = {2'b11, {(ADDR_WIDTH-1){1'b0}}};
+
+    initial begin
+        if (DEPTH < 2 || (DEPTH & (DEPTH - 1)) != 0)
+            $fatal(1, "async_fifo DEPTH must be a power of two and at least 2");
+    end
     
     // ========================================================================
     // Write pointer logic (write clock domain)
@@ -35,8 +41,8 @@ module async_fifo #(
     
     reg [ADDR_WIDTH:0] wr_ptr_gray;
     reg [ADDR_WIDTH:0] wr_ptr_bin;
-    reg [ADDR_WIDTH:0] wr_ptr_gray_next;
-    reg [ADDR_WIDTH:0] wr_ptr_bin_next;
+    wire [ADDR_WIDTH:0] wr_ptr_gray_next;
+    wire [ADDR_WIDTH:0] wr_ptr_bin_next;
     
     // Binary to Gray code conversion
     function [ADDR_WIDTH:0] bin_to_gray(input [ADDR_WIDTH:0] bin);
@@ -44,7 +50,7 @@ module async_fifo #(
     endfunction
     
     // Binary counter increment
-    assign wr_ptr_bin_next = wr_ptr_bin + 1;
+    assign wr_ptr_bin_next = wr_ptr_bin + {{ADDR_WIDTH{1'b0}}, (wr_en && !full)};
     assign wr_ptr_gray_next = bin_to_gray(wr_ptr_bin_next);
     
     always @(posedge wr_clk or negedge wr_rst_n) begin
@@ -65,10 +71,10 @@ module async_fifo #(
     
     reg [ADDR_WIDTH:0] rd_ptr_gray;
     reg [ADDR_WIDTH:0] rd_ptr_bin;
-    reg [ADDR_WIDTH:0] rd_ptr_gray_next;
-    reg [ADDR_WIDTH:0] rd_ptr_bin_next;
+    wire [ADDR_WIDTH:0] rd_ptr_gray_next;
+    wire [ADDR_WIDTH:0] rd_ptr_bin_next;
     
-    assign rd_ptr_bin_next = rd_ptr_bin + 1;
+    assign rd_ptr_bin_next = rd_ptr_bin + {{ADDR_WIDTH{1'b0}}, (rd_en && !empty)};
     assign rd_ptr_gray_next = bin_to_gray(rd_ptr_bin_next);
     
     always @(posedge rd_clk or negedge rd_rst_n) begin
@@ -123,11 +129,10 @@ module async_fifo #(
     reg full_reg;
     reg empty_reg;
 
-    // Full condition: next write pointer would equal synchronized read pointer
-    wire full_raw = (wr_ptr_gray_next == rd_ptr_gray_sync2);
+    wire full_raw = (wr_ptr_gray_next == (rd_ptr_gray_sync2 ^ FULL_MASK));
 
-    // Empty condition: write pointer equals synchronized read pointer
-    wire empty_raw = (wr_ptr_gray_sync2 == rd_ptr_gray);
+
+    wire empty_raw = (wr_ptr_gray_sync2 == rd_ptr_gray_next);
 
     always @(posedge wr_clk or negedge wr_rst_n) begin
         if (!wr_rst_n) begin
@@ -176,23 +181,5 @@ module async_fifo #(
     end
 
     assign dout = dout_reg;
-    
-    // ========================================================================
-    // FIFO status counters (optional for monitoring)
-    // ========================================================================
-    
-    // Write pointer difference calculation
-    wire [ADDR_WIDTH:0] wr_diff;
-    assign wr_diff = wr_ptr_bin - rd_ptr_gray_sync2[ADDR_WIDTH:1];
-    
-    // FIFO fill level (approximate)
-    reg [ADDR_WIDTH:0] fill_level;
-    always @(posedge wr_clk or negedge wr_rst_n) begin
-        if (!wr_rst_n) begin
-            fill_level <= 'd0;
-        end else begin
-            fill_level <= wr_diff;
-        end
-    end
 
 endmodule

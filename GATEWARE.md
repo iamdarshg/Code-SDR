@@ -1,0 +1,104 @@
+# Code-SDR V2 — Gateware
+
+FPGA gateware for the V2 control/SDR board (LIF-MD6000-6JMG80I + AD9215 +
+KSZ9031 RGMII + RP2040). All modules are verified in simulation with Icarus
+Verilog and area-estimated with Yosys — no vendor licence required for either.
+
+## Two modes (compile-time exclusive)
+
+The device is 5,936 LUTs. A 1024-point FFT plus the raw streamer do not fit
+together, so `v2_top` builds **one or the other**:
+
+```
+MODE = 0 (raw)   ADC 100 MSPS -> 8/10-bit pack -> CDC FIFO -> UDP/IP -> MAC -> RGMII
+MODE = 1 (fft)   ADC 100 MSPS -> CIC /R -> CDC FIFO -> window -> N-pt FFT
+                              -> bin packetizer -> UDP/IP -> MAC -> RGMII
+```
+
+The RP2040 holds both bitstreams on its flash and swaps them over slave SPI in
+~0.1–0.2 s, so switching modes needs no host and no re-flash.
+
+## The 100 MSPS question, stated once and clearly
+
+**The ADC always runs at 100 MSPS.** Its clock is a fixed 100 MHz board
+reference, so nothing throttles the converter in either mode.
+
+- **Raw mode consumes every sample** (8-bit → 800 Mbps on the wire). This is the
+  100 MSPS path, and it is the default.
+- **The on-FPGA FFT cannot consume 100 MSPS.** An N-point transform needs
+  (N/2)·log₂N butterflies per frame, and at 100 MSPS a frame arrives every N
+  samples, so it needs ≈ log₂(N)/2 butterflies *per clock*. For N=1024 that is 5
+  butterflies/clock ≈ 20 complex multipliers ≈ 12,000+ LUTs against 5,936
+  available. This is arithmetic, not tuning. The CIC does consume 100 MSPS
+  (its integrators run at the ADC rate); the transform itself runs decimated.
+
+If you want all 100 MSPS in one transform, the transform has to run on the host
+— that is raw mode.
+
+## FFT rate options
+
+`FFT_RATE` = CIC decimation (runtime-selectable via SPI `cfg_decim`; 0 = default):
+
+| FFT_RATE | consume | input to FFT | notes |
+|---|---|---|---|
+| 1 | 100 MSPS | 100 MSPS | CIC bypass; **FFT cannot keep up**, FIFO overflows |
+| 8 | 12.5 MSPS | 12.5 MSPS | only fits the smallest FFT sizes |
+| 16 | 6.25 MSPS | 6.25 MSPS | **default** — fastest the 1024-pt FFT sustains |
+| 32/64/128 | 3.125/1.56/0.78 MSPS | same | more averaging, narrower band |
+
+### FFT size vs capability
+
+Sustainable input = N / (N + (N/2)·log₂N·4) cycles × 125 MHz (burst-load, four
+cycles per butterfly):
+
+| FFT_N | EBR | sustainable MSPS | bin spacing @6.25 MSPS | useful span |
+|---|---:|---:|---:|---:|
+| 256 | 2 | 8.9 | 24.4 kHz | 3.1 MHz |
+| 512 | 4 | 6.6 | 12.2 kHz | 3.1 MHz |
+| 1024 | 8 | 6.0 | 6.1 kHz | 3.1 MHz |
+
+`FFT_N` is a `v2_top` parameter (256 / 512 / 1024). All three are verified
+end-to-end, including full FFT frames egressing on RGMII.
+
+## Block diagram / files
+
+| File | Role | Verified |
+|---|---|---|
+| `v2_top.v` | integration, mode mux, pin-level top | `v2_top_tb` (both modes) |
+| `v2_clock_pll.v` | 100→125 MHz PLL (sim model + vendor stub) | via top |
+| `v2_phy_manager.v` | KSZ9031 bring-up: ID, reset, RGMII delay regs, AN | `v2_phy_manager_tb` |
+| `v2_mdio_master.v` | MDIO frame engine | `v2_mdio_tb`, `v2_mdio_single_read_tb` |
+| `v2_rgmii.v` | GMII ↔ RGMII DDR | `v2_rgmii_tb` (loopback) |
+| `v2_cdc_fifo.v` | gray-code async FIFO + occupancy | `v2_cdc_fifo_tb` |
+| `v2_raw_path.v` | 10/8-bit pack, packetize, BFP-free raw stream | `v2_raw_path_tb` |
+| `v2_udp_ip_tx.v` | IPv4 + UDP framing, exact header checksum | `v2_udp_ip_tx_tb` |
+| `v2_eth_mac_tx.v` | preamble/SFD/DA/SA/type/FCS/IFG | `v2_eth_mac_tx_tb` |
+| `v2_cic_decimator.v` | multiplier-free decimation, runtime rate | `v2_cic_decimator_tb` |
+| `v2_fft1024.v` | N-point FFT, one shared butterfly, BFP | `v2_fft1024_tb` |
+| `v2_fft_packetizer.v` | bin framing (16-byte header + bins) | `v2_fft_packetizer_tb` |
+| `v2_spi_regs.v` | RP2040 register file | `v2_spi_regs_tb` |
+| `v2_telemetry.v` | counters for the dashboard | via `v2_spi_regs_tb` |
+
+## Telemetry / dashboard
+
+In-band: every packet carries sequence, base index, **FPGA drop counter**, bit
+depth, decimation and flags — so the host sees FPGA-side loss without extra
+wiring.
+
+Out-of-band: `v2_spi_regs` + `v2_telemetry` are read by
+`firmware/rp2040_dashboard/`, which computes sample rate, payload Mbps, headroom
+against the ~957 Mbps UDP ceiling, oversubscription and drops/second, and emits
+`TEL:` CSV lines for `software/sdr_dashboard.py`.
+
+## Known non-simulation work (blocks production)
+
+1. **Diamond fit** — see `RESOURCE_REPORT.md`. Raw mode fits under the pessimistic
+   estimate; FFT mode is over and needs ABC/LSE to confirm (the WASM Yosys build
+   cannot run ABC).
+2. **RGMII DDR I/O cells** — `v2_rgmii.v` is behavioural; production needs the
+   LIF-MD6000 DDR primitives plus input/output delay constraints.
+3. **PLL primitive** — `v2_clock_pll.v` simulates; hardware needs the
+   Diamond-generated wrapper (`V2_USE_VENDOR_PLL`).
+4. **Pin constraints** — `verilog/v2_top.lpf`, IO_TYPEs and DDR cells flagged TODO.
+5. **Hardware bring-up** — nothing here has touched silicon; there is no
+   fabricated board yet.

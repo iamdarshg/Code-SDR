@@ -24,3 +24,8 @@ fft_ddc_performance_report.json
 *.kicad_prl
 *.bak
 **/fp-info-cache
+
+# Code-SDR V2 sim outputs and local tooling
+/outputs/
+tools/diamond_watch.log
+

@@ -1,0 +1,32 @@
+name: RTL sanity (Icarus Verilog)
+
+# Addresses issue #20: RTL sanity CI with Icarus Verilog.
+# Runs the full Code-SDR V2 testbench regression on every push and PR.
+
+on:
+  push:
+    branches: [ main ]
+    paths:
+      - 'verilog/**'
+      - 'tools/run_tests.py'
+      - '.github/workflows/rtl.yml'
+  pull_request:
+    paths:
+      - 'verilog/**'
+      - 'tools/run_tests.py'
+  workflow_dispatch:
+
+jobs:
+  sim:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Icarus Verilog
+        run: sudo apt-get update && sudo apt-get install -y iverilog
+
+      - name: Report versions
+        run: iverilog -V | head -2
+
+      - name: Run RTL regression
+        run: python3 tools/run_tests.py
