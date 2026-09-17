@@ -18,6 +18,23 @@ A high-performance, FPGA-accelerated Software Defined Radio (SDR) system with re
 > [`HARDWARE.md`](HARDWARE.md). It is parsed from
 > `hardware/v2/Code-SDR-V2.kicad_pcb` and supersedes all
 > 105 MSPS / GMII / UMG64I / dsPIC33 passages anywhere else in this repo.
+>
+> **Gateware status (V2).** The verified FPGA gateware, its two operating modes,
+> the throughput and rate trade-offs, and what still blocks production are in
+> [`GATEWARE.md`](GATEWARE.md). Area estimates (Yosys) are in
+> [`RESOURCE_REPORT.md`](RESOURCE_REPORT.md). Pin constraints are
+> [`verilog/v2_top.lpf`](verilog/v2_top.lpf). Run the RTL regression with
+> `python tools/run_tests.py` (Icarus Verilog, 15 testbenches).
+>
+> **User-facing tools.**
+> - `software/sdr_spectrum.py` — live spectrum + waterfall viewer for either mode
+>   (works off-hardware with `--simulate`).
+> - `software/sdr_dashboard.py` — headless link dashboard: sample rate, network
+>   loss, FPGA drop counter.
+> - `firmware/rp2040_dashboard/` — RP2040 dashboard and bitstream mode swap.
+>
+> Sections below describing the legacy dsPIC33 / 105 MSPS / GMII design are
+> historical and are superseded by the two documents above.
 
 ## 🚀 Quick Start
 
