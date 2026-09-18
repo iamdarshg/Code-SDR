@@ -137,7 +137,11 @@ module v2_fft_pipe #(
                         bre[k] <= {DW{1'b0}};
                         bim[k] <= {DW{1'b0}};
                     end
-                end else if (s_vld[i]) begin
+                end else begin
+                    // The datapath must free-run, NOT be gated by the input
+                    // valid: after a finite burst the delay lines still hold
+                    // data that has to flush out. Gating the counter and buffer
+                    // on s_vld freezes the pipeline and truncates every frame.
                     bre[q] <= wr_r;
                     bim[q] <= wr_i;
                     cnt <= (cnt == M[LOGN-1:0] - 1'b1) ? {LOGN{1'b0}} : (cnt + 1'b1);

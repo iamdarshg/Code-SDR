@@ -38,6 +38,7 @@ module v2_telemetry (
     input  wire [1:0]  mode,
     input  wire        link_up,
     input  wire        pll_locked,
+    input  wire        phy_error,
     input  wire [15:0] effective_mbps,
 
     input  wire [7:0]  rd_addr,
@@ -56,7 +57,7 @@ module v2_telemetry (
             6'h00:   rd_data = packets_sent;
             6'h01:   rd_data = dropped_words;
             6'h02:   rd_data = {31'd0, sticky_overflow};
-            6'h03:   rd_data = {12'd0, decim[7:0], sample_bits[6:0],
+            6'h03:   rd_data = {11'd0, phy_error, decim[7:0], sample_bits[6:0],
                                 sticky_overflow, mode, pll_locked, link_up};
             6'h04:   rd_data = {16'd0, effective_mbps};
             default: rd_data = seq_value;

@@ -26,6 +26,45 @@
 #include <SPI.h>
 #include <LittleFS.h>
 #include "fpga_config.h"
+#include "faults.h"
+
+// telemetry status register bits (see verilog/v2_telemetry.v)
+#define STAT_LINK_UP     (1u << 0)
+#define STAT_PLL_LOCK    (1u << 1)
+#define STAT_PHY_ERROR   (1u << 20)
+
+// ------------------------------------------------------------------- self-test
+// Runs after configuration. Exercises every path we can from the controller:
+// the SPI bus, the telemetry register file, and the PHY identity.
+static void selftest(void) {
+    // 1. FPGA configured?
+    if (digitalRead(PIN_FPGA_CDONE) != HIGH) {
+        Serial.println("# SELFTEST: FPGA CDONE low - not configured");
+        fault_raise(FAULT_FPGA_CONFIG);
+    }
+
+    // 2. SPI bus: a telemetry read must come back with a magic-consistent value.
+    //    A stuck bus reads all-ones or all-zeros.
+    uint32_t status = fpga_read(REG_T_STATUS);
+    if (status == 0xFFFFFFFF || status == 0x00000000) {
+        Serial.printf("# SELFTEST: SPI bus read 0x%08X - bus or FPGA not responding\n",
+                      (unsigned)status);
+        fault_raise(FAULT_SPI_BUS);
+    } else {
+        Serial.printf("# SELFTEST: SPI bus OK (status=0x%08X)\n", (unsigned)status);
+    }
+
+    // 3. PHY bring-up: the FPGA's PHY manager sets its error flag if the KSZ9031
+    //    identity check, reset sequence or auto-negotiation failed. That flag is
+    //    exposed in the telemetry status register, so the controller can see it.
+    if (status & STAT_PHY_ERROR) {
+        Serial.println("# SELFTEST: FPGA reports PHY bring-up error");
+        fault_raise(FAULT_PHY_ID);
+    } else {
+        Serial.println("# SELFTEST: PHY bring-up OK");
+    }
+    Serial.println("# SELFTEST: complete");
+}
 
 // ---------------------------------------------------------------- pin mapping
 #define PIN_FPGA_SCK   2    // FPGA_SPI_SCK_MCU  U10.2
@@ -110,12 +149,28 @@ void setup() {
     fpga_write(REG_MODE,  g_mode);
     fpga_write(REG_ENABLE, 1);
 
-    Serial.println("# Code-SDR V2 dashboard. Commands: 'b <8|10>' 'd <1|2|4|8>' 'm <0|1>'");
+    Serial.println("# Code-SDR V2 dashboard. Commands: 'b <8|10>' 'd <1|2|4|8>' 'm <0|1>' '0'/'1' = swap bitstream");
     Serial.println("ms,bits,decim,mode,msps,payload_mbps,ceiling_mbps,headroom_mbps,required,packets,dropped,drops_per_s,sticky,link,pll");
+
+    // fault handling + watchdog: reset the controller if the loop ever hangs
+    faults_init();
+    faults_watchdog_init(3000);
+    selftest();
 }
 
 // ----------------------------------------------------------------------- loop
 void loop() {
+    faults_watchdog_kick();
+
+    // FPGA configuration lost? CDONE should stay high in user mode.
+    if (digitalRead(PIN_FPGA_CDONE) != HIGH) {
+        fault_raise(FAULT_FPGA_CONFIG);
+        Serial.println("# FPGA CDONE low - reconfiguring");
+        if (g_mode == 1) fpga_select_mode(1); else fpga_select_mode(0);
+    } else {
+        fault_clear(FAULT_FPGA_CONFIG);
+    }
+
     // Consume any commands from the SDR program / user.
     if (Serial.available()) {
         char c = Serial.read();
@@ -182,6 +237,10 @@ void loop() {
     Serial.print("  dropped words   : "); Serial.print(dropped);
     Serial.print("  ("); Serial.print(drops_per_s, 1); Serial.println(" /s)");
     Serial.print("  link / pll      : "); Serial.print(link); Serial.print(" / "); Serial.println(pll);
+
+    // fault housekeeping + report
+    faults_tick(link, dropped);
+    faults_report();
 
     // Machine-readable line for the SDR program.
     Serial.print("TEL:");

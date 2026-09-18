@@ -269,7 +269,7 @@ module v2_top #(
         .sample_bits(cfg_bits),
         .decim((MODE == 1) ? {3'b0, FFT_RATE[4:0]} : cfg_decim),
         .mode({1'b0, MODE[0]}),
-        .link_up(link_up), .pll_locked(eth_locked),
+        .link_up(link_up), .pll_locked(eth_locked), .phy_error(phy_error),
         .effective_mbps(16'd0),
         .rd_addr(tele_addr), .rd_data(tele_data)
     );

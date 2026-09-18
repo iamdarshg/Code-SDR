@@ -41,6 +41,9 @@ module v2_fft_pipe_tb;
     reg signed [DW-1:0] bins_re [0:N-1];
     reg signed [DW-1:0] bins_im [0:N-1];
     integer captured = 0;
+    reg signed [DW-1:0] stream [0:255];   // raw output stream, for order comparison
+    integer sc = 0;
+    always @(posedge clk) if (rst_n && out_valid && sc < 256) begin stream[sc] = out_re; sc = sc + 1; end
     integer nskip = 0;        // skip the pipeline's first frame (priming transient)
 
     // throughput monitor: the longest unbroken run of out_valid, i.e. how many
@@ -76,6 +79,7 @@ module v2_fft_pipe_tb;
             rst_n = 1'b1;
             repeat (2) @(negedge clk);
             captured = 0;
+            sc = 0;
             nskip = (mode == 1) ? N : 0;   // feed a priming frame for continuous input
             for (n = 0; n < ((mode == 1) ? 2*N : N); n = n + 1) begin
                 in_valid = 1'b1;
@@ -184,6 +188,9 @@ module v2_fft_pipe_tb;
             for (i = 0; i < N; i = i + 1) if (bins_re[i] != 0) nz3 = nz3 + 1;
             $display("  DC: %0d of %0d bins non-zero; bin0=%0d bin1=%0d",
                      nz3, N, bins_re[0], bins_re[1]);
+            $write("  DC stream 60..76:");
+            for (i = 60; i < 77; i = i + 1) $write(" %0d", stream[i]);
+            $write("\n");
         end
 
         if (errors !== 0) begin

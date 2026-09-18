@@ -35,7 +35,38 @@ reference, so nothing throttles the converter in either mode.
 If you want all 100 MSPS in one transform, the transform has to run on the host
 — that is raw mode.
 
-## FFT rate options
+## Throughput (measured in simulation)
+
+Every path has a throughput assertion in its testbench, not just a correctness
+check.
+
+| Path | Measured | Test |
+|---|---:|---|
+| Raw streamer, 8-bit / 100 MSPS | **842 Mbps** wire (800 Mbps samples) | `v2_raw_path_tb` |
+| Raw streamer, 10-bit / 50 MSPS | 530 Mbps wire (506 Mbps samples) | `v2_raw_path_tb` |
+| CDC FIFO | **799.6 Mbps** sustained + max-rate stress | `v2_cdc_fifo_tb` |
+| Ethernet MAC TX | **991.6 Mbps** wire | `v2_eth_mac_tx_tb` |
+| UDP/IP TX | **956.5 Mbps** payload (the 1500-MTU ceiling) | `v2_udp_ip_tx_tb` |
+| CIC decimator | ÷N verified, DC gain 1 | `v2_cic_decimator_tb` |
+| Memory FFT (N=1024) | ~7.8 MSPS sustained input | `v2_fft1024_tb` |
+| **Pipelined FFT (N=64)** | **100 MSPS** (128 bins at 1/clock) | `v2_fft_pipe_tb` (see below) |
+
+## Pipelined FFT: throughput achieved, arithmetic not yet correct
+
+`v2_fft_pipe.v` genuinely consumes **1 sample/clock = 100 MSPS** (measured), which
+the memory-based FFT cannot. Its **arithmetic is not correct yet**: an impulse
+gives the expected flat spectrum, but that test is permutation-invariant so it
+proves nothing; DC and single-tone inputs are wrong.
+
+Key finding for whoever finishes it: the R2SDF schedule itself is **verified
+correct** — `tools/r2sdf_reference.py` reproduces it in software and matches
+numpy exactly, including the output framing (stream `[N-1, 2N-1)`, index
+`bitrev(m)`) and the requirement that the datapath **free-run** rather than be
+gated by input valid. So the remaining bug is in the Verilog implementation, not
+the architecture. It is deliberately **not** instantiated by `v2_top` and **not**
+run in CI.
+
+
 
 `FFT_RATE` = CIC decimation (runtime-selectable via SPI `cfg_decim`; 0 = default):
 

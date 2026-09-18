@@ -37,10 +37,14 @@ streaming, and any GNU Radio / ExtIO completion status. Do not use them.
 | U21 | AD9215BCPZ-105 | LFCSP-32 | 10-bit parallel ADC |
 
 ADC bus (pad nets, U21 to U20 balls D10,E9,E10,F9,F10,G9,G10,H9,H10,J10):
-`ADC_D0`-`ADC_D9`, `ADC_CLK` (U21.1 to U20.D7), `ADC_OR` (U21.21 to U20.K9),
+`ADC_D0`-`ADC_D9`, `ADC_CLK` (U21.1 to U20.**D9**), `ADC_OR` (U21.21 to U20.K9),
 `ADC_PDWN` (driven by U10.34), `ADC_MODE` (strap net, no RP2040 pad).
 There is no data-valid net anywhere on the PCB, so gateware must treat each
 `ADC_CLK` edge as one sample and use `ADC_OR` only as an overload flag.
+(Correction: the sample clock lands on U20.**D9**, not D7 as an earlier revision
+of this document stated; the generator `tools/gen_lpf.py` derives the pin map
+directly from the PCB and flags exactly this class of mismatch. U20.D7 has no
+net.)
 `ADC_SENSE`/`ADC_VREF`/`ADC_REFB`/`ADC_REFT`/`ADC_VCM`/`ADC_VIN_P`/`ADC_VIN_N`
 are wired per the ADC footprint.
 
