@@ -29,8 +29,8 @@ module v2_fft1024 #(
     parameter integer N          = 1024,
     parameter integer LOGN       = 10,
     parameter integer W          = 16,
-    parameter         TWID_FILE  = "twiddle_real.mem",
-    parameter         TWID_FILEI = "twiddle_imag.mem",
+    parameter         TWID_FILE  = "verilog/twiddle_real.mem",
+    parameter         TWID_FILEI = "verilog/twiddle_imag.mem",
     parameter         WINDOW_FILE= "verilog/window_coeff.mem",
     parameter integer WINDOW_EN  = 1
 ) (
