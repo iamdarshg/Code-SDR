@@ -168,11 +168,25 @@ module v2_fft1024_tb;
             $display("FATAL: %0d errors", errors);
             $fatal(1);
         end
+        $display("  throughput: frame = %0.2f us -> %0.2f MSPS sustained input",
+                 frame_ns / 1000.0, 1024.0 / (frame_ns / 1000.0));
         $display("PASS: v2_fft1024 (impulse flat, tone at bin 64, BFP full-scale)");
         $finish;
     end
 
     integer dbg = 0;
+    // frame-rate measurement: the memory-based FFT's real throughput limit
+    time    last_done = 0;
+    real    frame_ns;
+    integer frames_seen = 0;
+    always @(posedge clk) begin
+        if (rst_n && frame_done) begin
+            frames_seen = frames_seen + 1;
+            if (frames_seen == 2) frame_ns = ($time - last_done) / 1000.0;
+            last_done = $time;
+        end
+    end
+
     always @(posedge clk) begin
         if (rst_n) begin
             dbg = dbg + 1;
