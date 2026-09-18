@@ -53,12 +53,32 @@ cycles per butterfly):
 
 | FFT_N | EBR | sustainable MSPS | bin spacing @6.25 MSPS | useful span |
 |---|---:|---:|---:|---:|
-| 256 | 2 | 8.9 | 24.4 kHz | 3.1 MHz |
-| 512 | 4 | 6.6 | 12.2 kHz | 3.1 MHz |
-| 1024 | 8 | 6.0 | 6.1 kHz | 3.1 MHz |
+| 256 | 2 | 9.6 | 24.4 kHz | 3.1 MHz |
+| 512 | 4 | 8.6 | 12.2 kHz | 3.1 MHz |
+| 1024 | 8 | 7.8 | 6.1 kHz | 3.1 MHz |
 
 `FFT_N` is a `v2_top` parameter (256 / 512 / 1024). All three are verified
 end-to-end, including full FFT frames egressing on RGMII.
+
+### Butterfly timing and headroom for more speed
+
+The butterfly is **3 phases** (address → latch+multiply → combine+write); the
+combine is combinational off the registered products so it merges with the
+write. The data RAM is EBR with a **registered** read (address in phase 0, data
+valid in phase 1) — a combinational read would not map to EBR, since 65 kbit
+exceeds the 47 kbit of distributed RAM.
+
+Measured headroom: raw mode is **2,400 LUTs of 5,936**, so FFT mode has roughly
+3,000 LUTs spare. Further speedup options, in increasing effort:
+
+| Option | Approx. gain | Note |
+|---|---:|---|
+| more `FFT_N` parallelism (banked RAM, P butterflies) | ~Px | needs conflict-free multi-bank addressing |
+| radix-4 (5 stages instead of 10, 3 complex mults each) | ~3x | more registers + twiddle sets |
+| pipelined across butterflies within a stage | ~2x | RAM-port bound (2 accesses/cycle) |
+
+The floor with a single dual-port EBR is ~2 cycles/butterfly (2 reads + 2
+writes), i.e. ~12 MSPS at N=1024 — banked RAMs are needed to beat that.
 
 ## Block diagram / files
 

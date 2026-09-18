@@ -60,13 +60,19 @@ module v2_fft1024 #(
 );
 
     // ------------------------------------------------------------------ memory
-    reg signed [W-1:0] mem_re [0:N-1];
-    reg signed [W-1:0] mem_im [0:N-1];
+    // Data RAM lives in EBR (32 kbit > distributed RAM budget), and EBR has a
+    // REGISTERED output: the read address must be presented one cycle before the
+    // data is consumed. The butterfly micro-sequence therefore registers the
+    // addresses in phase 0 and latches the data in phase 1.
+    (* ramstyle = "block" *) reg signed [W-1:0] mem_re [0:N-1];
+    (* ramstyle = "block" *) reg signed [W-1:0] mem_im [0:N-1];
 
     // ---------------------------------------------------------------- twiddles
-    reg signed [W-1:0] twr [0:N/2-1];
-    reg signed [W-1:0] twi [0:N/2-1];
-    reg signed [W-1:0] win [0:N-1];
+    // Twiddle and window ROMs are 16 kbit each, which fits the 47 kbit of
+    // distributed RAM, so they keep combinational reads (no extra phase).
+    (* ramstyle = "distributed" *) reg signed [W-1:0] twr [0:N/2-1];
+    (* ramstyle = "distributed" *) reg signed [W-1:0] twi [0:N/2-1];
+    (* ramstyle = "distributed" *) reg signed [W-1:0] win [0:N-1];
 
     initial begin
         $readmemh(TWID_FILE,  twr);
@@ -94,7 +100,6 @@ module v2_fft1024 #(
     reg signed [W-1:0] ar, ai, br, bi;
     reg signed [W-1:0] wr, wi;
     reg signed [2*W-1:0] p1, p2, p3;
-    reg signed [W:0]     t_re, t_im;
 
     // Block floating point: one shared exponent for the whole frame. After each
     // stage we note whether any output reached the guard threshold; the next
@@ -128,16 +133,23 @@ module v2_fft1024 #(
     wire signed [W:0] q2 = ($signed({p2[2*W-1], p2}) + $signed({RND[2*W-1], RND})) >>> 15;
     wire signed [W:0] q3 = ($signed({p3[2*W-1], p3}) + $signed({RND[2*W-1], RND})) >>> 15;
 
+    // combine stage is combinational off the registered products, so it merges
+    // with the write cycle: 3 phases per butterfly instead of 4.
+    wire signed [W:0] t_re = q1 - q2;
+    wire signed [W:0] t_im = q3 - q1 - q2;
+
     // ------------------------------------------------- BFP read scaling (>>1)
     // Applied at the start of a stage only if the previous stage grew too far.
-    wire signed [W:0] a_re_e = $signed({mem_re[idx_a][W-1], mem_re[idx_a]});
-    wire signed [W:0] a_im_e = $signed({mem_im[idx_a][W-1], mem_im[idx_a]});
-    wire signed [W:0] b_re_e = $signed({mem_re[idx_b][W-1], mem_re[idx_b]});
-    wire signed [W:0] b_im_e = $signed({mem_im[idx_b][W-1], mem_im[idx_b]});
-    wire signed [W-1:0] rd_ar = rd_scale ? ((a_re_e + 17'sd1) >>> 1) : mem_re[idx_a];
-    wire signed [W-1:0] rd_ai = rd_scale ? ((a_im_e + 17'sd1) >>> 1) : mem_im[idx_a];
-    wire signed [W-1:0] rd_br = rd_scale ? ((b_re_e + 17'sd1) >>> 1) : mem_re[idx_b];
-    wire signed [W-1:0] rd_bi = rd_scale ? ((b_im_e + 17'sd1) >>> 1) : mem_im[idx_b];
+    // Addresses are registered (ra_*) so the EBR read lands one cycle later.
+    reg  [LOGN-1:0] ra_a, ra_b;
+    wire signed [W:0] a_re_e = $signed({mem_re[ra_a][W-1], mem_re[ra_a]});
+    wire signed [W:0] a_im_e = $signed({mem_im[ra_a][W-1], mem_im[ra_a]});
+    wire signed [W:0] b_re_e = $signed({mem_re[ra_b][W-1], mem_re[ra_b]});
+    wire signed [W:0] b_im_e = $signed({mem_im[ra_b][W-1], mem_im[ra_b]});
+    wire signed [W-1:0] rd_ar = rd_scale ? ((a_re_e + 17'sd1) >>> 1) : mem_re[ra_a];
+    wire signed [W-1:0] rd_ai = rd_scale ? ((a_im_e + 17'sd1) >>> 1) : mem_im[ra_a];
+    wire signed [W-1:0] rd_br = rd_scale ? ((b_re_e + 17'sd1) >>> 1) : mem_re[ra_b];
+    wire signed [W-1:0] rd_bi = rd_scale ? ((b_im_e + 17'sd1) >>> 1) : mem_im[ra_b];
 
     // ---------------------------------------------------- butterfly outputs
     // Widened to W+2 so a genuine carry out of the signed range is visible.
@@ -261,31 +273,30 @@ module v2_fft1024 #(
                 S_CALC: begin
                     case (sub)
                         2'd0: begin
-                            ar <= rd_ar; ai <= rd_ai;
-                            br <= rd_br; bi <= rd_bi;
-                            wr <= twr[tw_idx];   wi <= twi[tw_idx];
-                            sub <= 2'd1;
+                            // register the RAM addresses; the EBR output (and so
+                            // the scaled read values) is valid next cycle
+                            ra_a <= idx_a;
+                            ra_b <= idx_b;
+                            sub  <= 2'd1;
                         end
                         2'd1: begin
-                            p1 <= wr * br;                 // wr*br
-                            p2 <= wi * bi;                 // wi*bi
-                            p3 <= sum_w * sum_b;           // (wr+wi)*(br+bi)
+                            // EBR data is valid now. Multiply straight from it
+                            // (Q15 twiddles from the distributed ROM), and latch
+                            // the un-multiplied value for the final add.
+                            ar <= rd_ar; ai <= rd_ai;
+                            p1 <= rd_br * twr[tw_idx];
+                            p2 <= rd_bi * twi[tw_idx];
+                            p3 <= (twr[tw_idx] + twi[tw_idx]) * (rd_br + rd_bi);
                             sub <= 2'd2;
                         end
-                        2'd2: begin
-                            // Twiddles are Q15 fractional, so each product must be
-                            // shifted back down by 15. Round (add half an LSB)
-                            // before shifting to keep the numerical noise low; the
-                            // accumulated FFT noise stays far below the 10-bit ADC.
-                            t_re <= q1 - q2;
-                            t_im <= q3 - q1 - q2;
-                            sub  <= 2'd3;
-                        end
                         default: begin
-                            mem_re[idx_a] <= o1_re[W-1:0];
-                            mem_im[idx_a] <= o1_im[W-1:0];
-                            mem_re[idx_b] <= o2_re[W-1:0];
-                            mem_im[idx_b] <= o2_im[W-1:0];
+                            // Combine + write in the same cycle: o* is
+                            // combinational off the products registered in phase 1,
+                            // so the butterfly is 3 phases (down from 4).
+                            mem_re[ra_a] <= o1_re[W-1:0];
+                            mem_im[ra_a] <= o1_im[W-1:0];
+                            mem_re[ra_b] <= o2_re[W-1:0];
+                            mem_im[ra_b] <= o2_im[W-1:0];
                             if (thresh_hit) need_scale <= 1'b1;
                             if (sat_hit)
                                 overflow <= 1'b1;      // latch: tolerance indicator
