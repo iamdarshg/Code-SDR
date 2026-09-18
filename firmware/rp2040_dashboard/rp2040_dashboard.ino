@@ -82,6 +82,7 @@ static void selftest(void) {
 #define REG_NCO       0x03
 #define REG_ENABLE    0x04
 #define REG_DST_PORT  0x05
+#define REG_DROP      0x06   // delta-sigma packet drop fraction, Q16 (see v2_raw_path)
 // reads (addr[7]=1); telemetry block lives at 0x20..0x3F
 #define REG_T_PACKETS 0xA0
 #define REG_T_DROPPED 0xA4
@@ -89,10 +90,16 @@ static void selftest(void) {
 #define REG_T_STATUS  0xAC
 #define REG_T_MBPS    0xB0
 #define REG_T_SEQ     0xB4
+#define REG_T_DROPPED_PKTS 0xB8
 
 // ------------------------------------------------------------- link constants
 static const float ADC_HZ        = 100.0e6;  // REF_100M_ADC
-static const float UDP_CEIL_MBPS = 957.0;    // 1472B payload / 1538B wire @1500 MTU
+static const int   JUMBO_MTU     = 9000;     // all datagrams are jumbo (v2_top MTU)
+// 8972 B payload / 9038 B wire @ 9000 MTU
+static const float UDP_CEIL_MBPS = 992.7;
+// Leave half a percent of headroom under the ceiling; the datapath's FIFO
+// high-water override catches anything the average does not.
+static const float CEIL_MARGIN   = 0.995;
 
 static uint8_t  g_bits  = 10;
 static uint8_t  g_decim = 2;
@@ -100,6 +107,40 @@ static uint8_t  g_mode  = 0;                 // 0 = raw, 1 = on-FPGA FFT
 
 static uint32_t prev_dropped = 0;
 static uint32_t prev_ms      = 0;
+
+// ------------------------------------------------------------------- rate plan
+// Offered UDP payload for the current width/decimation at jumbo MTU. The 40-bit
+// word packs 5 samples at 8 bit or 4 at 10 bit, so samples-per-packet follows.
+static double offered_mbps(uint8_t bits, uint8_t decim) {
+    const int HEADER = 16, BPW = 5;
+    int words = ((JUMBO_MTU - 28) - HEADER) / BPW;
+    int spw   = 40 / (bits ? bits : 1);
+    long nsamp = (long)words * spw;
+    long pkt_bytes = HEADER + (long)words * BPW;
+    double msps = 100.0 / (decim ? decim : 1);
+    return (msps * 1e6 / (double)nsamp) * (double)pkt_bytes * 8.0 / 1e6;
+}
+
+// Delta-sigma drop fraction (Q16) that brings the offered rate under the link
+// ceiling. 0 when the stream already fits, i.e. 8-bit at any rate below 100 MSPS
+// and any 10-bit rate at or below 50 MSPS.
+static uint16_t drop_fraction_for(uint8_t bits, uint8_t decim) {
+    double payload = offered_mbps(bits, decim);
+    double target  = CEIL_MARGIN * UDP_CEIL_MBPS;
+    if (payload <= target) return 0;
+    long f = (long)((1.0 - target / payload) * 65536.0);
+    if (f < 0) f = 0;
+    if (f > 65535) f = 65535;
+    return (uint16_t)f;
+}
+
+// Recompute and push the drop fraction. Called whenever bits or decimation
+// change, so the link can never be oversubscribed by a stale setting.
+static void apply_rate_config(void) {
+    uint16_t frac = (g_mode == 0) ? drop_fraction_for(g_bits, g_decim) : 0;
+    fpga_write(REG_DROP, frac);
+}
+
 
 // ------------------------------------------------------------------ SPI access
 static uint32_t fpga_read(uint8_t a) {
@@ -148,9 +189,10 @@ void setup() {
     fpga_write(REG_DECIM, g_decim);
     fpga_write(REG_MODE,  g_mode);
     fpga_write(REG_ENABLE, 1);
+    apply_rate_config();
 
     Serial.println("# Code-SDR V2 dashboard. Commands: 'b <8|10>' 'd <1|2|4|8>' 'm <0|1>' '0'/'1' = swap bitstream");
-    Serial.println("ms,bits,decim,mode,msps,payload_mbps,ceiling_mbps,headroom_mbps,required,packets,dropped,drops_per_s,sticky,link,pll");
+    Serial.println("ms,bits,decim,mode,msps,payload_mbps,ceiling_mbps,headroom_mbps,required,packets,dropped,drops_per_s,sticky,link,pll,pkts_dropped");
 
     // fault handling + watchdog: reset the controller if the loop ever hangs
     faults_init();
@@ -175,9 +217,9 @@ void loop() {
     if (Serial.available()) {
         char c = Serial.read();
         long arg = Serial.parseInt();
-        if      (c == 'b' && (arg == 8 || arg == 10)) { g_bits = arg;  fpga_write(REG_BITS, g_bits); }
-        else if (c == 'd' && arg > 0)                 { g_decim = arg; fpga_write(REG_DECIM, g_decim); }
-        else if (c == 'm')                            { g_mode = arg ? 1 : 0; fpga_write(REG_MODE, g_mode); }
+        if      (c == 'b' && (arg == 8 || arg == 10)) { g_bits = arg;  fpga_write(REG_BITS, g_bits);  apply_rate_config(); }
+        else if (c == 'd' && arg > 0)                 { g_decim = arg; fpga_write(REG_DECIM, g_decim); apply_rate_config(); }
+        else if (c == 'm')                            { g_mode = arg ? 1 : 0; fpga_write(REG_MODE, g_mode); apply_rate_config(); }
         else if (c == '0' || c == '1') {
             // Full reconfiguration: load the other bitstream from flash and
             // reprogram the FPGA. No host needed, no re-flash of the board.
@@ -205,6 +247,7 @@ void loop() {
     uint32_t packets = fpga_read(REG_T_PACKETS);
     uint32_t dropped = fpga_read(REG_T_DROPPED);
     uint32_t sticky  = fpga_read(REG_T_STICKY);
+    uint32_t pkts_dropped = fpga_read(REG_T_DROPPED_PKTS);
 
     uint8_t link      = status & 0x01;
     uint8_t pll       = (status >> 1) & 0x01;
@@ -231,12 +274,13 @@ void loop() {
     Serial.print("  bit depth       : "); Serial.print(bits); Serial.println(" bit");
     Serial.print("  sample rate     : "); Serial.print(msps, 2); Serial.println(" MSPS");
     Serial.print("  payload load    : "); Serial.print(payload_mbps, 1); Serial.println(" Mbps");
-    Serial.print("  link ceiling    : "); Serial.print(UDP_CEIL_MBPS, 1); Serial.println(" Mbps (1500 MTU)");
+    Serial.print("  link ceiling    : "); Serial.print(UDP_CEIL_MBPS, 1); Serial.println(" Mbps (jumbo 9000 MTU)");
     Serial.print("  headroom        : "); Serial.print(headroom, 1); Serial.print(" Mbps");
-    Serial.println(required ? "   *** OVERSUBSCRIBED: drops guaranteed ***" : "   OK");
+    Serial.println(required ? "   *** oversubscribed: delta-sigma packet dropping active ***" : "   OK");
     Serial.print("  dropped words   : "); Serial.print(dropped);
     Serial.print("  ("); Serial.print(drops_per_s, 1); Serial.println(" /s)");
     Serial.print("  link / pll      : "); Serial.print(link); Serial.print(" / "); Serial.println(pll);
+    Serial.print("  deliberate drops: "); Serial.print(pkts_dropped); Serial.print(" packets (delta-sigma "); Serial.print(drop_pct, 2); Serial.println(" %)");
 
     // fault housekeeping + report
     faults_tick(link, dropped);
@@ -258,5 +302,6 @@ void loop() {
     Serial.print(drops_per_s, 1); Serial.print(',');
     Serial.print(sticky | sticky_ov); Serial.print(',');
     Serial.print(link);         Serial.print(',');
-    Serial.println(pll);
+    Serial.print(pll);          Serial.print(',');
+    Serial.println(pkts_dropped);   // 16: deliberate delta-sigma packet drops
 }

@@ -35,7 +35,8 @@ module v2_spi_regs (
     output reg  [7:0]  cfg_decim,
     output reg  [31:0] cfg_nco_freq,
     output reg         cfg_enable,
-    output reg  [15:0] cfg_dst_port
+    output reg  [15:0] cfg_dst_port,
+    output reg  [15:0] cfg_drop_frac
 );
 
     localparam [6:0] A_MODE     = 7'h00;
@@ -44,6 +45,7 @@ module v2_spi_regs (
     localparam [6:0] A_NCO      = 7'h03;
     localparam [6:0] A_ENABLE   = 7'h04;
     localparam [6:0] A_DST_PORT = 7'h05;
+    localparam [6:0] A_DROP     = 7'h06;   // delta-sigma packet drop fraction, Q16
 
     reg [2:0] sclk_s, cs_s;
     wire sclk_rise = (sclk_s[2:1] == 2'b01);
@@ -83,6 +85,7 @@ module v2_spi_regs (
             cfg_nco_freq <= 32'd0;
             cfg_enable <= 1'b1;
             cfg_dst_port <= 16'd10000;
+            cfg_drop_frac <= 16'd0;
         end else begin
             sclk_s <= {sclk_s[1:0], spi_clk};
             cs_s   <= {cs_s[1:0], spi_cs_n};
@@ -113,6 +116,7 @@ module v2_spi_regs (
                             A_NCO:      cfg_nco_freq    <= wdata[31:0];
                             A_ENABLE:   cfg_enable      <= wdata[0];
                             A_DST_PORT: cfg_dst_port    <= wdata[15:0];
+                            A_DROP:     cfg_drop_frac   <= wdata[15:0];
                             default: ;
                         endcase
                     end
@@ -128,6 +132,7 @@ module v2_spi_regs (
                         A_NCO:      shout <= cfg_nco_freq;
                         A_ENABLE:   shout <= {31'd0, cfg_enable};
                         A_DST_PORT: shout <= {16'd0, cfg_dst_port};
+                        A_DROP:     shout <= {16'd0, cfg_drop_frac};
                         default:    shout <= 32'd0;
                     endcase
                 end

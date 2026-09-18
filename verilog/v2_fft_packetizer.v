@@ -53,12 +53,13 @@ module v2_fft_packetizer #(
 );
 
     localparam integer PKT_BYTES = HEADER_BYTES + BINS_PER_PKT*4;
+    localparam integer IDXW      = $clog2(BINS_PER_PKT) + 1;   // one extra bit to hold BINS_PER_PKT
 
     // ------------------------------------------------------------- bin buffer
     reg [31:0] binbuf [0:BINS_PER_PKT-1];
 
-    reg [8:0]  wr_idx;         // binbuf written into the staging buffer
-    reg [8:0]  rd_idx;         // binbuf read out
+    reg [IDXW-1:0] wr_idx;     // binbuf written into the staging buffer
+    reg [IDXW-1:0] rd_idx;     // binbuf read out
     reg [9:0]  first_bin;
     reg [31:0] frame_lat, seq;
     reg [4:0]  exp_lat;
@@ -67,7 +68,7 @@ module v2_fft_packetizer #(
     reg        sending;
     reg [15:0] byte_i;
 
-    wire buffer_full = (wr_idx == BINS_PER_PKT[8:0]);
+    wire buffer_full = (wr_idx == BINS_PER_PKT[IDXW-1:0]);
 
     assign send        = have_pkt && !sending && !upstream_busy;
     assign payload_len = PKT_BYTES[15:0];
@@ -76,21 +77,21 @@ module v2_fft_packetizer #(
     // ------------------------------------------------------------ bin intake
     always @(posedge clk or negedge rst_n) begin
         if (!rst_n) begin
-            wr_idx    <= 9'd0;
+            wr_idx    <= {IDXW{1'b0}};
             first_bin <= 10'd0;
             frame_lat <= 32'd0;
             exp_lat   <= 5'd0;
             ovf_lat   <= 1'b0;
         end else begin
             if (fft_valid && !buffer_full) begin
-                if (wr_idx == 9'd0) begin
+                if (wr_idx == {IDXW{1'b0}}) begin
                     first_bin <= fft_index;
                     frame_lat <= fft_frame;
                     exp_lat   <= fft_scale_exp;
                     ovf_lat   <= fft_overflow;
                 end
                 binbuf[wr_idx] <= {fft_re, fft_im};
-                wr_idx <= wr_idx + 9'd1;
+                wr_idx <= wr_idx + {{(IDXW-1){1'b0}}, 1'b1};
             end else if (fft_valid && buffer_full) begin
                 bins_dropped <= bins_dropped + 32'd1;
             end
@@ -141,7 +142,7 @@ module v2_fft_packetizer #(
             have_pkt     <= 1'b0;
             sending      <= 1'b0;
             byte_i       <= 16'd0;
-            rd_idx       <= 9'd0;
+            rd_idx       <= {IDXW{1'b0}};
             seq          <= 32'd0;
             packets_sent <= 32'd0;
             bins_dropped <= 32'd0;
@@ -150,7 +151,7 @@ module v2_fft_packetizer #(
                 if (buffer_full) begin
                     have_pkt <= 1'b1;
                     byte_i   <= 16'd0;
-                    rd_idx   <= 9'd0;
+                    rd_idx   <= {IDXW{1'b0}};
                 end
             end else if (!sending) begin
                 if (!upstream_busy) begin
@@ -164,13 +165,13 @@ module v2_fft_packetizer #(
                     seq          <= seq + 32'd1;
                     packets_sent <= packets_sent + 32'd1;
                     // free the staging buffer only after the packet is gone
-                    wr_idx <= 9'd0;
+                    wr_idx <= {IDXW{1'b0}};
                 end else begin
                     byte_i <= byte_i + 16'd1;
                     // advance the bin pointer when its last byte is taken
                     if (byte_i >= HEADER_BYTES[15:0] &&
                         bb == 2'd3)
-                        rd_idx <= rd_idx + 9'd1;
+                        rd_idx <= rd_idx + {{(IDXW-1){1'b0}}, 1'b1};
                 end
             end
         end

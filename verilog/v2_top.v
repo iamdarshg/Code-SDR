@@ -29,7 +29,7 @@ module v2_top #(
     parameter integer MODE         = 0,       // 0 = raw, 1 = on-FPGA 1024-pt FFT
     parameter integer SAMPLE_BITS  = 8,       // raw only: 8 or 10
     parameter integer DECIM        = 1,
-    parameter integer MTU          = 1500,
+    parameter integer MTU          = 9000,      // IP packet length; jumbo for all datagrams
     parameter integer FFT_RATE     = 16,      // CIC decimation for MODE=1 (fastest the FFT sustains)
     parameter integer FFT_W        = 16,
     parameter integer FFT_N        = 1024     // 256 / 512 / 1024
@@ -82,6 +82,7 @@ module v2_top #(
     wire [1:0]  cfg_mode;
     wire [7:0]  cfg_bits;
     wire [7:0]  cfg_decim;
+    wire [15:0] cfg_drop_frac;
     wire [31:0] cfg_nco;
     wire        cfg_enable;
     wire [15:0] cfg_dst_port;
@@ -96,13 +97,13 @@ module v2_top #(
     wire [31:0] packets_sent;
 
     // ===================================================== MODE 0: raw streamer
-    wire [31:0] raw_dropped, raw_ovf, raw_pkts;
+    wire [31:0] raw_dropped, raw_ovf, raw_pkts, raw_dropped_pkts;
 
     generate
     if (MODE == 0) begin : g_raw
 
         v2_raw_path #(
-            .FIFO_ADDR_WIDTH(10), .SAMPLE_BITS(SAMPLE_BITS),
+            .FIFO_ADDR_WIDTH(11), .SAMPLE_BITS(SAMPLE_BITS),
             .DECIM(DECIM), .MTU(MTU)
         ) u_raw (
             .clk_adc(clk_100m_in), .clk_eth(clk_eth), .rst_n(reset_n),
@@ -110,10 +111,12 @@ module v2_top #(
             .upstream_busy(upstream_busy),
             .link_up(link_up),
             .decim_cfg(cfg_decim),
+            .drop_frac_cfg(cfg_drop_frac),
             .p_data(p_data), .p_valid(p_valid), .p_ready(p_ready),
             .send(send), .payload_len(payload_len), .packet_seq(packet_seq),
             .dropped_words(raw_dropped),
-            .overflow_count(raw_ovf), .packets_sent(raw_pkts)
+            .overflow_count(raw_ovf), .packets_sent(raw_pkts),
+            .packets_dropped(raw_dropped_pkts)
         );
 
         assign packets_sent = raw_pkts;
@@ -199,7 +202,7 @@ module v2_top #(
         wire [31:0] fft_pkts, fft_bins_dropped;
 
         v2_fft_packetizer #(
-            .BINS_PER_PKT(256), .HEADER_BYTES(16), .W(FFT_W)
+            .BINS_PER_PKT(FFT_N), .HEADER_BYTES(16), .W(FFT_W)
         ) u_fftpkt (
             .clk(clk_eth), .rst_n(reset_n),
             .fft_re(fft_re), .fft_im(fft_im), .fft_valid(fft_valid),
@@ -215,6 +218,7 @@ module v2_top #(
         assign raw_dropped  = fft_bins_dropped;
         assign raw_ovf      = {27'd0, fft_overflow};
         assign raw_pkts     = fft_pkts;
+        assign raw_dropped_pkts = 32'd0;
 
     end
     endgenerate
@@ -281,7 +285,8 @@ module v2_top #(
         .spi_miso(spi_miso),
         .tele_addr(tele_addr), .tele_data(tele_data),
         .cfg_mode(cfg_mode), .cfg_sample_bits(cfg_bits), .cfg_decim(cfg_decim),
-        .cfg_nco_freq(cfg_nco), .cfg_enable(cfg_enable), .cfg_dst_port(cfg_dst_port)
+        .cfg_nco_freq(cfg_nco), .cfg_enable(cfg_enable), .cfg_dst_port(cfg_dst_port),
+        .cfg_drop_frac(cfg_drop_frac)
     );
 
 endmodule

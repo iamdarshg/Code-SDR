@@ -33,6 +33,8 @@ TESTS = [
     ("v2_raw_path_tb",         ["verilog/v2_raw_path_tb.v", "verilog/v2_raw_path.v",
                                 "verilog/v2_cdc_fifo.v", "verilog/v2_udp_ip_tx.v",
                                 "verilog/v2_eth_mac_tx.v"]),
+    ("v2_raw_drop_tb",         ["verilog/v2_raw_drop_tb.v", "verilog/v2_raw_path.v",
+                                "verilog/v2_cdc_fifo.v"]),
     ("v2_spi_regs_tb",         ["verilog/v2_spi_regs_tb.v", "verilog/v2_spi_regs.v",
                                 "verilog/v2_telemetry.v"]),
     ("v2_cic_decimator_tb",    ["verilog/v2_cic_decimator_tb.v", "verilog/v2_cic_decimator.v"]),
@@ -99,6 +101,19 @@ def main():
         ok, msg = run_one(iv, vvp, "v2_top_tb", base, [f"-Pv2_top_tb.MODE={mode}"])
         print(f"{name:<26} {'PASS' if ok else 'FAIL'}  {msg}")
         passed += 1 if ok else 0
+
+    # raw path at BOTH widths: 8-bit packs 5 samples/word, 10-bit packs 4.
+    # (The default entry above runs 10-bit; this adds the full-speed 8-bit mode.)
+    for bits, decim in ((8, 1),):
+        name = f"v2_raw_path_tb_{bits}bit"
+        total += 1
+        base = next(f for n, f in TESTS if n == "v2_raw_path_tb")
+        ok, msg = run_one(iv, vvp, "v2_raw_path_tb", base,
+                          [f"-Pv2_raw_path_tb.SAMPLE_BITS={bits}",
+                           f"-Pv2_raw_path_tb.DECIM={decim}"])
+        print(f"{name:<26} {'PASS' if ok else 'FAIL'}  {msg}")
+        passed += 1 if ok else 0
+
 
     print(f"--- {passed}/{total} passed ---")
     return 0 if passed == total else 1

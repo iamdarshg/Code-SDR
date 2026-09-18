@@ -23,8 +23,11 @@ The RP2040 holds both bitstreams on its flash and swaps them over slave SPI in
 **The ADC always runs at 100 MSPS.** Its clock is a fixed 100 MHz board
 reference, so nothing throttles the converter in either mode.
 
-- **Raw mode consumes every sample** (8-bit → 800 Mbps on the wire). This is the
-  100 MSPS path, and it is the default.
+- **Raw mode consumes every sample** (8-bit → 800 Mbps on the wire, and it fits
+  the link cleanly). At 10 bits over 100 MSPS the stream is 1002 Mbps, which no
+  gigabit link can carry, so rather than halve the sample rate the raw path keeps
+  the full 100 MSPS and drops whole datagrams at a controlled ~0.9% rate — see
+  *Rate plan* below. This is still the 100 MSPS path, and it is the default.
 - **The on-FPGA FFT cannot consume 100 MSPS.** An N-point transform needs
   (N/2)·log₂N butterflies per frame, and at 100 MSPS a frame arrives every N
   samples, so it needs ≈ log₂(N)/2 butterflies *per clock*. For N=1024 that is 5
@@ -42,16 +45,63 @@ check.
 
 | Path | Measured | Test |
 |---|---:|---|
-| Raw streamer, 8-bit / 100 MSPS | **842 Mbps** wire (800 Mbps samples) | `v2_raw_path_tb` |
-| Raw streamer, 10-bit / 50 MSPS | 530 Mbps wire (506 Mbps samples) | `v2_raw_path_tb` |
+| Raw streamer, 8-bit / 100 MSPS | **801 Mbps** wire, no drops | `v2_raw_path_tb_8bit` |
+| Raw streamer, 10-bit / 50 MSPS | 501 Mbps wire, no drops | `v2_raw_path_tb` |
+| Delta-sigma dropper | exact floor(K·frac/65536) | `v2_raw_drop_tb` |
 | CDC FIFO | **799.6 Mbps** sustained + max-rate stress | `v2_cdc_fifo_tb` |
 | Ethernet MAC TX | **991.6 Mbps** wire | `v2_eth_mac_tx_tb` |
-| UDP/IP TX | **956.5 Mbps** payload (the 1500-MTU ceiling) | `v2_udp_ip_tx_tb` |
+| UDP/IP TX | **956.5 Mbps** payload (1500-MTU ceiling) | `v2_udp_ip_tx_tb` |
 | CIC decimator | ÷N verified, DC gain 1 | `v2_cic_decimator_tb` |
 | Memory FFT (N=1024) | ~7.8 MSPS sustained input | `v2_fft1024_tb` |
 | **Pipelined FFT (N=64)** | **100 MSPS** (128 bins at 1/clock) | `v2_fft_pipe_tb` (see below) |
 
+## Rate plan: jumbo MTU + delta-sigma packet dropping
+
+All datagrams are **jumbo (MTU 9000)**, which raises the UDP payload ceiling from
+957 to **992.7 Mbps** and cuts per-packet header overhead.
+
+The ADC clock is a fixed 100 MHz, so the offered load is:
+
+| Mode | Offered | vs 992.7 Mbps ceiling | Action |
+|---|---:|---|---|
+| 8-bit, 100 MSPS | 801 Mbps | under | none |
+| 10-bit, 100 MSPS | 1002 Mbps | **over** | drop ~0.9% of packets |
+| 10-bit, 50 MSPS | 501 Mbps | under | none |
+
+10 bits at 100 MSPS exceeds a gigabit link at *any* packing, so the only choices
+are decimation (halving the instantaneous bandwidth to 25 MHz) or keeping the
+full 100 MSPS and losing ~0.9% of **whole datagrams**. The raw path does the
+latter: every packet that is sent is contiguous and jitter-free.
+
+`v2_raw_path` implements this with a first-order **delta-sigma** accumulator,
+programmed over SPI with a Q16 drop fraction. The drop count over K packets is
+**exactly** `floor(K*frac/65536)` — verified to the packet in `v2_raw_drop_tb`
+(109 of 2048 at frac=3510). Because the fraction is non-dyadic, the accumulator's
+limit cycle is thousands of packets long, so the gap spacing is dithered rather
+than a fixed cadence, spreading the drop spur across many harmonics instead of
+concentrating it at one tone.
+
+Dropped packets still consume a sequence number, so the host sees a gap in `seq`
+and a matching jump in `base_sample`. Loss is reported, never hidden.
+
+A FIFO high-water override forces extra drops if the read side stalls, so
+overflow is structurally impossible: `dropped_words` (FIFO overrun) stays zero
+and all loss is counted in `packets_dropped` (telemetry 0x18).
+
+### Packing
+
+The FIFO word is always 40 bits / 5 bytes, so both widths pack exactly and yield
+the same words-per-datagram (and therefore the same FIFO depth) at a given MTU:
+
+| Width | Samples per word | Bytes per word |
+|---|---:|---:|
+| 8-bit | 5 | 5 |
+| 10-bit | 4 | 5 |
+
+Byte extraction is identical for both, so the packetizer is width-agnostic.
+
 ## Pipelined FFT: throughput achieved, arithmetic not yet correct
+
 
 `v2_fft_pipe.v` genuinely consumes **1 sample/clock = 100 MSPS** (measured), which
 the memory-based FFT cannot. Its **arithmetic is not correct yet**: an impulse

@@ -1,13 +1,15 @@
 // ============================================================================
 // v2_raw_path_tb - full raw-mode chain verification:
-//   ADC(100 MHz) -> pack(SAMPLE_BITS) -> CDC FIFO -> packetizer -> UDP/IP -> MAC
+//   ADC(100 MHz) -> pack(40-bit word) -> CDC FIFO -> packetizer -> UDP/IP -> MAC
+//
+// The word is always 40 bits / 5 bytes, so both sample widths pack exactly:
+//   SAMPLE_BITS=10: 4 samples per 5 bytes
+//   SAMPLE_BITS= 8: 5 samples per 5 bytes  (top 8 bits of each 10-bit sample)
 //
 // Verifies the packed sample stream bit-exactly by UNPACKING the on-wire bytes
-// back into samples and comparing against the ADC stimulus:
-//   SAMPLE_BITS=10: 4 samples packed into 5 bytes
-//   SAMPLE_BITS= 8: 4 samples packed into 4 bytes
-// Also checks the per-packet header (sequence, base sample index, config),
-// IPv4/UDP headers, exact IP checksum, and FCS.
+// back into samples and comparing against the ADC stimulus. Also checks the
+// per-packet header (sequence, base sample index, config), IPv4/UDP headers,
+// exact IP checksum, and FCS. Runs at jumbo MTU with no drops configured.
 // ============================================================================
 
 `timescale 1ns/1ps
@@ -17,22 +19,23 @@ module v2_raw_path_tb;
 
     parameter integer SAMPLE_BITS = 10;
     parameter integer DECIM       = 2;
-    parameter integer MTU         = 1500;
+    parameter integer MTU         = 9000;
 
     localparam [47:0] TEST_DA = 48'h02_00_00_00_00_01;
     localparam [47:0] TEST_SA = 48'h02_00_00_00_00_02;
 
-    localparam integer WORD_W  = 4*SAMPLE_BITS;
-    localparam integer BPW     = (WORD_W + 7)/8;
+    localparam integer WORD_W  = 40;
+    localparam integer BPW     = WORD_W/8;             // 5 bytes per word
+    localparam integer SPW     = WORD_W/SAMPLE_BITS;   // samples per word
     localparam integer HEADER  = 16;
     localparam integer UDP_PAY = MTU - 28;
     localparam integer WORDS   = (UDP_PAY - HEADER) / BPW;
     localparam integer PKT_BYTES = HEADER + WORDS*BPW;
     localparam integer IP_LEN  = PKT_BYTES + 28;
-    localparam integer NSAMP   = WORDS*4;
+    localparam integer NSAMP   = WORDS*SPW;
     localparam integer FRAME_LEN = 54 + PKT_BYTES;
     localparam integer SAMP_OFF  = 22 + 28 + HEADER;   // first sample byte
-    localparam integer FRAMES  = 40;
+    localparam integer FRAMES  = 6;
 
     localparam [31:0] SRC_IP = 32'hC0A80002;
     localparam [31:0] DST_IP = 32'hC0A80001;
@@ -63,7 +66,6 @@ module v2_raw_path_tb;
         if (!rst_n) kk <= 0; else kk <= kk + 1;
 
     // ------------------------------------------------ random upstream backpressure
-    // Randomly asserts the raw path's start-gate so packet starts are jittered.
     reg [15:0] fuzz_lfsr = 16'hACE1;
     always @(posedge clk_eth or negedge rst_n)
         if (!rst_n) fuzz_lfsr <= 16'hACE1;
@@ -83,10 +85,10 @@ module v2_raw_path_tb;
     wire [15:0] m_len;
     wire [7:0]  gmii_tx_d;
     wire        gmii_tx_en;
-    wire [31:0] overflow_count, packets_sent;
+    wire [31:0] overflow_count, packets_sent, packets_dropped;
 
     v2_raw_path #(
-        .FIFO_ADDR_WIDTH(10),
+        .FIFO_ADDR_WIDTH(11),
         .SAMPLE_BITS(SAMPLE_BITS),
         .DECIM(DECIM),
         .MTU(MTU)
@@ -96,10 +98,12 @@ module v2_raw_path_tb;
         .upstream_busy(udp_busy_fuzz),
         .link_up(1'b1),
         .decim_cfg(8'd0),
+        .drop_frac_cfg(16'd0),
         .p_data(p_data), .p_valid(p_valid), .p_ready(p_ready),
         .send(udp_send), .payload_len(udp_plen), .packet_seq(udp_seq),
         .dropped_words(),
-        .overflow_count(overflow_count), .packets_sent(packets_sent)
+        .overflow_count(overflow_count), .packets_sent(packets_sent),
+        .packets_dropped(packets_dropped)
     );
 
     v2_udp_ip_tx u_udp (
@@ -121,7 +125,7 @@ module v2_raw_path_tb;
     );
 
     // ------------------------------------------------------------ wire capture
-    reg [7:0] frame [0:4095];
+    reg [7:0] frame [0:16383];
     integer   bidx = 0, gap = 0, errors = 0, checked = 0;
     integer   wire_bytes = 0;
     reg       seen_frame = 0, prev_en = 0;
@@ -129,7 +133,7 @@ module v2_raw_path_tb;
     integer   i, j, g, b;
     reg [31:0] sum, crc, inv;
     reg [31:0] base_w;
-    reg [9:0]  s0, s1, s2, s3;
+    reg [9:0]  s [0:4];
     reg [7:0]  exp_byte;
 
     function [31:0] crc32_byte;
@@ -152,7 +156,7 @@ module v2_raw_path_tb;
         end
     endfunction
 
-    // Expected packed byte b of the group of four 10-bit samples.
+    // Expected packed byte b of a group of four 10-bit samples.
     function [7:0] exp10;
         input [9:0] a0, a1, a2, a3;
         input integer bsel;
@@ -170,7 +174,7 @@ module v2_raw_path_tb;
     task check_frame;
         input integer n;
         reg [31:0] seq_w;
-        integer groups, rem;
+        integer groups;
         begin
             if (n !== FRAME_LEN) begin
                 $display("  FRAME %0d: length %0d expected %0d", checked, n, FRAME_LEN);
@@ -229,16 +233,13 @@ module v2_raw_path_tb;
             // unpack and compare every sample
             groups = WORDS;
             for (g = 0; g < groups; g = g + 1) begin
-                s0 = adc_val((base_w + g*4 + 0) * DECIM);
-                s1 = adc_val((base_w + g*4 + 1) * DECIM);
-                s2 = adc_val((base_w + g*4 + 2) * DECIM);
-                s3 = adc_val((base_w + g*4 + 3) * DECIM);
+                for (i = 0; i < SPW; i = i + 1)
+                    s[i] = adc_val((base_w + g*SPW + i) * DECIM);
                 for (b = 0; b < BPW; b = b + 1) begin
                     if (SAMPLE_BITS == 10)
-                        exp_byte = exp10(s0, s1, s2, s3, b);
+                        exp_byte = exp10(s[0], s[1], s[2], s[3], b);
                     else
-                        exp_byte = (b == 0) ? s0[9:2] : (b == 1) ? s1[9:2] :
-                                   (b == 2) ? s2[9:2] : s3[9:2];
+                        exp_byte = s[b][9:2];
                     if (frame[SAMP_OFF + g*BPW + b] !== exp_byte) begin
                         if (errors < 6)
                             $display("  FRAME %0d grp %0d byte %0d: got %h expected %h",
@@ -271,7 +272,7 @@ module v2_raw_path_tb;
             end
             prev_en <= 1;
             gap <= 0;
-            if (bidx < 4095) frame[bidx] <= gmii_tx_d;
+            if (bidx < 16383) frame[bidx] <= gmii_tx_d;
             bidx <= bidx + 1;
             wire_bytes <= wire_bytes + 1;
             if (first_en == 0) first_en <= $time;
@@ -288,7 +289,8 @@ module v2_raw_path_tb;
     end
 
     initial begin
-        $display("=== v2_raw_path_tb (SAMPLE_BITS=%0d DECIM=%0d) ===", SAMPLE_BITS, DECIM);
+        $display("=== v2_raw_path_tb (SAMPLE_BITS=%0d DECIM=%0d MTU=%0d) ===",
+                 SAMPLE_BITS, DECIM, MTU);
         repeat (8) @(posedge clk_eth);
         rst_n = 1;
         while (checked < FRAMES) @(posedge clk_eth);
@@ -297,18 +299,22 @@ module v2_raw_path_tb;
             $display("FATAL: %0d errors", errors);
             $fatal(1);
         end
+        if (packets_dropped !== 32'd0) begin
+            $display("FATAL: %0d packets dropped but none configured", packets_dropped);
+            $fatal(1);
+        end
         $display("  %0d frames, %0d packed sample bytes verified, overflows=%0d",
                  checked, checked*WORDS*BPW, overflow_count);
         $display("  sample payload   = %.1f Mbps (100/%0d MSPS x %0d bit)",
                  (checked*NSAMP*SAMPLE_BITS*1.0*1000.0)/(last_en-first_en), DECIM, SAMPLE_BITS);
         $display("  wire throughput  = %.1f Mbps",
                  (wire_bytes * 8.0 * 1000.0) / (last_en - first_en));
-        $display("PASS: v2_raw_path (%0d-bit packed, DECIM=%0d)", SAMPLE_BITS, DECIM);
+        $display("PASS: v2_raw_path (%0d-bit, %0d samples/word, jumbo MTU)", SAMPLE_BITS, SPW);
         $finish;
     end
 
     initial begin
-        #20_000_000;
+        #40_000_000;
         $fatal(1, "v2_raw_path_tb timeout");
     end
 

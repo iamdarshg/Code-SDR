@@ -15,6 +15,8 @@
 //                            bits[11:5] sample_bits[6:0], bits[19:12] decim
 //   0x10  effective Mbps     sample rate x bit depth (as computed in RTL)
 //   0x14  sequence           packet sequence / frame counter
+//   0x18  packets_dropped    datagrams deliberately dropped by the delta-sigma
+//                            dropper (distinct from FIFO overrun in 0x04)
 //
 // All inputs are expected in the telemetry clock domain; counters that origin-
 // ate elsewhere are synchronized by their source (dropped_words is gray-coded
@@ -30,6 +32,7 @@ module v2_telemetry (
 
     // live counters / configuration
     input  wire [31:0] packets_sent,
+    input  wire [31:0] packets_dropped,
     input  wire [31:0] dropped_words,
     input  wire [31:0] overflow_count,
     input  wire [31:0] seq_value,
@@ -60,6 +63,7 @@ module v2_telemetry (
             6'h03:   rd_data = {11'd0, phy_error, decim[7:0], sample_bits[6:0],
                                 sticky_overflow, mode, pll_locked, link_up};
             6'h04:   rd_data = {16'd0, effective_mbps};
+            6'h06:   rd_data = packets_dropped;
             default: rd_data = seq_value;
         endcase
     end

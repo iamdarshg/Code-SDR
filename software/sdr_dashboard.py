@@ -112,7 +112,7 @@ class LinkStats:
         print(" Code-SDR V2  |  raw mode  |  laptop FFT")
         print(f"  bit depth        : {self.bits} bit    decimation: {self.decim}")
         print(f"  sample rate      : {srate/1e6:.3f} MSPS (nominal {100.0/ (self.decim or 1):.1f})")
-        print(f"  payload rate     : {mbps:.1f} Mbps   (ceiling ~957 Mbps @1500 MTU)")
+        print(f"  payload rate     : {mbps:.1f} Mbps   (ceiling ~993 Mbps @ jumbo 9000 MTU)")
         print(f"  packets received : {self.rx}   expected {expected}")
         print(f"  NETWORK loss     : {self.lost_net} packets ({net_loss:.4f} %)")
         print(f"  FPGA-side drops  : {self.fpga_drops} words total, +{ddrop} this interval")
