@@ -112,13 +112,31 @@ against the ~957 Mbps UDP ceiling, oversubscription and drops/second, and emits
 
 ## Known non-simulation work (blocks production)
 
-1. **Diamond fit** — see `RESOURCE_REPORT.md`. Raw mode fits under the pessimistic
-   estimate; FFT mode is over and needs ABC/LSE to confirm (the WASM Yosys build
-   cannot run ABC).
-2. **RGMII DDR I/O cells** — `v2_rgmii.v` is behavioural; production needs the
-   LIF-MD6000 DDR primitives plus input/output delay constraints.
-3. **PLL primitive** — `v2_clock_pll.v` simulates; hardware needs the
-   Diamond-generated wrapper (`V2_USE_VENDOR_PLL`).
-4. **Pin constraints** — `verilog/v2_top.lpf`, IO_TYPEs and DDR cells flagged TODO.
-5. **Hardware bring-up** — nothing here has touched silicon; there is no
+1. **Diamond fit** — see `RESOURCE_REPORT.md`. Raw mode measures **2,400 of
+   5,936 LUTs** with real ABC and fits comfortably; FFT mode is unmeasured but
+   bounded. Raw mode can be built as soon as Diamond runs.
+2. **RGMII DDR I/O cells** — `v2_rgmii.v` now has both a behavioural path (used
+   by simulation) and a `V2_USE_VENDOR_DDR` path using the Lattice DDR
+   primitives, verified through the loopback with simulation-only models in
+   `verilog/sim/crosslink_prims_sim.v`. **Confirm the primitive names/ports**
+   against FPGA-TN-02016 (sysI/O Usage Guide) / FPGA-TN-02012 (High-Speed I/O).
+3. **Bank constraint — check before layout.** CrossLink GPIO DDR exists **only in
+   Bank 1 and Bank 2** (Bank 0 is SDR-only). The RGMII balls (TX E1,E2,F1,F2,J3,J7;
+   RX K8,J5,K10,K4,K5,K6) must all be in Bank 1/2. If any is in Bank 0, RGMII
+   cannot run on that pin and the assignment must change.
+4. **PLL primitive** — `v2_clock_pll.v` carries a `V2_USE_VENDOR_PLL` path
+   instantiating the CrossLink sysCLOCK PLL (`EHXPLLL`). Confirm parameters
+   against FPGA-TN-02015 (sysCLOCK PLL/DLL Design and Usage Guide) or regenerate
+   in Clarity Designer.
+5. **Pin constraints** — `verilog/v2_top.lpf`, IO_TYPEs and DDR cells flagged TODO.
+6. **Hardware bring-up** — nothing here has touched silicon; there is no
    fabricated board yet.
+
+## Licence path
+
+Diamond is required for bitstream generation and there is no open-source flow
+for CrossLink. **The free licence covers CrossLink** (Diamond 3.14 release
+notes) and needs only a **12-digit NIC MAC address** — no account linkage — so it
+can be issued by support directly. Paid subscriptions (`LSC-SW-NL` node-locked /
+`LSC-SW-FL` floating) are sold by Mouser, Digi-Key, Arrow, Farnell and the
+Lattice store. Digi-Key does not list the software licence itself.
