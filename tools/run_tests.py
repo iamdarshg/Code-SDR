@@ -39,9 +39,8 @@ TESTS = [
                                 "verilog/v2_telemetry.v"]),
     ("v2_cic_decimator_tb",    ["verilog/v2_cic_decimator_tb.v", "verilog/v2_cic_decimator.v"]),
     ("v2_fft1024_tb",          ["verilog/v2_fft1024_tb.v", "verilog/v2_fft1024.v"]),
-    # NOTE: v2_fft_pipe_tb is intentionally NOT run - the pipelined FFT's
-    # throughput is verified (100 MSPS) but its arithmetic correctness is not
-    # (see the header of verilog/v2_fft_pipe.v).
+    # pipelined FFT: verified against a DFT computed in the testbench itself
+    ("v2_fft_pipe_tb",        ["verilog/v2_fft_pipe_tb.v", "verilog/v2_fft_pipe.v"]),
     ("v2_fft_packetizer_tb",   ["verilog/v2_fft_packetizer_tb.v", "verilog/v2_fft_packetizer.v"]),
     ("v2_rgmii_tb",            ["verilog/v2_rgmii_tb.v", "verilog/v2_rgmii.v"]),
     ("app_stream_cdc_tb",      ["verilog/app_stream_cdc_tb.v", "verilog/app_stream_cdc.v",

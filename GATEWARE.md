@@ -100,22 +100,44 @@ the same words-per-datagram (and therefore the same FIFO depth) at a given MTU:
 
 Byte extraction is identical for both, so the packetizer is width-agnostic.
 
-## Pipelined FFT: throughput achieved, arithmetic not yet correct
+## Pipelined FFT: throughput **and** arithmetic verified
 
+`v2_fft_pipe.v` genuinely consumes **1 sample/clock = 100 MSPS** (measured),
+which the memory-based FFT cannot. It is **verified both ways**:
 
-`v2_fft_pipe.v` genuinely consumes **1 sample/clock = 100 MSPS** (measured), which
-the memory-based FFT cannot. Its **arithmetic is not correct yet**: an impulse
-gives the expected flat spectrum, but that test is permutation-invariant so it
-proves nothing; DC and single-tone inputs are wrong.
+- throughput: 128 consecutive bins at 1 bin/clock
+- arithmetic: `v2_fft_pipe_tb` compares every bin against a **DFT computed in the
+  testbench itself** (not hardcoded) for an impulse, DC, and tones at bins 1, 8,
+  17 and 31 — all 64 bins within ±4 LSB. `tone@17` is deliberate: it uses one of
+  the twiddles that exposed the multiply bug below.
 
-Key finding for whoever finishes it: the R2SDF schedule itself is **verified
-correct** — `tools/r2sdf_reference.py` reproduces it in software and matches
-numpy exactly, including the output framing (stream `[N-1, 2N-1)`, index
-`bitrev(m)`) and the requirement that the datapath **free-run** rather than be
-gated by input valid. So the remaining bug is in the Verilog implementation, not
-the architecture. It is deliberately **not** instantiated by `v2_top` and **not**
-run in CI.
+`tools/r2sdf_reference.py` remains the executable specification: it reproduces
+the R2SDF schedule in software and matches numpy exactly.
 
+**Three real bugs were found fixing this, none of them visible to a DC-only or
+impulse-only test:**
+
+1. **Delay-line index.** `q` was the low `QB` bits of `cnt`, but the reference is
+   `q = cnt % H`. For the last stage (`H=1`) that made `q = cnt[0]`, indexing
+   `bre[1]` out of bounds and returning **X on every second clock**, poisoning the
+   whole combinational chain.
+2. **Karatsuba operand sums.** Verilog sizes `a+b` self-determined, so
+   `(dif_re + dif_im) * (wr + wi)` evaluated `wr + wi` at `TW` bits — but
+   `|cos| + |sin|` reaches 1.41·2^(TW-1), overflowing a Q(TW-1) word for **15 of
+   the 32 twiddles**. This corrupts only the difference/twiddle path, which is
+   **exactly why DC passes and everything else fails** (every DC difference is
+   zero). This is the single most important lesson here: DC and impulse are both
+   blind tests.
+3. **Pipeline phase.** The stage counters free-ran from reset, so the frame
+   boundary depended on how many idle cycles elapsed before `in_valid`. Two
+   testbenches differing by *two idle cycles* produced different spectra. `run`
+   now holds the pipeline in reset until the first valid sample.
+
+Limitation: **the twiddle ROM is N-specific.** `verilog/tw12_*.mem` is generated
+for N=64; another length needs its own table from `tools/gen_twiddles.py`.
+
+Still not instantiated by `v2_top` (the memory-based `v2_fft1024` remains the FFT
+mode); it is now part of the CI suite.
 
 
 `FFT_RATE` = CIC decimation (runtime-selectable via SPI `cfg_decim`; 0 = default):

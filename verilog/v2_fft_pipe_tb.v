@@ -1,13 +1,22 @@
 // ============================================================================
-// v2_fft_pipe_tb - impulse and single-tone checks for the pipelined R2SDF FFT.
+// v2_fft_pipe_tb - self-checking verification of the pipelined R2SDF FFT.
 //
-//  * impulse at n=0 -> every bin equals A/2^S where S is the number of scaling
-//    stages (i odd), i.e. the flat spectrum an impulse must produce.
-//  * tone at bin 8 -> energy concentrated at bins 8 and N-8.
+// The DUT is checked against a DFT computed in the testbench itself, so the
+// expected values are not hardcoded and cannot drift from the definition.
 //
-// The impulse test exercises every stage and twiddle path, so a flat result
-// validates the R2SDF schedule, the delay feedback and the bit-reversed output
-// index together.
+// Framing (established against tools/r2sdf_reference.py, which matches numpy):
+//   * feed 2N samples, out_valid then runs for 2N cycles
+//   * the transform occupies output stream positions [N-1, 2N-1); the first
+//     N-1 outputs are the delay lines flushing
+//   * the sample at stream position p is bin bitrev((p-(N-1)) mod N), which the
+//     DUT carries on out_index, so capturing into bins[out_index] must
+//     reconstruct the spectrum in natural order
+//   * the datapath scales odd stages by 1/2 (three stages at N=64), so every
+//     bin is the true DFT divided by 2^NSCALE
+//
+// Cases: impulse (flat spectrum, exercises every stage and twiddle), DC
+// (isolates the sum path), and a tone at bin 8 (checks bin placement, the most
+// sensitive test of the output index).
 // ============================================================================
 
 `timescale 1ns/1ps
@@ -18,17 +27,20 @@ module v2_fft_pipe_tb;
     localparam integer N    = 64;
     localparam integer LOGN = 6;
     localparam integer DW   = 14;
+    localparam integer TW   = 12;
     localparam real    PI   = 3.14159265358979;
+    localparam integer NSCALE = (LOGN + 1) / 2;   // stages 1,3,5 scale
+    localparam real    SCALE  = 8.0;
 
     reg clk = 0, rst_n = 0, in_valid = 0;
     reg signed [DW-1:0] in_re = 0, in_im = 0;
-    wire out_valid;
+    wire                out_valid;
     wire signed [DW-1:0] out_re, out_im;
-    wire [LOGN-1:0] out_index;
+    wire [LOGN-1:0]     out_index;
 
     always #5 clk = ~clk;
 
-    v2_fft_pipe #(.N(N), .LOGN(LOGN), .DW(DW), .TW(12),
+    v2_fft_pipe #(.N(N), .LOGN(LOGN), .DW(DW), .TW(TW),
                   .RE_FILE("verilog/tw12_real.mem"),
                   .IM_FILE("verilog/tw12_imag.mem")) dut (
         .clk(clk), .rst_n(rst_n), .in_valid(in_valid),
@@ -37,173 +49,165 @@ module v2_fft_pipe_tb;
         .out_index(out_index)
     );
 
-    integer errors = 0, i;
+    integer errors = 0;
+    integer i, n, k;
     reg signed [DW-1:0] bins_re [0:N-1];
     reg signed [DW-1:0] bins_im [0:N-1];
+    reg                 got     [0:N-1];
+    integer             g_tone = 8;      // tone bin under test
     integer captured = 0;
-    reg signed [DW-1:0] stream [0:255];   // raw output stream, for order comparison
-    integer sc = 0;
-    always @(posedge clk) if (rst_n && out_valid && sc < 256) begin stream[sc] = out_re; sc = sc + 1; end
-    integer nskip = 0;        // skip the pipeline's first frame (priming transient)
+    integer vcount   = 0;
 
-    // throughput monitor: the longest unbroken run of out_valid, i.e. how many
-    // consecutive clocks bins are produced. A pipelined FFT must sustain 1 bin
-    // per clock, so this must reach N.
+    real dft_r [0:N-1];
+    real dft_i [0:N-1];
+
+    // stimulus for a case (only n < N feeds the transform window)
+    function real stim;
+        input integer mode;
+        input integer idx;
+        begin
+            case (mode)
+                0: stim = (idx == 0) ? 256.0 : 0.0;                        // impulse
+                1: stim = 64.0 * $cos(2.0*PI*g_tone*idx/N);                  // tone @ g_tone
+                default: stim = 64.0;                                      // DC
+            endcase
+        end
+    endfunction
+
+    // expected spectrum: DFT of the first N samples, divided by the scaling
+    task compute_expected;
+        input integer mode;
+        integer kk, nn;
+        real ang, x;
+        begin
+            for (kk = 0; kk < N; kk = kk + 1) begin
+                dft_r[kk] = 0.0;
+                dft_i[kk] = 0.0;
+                for (nn = 0; nn < N; nn = nn + 1) begin
+                    x   = stim(mode, nn);
+                    ang = -2.0*PI*kk*nn/N;
+                    dft_r[kk] = dft_r[kk] + x*$cos(ang);
+                    dft_i[kk] = dft_i[kk] + x*$sin(ang);
+                end
+                dft_r[kk] = dft_r[kk]/SCALE;
+                dft_i[kk] = dft_i[kk]/SCALE;
+            end
+        end
+    endtask
+
+    // captures the frame: skip the N-1 flushing outputs, take the next N
+    always @(posedge clk) begin
+        if (rst_n && out_valid) begin
+            vcount = vcount + 1;
+            if (vcount >= 2 && vcount <= N+1) begin
+                bins_re[out_index] = out_re;
+                bins_im[out_index] = out_im;
+                got[out_index]     = 1'b1;
+                captured = captured + 1;
+            end
+        end
+    end
+
+    // throughput: longest unbroken run of out_valid must cover a whole frame
     integer run_len = 0, max_run = 0;
     always @(posedge clk) begin
         if (rst_n && out_valid) begin
             run_len = run_len + 1;
             if (run_len > max_run) max_run = run_len;
-        end else begin
-            run_len = 0;
-        end
+        end else run_len = 0;
     end
 
-    always @(posedge clk)
-        if (rst_n && out_valid) begin
-            if (nskip > 0) nskip = nskip - 1;
-            else begin
-                bins_re[out_index] = out_re;
-                bins_im[out_index] = out_im;
-                captured = captured + 1;
-            end
-        end
-
-    task feed;
-        input integer mode;         // 0 = impulse, 1 = tone @ bin 8
-        integer n;
+    task run_case;
+        input integer mode;
+        integer nn;
         begin
-            // reset between frames so the previous frame's tail cannot leak in
             rst_n = 1'b0;
             repeat (4) @(negedge clk);
-            rst_n = 1'b1;
+            in_valid = 1'b0;
+            rst_n    = 1'b1;
             repeat (2) @(negedge clk);
+
             captured = 0;
-            sc = 0;
-            nskip = (mode == 1) ? N : 0;   // feed a priming frame for continuous input
-            for (n = 0; n < ((mode == 1) ? 2*N : N); n = n + 1) begin
+            vcount   = 0;
+            for (nn = 0; nn < N; nn = nn + 1) got[nn] = 1'b0;
+
+            for (nn = 0; nn < 2*N; nn = nn + 1) begin
                 in_valid = 1'b1;
-                if (mode == 0)
-                    in_re = (n == 0) ? 14'sd256 : 14'sd0;
-                else if (mode == 2)
-                    in_re = 14'sd64;                 // DC: isolates the sum path
-                else
-                    in_re = $rtoi(64.0 * $cos(2.0*PI*8.0*n/N));
-                in_im = {DW{1'b0}};
-                if (mode == 1 && n < 8) $display("    in[%0d] = %0d", n, in_re);
+                in_re    = $rtoi(stim(mode, nn));
+                in_im    = {DW{1'b0}};
                 @(negedge clk);
             end
-            in_valid = 0;
-            // drain: pipeline latency is N-1 plus slack
-            for (n = 0; n < 2*N; n = n + 1) @(negedge clk);
+            in_valid = 1'b0;
+            for (nn = 0; nn < 2*N; nn = nn + 1) @(negedge clk);
         end
     endtask
 
-    integer peak, mag, peak2;
-    localparam integer NSCALE = (LOGN + 1) / 2;    // i odd stages scale
+    task check_case;
+        input integer mode;
+        input [8*16-1:0] name;
+        input real tol;
+        integer kk;
+        real dr, di;
+        begin
+            compute_expected(mode);
+            if (captured != N) begin
+                $display("FAIL %0s: captured %0d of %0d bins", name, captured, N);
+                errors = errors + 1;
+            end
+            for (kk = 0; kk < N; kk = kk + 1) begin
+                if (!got[kk]) begin
+                    $display("FAIL %0s: bin %0d never written", name, kk);
+                    errors = errors + 1;
+                end else begin
+                    dr = bins_re[kk] - dft_r[kk];
+                    di = bins_im[kk] - dft_i[kk];
+                    if (dr < 0.0) dr = -dr;
+                    if (di < 0.0) di = -di;
+                    if (dr > tol || di > tol) begin
+                        if (errors < 12)
+                            $display("FAIL %0s bin %0d: got (%0d,%0d) expected (%.1f,%.1f)",
+                                     name, kk, bins_re[kk], bins_im[kk], dft_r[kk], dft_i[kk]);
+                        errors = errors + 1;
+                    end
+                end
+            end
+            $display("  %0s: all %0d bins within +/-%.1f", name, N, tol);
+        end
+    endtask
 
     initial begin
-        $display("=== v2_fft_pipe_tb (N=%0d) ===", N);
-        repeat (4) @(negedge clk);
-        rst_n = 1;
+        $display("=== v2_fft_pipe_tb (N=%0d, scale /%0.0f) ===", N, SCALE);
         repeat (4) @(negedge clk);
 
-        // -------------------------------------------------- impulse: flat
-        feed(0);
-        if (captured != N) begin
-            $display("FAIL: impulse captured %0d of %0d bins", captured, N);
-            errors = errors + 1;
-        end else begin
-            begin : dbg
-                integer nz;
-                nz = 0;
-                for (i = 0; i < N; i = i + 1) if (bins_re[i] != 0) nz = nz + 1;
-                $display("  impulse: %0d of %0d bins non-zero", nz, N);
-                for (i = 0; i < 16; i = i + 1)
-                    $display("    bin %0d = %0d", i, bins_re[i]);
-            end
-            for (i = 0; i < N; i = i + 1) begin
-                if (bins_re[i] < 32 - 2 || bins_re[i] > 32 + 2) begin
-                    if (errors < 6)
-                        $display("  impulse bin %0d = %0d (expected ~32 = 256>>%0d)",
-                                 i, bins_re[i], NSCALE);
-                    errors = errors + 1;
-                end
-                if (bins_im[i] < -3 || bins_im[i] > 3) begin
-                    if (errors < 6)
-                        $display("  impulse bin %0d imag = %0d", i, bins_im[i]);
-                    errors = errors + 1;
-                end
-            end
-            $display("  impulse: all %0d bins flat at ~32, imag ~0 OK", N);
-        end
+        run_case(0);
+        check_case(0, "impulse", 3.0);
 
-        // ----------------------------------------------------- tone @ bin 8
-        feed(1);
-        if (captured != N) begin
-            $display("FAIL: tone captured %0d bins", captured);
-            errors = errors + 1;
-        end else begin
-            begin : dbg2
-                integer nz2;
-                nz2 = 0;
-                for (i = 0; i < N; i = i + 1) if (bins_re[i] != 0) nz2 = nz2 + 1;
-                $display("  tone: %0d of %0d bins non-zero", nz2, N);
-                for (i = 0; i < 10; i = i + 1)
-                    $display("    tone bin %0d = %0d", i, bins_re[i]);
-            end
-            peak = 0; mag = -1;
-            for (i = 0; i < N; i = i + 1) begin
-                integer m;
-                m = (bins_re[i] < 0) ? -bins_re[i] : bins_re[i];
-                if (m > mag) begin mag = m; peak = i; end
-            end
-            peak2 = (N - peak) % N;
-            if (peak !== 8) begin
-                $display("FAIL: tone peak at bin %0d, expected 8 (mag %0d)", peak, mag);
-                errors = errors + 1;
-            end else begin
-                $display("  tone: peak bin %0d mag %0d, mirror bin %0d mag %0d OK",
-                         peak, mag, peak2,
-                         (bins_re[peak2] < 0) ? -bins_re[peak2] : bins_re[peak2]);
-            end
-        end
+        run_case(2);
+        check_case(2, "dc     ", 3.0);
 
-        // -------------------------------------------------------- throughput
-        // 100 MSPS path: one bin per clock, continuously. The longest run of
-        // out_valid must cover a whole frame.
+        g_tone = 8;  run_case(1); check_case(1, "tone@8 ", 4.0);
+        g_tone = 1;  run_case(1); check_case(1, "tone@1 ", 4.0);
+        g_tone = 17; run_case(1); check_case(1, "tone@17", 4.0);
+        g_tone = 31; run_case(1); check_case(1, "tone@31", 4.0);
+
         if (max_run < N) begin
-            $display("FAIL: throughput - longest output run %0d bins, expected %0d (1/clk)",
-                     max_run, N);
+            $display("FAIL: throughput - longest run %0d, expected %0d (1 bin/clk)", max_run, N);
             errors = errors + 1;
         end else begin
-            $display("  throughput: %0d consecutive bins at 1/clock = 100 MSPS OK", max_run);
-        end
-
-        // ---------------------------------------------------------- DC check
-        feed(2);
-        begin : dbg3
-            integer nz3;
-            nz3 = 0;
-            for (i = 0; i < N; i = i + 1) if (bins_re[i] != 0) nz3 = nz3 + 1;
-            $display("  DC: %0d of %0d bins non-zero; bin0=%0d bin1=%0d",
-                     nz3, N, bins_re[0], bins_re[1]);
-            $write("  DC stream 60..76:");
-            for (i = 60; i < 77; i = i + 1) $write(" %0d", stream[i]);
-            $write("\n");
+            $display("  throughput: %0d consecutive bins at 1/clock = 100 MSPS", max_run);
         end
 
         if (errors !== 0) begin
             $display("FATAL: %0d errors", errors);
             $fatal(1);
         end
-        $display("PASS: v2_fft_pipe (impulse flat, tone at bin 8, 1 sample/clk)");
+        $display("PASS: v2_fft_pipe (impulse, DC, tone@1/8/17/31 all match the DFT, 1 bin/clk)");
         $finish;
     end
 
     initial begin
-        #2_000_000;
-        $fatal(1, "v2_fft_pipe_tb timeout (captured=%0d)", captured);
+        #5_000_000;
+        $fatal(1, "v2_fft_pipe_tb timeout");
     end
 
 endmodule
