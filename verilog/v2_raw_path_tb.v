@@ -136,18 +136,7 @@ module v2_raw_path_tb;
     reg [9:0]  s [0:4];
     reg [7:0]  exp_byte;
 
-    function [31:0] crc32_byte;
-        input [31:0] c_in;
-        input [7:0]  d;
-        integer i2;
-        reg [31:0] x;
-        begin
-            x = c_in ^ {24'h0, d};
-            for (i2 = 0; i2 < 8; i2 = i2 + 1)
-                x = x[0] ? ((x >> 1) ^ 32'hEDB88320) : (x >> 1);
-            crc32_byte = x;
-        end
-    endfunction
+    `include "verilog/tb_utils.vh"
 
     function [15:0] rd16;
         input integer idx;

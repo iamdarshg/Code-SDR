@@ -115,23 +115,28 @@ which the memory-based FFT cannot. It is **verified both ways**:
 the R2SDF schedule in software and matches numpy exactly.
 
 **Three real bugs were found fixing this, none of them visible to a DC-only or
-impulse-only test:**
+impulse-only test** (both are blind: DC zeroes every difference-path value, and
+the impulse spectrum is permutation-invariant):
 
 1. **Delay-line index.** `q` was the low `QB` bits of `cnt`, but the reference is
    `q = cnt % H`. For the last stage (`H=1`) that made `q = cnt[0]`, indexing
    `bre[1]` out of bounds and returning **X on every second clock**, poisoning the
    whole combinational chain.
-2. **Karatsuba operand sums.** Verilog sizes `a+b` self-determined, so
-   `(dif_re + dif_im) * (wr + wi)` evaluated `wr + wi` at `TW` bits — but
-   `|cos| + |sin|` reaches 1.41·2^(TW-1), overflowing a Q(TW-1) word for **15 of
-   the 32 twiddles**. This corrupts only the difference/twiddle path, which is
-   **exactly why DC passes and everything else fails** (every DC difference is
-   zero). This is the single most important lesson here: DC and impulse are both
-   blind tests.
-3. **Pipeline phase.** The stage counters free-ran from reset, so the frame
+2. **Pipeline phase.** The stage counters free-ran from reset, so the frame
    boundary depended on how many idle cycles elapsed before `in_valid`. Two
    testbenches differing by *two idle cycles* produced different spectra. `run`
    now holds the pipeline in reset until the first valid sample.
+3. **Output alignment / index.** The data was registered once while the valid
+   flag was not, leaving the stream one output early; `out_index` was also off by
+   one against the `[N-1, 2N-1)` frame. That is what put the DC spike in bin 32
+   and the tone peaks in bins 4/40.
+
+> **Correction.** An earlier version of this document claimed a fourth bug —
+> that the Karatsuba operand sums `(dif_re + dif_im)` and `(wr + wi)` overflow
+> because Verilog sizes `a + b` self-determined. **That was wrong.** Verilog
+> extends both operands to the width of the enclosing multiply, so the sums are
+> already computed wide; reverting the explicit widening changes nothing
+> (verified). The widened wires are kept only as a portable clamp.
 
 Transform length is free — **no per-size twiddle table.** Stage `i` of an
 N-point transform needs `W_N^(j<<i)`, and `W_N^(j<<i) == W_TBL^((j<<i)·(TBL_N/N))`,

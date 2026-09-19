@@ -83,6 +83,32 @@ module v2_top #(
     wire [7:0]  cfg_bits;
     wire [7:0]  cfg_decim;
     wire [15:0] cfg_drop_frac;
+
+    // ------------------------------------------------------- config CDC guard
+    // cfg_* are written by the SPI slave in the clk_eth domain but consumed by
+    // the raw packer and the CIC in the 100 MHz clk_100m_in domain. Sampling a
+    // multi-bit register directly across that boundary can catch a mid-write
+    // transition and produce an arbitrary value - for cfg_decim that means a
+    // wrong sample rate and a corrupted datapath. Hold the last value until two
+    // consecutive samples agree; the SPI register is stable for milliseconds,
+    // so the extra cycle is free.
+    reg [7:0]  decim_s0, decim_s1, decim_sync;
+    reg [15:0] dropf_s0, dropf_s1, dropf_sync;
+
+    always @(posedge clk_100m_in or negedge rst_n) begin
+        if (!rst_n) begin
+            decim_s0 <= 8'd0;  decim_s1 <= 8'd0;  decim_sync <= 8'd0;
+            dropf_s0 <= 16'd0; dropf_s1 <= 16'd0; dropf_sync <= 16'd0;
+        end else begin
+            decim_s0 <= cfg_decim;
+            decim_s1 <= decim_s0;
+            if (decim_s0 == decim_s1) decim_sync <= decim_s0;
+
+            dropf_s0 <= cfg_drop_frac;
+            dropf_s1 <= dropf_s0;
+            if (dropf_s0 == dropf_s1) dropf_sync <= dropf_s0;
+        end
+    end
     wire [31:0] cfg_nco;
     wire        cfg_enable;
     wire [15:0] cfg_dst_port;
@@ -110,8 +136,8 @@ module v2_top #(
             .adc_data(adc_data),
             .upstream_busy(upstream_busy),
             .link_up(link_up),
-            .decim_cfg(cfg_decim),
-            .drop_frac_cfg(cfg_drop_frac),
+            .decim_cfg(decim_sync),
+            .drop_frac_cfg(dropf_sync),
             .p_data(p_data), .p_valid(p_valid), .p_ready(p_ready),
             .send(send), .payload_len(payload_len), .packet_seq(packet_seq),
             .dropped_words(raw_dropped),
@@ -136,7 +162,7 @@ module v2_top #(
         ) u_cic (
             .clk(clk_100m_in), .rst_n(reset_n), .in_valid(1'b1),
             .din(adc_data[9:0]),
-            .rate_cfg(cfg_decim),
+            .rate_cfg(decim_sync),
             .out_valid(cic_valid), .dout(cic_out),
             .samples_in(cic_in_n), .samples_out(cic_out_n)
         );
@@ -185,13 +211,26 @@ module v2_top #(
         );
 
         // Burst-load handshake: the FIFO has registered output, so a read issued
-        // this cycle data is valid on the next, which is when in_valid asserts.
+        // this cycle has its data valid on the next, which is when in_valid
+        // asserts. That one-cycle skew means in_ready stays high for one cycle
+        // longer than the FFT actually accepts, and the surplus request still
+        // advances the FIFO read pointer - so every frame used to silently lose
+        // one sample and start one sample later. Bound the reads per frame to
+        // exactly FFT_N to keep the pop count equal to the accept count.
         reg rd_en_d;
-        always @(posedge clk_eth or negedge reset_n)
-            if (!reset_n) rd_en_d <= 1'b0;
-            else          rd_en_d <= fifo_rd_en;
+        reg [FFT_LOGN:0] load_n;
+        wire load_rd = fft_in_ready && (load_n < FFT_N);
 
-        assign fifo_rd_en   = fft_in_ready;              // one pop per load cycle
+        always @(posedge clk_eth or negedge reset_n)
+            if (!reset_n)        rd_en_d <= 1'b0;
+            else                 rd_en_d <= load_rd;
+
+        always @(posedge clk_eth or negedge reset_n)
+            if (!reset_n)        load_n <= {(FFT_LOGN+1){1'b0}};
+            else if (fft_start)  load_n <= {(FFT_LOGN+1){1'b0}};
+            else if (load_rd)    load_n <= load_n + 1'b1;
+
+        assign fifo_rd_en   = load_rd;
         assign fft_in_valid = rd_en_d;
 
         // start a frame only when a whole frame is buffered, so the burst load

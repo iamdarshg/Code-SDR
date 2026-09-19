@@ -18,6 +18,7 @@ Usage:
 """
 
 import argparse
+import os
 import socket
 import struct
 import sys
@@ -33,21 +34,10 @@ FFT_BINS = 256          # bins per FFT packet (v2_fft_packetizer)
 
 
 # --------------------------------------------------------------------- unpack
-def unpack_raw(buf, bits):
-    if bits == 8:
-        return np.frombuffer(buf, dtype=np.uint8).astype(np.int16) - 128
-    if bits == 10:
-        n5 = len(buf) // 5
-        if n5 == 0:
-            return np.zeros(0, dtype=np.int16)
-        raw = np.frombuffer(buf[:n5 * 5], dtype=np.uint8).reshape(-1, 5).astype(np.uint16)
-        s = np.empty((n5, 4), dtype=np.int16)
-        s[:, 0] = ((raw[:, 0] << 2) | (raw[:, 1] >> 6)) & 0x3FF
-        s[:, 1] = ((raw[:, 1] << 4) | (raw[:, 2] >> 4)) & 0x3FF
-        s[:, 2] = ((raw[:, 2] << 6) | (raw[:, 3] >> 2)) & 0x3FF
-        s[:, 3] = ((raw[:, 3] << 8) | raw[:, 4]) & 0x3FF
-        return (s.reshape(-1).astype(np.int32) - 512).astype(np.int16)
-    raise ValueError(bits)
+# Shared with sdr_dashboard via sdr_common (imported regardless of how this
+# module was loaded, so its directory must be on sys.path explicitly).
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+from sdr_common import unpack_samples as unpack_raw  # noqa: E402
 
 
 def unpack_fft_packet(buf):

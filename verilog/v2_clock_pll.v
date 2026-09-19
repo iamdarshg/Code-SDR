@@ -32,11 +32,18 @@ module v2_clock_pll (
     // valid CLKI/CLKOP ranges against that guide (or regenerate this block with
     // Clarity Designer) before the first build.
     localparam integer CLKIN_PERIOD = 10;           // 100 MHz input, ns
+    // VCO = f_in * CLKFB_DIV / CLKI_DIV with CLKOP feedback, then
+    // CLKOP = VCO / CLKOP_DIV. For 100 -> 125 MHz that needs VCO = 500 MHz:
+    //   CLKFB_DIV = 5  -> VCO = 500 MHz
+    //   CLKOP_DIV = 4  -> CLKOP = 125 MHz
+    // CLKFB_DIV must NOT be tied to CLKOP_DIV: doing that gives VCO = 400 MHz
+    // and CLKOP = 100 MHz, i.e. an Ethernet MAC clocked at the ADC rate.
+    localparam integer CLKFB_DIV    = 5;            // VCO = 100 * 5 / 1 = 500 MHz
     localparam integer CLKOP_DIV    = 4;            // 500 MHz VCO / 4 = 125 MHz
 
     EHXPLLL #(
         .CLKI_DIV        (1),
-        .CLKFB_DIV       (CLKOP_DIV),
+        .CLKFB_DIV       (CLKFB_DIV),
         .CLKOP_DIV       (CLKOP_DIV),
         .FEEDBK_PATH     ("CLKOP"),
         .CLKOP_CPHASE    (0),

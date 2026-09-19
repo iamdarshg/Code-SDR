@@ -74,18 +74,7 @@ module v2_eth_mac_tx_tb;
     integer j, f;
     reg [31:0] crc_ref;
 
-    function [31:0] crc32_byte;
-        input [31:0] c;
-        input [7:0]  d;
-        integer i;
-        reg [31:0] x;
-        begin
-            x = c ^ {24'h0, d};
-            for (i = 0; i < 8; i = i + 1)
-                x = x[0] ? ((x >> 1) ^ 32'hEDB88320) : (x >> 1);
-            crc32_byte = x;
-        end
-    endfunction
+    `include "verilog/tb_utils.vh"
 
     task check_frame;
         input integer n;

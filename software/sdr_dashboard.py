@@ -28,6 +28,7 @@ Usage:
 """
 
 import argparse
+import os
 import socket
 import struct
 import sys
@@ -40,26 +41,11 @@ MAGIC = 0xA5
 HDR = 16
 
 
-def unpack_samples(buf: bytes, bits: int) -> np.ndarray:
-    """Unpack the packed sample payload into an array of signed ints."""
-    if bits == 8:
-        return np.frombuffer(buf, dtype=np.uint8).astype(np.int16) - 128
-    if bits == 10:
-        n = (len(buf) // 5) * 4
-        raw = np.frombuffer(buf[: (len(buf) // 5) * 5], dtype=np.uint8).reshape(-1, 5)
-        b0 = raw[:, 0].astype(np.uint16)
-        b1 = raw[:, 1].astype(np.uint16)
-        b2 = raw[:, 2].astype(np.uint16)
-        b3 = raw[:, 3].astype(np.uint16)
-        b4 = raw[:, 4].astype(np.uint16)
-        s = np.empty((raw.shape[0], 4), dtype=np.int16)
-        s[:, 0] = ((b0 << 2) | (b1 >> 6)) & 0x3FF
-        s[:, 1] = ((b1 << 4) | (b2 >> 4)) & 0x3FF
-        s[:, 2] = ((b2 << 6) | (b3 >> 2)) & 0x3FF
-        s[:, 3] = ((b3 << 8) | b4) & 0x3FF
-        out = s.reshape(-1)[:n]
-        return (out.astype(np.int32) - 512).astype(np.int16)
-    raise ValueError(f"unsupported bit depth {bits}")
+# Sample unpacking lives in sdr_common so the dashboard and the spectrum tool
+# cannot drift apart. Import it regardless of how this module was loaded (the
+# test harness loads it by path, so its directory is not on sys.path for free).
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+from sdr_common import unpack_samples  # noqa: E402
 
 
 class LinkStats:

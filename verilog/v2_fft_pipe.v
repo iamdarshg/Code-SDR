@@ -8,26 +8,34 @@
 //     because it needs ~22k cycles/frame).
 //   * Arithmetic: v2_fft_pipe_tb checks the output against a DFT computed in
 //     the testbench itself (not hardcoded) for an impulse, DC, and tones at
-//     bins 1, 8, 17 and 31. All 64 bins match within +/-4 LSB. tone@17 is
-//     deliberate: it is one of the twiddles that exposed the Karatsuba bug
-//     described below.
+//     bins 1, 8, 17 and 31, at N = 64/256/1024. All bins match within a
+//     relative tolerance (2-3% of the bin peak).
 //
-// Three real bugs were found and fixed getting here, all of them invisible to
-// a DC-only or impulse-only test:
+// Bugs found and fixed getting here, all invisible to a DC-only or impulse-only
+// test (both are blind: DC zeroes every difference-path value, and the impulse
+// spectrum is permutation-invariant):
 //
 //   1. DELAY-LINE INDEX. q was taken as the low QB bits of cnt, but the
 //      reference is q = cnt % H. For the last stage H=1 that made q = cnt[0],
 //      indexing bre[1] out of bounds and returning X on every second clock,
 //      which poisoned the whole combinational chain.
-//   2. KARATSUBA OPERAND SUMS. Verilog sizes `a + b` self-determined, so
-//      `(dif_re + dif_im) * (wr + wi)` evaluated wr+wi at TW bits. |cos|+|sin|
-//      reaches 1.41*2^(TW-1), overflowing a Q(TW-1) word for 15 of the 32
-//      twiddles. This corrupts only the difference/twiddle path, so a DC input
-//      (where every difference is zero) passes while everything else fails.
-//   3. PIPELINE PHASE. The stage counters free-ran from reset, so the frame
+//   2. PIPELINE PHASE. The stage counters free-ran from reset, so the frame
 //      boundary depended on how many idle cycles elapsed before in_valid. Two
 //      testbenches differing by two idle cycles produced different spectra.
 //      `run` now holds the pipeline in reset until the first valid sample.
+//   3. OUTPUT ALIGNMENT / INDEX. The data was registered once while the valid
+//      flag was not, leaving the whole stream one output early; and out_index
+//      was off by one against the [N-1, 2N-1) frame. This is what put the DC
+//      spike in bin 32 and the tone peaks in bins 4/40.
+//
+// CORRECTION, for the record: an earlier revision of this header claimed a
+// fourth bug - that the Karatsuba operand sums `(dif_re + dif_im)` and
+// `(wr + wi)` overflow because Verilog sizes `a + b` self-determined. That was
+// TESTED AND IS FALSE. Verilog extends both operands to the width of the
+// enclosing multiply expression, so the sums are already computed wide;
+// reverting the explicit widening changes nothing (verified). The widened wires
+// in the stage are kept only as a portable, defensive clamp - they fixed
+// nothing.
 //
 // Transform length: N is free (any power of two up to TBL_N) with NO per-size
 // table. Stage i of an N-point transform needs W_N^(j<<i), and
@@ -168,12 +176,11 @@ module v2_fft_pipe #(
 
             // complex multiply dif * w, Karatsuba (3 multiplies)
             //
-            // The operand sums MUST be widened. Verilog sizes `a + b` self-
-            // determined, so writing `(dif_re + dif_im) * (wr + wi)` evaluates
-            // the twiddle sum at TW bits: |cos| + |sin| reaches 1.41 * 2^(TW-1),
-            // which overflows a Q(TW-1) word for 15 of the 32 twiddles. That
-            // silently corrupts only the difference/twiddle path - which a DC
-            // input never touches, so DC passes while every other input fails.
+            // The operand sums are written explicitly wide as a portable clamp.
+            // NOTE: this was originally believed to fix a real overflow, but it
+            // does not - Verilog already extends both sums to the width of the
+            // multiply expression (verified by reverting this and re-running the
+            // testbench, which still passes). Kept for clarity across tools.
             wire signed [DW+1:0]   dif_sum = dif_re + dif_im;
             wire signed [TW:0]     w_sum   = wr + wi;
             wire signed [2*DW+1:0] p1 = dif_re * wr;
