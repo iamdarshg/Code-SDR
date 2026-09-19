@@ -1,32 +1,70 @@
-name: RTL sanity (Icarus Verilog)
+name: RTL sanity (Icarus Verilog + Verilator + firmware)
 
-# Addresses issue #20: RTL sanity CI with Icarus Verilog.
-# Runs the full Code-SDR V2 testbench regression on every push and PR.
+# Addresses issue #20: RTL sanity CI.
+# Runs the Code-SDR V2 testbench regression, a Verilator lint gate, and a
+# compile check of the RP2040 firmware on every push and PR.
+#
+# Why three gates and not just the simulation:
+#   * Icarus runs the behaviour, but a passing simulation only exercises the
+#     paths it happens to drive.
+#   * Verilator catches the static class - it found an unconnected telemetry
+#     port, dead registers and a zero-width replication that 21 passing
+#     testbenches all missed.
+#   * The firmware is compiled nowhere else; two whole-file errors (an
+#     undeclared identifier and a selftest placed above the #defines it reads)
+#     survived a reading and only a compiler found them.
 
 on:
   push:
     branches: [ main ]
     paths:
       - 'verilog/**'
-      - 'tools/run_tests.py'
+      - 'firmware/**'
+      - 'tools/**'
       - '.github/workflows/rtl.yml'
   pull_request:
     paths:
       - 'verilog/**'
-      - 'tools/run_tests.py'
+      - 'firmware/**'
+      - 'tools/**'
   workflow_dispatch:
 
 jobs:
   sim:
+    name: RTL regression + lint
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
 
-      - name: Install Icarus Verilog
-        run: sudo apt-get update && sudo apt-get install -y iverilog
+      - name: Install Icarus Verilog and Verilator
+        run: sudo apt-get update && sudo apt-get install -y iverilog verilator
 
       - name: Report versions
-        run: iverilog -V | head -2
+        run: |
+          iverilog -V | head -2
+          verilator --version | head -1
 
-      - name: Run RTL regression
+      - name: RTL regression
         run: python3 tools/run_tests.py
+
+      - name: Verilator lint gate
+        run: python3 tools/lint_verilog.py
+
+  firmware:
+    name: RP2040 firmware builds
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: arduino/setup-arduino-cli@v2
+
+      - name: Install the Arduino-Pico RP2040 core
+        run: |
+          arduino-cli config init
+          arduino-cli config add board_manager.additional_urls \
+            https://github.com/earlephilhower/arduino-pico/releases/download/global/package_rp2040_index.json
+          arduino-cli core update-index
+          arduino-cli core install rp2040:rp2040
+
+      - name: Compile firmware
+        run: python3 tools/check_firmware.py

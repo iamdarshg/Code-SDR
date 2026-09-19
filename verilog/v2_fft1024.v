@@ -101,8 +101,7 @@ module v2_fft1024 #(
     reg [LOGN-1:0] k, j;       // group base, position within half group
 
     // butterfly operand registers
-    reg signed [W-1:0] ar, ai, br, bi;
-    reg signed [W-1:0] wr, wi;
+    reg signed [W-1:0] ar, ai;
     reg signed [2*W-1:0] p1, p2, p3;
 
     // Block floating point: one shared exponent for the whole frame. After each
@@ -127,9 +126,6 @@ module v2_fft1024 #(
     // twiddle index = j * (N/m) = j << (LOGN - stage)
     wire [LOGN-1:0] tw_idx_full = j << (LOGN[4:0] - stage);
     wire [LOGN-2:0] tw_idx = tw_idx_full[LOGN-2:0];
-
-    wire signed [W:0] sum_w = wr + wi;
-    wire signed [W:0] sum_b = br + bi;
 
     // Q15 -> integer conversion of the three Karatsuba products, with rounding.
     localparam signed [2*W-1:0] RND = {{(2*W-1){1'b0}}, 1'b1} <<< 14;

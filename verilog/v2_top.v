@@ -350,6 +350,7 @@ module v2_top #(
     v2_telemetry u_tele (
         .clk(clk_eth), .rst_n(reset_n),
         .packets_sent(packets_sent),
+        .packets_dropped(raw_dropped_pkts),
         .dropped_words(raw_dropped),
         .overflow_count(raw_ovf),
         .seq_value(packet_seq),

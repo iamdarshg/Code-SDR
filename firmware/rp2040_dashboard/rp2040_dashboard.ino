@@ -33,6 +33,27 @@
 #define STAT_PLL_LOCK    (1u << 1)
 #define STAT_PHY_ERROR   (1u << 20)
 
+// ------------------------------------------------------------ FPGA registers
+// These must be defined BEFORE selftest(), which reads REG_T_STATUS. #defines
+// are resolved lexically, so a function placed above them does not see them.
+// writes (addr[7]=0)
+#define REG_MODE      0x00
+#define REG_BITS      0x01
+#define REG_DECIM     0x02
+#define REG_NCO       0x03
+#define REG_ENABLE    0x04
+#define REG_DST_PORT  0x05
+#define REG_DROP      0x06   // delta-sigma packet drop fraction, Q16 (see v2_raw_path)
+// reads (addr[7]=1); telemetry block lives at 0x20..0x3F
+#define REG_T_PACKETS 0xA0
+#define REG_T_DROPPED 0xA4
+#define REG_T_STICKY  0xA8
+#define REG_T_STATUS  0xAC
+#define REG_T_MBPS    0xB0
+#define REG_T_SEQ     0xB4
+#define REG_T_DROPPED_PKTS 0xB8
+
+
 // ------------------------------------------------------------------- self-test
 // Runs after configuration. Exercises every path we can from the controller:
 // the SPI bus, the telemetry register file, and the PHY identity.
@@ -73,25 +94,6 @@ static void selftest(void) {
 #define PIN_FPGA_CS_N  5    // FPGA_SPI_CS_N     U10.5
 #define PIN_FPGA_RESET 29   // FPGA_RESET_N      U10.29
 #define PIN_FPGA_CDONE 41   // FPGA_CDONE        U10.41
-
-// ------------------------------------------------------------ FPGA registers
-// writes (addr[7]=0)
-#define REG_MODE      0x00
-#define REG_BITS      0x01
-#define REG_DECIM     0x02
-#define REG_NCO       0x03
-#define REG_ENABLE    0x04
-#define REG_DST_PORT  0x05
-#define REG_DROP      0x06   // delta-sigma packet drop fraction, Q16 (see v2_raw_path)
-// reads (addr[7]=1); telemetry block lives at 0x20..0x3F
-#define REG_T_PACKETS 0xA0
-#define REG_T_DROPPED 0xA4
-#define REG_T_STICKY  0xA8
-#define REG_T_STATUS  0xAC
-#define REG_T_MBPS    0xB0
-#define REG_T_SEQ     0xB4
-#define REG_T_DROPPED_PKTS 0xB8
-
 // ------------------------------------------------------------- link constants
 static const float ADC_HZ        = 100.0e6;  // REF_100M_ADC
 static const int   JUMBO_MTU     = 9000;     // all datagrams are jumbo (v2_top MTU)
@@ -221,9 +223,9 @@ void loop() {
         long arg = Serial.parseInt();
         // NOTE: bit depth is a BUILD-TIME choice in the gateware (the raw path's
         // packing width is the SAMPLE_BITS elaboration parameter and the FIFO
-        // word is a fixed 40 bits), so there is no runtime  command. To change
-        // it, rebuild v2_top with a different SAMPLE_BITS.
-        else if (c == 'd' && arg > 0)                 { g_decim = arg; fpga_write(REG_DECIM, g_decim); apply_rate_config(); }
+        // word is a fixed 40 bits), so there is no runtime bit-depth command.
+        // To change it, rebuild v2_top with a different SAMPLE_BITS.
+        if      (c == 'd' && arg > 0)                 { g_decim = arg; fpga_write(REG_DECIM, g_decim); apply_rate_config(); }
         else if (c == 'm')                            { g_mode = arg ? 1 : 0; fpga_write(REG_MODE, g_mode); apply_rate_config(); }
         else if (c == '0' || c == '1') {
             // Full reconfiguration: load the other bitstream from flash and

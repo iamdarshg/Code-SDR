@@ -44,6 +44,17 @@ configuration, **MINOR** = latent or cosmetic.
 | 17 | `sdr_spectrum.py` bound to UDP 4660/4661 by default, but the FPGA transmits **to** `cfg_dst_port` = 10000 (its reset value, never changed) and only *stamps* 4660/4661 as source ports. The tool received nothing. | Defaults to 10000; added `--fs` for the axis. |
 | 18 | Status reported `cfg_bits` as the sample depth, but the raw path packs at the elaboration-time `SAMPLE_BITS`, so a `b 10` write changed the reported depth and the firmware's rate plan without changing the data. | Status reports the true `SAMPLE_BITS`; the firmware no longer issues or advertises a runtime `b` command. |
 | 19 | *(Correction)* The docs claimed a Karatsuba operand-sum overflow in `v2_fft_pipe`. **That was wrong** — Verilog extends both sums to the multiply's width; reverting the "fix" still passes. | Docs corrected; the widened wires stay only as a portable clamp. |
+| 20 | **`v2_telemetry`'s `packets_dropped` pin was left unconnected in `v2_top`**, so register `0x18` — the deliberate-drop count the firmware displays — read garbage/floating instead of the real count. Found by the new Verilator lint gate; **21 passing simulations all missed it** because nothing asserted on that register. | Connect `.packets_dropped(raw_dropped_pkts)`. |
+| 21 | **The RP2040 firmware had two more whole-file errors** beyond the `drop_pct` one: `selftest()` was defined *above* the `REG_*` `#define`s it reads (a `#define` is resolved lexically), and removing the runtime `b` command left an `else if` chain with no leading `if`. Found by the new firmware compile check. | Defines moved above `selftest()`; the chain starts with `if`. |
+
+### New gates (a blocker was that neither existed)
+
+- `tools/lint_verilog.py` — Verilator lint gate over 5 tops, failing on a
+  curated defect set (UNDRIVEN, MULTIDRIVEN, LATCH, SELRANGE, PINMISSING,
+  MODMISSING, …) and printing the known-benign codes with the reason each is
+  silenced. It found #20 and the dead `br/bi/wr/wi` registers in `v2_fft1024`.
+- `tools/check_firmware.py` — compiles the sketch for `rp2040:rp2040:rpipico`.
+  It found #21. Both are wired into `.github/workflows/rtl.yml`.
 
 ### Removed
 
