@@ -133,8 +133,18 @@ impulse-only test:**
    testbenches differing by *two idle cycles* produced different spectra. `run`
    now holds the pipeline in reset until the first valid sample.
 
-Limitation: **the twiddle ROM is N-specific.** `verilog/tw12_*.mem` is generated
-for N=64; another length needs its own table from `tools/gen_twiddles.py`.
+Transform length is free — **no per-size twiddle table.** Stage `i` of an
+N-point transform needs `W_N^(j<<i)`, and `W_N^(j<<i) == W_TBL^((j<<i)·(TBL_N/N))`,
+so a smaller transform merely indexes the same shared ROM with a shift. One
+1024-point table (`verilog/tw12_*.mem`, 512 entries) serves **N = 64, 256 and
+1024**, all three verified in CI. This is why the RP2040 does not need to
+generate twiddles: there is nothing left for it to compute that a shift register
+cannot do.
+
+Residual error grows with N (more stages, more rounding), so the testbench uses
+a **relative** tolerance (2–3% of the bin peak + 2 LSB) rather than an absolute
+bound — an absolute LSB limit would fail large N for reasons unrelated to
+correctness.
 
 Still not instantiated by `v2_top` (the memory-based `v2_fft1024` remains the FFT
 mode); it is now part of the CI suite.

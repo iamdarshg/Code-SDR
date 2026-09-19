@@ -113,6 +113,17 @@ def main():
         print(f"{name:<26} {'PASS' if ok else 'FAIL'}  {msg}")
         passed += 1 if ok else 0
 
+    # pipelined FFT at other transform lengths: proves the one shared twiddle
+    # ROM really does serve every N (the default entry above runs N=64).
+    for fft_n in (256, 1024):
+        name = f"v2_fft_pipe_tb_n{fft_n}"
+        total += 1
+        files = next(f for tb, f in TESTS if tb == "v2_fft_pipe_tb")
+        ok, msg = run_one(iv, vvp, "v2_fft_pipe_tb", files,
+                          [f"-Pv2_fft_pipe_tb.N={fft_n}"])
+        print(f"{name:<26} {'PASS' if ok else 'FAIL'}  {msg}")
+        passed += 1 if ok else 0
+
 
     print(f"--- {passed}/{total} passed ---")
     return 0 if passed == total else 1

@@ -24,13 +24,13 @@
 
 module v2_fft_pipe_tb;
 
-    localparam integer N    = 64;
-    localparam integer LOGN = 6;
+    parameter integer N    = 64;
+    localparam integer LOGN = $clog2(N);
     localparam integer DW   = 14;
     localparam integer TW   = 12;
     localparam real    PI   = 3.14159265358979;
-    localparam integer NSCALE = (LOGN + 1) / 2;   // stages 1,3,5 scale
-    localparam real    SCALE  = 8.0;
+    localparam integer NSCALE = (LOGN + 1) / 2;
+    localparam real    SCALE  = (1 << NSCALE) * 1.0;
 
     reg clk = 0, rst_n = 0, in_valid = 0;
     reg signed [DW-1:0] in_re = 0, in_im = 0;
@@ -145,11 +145,21 @@ module v2_fft_pipe_tb;
     task check_case;
         input integer mode;
         input [8*16-1:0] name;
-        input real tol;
+        input real frac;           // tolerance as a fraction of the bin peak
         integer kk;
-        real dr, di;
+        real dr, di, peak, tol;
         begin
             compute_expected(mode);
+            // A fixed-point FFT's error scales with the signal magnitude (more
+            // stages and more rounding for larger N), so a relative tolerance is
+            // the meaningful one - an absolute LSB bound would fail large N for
+            // reasons that have nothing to do with correctness.
+            peak = 0.0;
+            for (kk = 0; kk < N; kk = kk + 1) begin
+                if (dft_r[kk] >  peak) peak =  dft_r[kk];
+                if (dft_r[kk] < -peak) peak = -dft_r[kk];
+            end
+            tol = frac * peak + 2.0;
             if (captured != N) begin
                 $display("FAIL %0s: captured %0d of %0d bins", name, captured, N);
                 errors = errors + 1;
@@ -180,15 +190,15 @@ module v2_fft_pipe_tb;
         repeat (4) @(negedge clk);
 
         run_case(0);
-        check_case(0, "impulse", 3.0);
+        check_case(0, "impulse", 0.03);
 
         run_case(2);
-        check_case(2, "dc     ", 3.0);
+        check_case(2, "dc     ", 0.03);
 
-        g_tone = 8;  run_case(1); check_case(1, "tone@8 ", 4.0);
-        g_tone = 1;  run_case(1); check_case(1, "tone@1 ", 4.0);
-        g_tone = 17; run_case(1); check_case(1, "tone@17", 4.0);
-        g_tone = 31; run_case(1); check_case(1, "tone@31", 4.0);
+        g_tone = 8;  run_case(1); check_case(1, "tone@8 ", 0.02);
+        g_tone = 1;  run_case(1); check_case(1, "tone@1 ", 0.02);
+        g_tone = 17; run_case(1); check_case(1, "tone@17", 0.02);
+        g_tone = 31; run_case(1); check_case(1, "tone@31", 0.02);
 
         if (max_run < N) begin
             $display("FAIL: throughput - longest run %0d, expected %0d (1 bin/clk)", max_run, N);

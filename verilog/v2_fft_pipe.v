@@ -29,9 +29,13 @@
 //      testbenches differing by two idle cycles produced different spectra.
 //      `run` now holds the pipeline in reset until the first valid sample.
 //
-// Note: the twiddle ROM is N-specific. verilog/tw12_*.mem is generated for
-// N=64; a different transform length needs its own table from
-// tools/gen_twiddles.py.
+// Transform length: N is free (any power of two up to TBL_N) with NO per-size
+// table. Stage i of an N-point transform needs W_N^(j<<i), and
+//     W_N^(j<<i) == W_TBL^((j<<i) * (TBL_N/N))
+// so a smaller transform simply indexes the same shared ROM with a shift. One
+// 1024-point table therefore serves N = 64, 256 and 1024 (all verified in
+// v2_fft_pipe_tb). Regenerate it with:
+//     python tools/gen_twiddles.py --n 1024 --width 12 --out verilog
 //
 // Why it exists: a pipelined FFT consumes 1 sample/cycle (the 100 MSPS path) but
 // needs one complex multiplier PER STAGE (log2(N)), so it trades FFT size for
@@ -58,6 +62,11 @@ module v2_fft_pipe #(
     parameter integer LOGN  = 6,
     parameter integer DW    = 14,          // stored data width (signed)
     parameter integer TW    = 12,          // twiddle width (signed, Q(TW-1))
+    // One shared twiddle ROM serves every transform length: stage i of an
+    // N-point transform needs W_N^(j<<i), and W_N^(j<<i) == W_TBL^((j<<i)*(TBL_N/N)),
+    // so an N < TBL_N transform simply indexes the same table with a shift.
+    // TBL_N must be a power of two and a multiple of N.
+    parameter integer TBL_N = 1024,
     parameter         RE_FILE = "verilog/tw12_real.mem",
     parameter         IM_FILE = "verilog/tw12_imag.mem"
 ) (
@@ -74,14 +83,19 @@ module v2_fft_pipe #(
 );
 
     // ---------------------------------------------------------------- twiddles
-    reg signed [TW-1:0] twr [0:N/2-1];
-    reg signed [TW-1:0] twi [0:N/2-1];
+    localparam integer TBW       = $clog2(TBL_N);        // twiddle index width
+    localparam integer TBL_SHIFT = $clog2(TBL_N / N);    // shared-table index scale
+
+    reg signed [TW-1:0] twr [0:TBL_N/2-1];
+    reg signed [TW-1:0] twi [0:TBL_N/2-1];
 
     initial begin
         $readmemh(RE_FILE, twr);
         $readmemh(IM_FILE, twi);
         if ((N & (N-1)) != 0)
             $fatal(1, "v2_fft_pipe N must be a power of two");
+        if (TBL_N < N || (TBL_N & (TBL_N-1)) != 0 || (TBL_N % N) != 0)
+            $fatal(1, "v2_fft_pipe TBL_N must be a power of two and a multiple of N");
     end
 
     localparam signed [DW+1:0] RND = ({{(DW+1){1'b0}}, 1'b1} <<< (TW-2));
@@ -142,7 +156,7 @@ module v2_fft_pipe #(
 
             // twiddle index for this stage: j << i, j = cnt - H in the 2nd half
             wire [LOGN-1:0] j     = cnt - H[LOGN-1:0];
-            wire [LOGN-1:0] twidx = j << i;
+            wire [TBW-1:0]  twidx = j << (i + TBL_SHIFT);
             wire signed [TW-1:0] wr = twr[twidx];
             wire signed [TW-1:0] wi = twi[twidx];
 
