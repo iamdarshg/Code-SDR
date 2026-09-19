@@ -114,7 +114,7 @@ module v2_fft_packetizer #(
             16'd8:  hdr_byte = {6'b0, first_bin[9:8]};
             16'd9:  hdr_byte = first_bin[7:0];
             16'd10: hdr_byte = {3'b0, exp_lat};
-            16'd11: hdr_byte = {6'b0, ovf_lat, 1'b1};
+            16'd11: hdr_byte = {6'b0, 1'b1, ovf_lat};
             default: hdr_byte = 8'h00;
         endcase
     end

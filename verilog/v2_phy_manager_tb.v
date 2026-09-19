@@ -5,7 +5,7 @@ module v2_phy_manager_tb;
     always #5 clk = ~clk;
     reg rst_n = 0;
     wire mdc, mdio_o, mdio_oe, link_up, ready, error;
-    wire phy_int_n = 1'b1;
+    reg phy_int_n = 1'b1;
     reg mdio_i = 1'b1;
     reg phy_oe = 0;
     reg phy_data = 1;
@@ -82,12 +82,36 @@ module v2_phy_manager_tb;
         end
     end
     initial begin
-        #4000000;
+        #40000000;
         $fatal(1, "Timeout: state=%0d start=%b busy=%b done=%b read=%b reg=%0d data=%h wire_bits=%0d", dut.op, dut.start, dut.md_busy, dut.md_done, dut.read_op, dut.md_reg_addr, dut.read_data, frames);
     end
     initial begin
         wait(ready);
         #100;
+        if (link_up !== 1'b1)
+            $fatal(1, "link_up not asserted after bring-up");
+        $display("TB: bring-up complete, link_up=1");
+
+        // Cable unplug: BMSR's link bit clears and the periodic re-poll must
+        // drop link_up without any bring-up retrigger.
+        regfile[1] = 16'h0020;
+        wait (!link_up);
+        $display("TB: link_up dropped after BMSR link cleared");
+
+        // Replug: the same poll must re-assert it.
+        regfile[1] = 16'h0024;
+        wait (link_up);
+        $display("TB: link_up re-asserted after BMSR link returned");
+
+        // phy_int_n must force an immediate re-read, not wait for the timer.
+        regfile[1] = 16'h0020;
+        if (link_up !== 1'b1) $fatal(1, "link_up changed before interrupt test");
+        phy_int_n = 1'b0;
+        repeat (4) @(posedge clk);
+        phy_int_n = 1'b1;
+        wait (!link_up);
+        $display("TB: link_up dropped on PHY interrupt");
+
         $display("PASS: manager ready=%b link_up=%b error=%b", ready, link_up, error);
         $finish;
     end

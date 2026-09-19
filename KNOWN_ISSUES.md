@@ -1,133 +1,139 @@
 # Known Issues
 
-Findings from a review of the V2 gateware, the host tools and the firmware.
-Everything here is either **fixed** (listed for the record) or **open and
-deliberately not fixed yet**, with the reason it was deferred.
+Findings from code review of the V2 gateware, host tools and firmware.
+Everything is either **fixed** (kept for the record) or **open**, with the reason
+it was deferred.
 
 Severity: **CRITICAL** = blocks hardware, **MAJOR** = wrong behaviour in some
 configuration, **MINOR** = latent or cosmetic.
 
 ---
 
-## Fixed in this pass
+## Fixed
 
-| # | Severity | Issue | Fix |
-|---|---|---|---|
-| 1 | CRITICAL | `v2_clock_pll.v` tied `CLKFB_DIV` to `CLKOP_DIV`. With CLKOP feedback the VCO is `f_in·CLKFB_DIV/CLKI_DIV = 400 MHz` and `CLKOP = 100 MHz` — the Ethernet MAC would have been clocked at the ADC rate. | `CLKFB_DIV = 5` (VCO 500 MHz → CLKOP 125 MHz). |
-| 2 | MAJOR | `v2_fft1024.v` loader off-by-one. `in_ready = (state==S_LOAD) && (load_cnt < N)` is always true (`load_cnt` is `LOGN` bits, so it can never reach `N`). Combined with the one-cycle `in_valid` skew in `v2_top`, the FIFO was read **N+1 times per frame**: one sample silently discarded, and every frame started one sample later. | `v2_top` now bounds the reads per frame to exactly `FFT_N`. |
-| 3 | MAJOR | `cfg_decim` / `cfg_drop_frac` were written by the SPI slave in the `clk_eth` domain and sampled directly in the 100 MHz domain. A mid-write transition could be seen as an arbitrary value — for `cfg_decim` that means a wrong sample rate and a corrupted datapath. | Stable-value synchroniser: hold the last value until two consecutive ADC-domain samples agree. |
-| 4 | — | *(Correction)* The docs previously claimed a Karatsuba operand-sum overflow in `v2_fft_pipe`. **That was wrong** — Verilog extends both sums to the multiply's width, confirmed by reverting the "fix" and re-running the test, which still passes. The widened wires are kept only as a portable clamp. | Docs corrected in `GATEWARE.md` and the module header. |
+### Critical
+
+| # | Issue | Fix |
+|---|---|---|
+| 1 | `v2_clock_pll.v` tied `CLKFB_DIV` to `CLKOP_DIV`. With CLKOP feedback the VCO is `f_in·CLKFB_DIV/CLKI_DIV = 400 MHz` and `CLKOP = 100 MHz` — the Ethernet MAC would have been clocked at the ADC rate. | `CLKFB_DIV = 5` (VCO 500 MHz → CLKOP 125 MHz). |
+| 2 | **The RP2040 firmware did not compile.** `rp2040_dashboard.ino` printed `drop_pct`, which was never declared — an edit had added the print but not the computation. The whole dashboard was unbuildable. | Compute `drop_pct` from `drop_fraction_for()` and use `offered_mbps()` for the payload figure. |
+
+### Major
+
+| # | Issue | Fix |
+|---|---|---|
+| 3 | `v2_fft1024.v` loader off-by-one: `load_cnt` is `LOGN` bits so `load_cnt < N` is always true. With the one-cycle `in_valid` skew in `v2_top` the FIFO was read **N+1 times per frame** — one sample discarded, every frame starting one sample later. | `v2_top` bounds reads per frame to exactly `FFT_N`. |
+| 4 | `cfg_decim` / `cfg_drop_frac` were written in `clk_eth` and sampled directly in the 100 MHz domain, so a mid-write transition could be read as an arbitrary value. | Stable-value synchroniser: hold until two consecutive ADC-domain samples agree. |
+| 5 | **FFT `flags` byte bit layout was inverted.** The RTL emitted `{6'b0, ovf_lat, 1'b1}` (bit1 = overflow) while the header comment and the host both use bit0 = overflow, so the host read the constant `1` as "overflow" and flagged **every** FFT packet. The TB only tested the no-overflow case. | Emit `{6'b0, 1'b1, ovf_lat}`; the TB now asserts the whole byte against the documented layout. |
+| 6 | **`link_up` was sampled once at bring-up and then frozen**; `phy_int_n` was in the port list but never referenced, so a cable unplug never updated it. | `v2_phy_manager` re-polls BMSR every 2 ms and on a `phy_int_n` falling edge; the TB now proves link drops and re-asserts. |
+| 7 | **CIC `rate_cfg` was not restricted to powers of two.** `log2i()` returns 4 for any unknown value, so the gain-removal shift was always 12 while the real gain is `rate³` — `rate_cfg = 100` gave ≈244× gain into a signed 16-bit output and wrapped. | Snap the rate to the nearest power of two and use the same value for the decimation counter and the gain shift. TB covers `rate_cfg` 48 and 100. |
+| 8 | **CIC→FFT FIFO overflow was completely invisible.** The CIC writes unconditionally and a full FIFO drops the write; nothing counted it, so a host choosing a rate the FFT cannot sustain (e.g. `cfg_decim = 1`) would lose most samples silently. | Drop events are toggle-synchronised into `clk_eth`, counted, and folded into `overflow_count` so `sticky_overflow` latches and the dashboard shows it. |
+
+### Minor
+
+| # | Issue | Fix |
+|---|---|---|
+| 9 | `v2_fft1024.v`: the stage-final butterfly's guard hit was overwritten by `need_scale <= 1'b0`, excluding it from the BFP decision. | `calc_next` now takes the current butterfly's guard hit into the stage-end decision. |
+| 10 | `v2_fft1024.v`: the window was applied to `in_re` only. | Applied to `in_im` as well (identical result when `in_im = 0`). |
+| 11 | `v2_fft1024.v`: `overflow_count` was reset but never incremented. | Incremented once per overflowing frame. |
+| 12 | `async_fifo.v`: `FULL_MASK` malformed for `ADDR_WIDTH == 1` (zero-width replication). | Written as `(3 << (ADDR_WIDTH-1))` — bit-identical for all widths, legal at `ADDR_WIDTH==1`. |
+| 13 | `v2_mdio_master.v`: `mdio_i` sampled without a synchroniser; the MDC rate comment/check disagreed with the actual 125 MHz clock. | Two-flop sync on `mdio_i`; the guard now enforces the real KSZ9031 ceiling (25 MHz) and the comment is corrected. |
+| 14 | `v2_top.v`: `effective_mbps` was hard-wired to 0, so telemetry `0x10` and the dashboard's Mbps/headroom always read zero. | Computed from the configured width and rate. |
+| 15 | `v2_top.v`: `{{(10-FFT_LOGN){1'b0}}, fft_index}` is a zero-width replication in the default `FFT_N=1024` config (illegal per IEEE 1364-2001 §4.1.1). | Pass `fft_index` directly. |
+| 16 | Firmware: a bitstream swap did not re-apply the delta-sigma drop fraction (reconfiguration resets it to 0), leaving the link oversubscribed until the user touched a rate command. | `apply_rate_config()` is called in the mode-switch branch. |
+| 17 | `sdr_spectrum.py` bound to UDP 4660/4661 by default, but the FPGA transmits **to** `cfg_dst_port` = 10000 (its reset value, never changed) and only *stamps* 4660/4661 as source ports. The tool received nothing. | Defaults to 10000; added `--fs` for the axis. |
+| 18 | Status reported `cfg_bits` as the sample depth, but the raw path packs at the elaboration-time `SAMPLE_BITS`, so a `b 10` write changed the reported depth and the firmware's rate plan without changing the data. | Status reports the true `SAMPLE_BITS`; the firmware no longer issues or advertises a runtime `b` command. |
+| 19 | *(Correction)* The docs claimed a Karatsuba operand-sum overflow in `v2_fft_pipe`. **That was wrong** — Verilog extends both sums to the multiply's width; reverting the "fix" still passes. | Docs corrected; the widened wires stay only as a portable clamp. |
+
+### Removed
+
+- **The P0 cluster is gone.** `fpga_processing_pipeline.v` and everything used
+  only by it (`adc_interface`, `adaptive_gain_scaler`, `clock_manager`,
+  `compensation_filter`, `digital_downconverter`, `ethernet_mac`, `fft_packetizer`,
+  `fft_processor`, `hamming_window`, `lifmd6000_clock_pll`, `nco_generator`,
+  `rp2040_interface`, `udp_ip_stack`, `cic_decimator`, `signal_processing_testbench`,
+  `fpga_testbench`) plus their testbenches, `synthesize.tcl`,
+  `fpga_timing_constraints.sdc`, `V2_HARDWARE_COMPATIBILITY.md`, the verified
+  `build_diamond.tcl` file list's stale siblings, and the legacy-only cocotb
+  tests / fixtures / runners. **Recoverable from git history.**
+  Note this includes `adc_interface.v`, which was the subject of P0 issue #59 —
+  restore it from history if that fix is still wanted.
 
 ---
 
 ## Open
 
-### MAJOR
+### Major
 
-1. **CIC/FIFO overflow is invisible in FFT mode** (`v2_top.v`).
-   The CIC→FFT FIFO's `full` is left unconnected and the write enable is
-   unconditional, so a write is silently dropped when it is full. Neither
-   `bins_dropped` nor the FFT's `overflow` covers this, so a host that sets
-   `cfg_decim = 1` (documented as pass-through) would lose ~93 % of samples with
-   **no indication**. *Deferred because it wants a design decision, not just a
-   patch: either clamp `cfg_decim` to what the FFT can sustain, or add a
-   dedicated drop counter to telemetry and surface it in the dashboard.*
+1. **Runtime bit-depth switching is not implemented.** The raw path's packing
+   width is the `SAMPLE_BITS` elaboration parameter (the FIFO word is a fixed
+   40 bits, 8-bit packs 5 samples, 10-bit packs 4). Both widths are built and
+   tested, but they are *build-time* choices — `REG_BITS` is inert by design now
+   that status reports the truth. Implementing runtime switching needs: a muxed
+   sample slice (`adc_data[9:2]` vs `[9:0]` — a variable-width part-select is
+   not legal Verilog), the accumulator as `(acc << bits) | sample`, and a
+   runtime samples-per-word and `NSAMP`. *Deferred as a feature, not a fix.*
 
-2. **`link_up` is sampled once and then frozen** (`v2_phy_manager.v`).
-   Link state is only read during the one-shot bring-up sequence; the FSM then
-   sits in `O_DONE` forever. `phy_int_n` is in the port list but never used, so a
-   cable unplug/replug never updates `link_up` and telemetry reports a stale
-   value. *Deferred: needs a periodic BMSR re-poll (or an interrupt-driven
-   re-read), which changes the PHY manager's FSM shape and needs its own test.*
+2. **Hardware paths are gated on macros no build script defines.**
+   `V2_USE_VENDOR_PLL` and `V2_USE_VENDOR_DDR` appear nowhere else, so the build
+   elaborates the behavioural clock and the fabric RGMII mux — neither
+   synthesizable as intended. *This is the Diamond-licence blocker, not a code
+   defect: the vendor primitives must be generated by the tool and their ports
+   confirmed against FPGA-TN-02015 / -02016 / -02012.*
 
-3. **CIC `rate_cfg` is not restricted to powers of two** (`v2_cic_decimator.v`).
-   `log2i()` returns 4 for any value not in its table, so the gain-removal shift
-   is `STAGES·4 = 12` regardless of the real rate. The CIC gain is `rate³`, so
-   `rate_cfg = 100` gives ≈244× gain into a signed 16-bit output — it wraps.
-   The host may write any byte to `A_DECIM`. *Deferred: the right fix is to
-   validate/round the rate at the register (or reject it via status), which is a
-   protocol change and wants the firmware side updated with it.*
+### Minor
 
-4. **Hardware paths gated on macros no build script defines** (`v2_clock_pll.v`,
-   `v2_rgmii.v`).
-   `V2_USE_VENDOR_PLL` and `V2_USE_VENDOR_DDR` appear nowhere else in the repo,
-   so as shipped the build elaborates the behavioural clock and the fabric RGMII
-   mux. Neither is synthesizable as intended. *This is the Diamond-licence
-   blocker, not a code defect: the vendor primitives must be generated by the
-   tool and their exact ports confirmed against FPGA-TN-02015 / -02016 / -02012.*
+3. **`sdr_spectrum.py`'s frequency axis in FFT mode is still nominal** — the
+   axis is built from `--fft` (default 4096) while the FPGA emits 1024 bins.
+   Raw mode is correct now that `--fs` exists (default 50 MSPS = 100/decim 2).
 
-### MINOR
+4. **`v2_fft_packetizer` can drop one bin at a packet boundary.** When the last
+   byte is taken, `wr_idx <= 0` and the intake branch can still see
+   `buffer_full == 1` on that same edge, so an `fft_valid` arriving there is
+   counted in `bins_dropped` and lost — which desynchronises the next packet's
+   `first_bin`. Counted, not silent, and timing-dependent.
 
-5. **Last butterfly excluded from the BFP decision** (`v2_fft1024.v`). At the
-   stage-final butterfly `need_scale <= 1'b1` is immediately overridden by
-   `need_scale <= 1'b0`, so `rd_scale` sees the pre-final value. If only the
-   final butterfly crosses the guard the next stage runs unscaled and can
-   saturate (latched in `overflow`). Data stays consistent with `scale_exp`, so
-   this is a headroom bug, not corruption.
+5. **Latent register no-ops.** `cfg_enable`, `cfg_nco_freq` and (for the
+   datapath) `cfg_mode` are produced by `v2_spi_regs` but not consumed by
+   `v2_top`; the datapath cannot actually be gated by software. The firmware only
+   ever writes `ENABLE = 1` and never touches `NCO`, so nothing is broken today.
 
-6. **Zero-width replication** (`v2_top.v`): `{{(10-FFT_LOGN){1'b0}}, fft_index}`
-   is zero-width in the default `FFT_N = 1024` config. Icarus accepts it; IEEE
-   1364-2001 §4.1.1 says it is illegal and some synthesis tools will reject it.
+6. **`reset_n = rst_n & eth_locked` is used as an asynchronous reset in the
+   100 MHz domain.** `eth_locked` is not synchronous to `clk_100m_in`, so reset
+   de-assertion can violate recovery/removal. Wants a per-domain reset
+   synchroniser.
 
-7. **`effective_mbps` is hard-wired to 0** (`v2_top.v`), so telemetry register
-   `0x10` and the dashboard's Mbps/headroom display read zero. The firmware
-   computes its own figure, so nothing user-visible is broken.
+7. **`v2_raw_path`'s `overflow_count` (not the gray-coded `ovf_bin`) still drives
+   telemetry's `sticky_overflow` across domains.** Monotonic + sticky masks the
+   usual tearing damage, but it is still a CDC hazard.
 
-8. **`overflow_count` crosses to the telemetry domain unsynchronized**
-   (`v2_raw_path.v` → `v2_telemetry.v`). The gray-coded `ovf_bin` is the proper
-   path and feeds `dropped_words`; the raw counter reaching `sticky_overflow`
-   is a CDC hazard, masked in practice because it is monotonic and sticky.
+8. **`v2_fft_pipe`'s `run` aligns only the first frame.** `started` latches on
+   the first `in_valid` and never clears, so gapped bursts after the first frame
+   are no longer block-aligned. Correct for the intended continuous 100 MSPS
+   stream.
 
-9. **`reset_n = rst_n & eth_locked` is used as an asynchronous reset in the
-   100 MHz domain** (`v2_top.v`). `eth_locked` is not synchronous to
-   `clk_100m_in`, so reset de-assertion can violate recovery/removal. Wants a
-   per-domain reset synchroniser.
+---
 
-10. **`adc_interface.v`'s "DC offset correction" is a ~1 MHz high-pass**, not a
-    DC tracker: the `>>> 4` time constant gives a pole at `fs/16 = 6.25 MHz`.
-    The module is **not instantiated by `v2_top`**, so this is latent — but if it
-    is ever wired in it will differentiate away any signal content below ~1 MHz.
+## Verified correct (checked, no change needed)
 
-11. **`mdio_i` is sampled without a synchroniser** (`v2_mdio_master.v`), and
-    `HALF_PERIOD = 20` at 125 MHz gives MDC = 3.125 MHz — above the 2.5 MHz that
-    the comment on the rate check assumes.
-
-12. **`v2_fft_pipe`'s `run` aligns only the first frame**
-    (`v2_fft_pipe.v`). `started` latches on the first `in_valid` and never
-    clears, so gapped bursts after the first frame are no longer block-aligned.
-    Correct for the intended continuous 100 MSPS stream; not robust to gaps.
-
-13. **`async_fifo.v` `FULL_MASK` is malformed for `DEPTH = 2`**
-    (`ADDR_WIDTH = 1`): `{(ADDR_WIDTH-1){1'b0}}` is a zero-width replication.
-    Not reachable from `app_stream_cdc` (`DEPTH = 1024`).
-
-14. **`v2_fft1024` applies the window to `in_re` only**, not `in_im`. Harmless
-    for the current real-only ADC feed, wrong for a general complex input.
-
-15. **`v2_fft1024`'s `overflow_count` is reset but never incremented**, and
-    `v2_top` leaves it unconnected.
-
-### Not a defect (checked)
-
-- **Karatsuba operand sums in `v2_fft1024.v`** have the same shape as the
-  (non-)issue in `v2_fft_pipe.v`. Same conclusion: **not a bug** — Verilog sizes
-  the sum to the multiply's context. No change needed.
-- **`app_stream_cdc.v`, `async_fifo.v`, `adc_interface.v`, `v2_fft_pipe.v`** are
-  not instantiated by `v2_top`. They are retained deliberately: the first two
-  have CI tests, `adc_interface` carries the P0 fix, and `v2_fft_pipe` is the
-  verified 100 MSPS FFT.
-- **`v2_fft1024.v`'s "CIC must decimate by 32" comment** contradicts
-  `v2_top`'s `FFT_RATE = 16`. At 16 the FFT keeps up (6.25 < 6.94 MSPS), so the
-  comment is stale, not the logic.
+- Karatsuba operand sums in `v2_fft1024` (same shape as the non-issue in
+  `v2_fft_pipe`): **not a bug** — Verilog sizes the sum to the multiply context.
+- IPv4 header, checksum, UDP length, MAC preamble/SFD/FCS/IFG and the
+  byte-count handshakes across UDP→MAC→source all line up cycle-for-cycle.
+- Raw packet header (seq/base/drops/`0xA5`/bits/decim/flags) matches the host
+  parsers; 8/10-bit packing round-trips against `sdr_common.unpack_samples`.
+- Telemetry register map and status bit packing match the firmware addresses.
+- SPI framing, address decode and read/write byte positions are consistent.
+- CDC FIFO gray-pointer scheme, `full`/`empty` and `rd_avail` occupancy.
+- RGMII nibble order on both the behavioural and vendor DDR paths.
 
 ---
 
 ## Repo hygiene
 
-- The superseded P0 design (`verilog/fpga_processing_pipeline.v`, `adc_interface`,
-  `ethernet_mac`, `fft_processor`, `udp_ip_stack`, `nco_generator`, …) is **still
-  present**. It is referenced by `verilog/synthesize.tcl` and by
-  `tests/cocotb_tests/`, so it is not "unused" and was left alone rather than
-  deleting a working test suite. If it should go, delete the cluster *and*
-  `synthesize.tcl` *and* the legacy-only cocotb tests together.
-- No build artifacts are tracked; `outputs/` holds real PCB routing deliverables.
+- `app_stream_cdc.v`, `async_fifo.v` and `v2_fft_pipe.v` are not instantiated by
+  `v2_top`; they are retained deliberately (CI-tested, and `v2_fft_pipe` is the
+  verified 100 MSPS FFT).
+- No build artifacts are tracked. `outputs/` holds real PCB routing deliverables.
+- The authoritative regression is `python tools/run_tests.py` (21 testbenches,
+  plus the two extra FFT sizes), also run by `.github/workflows/rtl.yml`.

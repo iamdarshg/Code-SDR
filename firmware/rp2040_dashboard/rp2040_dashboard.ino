@@ -101,6 +101,8 @@ static const float UDP_CEIL_MBPS = 992.7;
 // high-water override catches anything the average does not.
 static const float CEIL_MARGIN   = 0.995;
 
+// Must match the SAMPLE_BITS the bitstream was built with: the gateware packs at
+// a fixed build-time width, so this only drives this dashboard's rate plan.
 static uint8_t  g_bits  = 10;
 static uint8_t  g_decim = 2;
 static uint8_t  g_mode  = 0;                 // 0 = raw, 1 = on-FPGA FFT
@@ -184,14 +186,14 @@ void setup() {
     SPI.setRX(PIN_FPGA_MISO);
     SPI.begin();
 
-    // Default operating point: 10-bit, decimate by 2 (all bits, 50 MSPS).
-    fpga_write(REG_BITS,  g_bits);
+    // Default operating point: decimate by 2. Bit depth is fixed by the
+    // bitstream (see REG_BITS note above), so g_bits must match it.
     fpga_write(REG_DECIM, g_decim);
     fpga_write(REG_MODE,  g_mode);
     fpga_write(REG_ENABLE, 1);
     apply_rate_config();
 
-    Serial.println("# Code-SDR V2 dashboard. Commands: 'b <8|10>' 'd <1|2|4|8>' 'm <0|1>' '0'/'1' = swap bitstream");
+    Serial.println("# Code-SDR V2 dashboard. Commands: 'd <1|2|4|8>' 'm <0|1>' '0'/'1' = swap bitstream");
     Serial.println("ms,bits,decim,mode,msps,payload_mbps,ceiling_mbps,headroom_mbps,required,packets,dropped,drops_per_s,sticky,link,pll,pkts_dropped");
 
     // fault handling + watchdog: reset the controller if the loop ever hangs
@@ -217,7 +219,10 @@ void loop() {
     if (Serial.available()) {
         char c = Serial.read();
         long arg = Serial.parseInt();
-        if      (c == 'b' && (arg == 8 || arg == 10)) { g_bits = arg;  fpga_write(REG_BITS, g_bits);  apply_rate_config(); }
+        // NOTE: bit depth is a BUILD-TIME choice in the gateware (the raw path's
+        // packing width is the SAMPLE_BITS elaboration parameter and the FIFO
+        // word is a fixed 40 bits), so there is no runtime  command. To change
+        // it, rebuild v2_top with a different SAMPLE_BITS.
         else if (c == 'd' && arg > 0)                 { g_decim = arg; fpga_write(REG_DECIM, g_decim); apply_rate_config(); }
         else if (c == 'm')                            { g_mode = arg ? 1 : 0; fpga_write(REG_MODE, g_mode); apply_rate_config(); }
         else if (c == '0' || c == '1') {
@@ -227,10 +232,13 @@ void loop() {
             Serial.printf("# selecting %s bitstream...\n", want ? "FFT" : "RAW");
             if (fpga_select_mode(want)) {
                 g_mode = want;
-                fpga_write(REG_BITS,  g_bits);
                 fpga_write(REG_DECIM, g_decim);
                 fpga_write(REG_MODE,  g_mode);
                 fpga_write(REG_ENABLE, 1);
+                // Reconfiguration resets the FPGA, so cfg_drop_frac is back to 0.
+                // Without this the link runs oversubscribed after a bitstream
+                // swap until the user touches a rate command.
+                apply_rate_config();
                 Serial.printf("# mode switch complete\n");
             } else {
                 Serial.printf("# mode switch FAILED\n");
@@ -258,9 +266,13 @@ void loop() {
     if (decim == 0) decim = 1;
 
     float msps          = (ADC_HZ / (float)decim) / 1.0e6;
-    float payload_mbps  = msps * (float)bits;
+    // Payload load includes the 16-byte per-packet header, so use the same
+    // figure the rate plan is derived from - msps*bits alone understates it.
+    float payload_mbps  = (float)offered_mbps(bits, decim);
+    uint16_t dropq      = (mode == 0) ? drop_fraction_for(bits, decim) : 0;
+    float drop_pct      = 100.0f * (float)dropq / 65536.0f;
     float headroom      = UDP_CEIL_MBPS - payload_mbps;
-    uint8_t required    = (payload_mbps > UDP_CEIL_MBPS) ? 1 : 0;
+    uint8_t required    = (dropq > 0) ? 1 : 0;   // 1 = delta-sigma dropping active
 
     uint32_t dt_ms = now - prev_ms;
     uint32_t dd    = dropped - prev_dropped;

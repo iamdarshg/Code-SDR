@@ -80,9 +80,13 @@ module v2_fft1024 #(
         if (WINDOW_EN) $readmemh(WINDOW_FILE, win);
     end
 
-    // window applied at load, with rounding (Q15 coefficient)
-    wire signed [2*W-1:0] win_prod = in_re * win[load_cnt];
-    wire signed [W-1:0]   win_re   = (win_prod + (32'sd1 << 14)) >>> 15;
+    // Window applied at load, with rounding (Q15 coefficient), to BOTH rails.
+    // Windowing only re is correct for the real ADC feed but would leave a
+    // general complex input's imaginary part unapodised.
+    wire signed [2*W-1:0] win_prod  = in_re * win[load_cnt];
+    wire signed [2*W-1:0] win_prodi = in_im * win[load_cnt];
+    wire signed [W-1:0]   win_re    = (win_prod  + (32'sd1 << 14)) >>> 15;
+    wire signed [W-1:0]   win_imw   = (win_prodi + (32'sd1 << 14)) >>> 15;
 
     // ------------------------------------------------------------------- state
     localparam [2:0] S_IDLE=3'd0, S_LOAD=3'd1, S_CALC=3'd2, S_OUT=3'd3, S_DONE=3'd4;
@@ -187,14 +191,19 @@ module v2_fft1024 #(
     endfunction
 
     task calc_next;
+        input thresh_now;      // this butterfly reached the guard
         begin
             if (j == half - 1'b1) begin
                 j <= {LOGN{1'b0}};
                 if ((k + m) >= N) begin
-                    // last group of this stage: fold in the BFP decision
-                    rd_scale   <= need_scale;
+                    // Last group of this stage: fold in the BFP decision. The
+                    // final butterfly's guard hit is supplied as thresh_now --
+                    // reading `need_scale` here would see the pre-final value
+                    // (its `<= 1'b1` has not landed yet) and the last butterfly
+                    // of every stage would be excluded from the scaling decision.
+                    rd_scale   <= need_scale | thresh_now;
                     need_scale <= 1'b0;
-                    if (need_scale) scale_exp <= scale_exp + 5'd1;
+                    if (need_scale | thresh_now) scale_exp <= scale_exp + 5'd1;
                     if (stage == LOGN[4:0]) begin
                         state   <= S_OUT;
                         out_cnt <= {LOGN{1'b0}};
@@ -207,9 +216,11 @@ module v2_fft1024 #(
                     end
                 end else begin
                     k <= k + m[LOGN-1:0];
+                    if (thresh_now) need_scale <= 1'b1;
                 end
             end else begin
                 j <= j + 1'b1;
+                if (thresh_now) need_scale <= 1'b1;
             end
         end
     endtask
@@ -251,7 +262,7 @@ module v2_fft1024 #(
                 S_LOAD: begin
                     if (in_valid) begin
                         mem_re[brev(load_cnt)] <= (WINDOW_EN != 0) ? win_re : in_re;
-                        mem_im[brev(load_cnt)] <= in_im;
+                        mem_im[brev(load_cnt)] <= (WINDOW_EN != 0) ? win_imw : in_im;
                         load_cnt <= load_cnt + 1'b1;
                         if (load_cnt == N - 1) begin
                             stage <= 5'd1;
@@ -297,10 +308,13 @@ module v2_fft1024 #(
                             mem_im[ra_a] <= o1_im[W-1:0];
                             mem_re[ra_b] <= o2_re[W-1:0];
                             mem_im[ra_b] <= o2_im[W-1:0];
-                            if (thresh_hit) need_scale <= 1'b1;
-                            if (sat_hit)
+                            if (sat_hit) begin
                                 overflow <= 1'b1;      // latch: tolerance indicator
-                            calc_next;
+                                // Count once per overflowing frame: `overflow` is
+                                // cleared at load, so !overflow marks the first hit.
+                                if (!overflow) overflow_count <= overflow_count + 32'd1;
+                            end
+                            calc_next(thresh_hit);
                             sub <= 2'd0;
                         end
                     endcase

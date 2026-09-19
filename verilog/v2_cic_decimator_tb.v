@@ -11,6 +11,7 @@ module v2_cic_decimator_tb;
 
     reg clk = 0, rst_n = 0, in_valid = 0;
     reg signed [IN_W-1:0] din = 0;
+    reg [7:0] rate_cfg = 8'd0;
     wire out_valid;
     wire signed [OUT_W-1:0] dout;
     wire [31:0] s_in, s_out;
@@ -20,7 +21,7 @@ module v2_cic_decimator_tb;
 
     v2_cic_decimator #(.IN_WIDTH(IN_W), .STAGES(ST), .RATE(RATE), .OUT_WIDTH(OUT_W))
     dut (
-        .clk(clk), .rst_n(rst_n), .in_valid(in_valid), .din(din), .rate_cfg(8'd0),
+        .clk(clk), .rst_n(rst_n), .in_valid(in_valid), .din(din), .rate_cfg(rate_cfg),
         .out_valid(out_valid), .dout(dout),
         .samples_in(s_in), .samples_out(s_out)
     );
@@ -28,6 +29,55 @@ module v2_cic_decimator_tb;
     integer i;
     integer nout;
     integer minv, maxv, lastv;
+
+    // ------------------------- invalid / non-power-of-two rate must be SAFE
+    // rate_cfg is snapped to the nearest power of two (ties up): 48 -> 64 and
+    // 100 -> 128. The DC level must stay at the input level (no wrap) and the
+    // decimation ratio must match that documented effective rate.
+    task check_rate;
+        input [7:0] rcfg;
+        input integer eff;
+        integer n, nout_r;
+        integer mn, mx, lv;
+        begin
+            rst_n = 0; in_valid = 0; din = 0;
+            repeat (4) @(negedge clk);
+            rate_cfg = rcfg;
+            rst_n    = 1;
+            repeat (4) @(negedge clk);
+
+            in_valid = 1;
+            din = 10'sd500;
+            nout_r = 0; mn = 100000; mx = -100000;
+            for (n = 0; n < 8192; n = n + 1) begin
+                @(negedge clk);
+                if (out_valid) begin
+                    nout_r = nout_r + 1;
+                    if (nout_r > 8) begin
+                        if (dout < mn) mn = dout;
+                        if (dout > mx) mx = dout;
+                        lv = dout;
+                    end
+                end
+            end
+            if (nout_r == 0) begin
+                $display("FAIL: rate_cfg=%0d produced no output", rcfg);
+                errors = errors + 1;
+            end else if (mn < 480 || mx > 520) begin
+                $display("FAIL: rate_cfg=%0d (eff %0d) wrapped/misscaled: min=%0d max=%0d last=%0d (DC in=500)",
+                         rcfg, eff, mn, mx, lv);
+                errors = errors + 1;
+            end else if (s_out * eff > s_in + eff || s_out * eff + eff < s_in) begin
+                $display("FAIL: rate_cfg=%0d eff=%0d ratio off: in=%0d out=%0d",
+                         rcfg, eff, s_in, s_out);
+                errors = errors + 1;
+            end else begin
+                $display("  rate_cfg=%0d -> eff %0d: DC held [%0d,%0d], ratio %0d OK",
+                         rcfg, eff, mn, mx, (s_in + s_out/2) / s_out);
+            end
+            in_valid = 0;
+        end
+    endtask
 
     // ------------------------------------------------ test 1: DC gain = 1
     initial begin
@@ -96,6 +146,10 @@ module v2_cic_decimator_tb;
                 $display("  tone: low-frequency peak %0d of 400 preserved OK", peak);
             end
         end
+
+        // ------------------------- test 3: non-power-of-two rate_cfg is safe
+        check_rate(8'd48,  64);
+        check_rate(8'd100, 128);
 
         if (errors !== 0) begin
             $display("FATAL: %0d errors", errors);

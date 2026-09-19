@@ -181,18 +181,26 @@ def main():
     ap.add_argument("--bind", default="0.0.0.0")
     ap.add_argument("--simulate", action="store_true")
     ap.add_argument("--fft", type=int, default=4096, help="host FFT size (raw mode)")
+    ap.add_argument("--fs", type=float, default=None,
+                    help="sample rate (Hz) for the frequency axis; default 50e6 raw "
+                         "(=100 MSPS/decim 2) or 6.25e6 for the FFT path")
     ap.add_argument("--save", default=None, help="render and exit instead of showing")
     ap.add_argument("--frames", type=int, default=60, help="frames before exit in --save mode")
     args = ap.parse_args()
 
-    port = args.port if args.port else (4660 if args.mode == "raw" else 4661)
+    # The FPGA transmits TO cfg_dst_port, whose power-on value is 10000
+    # (v2_spi_regs A_DST_PORT reset) and which nothing else changes - src_port
+    # 4660/4661 is only what the packets are stamped with. A receiver must bind
+    # the destination port, so the default here has to be 10000.
+    port = args.port if args.port else 10000
+    fs = args.fs if args.fs else (50.0e6 if args.mode == "raw" else 6.25e6)
 
     import matplotlib
     if args.save:
         matplotlib.use("Agg")
     import matplotlib.pyplot as plt
 
-    freq = np.fft.rfftfreq(args.fft, d=1.0 / 6.25e6)
+    freq = np.fft.rfftfreq(args.fft, d=1.0 / fs)
     win = np.hanning(args.fft)
     waterfall = np.full((120, len(freq) if args.mode == "raw" else 512), -120.0)
 

@@ -13,6 +13,8 @@
 //   -> 4x MMD RGMII pad-skew writes (dev 2: regs 0x04,0x05,0x06,0x08)
 //   -> write GBCTL (advertise 1000BASE-T FD) -> write BMCR (AN enable + restart)
 //   -> poll BMSR link -> read GBSTAT -> read BMSR x2 -> ready
+//   -> then re-read BMSR on a slow timer (and on phy_int_n) so link_up keeps
+//      tracking the cable instead of freezing at the bring-up value.
 //
 // Two-phase per operation: LAUNCH (drive start + latch op) then WAIT (md_done,
 // then check the result and pick the next operation).
@@ -73,7 +75,8 @@ module v2_phy_manager #(
     localparam [4:0] O_ID1=5'd0, O_ID2=5'd1, O_RST=5'd2, O_CHKRST=5'd3,
                      O_MMDA=5'd4, O_MMDD=5'd5, O_MMDC=5'd6, O_MMDW=5'd7,
                      O_GBCTL=5'd8, O_BMCR=5'd9, O_ANP=5'd10, O_GBSTAT=5'd11,
-                     O_BMSR1=5'd12, O_BMSR2=5'd13, O_DONE=5'd14, O_FAIL=5'd15;
+                     O_BMSR1=5'd12, O_BMSR2=5'd13, O_DONE=5'd14, O_FAIL=5'd15,
+                     O_MON=5'd16;
 
     reg [4:0]  op;          // current operation (launched / being waited on)
     reg        phase;       // 0 = launch, 1 = wait
@@ -113,6 +116,7 @@ module v2_phy_manager #(
                 O_GBCTL:  op_addr_of = REG_GBCTL;
                 O_BMCR:   op_addr_of = REG_BMCR;
                 O_ANP:    op_addr_of = REG_BMSR;
+                O_MON:    op_addr_of = REG_BMSR;
                 O_GBSTAT: op_addr_of = REG_GBSTAT;
                 default:  op_addr_of = REG_BMSR;   // BMSR1 / BMSR2
             endcase
@@ -123,7 +127,7 @@ module v2_phy_manager #(
         input [4:0] o;
         begin
             case (o)
-                O_ID1, O_ID2, O_CHKRST, O_ANP, O_GBSTAT, O_BMSR1, O_BMSR2:
+                O_ID1, O_ID2, O_CHKRST, O_ANP, O_GBSTAT, O_BMSR1, O_BMSR2, O_MON:
                     op_is_read = 1'b1;
                 default: op_is_read = 1'b0;
             endcase
@@ -159,6 +163,33 @@ module v2_phy_manager #(
 
     wire skew_last = (skew_index == 5'd3);
 
+    // -------------------------------------------------- periodic link re-poll
+    // The one-shot bring-up freezes link_up at whatever it saw; a later cable
+    // unplug then leaves telemetry reporting a stale link. Re-read BMSR on a
+    // slow timer, and once more just after the PHY's active-low interrupt
+    // falls. BMSR bit 2 is latch-low, so the read itself re-arms the interrupt.
+    localparam integer LINK_REPOLL_CYCLES = 250000;   // 2 ms at 125 MHz
+    localparam integer LINK_TIMER_WIDTH = $clog2(LINK_REPOLL_CYCLES + 1);
+    reg [LINK_TIMER_WIDTH-1:0] link_timer;
+    reg phy_int_s0, phy_int_s1;
+
+    always @(posedge clk or negedge rst_n) begin
+        if (!rst_n) begin
+            link_timer <= {LINK_TIMER_WIDTH{1'b0}};
+            phy_int_s0 <= 1'b1;
+            phy_int_s1 <= 1'b1;
+        end else begin
+            phy_int_s0 <= phy_int_n;
+            phy_int_s1 <= phy_int_s0;
+            if (op == O_MON) link_timer <= {LINK_TIMER_WIDTH{1'b0}};
+            else if (link_timer != LINK_REPOLL_CYCLES)
+                link_timer <= link_timer + 1'b1;
+        end
+    end
+
+    wire link_req       = (link_timer == LINK_REPOLL_CYCLES);
+    wire phy_int_assert = phy_int_s1 & ~phy_int_s0;
+
     // ---------------------------------------------------------------- sequencer
     always @(posedge clk or negedge rst_n) begin
         if (!rst_n) begin
@@ -179,20 +210,26 @@ module v2_phy_manager #(
 
             if (!phase) begin
                 // ----------------------------------------------------- launch
-                // Address, direction and data all come from the same operation
-                // and are registered, so the master sees them stable the cycle
-                // after start is asserted.
-                read_op    <= op_is_read(op);
-                md_reg_addr<= op_addr_of(op);
-                write_data <= (op == O_RST)   ? BMCR_RESET   :
-                              (op == O_MMDA)  ? MMD_DEV2     :
-                              (op == O_MMDD)  ? mmd_reg      :
-                              (op == O_MMDC)  ? MMD_DATA_MODE:
-                              (op == O_MMDW)  ? skew_value   :
-                              (op == O_GBCTL) ? GBCTL_1000FD :
-                              (op == O_BMCR)  ? BMCR_ANEN    : 16'd0;
-                start   <= 1'b1;
-                phase   <= 1'b1;
+                if (op == O_DONE) begin
+                    // Bring-up is complete, but the cable can still move. Kick a
+                    // monitor read on the timer or a PHY interrupt edge.
+                    if (link_req || phy_int_assert) op <= O_MON;
+                end else if (op != O_FAIL) begin
+                    // Address, direction and data all come from the same
+                    // operation and are registered, so the master sees them
+                    // stable the cycle after start is asserted.
+                    read_op    <= op_is_read(op);
+                    md_reg_addr<= op_addr_of(op);
+                    write_data <= (op == O_RST)   ? BMCR_RESET   :
+                                  (op == O_MMDA)  ? MMD_DEV2     :
+                                  (op == O_MMDD)  ? mmd_reg      :
+                                  (op == O_MMDC)  ? MMD_DATA_MODE:
+                                  (op == O_MMDW)  ? skew_value   :
+                                  (op == O_GBCTL) ? GBCTL_1000FD :
+                                  (op == O_BMCR)  ? BMCR_ANEN    : 16'd0;
+                    start   <= 1'b1;
+                    phase   <= 1'b1;
+                end
             end else if (!md_busy && !start && md_done) begin
                 // -------------------------------------------------- WAIT: result
                 case (op)
@@ -252,6 +289,10 @@ module v2_phy_manager #(
                     O_BMSR2: begin
                         link_up <= scratch[2] & read_data[2];
                         ready   <= 1'b1;
+                        op      <= O_DONE;
+                    end
+                    O_MON: begin
+                        link_up <= read_data[2];
                         op      <= O_DONE;
                     end
                     O_DONE, O_FAIL: ;

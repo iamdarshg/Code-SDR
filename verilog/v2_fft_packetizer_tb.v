@@ -102,8 +102,14 @@ module v2_fft_packetizer_tb;
             if (cap[10] !== 8'd4) begin
                 $display("FAIL: scale_exp = %0d", cap[10]); errors = errors + 1;
             end
-            if (cap[11] !== 8'h01) begin
-                $display("FAIL: flags = %h", cap[11]); errors = errors + 1;
+            // flags byte: bit0 = overflow, bit1 = FFT-present. This used to be
+            // emitted the other way round, so the host (which reads bit0 as
+            // overflow) flagged every packet as overflowed. Asserting the whole
+            // byte against the documented layout catches a swap either way.
+            if (cap[11] !== {6'b0, 1'b1, fft_overflow}) begin
+                $display("FAIL: flags = %h (expected bit0=overflow, bit1=present)",
+                         cap[11]);
+                errors = errors + 1;
             end
             // bins
             for (i = 0; i < BINS; i = i + 1) begin

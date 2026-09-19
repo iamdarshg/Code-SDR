@@ -28,7 +28,11 @@ module async_fifo #(
     // ========================================================================
     
     localparam ADDR_WIDTH = (DEPTH >= 2) ? $clog2(DEPTH) : 1;
-    localparam [ADDR_WIDTH:0] FULL_MASK = {2'b11, {(ADDR_WIDTH-1){1'b0}}};
+    // Full = next write pointer equals the read pointer with the two MSBs of the
+    // Gray pointer inverted. Written as a shift rather than
+    // {2'b11, {(ADDR_WIDTH-1){1'b0}}}: at DEPTH=2 (ADDR_WIDTH=1) that
+    // replication is zero-width, which IEEE 1364-2001 4.1.1 forbids.
+    localparam [ADDR_WIDTH:0] FULL_MASK = (3 << (ADDR_WIDTH - 1));
 
     initial begin
         if (DEPTH < 2 || (DEPTH & (DEPTH - 1)) != 0)

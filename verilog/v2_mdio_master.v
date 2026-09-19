@@ -26,12 +26,32 @@ module v2_mdio_master #(
     reg [5:0] bit_index;
     reg reading;
 
+    // mdio_i is an asynchronous board input. Register it through two flops
+    // before the frame engine samples it, so a metastable edge cannot corrupt
+    // read_data or the turnaround-error decision.
+    reg mdio_i_s0, mdio_i_s1;
+
+    always @(posedge clk or negedge rst_n) begin
+        if (!rst_n) begin
+            mdio_i_s0 <= 1'b1;
+            mdio_i_s1 <= 1'b1;
+        end else begin
+            mdio_i_s0 <= mdio_i;
+            mdio_i_s1 <= mdio_i_s0;
+        end
+    end
+
     assign mdio_o = frame[63];
     assign mdio_oe = busy && !(reading && bit_index >= 6'd46);
 
+    // MDC = clk / (2*HALF_PERIOD). The master runs in the 125 MHz Ethernet
+    // domain, so HALF_PERIOD = 20 yields 3.125 MHz. That is well under the
+    // KSZ9031's 25 MHz MDC ceiling, but above the 2.5 MHz that IEEE 802.3
+    // clause 22 guarantees for a generic station - revisit this guard if the
+    // PHY is ever swapped.
     initial begin
-        if (HALF_PERIOD < 20)
-            $fatal(1, "MDC must not exceed 2.5 MHz at a 100 MHz input");
+        if (HALF_PERIOD < 3)
+            $fatal(1, "MDC must not exceed 25 MHz (KSZ9031 max) at 125 MHz");
     end
 
     always @(posedge clk or negedge rst_n) begin
@@ -63,10 +83,10 @@ module v2_mdio_master #(
                 divider <= 0;
                 mdc <= !mdc;
                 if (!mdc) begin
-                    if (reading && bit_index == 6'd47 && mdio_i !== 1'b0)
+                    if (reading && bit_index == 6'd47 && mdio_i_s1 !== 1'b0)
                         error <= 1;
                     if (reading && bit_index >= 6'd48)
-                        read_data <= {read_data[14:0], mdio_i};
+                        read_data <= {read_data[14:0], mdio_i_s1};
                 end else if (bit_index == 6'd63) begin
                     busy <= 0;
                     done <= 1;

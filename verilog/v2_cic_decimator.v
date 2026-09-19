@@ -14,9 +14,11 @@
 //   RATE=32  -> 3.125  MSPS
 //   RATE=64  -> 1.5625 MSPS
 //
-// RATE must be a power of two. The output is shifted back down by the CIC gain
-// (RATE^STAGES) with round-to-nearest so the magnitude is stable and the noise
-// floor does not move with the ratio.
+// RATE must be a power of two. Any byte the host writes to rate_cfg is snapped
+// to the nearest supported power of two (ties round up, clamped to MAX_RATE) so
+// a malformed value cannot inflate the gain. The output is shifted back down by
+// the CIC gain (RATE^STAGES) with round-to-nearest so the magnitude is stable
+// and the noise floor does not move with the ratio.
 // ============================================================================
 
 `timescale 1ns/1ps
@@ -45,11 +47,39 @@ module v2_cic_decimator #(
     localparam integer MAXBITS = $clog2(MAX_RATE);
 
     // ---------------------------------------------------- effective rate + shift
-    // rate_eff is masked to a power of two up to MAX_RATE.
+    // The host may write any byte to rate_cfg, so it is snapped to the nearest
+    // supported power of two (ties round up, anything above MAX_RATE clamps
+    // there). Both the decimation counter AND the gain-removal shift use this
+    // same snapped value: the CIC gain is rate^STAGES, so feeding the counter a
+    // raw non-power-of-two rate while log2i() defaulted the shift to /16 (as a
+    // bare invalid value did) injects up to ~244x gain and wraps the output.
     wire [7:0] rate_sel = (rate_cfg == 8'd0) ? RATE[7:0] : rate_cfg;
 
-    // Synthesizable log2 for the power-of-two rate (a variable-bound loop is not
-    // accepted by synthesis tools).
+    // Largest power of two <= v (for v != 0), then pick the closer of it and 2x.
+    function [7:0] snap_rate;
+        input [7:0] v;
+        integer b;
+        reg [7:0] lo;
+        reg found;
+        begin
+            if (v == 8'd0)
+                snap_rate = 8'd1;
+            else if (v >= MAX_RATE[7:0])
+                snap_rate = MAX_RATE[7:0];
+            else begin
+                lo    = 8'd1;
+                found = 1'b0;
+                for (b = 7; b >= 0; b = b - 1)
+                    if (!found && v[b]) begin
+                        lo    = 8'd1 << b;
+                        found = 1'b1;
+                    end
+                snap_rate = ((v - lo) < ((lo << 1) - v)) ? lo : (lo << 1);
+            end
+        end
+    endfunction
+
+    // Synthesizable log2 for the (now guaranteed power-of-two) rate.
     function [7:0] log2i;
         input [7:0] v;
         begin
@@ -62,16 +92,12 @@ module v2_cic_decimator #(
                 8'd32:   log2i = 8'd5;
                 8'd64:   log2i = 8'd6;
                 8'd128:  log2i = 8'd7;
-                default: log2i = 8'd4;   // assume /16 if an invalid rate slips in
+                default: log2i = 8'd0;   // unreachable: snap_rate is a power of two
             endcase
         end
     endfunction
 
-    // clamp rate_sel to [1, MAX_RATE]
-    wire [7:0] rate_cl =
-        (rate_sel == 8'd0)            ? 8'd1 :
-        (rate_sel >  MAX_RATE[7:0])   ? MAX_RATE[7:0] : rate_sel;
-
+    wire [7:0] rate_cl   = snap_rate(rate_sel);
     wire [7:0] shift_amt = STAGES[7:0] * log2i(rate_cl);
 
     initial begin

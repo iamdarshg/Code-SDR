@@ -174,10 +174,44 @@ module v2_top #(
         wire             fifo_empty;
         wire [11:0]      fifo_avail;
         wire             fifo_rd_en;
+        wire             cic_full;
+
+        // ------------------------------------------------ CIC/FIFO drop counter
+        // The CIC writes unconditionally, so a full FIFO silently discards the
+        // sample. Nothing else covered this (the FFT's own `overflow` is only
+        // internal saturation), so a host selecting a rate the FFT cannot
+        // sustain - e.g. cfg_decim = 1, documented as pass-through - would lose
+        // most samples with no indication at all. Count it as a toggle event so
+        // it can cross into clk_eth without a multi-bit CDC hazard, and fold it
+        // into overflow_count so sticky_overflow latches and the dashboard
+        // shows it.
+        wire cic_drop = cic_valid && cic_full;
+
+        reg cic_tog;
+        always @(posedge clk_100m_in or negedge rst_n)
+            if (!rst_n)        cic_tog <= 1'b0;
+            else if (cic_drop) cic_tog <= ~cic_tog;
+
+        reg cic_tog_s0, cic_tog_s1, cic_tog_s2;
+        always @(posedge clk_eth or negedge reset_n) begin
+            if (!reset_n) begin
+                cic_tog_s0 <= 1'b0; cic_tog_s1 <= 1'b0; cic_tog_s2 <= 1'b0;
+            end else begin
+                cic_tog_s0 <= cic_tog;
+                cic_tog_s1 <= cic_tog_s0;
+                cic_tog_s2 <= cic_tog_s1;
+            end
+        end
+
+        wire        cic_drop_ev = cic_tog_s1 ^ cic_tog_s2;
+        reg  [31:0] cic_dropped;
+        always @(posedge clk_eth or negedge reset_n)
+            if (!reset_n)          cic_dropped <= 32'd0;
+            else if (cic_drop_ev)  cic_dropped <= cic_dropped + 32'd1;
 
         v2_cdc_fifo #(.WIDTH(FFT_W), .ADDR_WIDTH(11)) u_cicfifo (
             .wr_clk(clk_100m_in), .wr_rst_n(reset_n), .wr_en(cic_valid),
-            .din(cic_out), .full(),
+            .din(cic_out), .full(cic_full),
             .rd_clk(clk_eth), .rd_rst_n(reset_n), .rd_en(fifo_rd_en),
             .dout(fifo_dout), .empty(fifo_empty), .rd_avail(fifo_avail)
         );
@@ -245,7 +279,7 @@ module v2_top #(
         ) u_fftpkt (
             .clk(clk_eth), .rst_n(reset_n),
             .fft_re(fft_re), .fft_im(fft_im), .fft_valid(fft_valid),
-            .fft_index({{(10-FFT_LOGN){1'b0}}, fft_index}), .fft_frame(fft_frames),
+            .fft_index(fft_index), .fft_frame(fft_frames),
             .fft_scale_exp(fft_scale_exp), .fft_overflow(fft_overflow),
             .upstream_busy(upstream_busy),
             .p_data(p_data), .p_valid(p_valid), .p_ready(p_ready),
@@ -255,7 +289,7 @@ module v2_top #(
 
         assign packets_sent = fft_pkts;
         assign raw_dropped  = fft_bins_dropped;
-        assign raw_ovf      = {27'd0, fft_overflow};
+        assign raw_ovf      = fft_overflow + cic_dropped;
         assign raw_pkts     = fft_pkts;
         assign raw_dropped_pkts = 32'd0;
 
@@ -303,17 +337,33 @@ module v2_top #(
     wire [7:0]  tele_addr;
     wire [31:0] tele_data;
 
+    // Sample payload rate at the configured width and rate. This register used
+    // to be hard-wired to 0, so telemetry 0x10 and the dashboard's Mbps/headroom
+    // display always read zero.
+    wire [15:0] tele_div = (decim_sync == 8'd0)
+                         ? ((MODE == 1) ? FFT_RATE[15:0] : {{8{1'b0}}, DECIM[7:0]})
+                         : {{8{1'b0}}, decim_sync};
+    wire [15:0] tele_msps = (tele_div == 16'd0) ? 16'd0 : (16'd100 / tele_div);
+    wire [15:0] tele_mbps = (MODE == 1) ? (tele_msps * FFT_W[15:0])
+                                        : (tele_msps * {{8{1'b0}}, cfg_bits});
+
     v2_telemetry u_tele (
         .clk(clk_eth), .rst_n(reset_n),
         .packets_sent(packets_sent),
         .dropped_words(raw_dropped),
         .overflow_count(raw_ovf),
         .seq_value(packet_seq),
-        .sample_bits(cfg_bits),
+        // Report the depth the packer is actually built with, NOT cfg_bits.
+        // The raw path's packing width is the elaboration parameter SAMPLE_BITS
+        // (the FIFO word is a fixed 40 bits), so a runtime `b 10` write changes
+        // the register readback and the firmware's rate plan without changing
+        // the data. Reporting cfg_bits here made status describe a stream that
+        // was not being produced.
+        .sample_bits(SAMPLE_BITS[7:0]),
         .decim((MODE == 1) ? {3'b0, FFT_RATE[4:0]} : cfg_decim),
         .mode({1'b0, MODE[0]}),
         .link_up(link_up), .pll_locked(eth_locked), .phy_error(phy_error),
-        .effective_mbps(16'd0),
+        .effective_mbps(tele_mbps),
         .rd_addr(tele_addr), .rd_data(tele_data)
     );
 
