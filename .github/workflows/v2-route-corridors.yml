@@ -1,0 +1,47 @@
+name: V2 collision-ranked corridor route
+
+on:
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+  actions: read
+
+env:
+  GH_TOKEN: ${{ github.token }}
+
+jobs:
+  corridor-route:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+      - name: Recover clean routed baseline
+        run: |
+          set -euo pipefail
+          mkdir -p baseline hardware/v2/build/corridor-route
+          gh run download 29694149006 --repo "$GITHUB_REPOSITORY" \
+            --name Code-SDR-V2-completion-route --dir baseline
+          cp baseline/Code-SDR-V2.kicad_pcb hardware/v2/Code-SDR-V2.kicad_pcb
+          docker pull kicad/kicad:9.0.9-full
+      - name: Apply collision-ranked candidates with project DRC
+        run: |
+          set -euo pipefail
+          docker run --rm --user 0:0 \
+            -v "$GITHUB_WORKSPACE:/work" -w /work \
+            --entrypoint /bin/bash kicad/kicad:9.0.9-full -lc '
+              set -euo pipefail
+              python3 hardware/v2/tools/apply_corridor_candidates.py \
+                2>&1 | tee hardware/v2/build/corridor-route/corridor-route.log
+              python3 hardware/v2/tools/validate_route.py \
+                > hardware/v2/build/corridor-route/validate-route.log 2>&1 || true
+            '
+      - name: Upload corridor candidate
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: Code-SDR-V2-corridor-route
+          path: hardware/v2/build/corridor-route
+          retention-days: 2
+          if-no-files-found: error
