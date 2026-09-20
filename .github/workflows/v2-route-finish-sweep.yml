@@ -1,0 +1,49 @@
+name: V2 routing finish sweep
+
+on:
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+  actions: read
+
+concurrency:
+  group: v2-routing-finish-sweep-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+env:
+  GH_TOKEN: ${{ github.token }}
+
+jobs:
+  finish-sweep:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 120
+    steps:
+      - uses: actions/checkout@v4
+      - name: Recover clean routed candidate
+        run: |
+          set -euo pipefail
+          mkdir -p baseline hardware/v2/build/finish-sweep
+          gh run download 29694149006 --repo "$GITHUB_REPOSITORY" --name Code-SDR-V2-completion-route --dir baseline
+          cp baseline/Code-SDR-V2.kicad_pcb hardware/v2/Code-SDR-V2.kicad_pcb
+          if test -f baseline/build/ROUTE_STATISTICS.csv; then
+            cp baseline/build/ROUTE_STATISTICS.csv hardware/v2/build/ROUTE_STATISTICS.csv
+          fi
+          docker pull kicad/kicad:9.0.9-full
+      - name: Run reversible DRC-scored finish sweep
+        run: |
+          set -euo pipefail
+          docker run --rm --user 0:0 -v "$GITHUB_WORKSPACE:/work" -w /work --entrypoint /bin/bash kicad/kicad:9.0.9-full -lc '
+            set -euo pipefail
+            python3 hardware/v2/tools/finish_route_sweep.py 2>&1 | tee hardware/v2/build/finish-sweep/finish-sweep.log
+            python3 hardware/v2/tools/validate_route.py > hardware/v2/build/finish-sweep/validate-route.log 2>&1 || true
+          '
+      - name: Upload finish sweep
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: Code-SDR-V2-finish-sweep
+          path: hardware/v2/build/finish-sweep
+          retention-days: 2
+          if-no-files-found: warn
