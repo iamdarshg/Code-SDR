@@ -1,0 +1,241 @@
+{
+ "all_passed": true,
+ "checks": [
+  {
+   "check": "default coverage 100-10000 continuous",
+   "status": "PASS",
+   "pass": true,
+   "detail": "merged=[(100.0, 10000.0)]"
+  },
+  {
+   "check": "HF bypass coverage 10-10000 continuous",
+   "status": "PASS",
+   "pass": true,
+   "detail": "merged=[(10.0, 10000.0)]"
+  },
+  {
+   "check": "LOW: RF 100-2500 within ADL5801 RF (10.0, 6000.0)",
+   "status": "PASS",
+   "pass": true,
+   "detail": ""
+  },
+  {
+   "check": "LOW: LO 2526.25-4926.25 within ADL5801 LO (10.0, 6000.0)",
+   "status": "PASS",
+   "pass": true,
+   "detail": ""
+  },
+  {
+   "check": "LOW: LO 2526.25-4926.25 within LMX2592 20.0-9800.0",
+   "status": "PASS",
+   "pass": true,
+   "detail": ""
+  },
+  {
+   "check": "LOW: first-IF arithmetic",
+   "status": "PASS",
+   "pass": true,
+   "detail": ""
+  },
+  {
+   "check": "LOW_HF_OPTION: RF 10-2500 within ADL5801 RF (10.0, 6000.0)",
+   "status": "PASS",
+   "pass": true,
+   "detail": ""
+  },
+  {
+   "check": "LOW_HF_OPTION: LO 2436.25-4926.25 within ADL5801 LO (10.0, 6000.0)",
+   "status": "PASS",
+   "pass": true,
+   "detail": ""
+  },
+  {
+   "check": "LOW_HF_OPTION: LO 2436.25-4926.25 within LMX2592 20.0-9800.0",
+   "status": "PASS",
+   "pass": true,
+   "detail": ""
+  },
+  {
+   "check": "LOW_HF_OPTION: first-IF arithmetic",
+   "status": "PASS",
+   "pass": true,
+   "detail": ""
+  },
+  {
+   "check": "HIGH_A: RF 2300-4200 within LTC5548 RF (2000.0, 14000.0)",
+   "status": "PASS",
+   "pass": true,
+   "detail": ""
+  },
+  {
+   "check": "HIGH_A: LO 4726.25-6626.25 within LTC5548 LO (1000.0, 12000.0)",
+   "status": "PASS",
+   "pass": true,
+   "detail": ""
+  },
+  {
+   "check": "HIGH_A: LO 4726.25-6626.25 within LMX2592 20.0-9800.0",
+   "status": "PASS",
+   "pass": true,
+   "detail": ""
+  },
+  {
+   "check": "HIGH_A: first-IF arithmetic",
+   "status": "PASS",
+   "pass": true,
+   "detail": ""
+  },
+  {
+   "check": "HIGH_B: RF 4200-6800 within LTC5548 RF (2000.0, 14000.0)",
+   "status": "PASS",
+   "pass": true,
+   "detail": ""
+  },
+  {
+   "check": "HIGH_B: LO 6626.25-9226.25 within LTC5548 LO (1000.0, 12000.0)",
+   "status": "PASS",
+   "pass": true,
+   "detail": ""
+  },
+  {
+   "check": "HIGH_B: LO 6626.25-9226.25 within LMX2592 20.0-9800.0",
+   "status": "PASS",
+   "pass": true,
+   "detail": ""
+  },
+  {
+   "check": "HIGH_B: first-IF arithmetic",
+   "status": "PASS",
+   "pass": true,
+   "detail": ""
+  },
+  {
+   "check": "HIGH_C_HIGH_SIDE: RF 6800-7350 within LTC5548 RF (2000.0, 14000.0)",
+   "status": "PASS",
+   "pass": true,
+   "detail": ""
+  },
+  {
+   "check": "HIGH_C_HIGH_SIDE: LO 9226.25-9776.25 within LTC5548 LO (1000.0, 12000.0)",
+   "status": "PASS",
+   "pass": true,
+   "detail": ""
+  },
+  {
+   "check": "HIGH_C_HIGH_SIDE: LO 9226.25-9776.25 within LMX2592 20.0-9800.0",
+   "status": "PASS",
+   "pass": true,
+   "detail": ""
+  },
+  {
+   "check": "HIGH_C_HIGH_SIDE: first-IF arithmetic",
+   "status": "PASS",
+   "pass": true,
+   "detail": ""
+  },
+  {
+   "check": "HIGH_C_LOW_SIDE: RF 7150-9200 within LTC5548 RF (2000.0, 14000.0)",
+   "status": "PASS",
+   "pass": true,
+   "detail": ""
+  },
+  {
+   "check": "HIGH_C_LOW_SIDE: LO 4723.75-6773.75 within LTC5548 LO (1000.0, 12000.0)",
+   "status": "PASS",
+   "pass": true,
+   "detail": ""
+  },
+  {
+   "check": "HIGH_C_LOW_SIDE: LO 4723.75-6773.75 within LMX2592 20.0-9800.0",
+   "status": "PASS",
+   "pass": true,
+   "detail": ""
+  },
+  {
+   "check": "HIGH_C_LOW_SIDE: first-IF arithmetic",
+   "status": "PASS",
+   "pass": true,
+   "detail": ""
+  },
+  {
+   "check": "HIGH_D: RF 8000-10000 within LTC5548 RF (2000.0, 14000.0)",
+   "status": "PASS",
+   "pass": true,
+   "detail": ""
+  },
+  {
+   "check": "HIGH_D: LO 5573.75-7573.75 within LTC5548 LO (1000.0, 12000.0)",
+   "status": "PASS",
+   "pass": true,
+   "detail": ""
+  },
+  {
+   "check": "HIGH_D: LO 5573.75-7573.75 within LMX2592 20.0-9800.0",
+   "status": "PASS",
+   "pass": true,
+   "detail": ""
+  },
+  {
+   "check": "HIGH_D: first-IF arithmetic",
+   "status": "PASS",
+   "pass": true,
+   "detail": ""
+  },
+  {
+   "check": "LMX2592 max LO headroom (9786.25 <= 9800)",
+   "status": "PASS",
+   "pass": true,
+   "detail": "peak LO used 9776.25 MHz"
+  },
+  {
+   "check": "ADF4360-1 LO2=2400 MHz in 2050-2450",
+   "status": "PASS",
+   "pass": true,
+   "detail": ""
+  },
+  {
+   "check": "LO2 divider arithmetic N*PFD = 480*5 MHz",
+   "status": "PASS",
+   "pass": true,
+   "detail": ""
+  },
+  {
+   "check": "BAW passband covers wanted IF1",
+   "status": "PASS",
+   "pass": true,
+   "detail": "wanted (2406.25, 2446.25)"
+  },
+  {
+   "check": "BAW passband does NOT overlap image",
+   "status": "PASS",
+   "pass": true,
+   "detail": "image (2353.75, 2393.75) vs BAW 2402.5-2493.5; overlap 0.000 MHz"
+  },
+  {
+   "check": "Image fully inside proved QPQ stopband",
+   "status": "WARN",
+   "pass": false,
+   "detail": "image (2353.75, 2393.75) vs proved-stopband ceiling 2390.0; unproved-transition exposure 3.75 MHz (documented limitation - transition region unproved, not a pass claim)"
+  },
+  {
+   "check": "Image transition exposure < 3.75 MHz documented bound",
+   "status": "PASS",
+   "pass": true,
+   "detail": "exposure 3.75 MHz"
+  },
+  {
+   "check": "IF2 band inside ADC Nyquist",
+   "status": "PASS",
+   "pass": true,
+   "detail": "IF2 band (6.25, 46.25) vs FS/2 50.0"
+  },
+  {
+   "check": "Nyquist guard >= 3.75 MHz",
+   "status": "PASS",
+   "pass": true,
+   "detail": "guard 3.750 MHz"
+  }
+ ],
+ "generated_from": "C:\\Users\\Darsh Gupta\\engineering-portfolio-audit\\evidence\\code-sdr-em\\scripts\\redesign\\FREQUENCY_PLAN.csv",
+ "note": "Analytical cross-check of documented plan constants; does not constitute measured RF performance."
+}
