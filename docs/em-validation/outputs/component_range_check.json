@@ -1,0 +1,68 @@
+{
+ "all_passed": true,
+ "checks": [
+  {
+   "check": "Filter series L values present (200/360/390 nH)",
+   "pass": true,
+   "detail": "missing none"
+  },
+  {
+   "check": "Filter bridge C values present (51/56 pF)",
+   "pass": true,
+   "detail": "missing none"
+  },
+  {
+   "check": "Ladder section resonances recorded (informational, not a defect)",
+   "pass": true,
+   "detail": "internal resonances [35.24, 25.06, 24.08, 26.26] MHz lie in/near passband by design for a Chebyshev-style ladder; flatness criterion is FILTER_RESPONSE.csv wanted-band attenuation, verified by em_filter_recheck.py (max dev 4.9e-4 dB)."
+  },
+  {
+   "check": "100 nF coupler values present",
+   "pass": true,
+   "detail": "found 100 nF"
+  },
+  {
+   "check": "2.2 uH choke values present",
+   "pass": true,
+   "detail": "found 2.2 uH"
+  }
+ ],
+ "capacitors": {
+  "22uF (2.2e+07 pF)": 4,
+  "10uF (1e+07 pF)": 26,
+  "100nF (1e+05 pF)": 85,
+  "1uF (1e+06 pF)": 10,
+  "2.2uF (2.2e+06 pF)": 4,
+  "22uF_10V_X7R (2.2e+07 pF)": 1,
+  "47uF_10V_X7R (4.7e+07 pF)": 2,
+  "10nF (1e+04 pF)": 4,
+  "15pF_C0G (15 pF)": 2,
+  "33pF_C0G (33 pF)": 2,
+  "100pF_C0G (100 pF)": 21,
+  "4.7nF_C0G (4.7e+03 pF)": 1,
+  "100nF_C0G (1e+05 pF)": 1,
+  "470pF_C0G (470 pF)": 2,
+  "22nF_C0G (2.2e+04 pF)": 1,
+  "0.2pF_C0G (0.2 pF)": 4,
+  "1nF_C0G (1e+03 pF)": 3,
+  "0.6pF_C0G (0.6 pF)": 1,
+  "22pF_C0G (22 pF)": 1,
+  "0.8pF_C0G (0.8 pF)": 1,
+  "0.3pF_C0G (0.3 pF)": 1,
+  "2.2pF_C0G (2.2 pF)": 1,
+  "0.5pF_C0G (0.5 pF)": 2,
+  "1.0pF_C0G (1 pF)": 3,
+  "51pF_C0G (51 pF)": 2,
+  "56pF_C0G (56 pF)": 2
+ },
+ "inductors": {
+  "220nH (220 nH)": 2,
+  "2.7nH (2.7 nH)": 1,
+  "33nH (33 nH)": 2,
+  "2.2uH (2.2e+03 nH)": 2,
+  "200nH (200 nH)": 4,
+  "360nH (360 nH)": 4,
+  "390nH (390 nH)": 2
+ },
+ "note": "Component-value presence and resonance sanity from committed schematics; not a measurement or datasheet validation."
+}

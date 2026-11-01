@@ -1,0 +1,81 @@
+{
+ "all_within_tolerance_db": true,
+ "max_abs_dev_db": 0.0004854915003846827,
+ "tolerance_db": 0.0006,
+ "tolerance_note": "CSV values stored with 3 decimals (0.001 dB quantization); half-ULP = 0.0005 dB",
+ "rows": [
+  {
+   "frequency_mhz": 6.25,
+   "committed_db": -1.125,
+   "independent_db": -1.125398,
+   "abs_dev_db": 0.000398
+  },
+  {
+   "frequency_mhz": 26.25,
+   "committed_db": -0.5,
+   "independent_db": -0.50019,
+   "abs_dev_db": 0.00019
+  },
+  {
+   "frequency_mhz": 35.0,
+   "committed_db": -0.649,
+   "independent_db": -0.649244,
+   "abs_dev_db": 0.000244
+  },
+  {
+   "frequency_mhz": 40.0,
+   "committed_db": -0.46,
+   "independent_db": -0.459539,
+   "abs_dev_db": 0.000461
+  },
+  {
+   "frequency_mhz": 46.25,
+   "committed_db": -0.685,
+   "independent_db": -0.684713,
+   "abs_dev_db": 0.000287
+  },
+  {
+   "frequency_mhz": 48.0,
+   "committed_db": -3.628,
+   "independent_db": -3.628465,
+   "abs_dev_db": 0.000465
+  },
+  {
+   "frequency_mhz": 50.0,
+   "committed_db": -10.529,
+   "independent_db": -10.528643,
+   "abs_dev_db": 0.000357
+  },
+  {
+   "frequency_mhz": 53.75,
+   "committed_db": -22.54,
+   "independent_db": -22.540181,
+   "abs_dev_db": 0.000181
+  },
+  {
+   "frequency_mhz": 60.0,
+   "committed_db": -37.343,
+   "independent_db": -37.342841,
+   "abs_dev_db": 0.000159
+  },
+  {
+   "frequency_mhz": 75.0,
+   "committed_db": -61.547,
+   "independent_db": -61.547349,
+   "abs_dev_db": 0.000349
+  },
+  {
+   "frequency_mhz": 83.5,
+   "committed_db": -71.869,
+   "independent_db": -71.869108,
+   "abs_dev_db": 0.000108
+  },
+  {
+   "frequency_mhz": 100.0,
+   "committed_db": -88.202,
+   "independent_db": -88.201515,
+   "abs_dev_db": 0.000485
+  }
+ ],
+ "note": "Independent ABCD re-derivation vs committed CSV. Arithmetic-consistency check only; not an RF measurement."
+}
