@@ -1,3 +1,12 @@
+> **HISTORICAL — V1 / P0 design, code removed.** This report describes the
+> first-generation FPGA pipeline (`fpga_processing_pipeline.v`,
+> `rp2040_interface.v`, `fft_processor`, `udp_ip_stack`, 105 MSPS / GMII). Those
+> modules no longer exist in this tree (see `KNOWN_ISSUES.md` § Removed) and the
+> claims below — including the "elaboration-clean, synthesizable, and verified"
+> conclusion — do **not** apply to the V2 gateware in `verilog/v2_*.v`. It is kept
+> only as a record of the V1 verification effort, recoverable in full from git
+> history. Current gateware status: `GATEWARE.md`.
+
 # Issue 11: Integration and System Testing - FINAL VERIFICATION REPORT
 
 ## 1. RTL Quality and Elaboration (P0 Fixes)

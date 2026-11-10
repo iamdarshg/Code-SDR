@@ -142,7 +142,7 @@ releasable bitstream.
 `FPGA_SPI_SCK` (U20.J1), `FPGA_RESET_N` (U10.29 to U20.H2),
 `FPGA_CDONE` (U20.J2 to U10.41). RP2040 is the SPI master and the
 reset/done monitor. No SPI register map exists in copper; the
-`verilog/rp2040_interface.v` address map is an RTL proposal, not hardware
+`verilog/v2_spi_regs.v` address map is an RTL proposal, not hardware
 truth, until firmware and gateware agree on it and it is tested on the board.
 
 ## 9. Power (input and rails as placed)
