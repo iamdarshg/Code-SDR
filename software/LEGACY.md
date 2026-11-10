@@ -43,5 +43,5 @@ command set (set frequency / sample rate / gain, start/stop stream, status,
 calibrate, power), watchdog/error recovery. Peripherals: `adc_dma.*` (AD9215
 capture), `adf4351.*` (PLL synth), `usb_device.*` (USB stack),
 `antenna_control.c`, `lna_control.c`, `dc_offset.*`, `dsp_fft.*` (on-chip FFT).
-Superseded by FPGA RTL in `verilog/` + RP2040 SPI control
-(`verilog/rp2040_interface.v`); host side moves to the new `software/`.
+Superseded by the V2 gateware in `verilog/` (`v2_top.v` / `v2_spi_regs.v`) plus
+RP2040 SPI control; host side moves to the new `software/`.

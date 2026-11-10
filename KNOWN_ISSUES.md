@@ -148,3 +148,9 @@ configuration, **MINOR** = latent or cosmetic.
 - No build artifacts are tracked. `outputs/` holds real PCB routing deliverables.
 - The authoritative regression is `python tools/run_tests.py` (21 testbenches,
   plus the two extra FFT sizes), also run by `.github/workflows/rtl.yml`.
+- **2026-11-04 cleanup:** the abandoned OpenFPGA experiment (`sdr_fpga_task/`,
+  `openfpga_arch/`), the V1 process/design docs (`prompts.md`, `.clinerules/`,
+  `documentation/`), the V1 installer scratch (`random/`), the V1 USB udev rules,
+  the void LIF-MD6000-6UMG64I / IS25LPxxD KiCad libraries and the V1 FFT-path note
+  were removed. Vendored third-party libraries and `openfpga_framework/` were
+  kept. Itemised list and rationale: `docs/CLEANUP_2026-11-04.md`.

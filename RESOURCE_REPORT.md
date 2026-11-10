@@ -27,11 +27,12 @@ trees, which ABC cannot optimise in reasonable time.
 
 On the real device those arrays are ~65 kbit, which **exceeds the 47 kbit of
 distributed RAM**, so they must live in EBR — and **EBR has a registered output**.
-A combinational read therefore will not synthesise as written. Before FFT mode
-can be built, the FFT's load/butterfly micro-sequence must add the EBR read
-latency (register the address one cycle earlier, or consume the read on the
-following state). That is a control-path change, not a rewrite, but it is
-required and is not yet done.
+A combinational read therefore cannot synthesise as written, which is why
+`v2_fft1024` now registers its read addresses (`ra_a`/`ra_b`) one cycle ahead and
+uses a 3-phase butterfly (address → latch+multiply → combine+write). That RTL fix
+landed in commit `63dd970`. The reason FFT mode still has no area number is
+downstream of the RTL: with no BRAM target Yosys elaborates the 1024-entry arrays
+as mux trees, and ABC cannot optimise those in reasonable time.
 
 The FFT's *logic* is still bounded analytically: three 16x16 multipliers
 (Karatsuba complex multiply) plus the sequencer. A 16x16 LUT4 multiplier is

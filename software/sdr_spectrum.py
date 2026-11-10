@@ -12,9 +12,13 @@ sequence gaps) and FPGA-side drops (from the in-band counter), plus the
 block-floating-point exponent in FFT mode.
 
 Usage:
-  python sdr_spectrum.py --mode raw --port 4660
-  python sdr_spectrum.py --mode fft --port 4661
-  python sdr_spectrum.py --simulate raw --save spectrum.png --frames 20
+  python sdr_spectrum.py --mode raw
+  python sdr_spectrum.py --mode fft
+  python sdr_spectrum.py --simulate --save spectrum.png --frames 20
+
+The receiver binds the FPGA's *destination* port (cfg_dst_port, power-on value
+10000). The 4660/4661 in the packet headers are only the source ports the FPGA
+stamps, so binding those receives nothing.
 """
 
 import argparse
