@@ -69,6 +69,11 @@ module v2_fft_packetizer #(
     reg [15:0] byte_i;
 
     wire buffer_full = (wr_idx == BINS_PER_PKT[IDXW-1:0]);
+    // Last byte of the staged packet is accepted this cycle. The intake block
+    // is the only writer of wr_idx and bins_dropped; the TX block signals the
+    // buffer release through this wire (previously both blocks wrote wr_idx
+    // and bins_dropped: two drivers per register, Verilator MULTIDRIVENPROC).
+    wire pkt_done = sending && p_ready && (byte_i == PKT_BYTES - 1);
 
     assign send        = have_pkt && !sending && !upstream_busy;
     assign payload_len = PKT_BYTES[15:0];
@@ -77,13 +82,21 @@ module v2_fft_packetizer #(
     // ------------------------------------------------------------ bin intake
     always @(posedge clk or negedge rst_n) begin
         if (!rst_n) begin
-            wr_idx    <= {IDXW{1'b0}};
-            first_bin <= 10'd0;
-            frame_lat <= 32'd0;
-            exp_lat   <= 5'd0;
-            ovf_lat   <= 1'b0;
+            wr_idx       <= {IDXW{1'b0}};
+            first_bin    <= 10'd0;
+            frame_lat    <= 32'd0;
+            exp_lat      <= 5'd0;
+            ovf_lat      <= 1'b0;
+            bins_dropped <= 32'd0;
         end else begin
-            if (fft_valid && !buffer_full) begin
+            if (pkt_done) begin
+                // free the staging buffer only after the packet is gone; a bin
+                // arriving in this cycle still sees a full buffer and is
+                // counted as dropped, exactly as before the refactor
+                wr_idx <= {IDXW{1'b0}};
+                if (fft_valid)
+                    bins_dropped <= bins_dropped + 32'd1;
+            end else if (fft_valid && !buffer_full) begin
                 if (wr_idx == {IDXW{1'b0}}) begin
                     first_bin <= fft_index;
                     frame_lat <= fft_frame;
@@ -145,7 +158,6 @@ module v2_fft_packetizer #(
             rd_idx       <= {IDXW{1'b0}};
             seq          <= 32'd0;
             packets_sent <= 32'd0;
-            bins_dropped <= 32'd0;
         end else begin
             if (!have_pkt) begin
                 if (buffer_full) begin
@@ -164,8 +176,7 @@ module v2_fft_packetizer #(
                     have_pkt     <= 1'b0;
                     seq          <= seq + 32'd1;
                     packets_sent <= packets_sent + 32'd1;
-                    // free the staging buffer only after the packet is gone
-                    wr_idx <= {IDXW{1'b0}};
+                    // staging buffer is released by the intake block (pkt_done)
                 end else begin
                     byte_i <= byte_i + 16'd1;
                     // advance the bin pointer when its last byte is taken
