@@ -3,7 +3,7 @@
  "rule": "lib_footprint_mismatch",
  "severity": "warning",
  "board": "hardware/v2/Code-SDR-V2.kicad_pcb",
- "board_sha256": "bfab3547c5334301b621434be2ed946a6d42bafdae69ae1112035df534a9b6e3",
+ "board_sha256": "fdef9e97c288d67f55aac2c4af2492c0bd4b44457da3d2adeed83f2f211a5b69",
  "kicad": "9.0.7",
  "generated": "2026-11-12",
  "decision": "WAIVED: cosmetic. Every listed footprint has pads identical to its library copy (number, shape, size, position, drill, rotation, layer count; tolerance 0.0015 mm, negative control detects 0.03 mm). The only difference is F.Silkscreen shapes removed on the board (the intentional silk cleanup); R153/R156 additionally carry DNP.",
@@ -2599,5 +2599,9 @@
    },
    "attributes": "identical"
   }
- ]
+ ],
+ "board_sha256_history": [
+  "bfab3547c5334301b621434be2ed946a6d42bafdae69ae1112035df534a9b6e3"
+ ],
+ "revalidated": "2026-11-12 after removing 6 single-layer GND vias: same 199 (reference, uuid) identities, pads identical"
 }

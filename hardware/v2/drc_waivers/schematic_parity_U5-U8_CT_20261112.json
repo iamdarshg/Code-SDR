@@ -2,17 +2,44 @@
  "schema": "code-sdr/drc-waiver/1",
  "rule": "schematic_parity net_conflict (\"Pad missing net given by schematic\")",
  "board": "hardware/v2/Code-SDR-V2.kicad_pcb",
- "board_sha256": "bfab3547c5334301b621434be2ed946a6d42bafdae69ae1112035df534a9b6e3",
+ "board_sha256": "fdef9e97c288d67f55aac2c4af2492c0bd4b44457da3d2adeed83f2f211a5b69",
  "kicad": "9.0.7",
  "generated": "2026-11-12",
  "decision": "DOCUMENTED, no electrical difference. Pad 5 (CT, delay-capacitor pin) of the TPS3890 supervisors U5-U8 is a no-connect in the schematic (KiCad names it unconnected-(Ux-CT-Pad5)) and carries no net on the board. Both sides leave CT open; no copper connects to it. The parity checker only differs on the auto-generated name of the no-connect net.",
  "identities": [
-  {"reference": "U5", "value": "TPS389033DSER", "pad": "5", "schematic_net": "unconnected-(U5-CT-Pad5)", "board_net": ""},
-  {"reference": "U6", "value": "TPS389033DSER", "pad": "5", "schematic_net": "unconnected-(U6-CT-Pad5)", "board_net": ""},
-  {"reference": "U7", "value": "TPS389033DSER", "pad": "5", "schematic_net": "unconnected-(U7-CT-Pad5)", "board_net": ""},
-  {"reference": "U8", "value": "TPS389012DSER", "pad": "5", "schematic_net": "unconnected-(U8-CT-Pad5)", "board_net": ""}
+  {
+   "reference": "U5",
+   "value": "TPS389033DSER",
+   "pad": "5",
+   "schematic_net": "unconnected-(U5-CT-Pad5)",
+   "board_net": ""
+  },
+  {
+   "reference": "U6",
+   "value": "TPS389033DSER",
+   "pad": "5",
+   "schematic_net": "unconnected-(U6-CT-Pad5)",
+   "board_net": ""
+  },
+  {
+   "reference": "U7",
+   "value": "TPS389033DSER",
+   "pad": "5",
+   "schematic_net": "unconnected-(U7-CT-Pad5)",
+   "board_net": ""
+  },
+  {
+   "reference": "U8",
+   "value": "TPS389012DSER",
+   "pad": "5",
+   "schematic_net": "unconnected-(U8-CT-Pad5)",
+   "board_net": ""
+  }
  ],
  "evidence": "kicad-cli pcb drc --schematic-parity (4 parity items, all listed); pcbnew pad net dump; kicad-cli sch erc -> 0 violations",
  "owner_check": "If a non-minimum supervisor delay was intended, CT needs a capacitor; that would be a schematic change, not a parity fix.",
- "identity_rule": "Covers only these four (reference, pad) pairs at this board sha256."
+ "identity_rule": "Covers only these four (reference, pad) pairs at this board sha256.",
+ "board_sha256_history": [
+  "bfab3547c5334301b621434be2ed946a6d42bafdae69ae1112035df534a9b6e3"
+ ]
 }
