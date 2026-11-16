@@ -204,6 +204,10 @@ Ref,Val,Package,PosX,PosY,Rot,Side
 "FB36","120R@100MHz","L_0402_1005Metric",51.800000,-57.500000,0.000000,top
 "FB37","120R@100MHz","L_0402_1005Metric",53.400000,-56.000000,0.000000,top
 "FB38","120R@100MHz","L_0402_1005Metric",55.500000,-56.000000,0.000000,top
+"FID1","Fiducial_1mm_Mask2mm","Fiducial_1mm_Mask2mm",4.700000,-50.600000,0.000000,top
+"FID2","Fiducial_1mm_Mask2mm","Fiducial_1mm_Mask2mm",91.000000,-61.000000,0.000000,top
+"FID3","Fiducial_1mm_Mask2mm","Fiducial_1mm_Mask2mm",49.600000,-96.600000,0.000000,top
+"FIDL_U63_U64","Fiducial_1mm_Mask2mm","Fiducial_1mm_Mask2mm",81.000000,-17.900000,0.000000,top
 "FL50","LFCN-2500+","MiniCircuits_FV1206",7.050000,-32.000000,0.000000,top
 "FL70","QPQ1909TR13","QPQ1909_1.4x1.2mm",46.850000,-31.000000,0.000000,top
 "J1","5V_INPUT_ONLY","TerminalBlock_Phoenix_MKDS-1,5-2_1x02_P5.00mm_Horizontal",9.000000,-93.000000,180.000000,top
