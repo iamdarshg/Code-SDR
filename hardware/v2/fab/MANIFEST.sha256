@@ -1,0 +1,24 @@
+# SHA256SUMS for the Code-SDR V2 revision 2.1 fabrication package
+# generated 2026-11-16; verify with: sha256sum -c MANIFEST.sha256
+# board of record: hardware/v2/Code-SDR-V2.kicad_pcb sha256 309414d2b371c6265629352fc0aa7252aa3e3b630488849187761d24b09ff486
+
+6341c99a10261f555ed27ebc58e4886bf1c71165672aeb55f60eee725c7155ff  assembly/Code-SDR-V2-BOM-flat.csv
+2af66771713bd4b7bd9bc277387af7bcd934b32a8d0ecd19dcfc9622688fbc0d  assembly/Code-SDR-V2-BOM-grouped.csv
+6d13057fbf4cf9127a456a02ee82eb71e60e7a8c74c0bc25dc067894b0d9196f  assembly/Code-SDR-V2-pos.csv
+e436abc375745f15947c9a19b35f9d31a3cb166e2c79ed245b06878751271817  drill/Code-SDR-V2-NPTH-drl_map.gbr
+c7b320b5f7be81859be5824d47b61fd5b977671ae7171503e0133f39cf7087d7  drill/Code-SDR-V2-NPTH.drl
+f7ab4588a7fa0d74f24e0873ded3cac70fbf95c86b4301b24ad44e14f0d47b5b  drill/Code-SDR-V2-PTH-drl_map.gbr
+b8154a47ddd4ee640e9d80fc3d33299105c35c58ed33bcc9481650a6f23e6eb0  drill/Code-SDR-V2-PTH.drl
+e795a83a40eeebd6366f9693e90ade4dbfa21e9e35992c05a5ed0111a53068d8  gerbers/Code-SDR-V2-B_Cu.gbl
+0fdbea6e4f4c37c4eb4d7417986e97614acd40fd6195eb3116e9784356cded29  gerbers/Code-SDR-V2-B_Mask.gbs
+286447f63bcda70ccea0ad943d6f9c7810a5974a1c73e7ef11bc4142721dc37f  gerbers/Code-SDR-V2-B_Paste.gbp
+0c98f2bbcb028aad19cf3cc7570d3173f77ff704271d90735145cbf6501ab988  gerbers/Code-SDR-V2-B_Silkscreen.gbo
+121c5d4d7348be87579a35ee3823302780e49d4b768e79ffb73c13be2f9118d0  gerbers/Code-SDR-V2-Edge_Cuts.gm1
+d7601a3687c53026d440d878bf9163be80e6097e3ab9997d04982d9faa31b02c  gerbers/Code-SDR-V2-F_Cu.gtl
+c80aaa111f7b943135212ff54e6ecc6e97d3c46c9b5bf319058ae82e4bc4b753  gerbers/Code-SDR-V2-F_Mask.gts
+a0600b63f443ad92104bfa2bf969f539e122daf7dc6e342353e8376891b4aae1  gerbers/Code-SDR-V2-F_Paste.gtp
+2b88d8cb226476413969aa26b2bece701f419462c1a366e89669b355e3454b69  gerbers/Code-SDR-V2-F_Silkscreen.gto
+81bfd6f95237fc07198588f72ce3148696cbd8fa6099c86f6b11cc7e63ac363f  gerbers/Code-SDR-V2-In1_Cu.g1
+9ee1aa83af22b709582d36cc5536f256a8d039c4f71d436a0c011100c93f3ec4  gerbers/Code-SDR-V2-In2_Cu.g2
+a3f2a6b393bb0724a4da9cac92336864f4cb7dfc5cdfda72ae418233b147daf3  gerbers/Code-SDR-V2-job.gbrjob
+4a431dd5cf61389478b39c4656a96315ed5c1bb1f05b5e9ea3be87f408823d72  README.md

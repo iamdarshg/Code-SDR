@@ -1,0 +1,14 @@
+# Fabrication outputs are consumed by CAM software byte-for-byte, and MANIFEST.sha256
+# checksums them. Any line-ending normalisation would make the manifest fail on a
+# different platform or git configuration, so it is disabled for the package payload.
+#
+#   Code-SDR-V2-*   stored and checked out verbatim (KiCad writes these with CRLF on
+#                   Windows; that is what the fab receives and what is checksummed)
+#   text files      forced to LF everywhere, so they are also byte-stable
+#
+# Measured before this file existed: with core.autocrlf=true the two BOM CSVs and
+# README.md were stored as LF and would have been checked out as CRLF, silently
+# breaking 3 of the 20 manifest entries.
+Code-SDR-V2-* -text
+README.md text eol=lf
+MANIFEST.sha256 text eol=lf
