@@ -1,5 +1,7 @@
 # Fab package for board sha256 `fdef9e97c288…` — NOT FAB-READY (CS-G5 receipt, 2026-11-15)
 
+> **SUPERSEDED (2026-11-18) by `../board_ffb28b7b/`.** The board hash changed (CS-G1 trim + zone refill that removed 6 orphan In2 clearance holes this package still contains). Do not use.
+
 This package is valid **only** for `hardware/v2/Code-SDR-V2.kicad_pcb` with sha256
 `fdef9e97c288d67f55aac2c4af2492c0bd4b44457da3d2adeed83f2f211a5b69` (branch `audit/code-sdr`).
 If the board hash differs, this package is stale: regenerate it with the commands in
