@@ -1,0 +1,2607 @@
+{
+ "schema": "code-sdr/drc-waiver/1",
+ "rule": "lib_footprint_mismatch",
+ "severity": "warning",
+ "board": "hardware/v2/Code-SDR-V2.kicad_pcb",
+ "board_sha256": "fdef9e97c288d67f55aac2c4af2492c0bd4b44457da3d2adeed83f2f211a5b69",
+ "kicad": "9.0.7",
+ "generated": "2026-11-12",
+ "decision": "WAIVED: cosmetic. Every listed footprint has pads identical to its library copy (number, shape, size, position, drill, rotation, layer count; tolerance 0.0015 mm, negative control detects 0.03 mm). The only difference is F.Silkscreen shapes removed on the board (the intentional silk cleanup); R153/R156 additionally carry DNP.",
+ "why_not_fixed": "Restoring library silk was tried and reverted: it created 113 silk_over_copper + 157 silk_overlap (full restore) or 47 new mismatch identities (curated restore).",
+ "evidence_command": "<KiCad python> hardware/v2/tools/classify_lib_mismatch.py hardware/v2/Code-SDR-V2.kicad_pcb drc.json out.json",
+ "identity_rule": "A waiver applies only to the exact (reference, uuid) pairs below at this board sha256; any new lib_footprint_mismatch identity, or any of these with a pad difference, is not covered.",
+ "count": 199,
+ "footprints": [
+  {
+   "reference": "C1",
+   "uuid": "00859728-9ded-43f1-a4d0-6e8305ddec73",
+   "lib_id": "Capacitor_SMD:C_0805_2012Metric",
+   "pads_identical_to_library": true,
+   "graphics_removed": {
+    "F.Silkscreen/PCB_SHAPE": {
+     "board": 0,
+     "library": 2
+    }
+   },
+   "attributes": "identical"
+  },
+  {
+   "reference": "C205",
+   "uuid": "02584b6b-de8e-4fef-9a97-0e0fb1a5d373",
+   "lib_id": "Capacitor_SMD:C_0402_1005Metric",
+   "pads_identical_to_library": true,
+   "graphics_removed": {
+    "F.Silkscreen/PCB_SHAPE": {
+     "board": 0,
+     "library": 2
+    }
+   },
+   "attributes": "identical"
+  },
+  {
+   "reference": "C78",
+   "uuid": "02a624b5-65c0-4a8d-819a-4ee6448453cc",
+   "lib_id": "Capacitor_SMD:C_0402_1005Metric",
+   "pads_identical_to_library": true,
+   "graphics_removed": {
+    "F.Silkscreen/PCB_SHAPE": {
+     "board": 0,
+     "library": 2
+    }
+   },
+   "attributes": "identical"
+  },
+  {
+   "reference": "C60",
+   "uuid": "0587cd25-bfb2-41aa-b498-903939fc1543",
+   "lib_id": "Capacitor_SMD:C_0402_1005Metric",
+   "pads_identical_to_library": true,
+   "graphics_removed": {
+    "F.Silkscreen/PCB_SHAPE": {
+     "board": 0,
+     "library": 2
+    }
+   },
+   "attributes": "identical"
+  },
+  {
+   "reference": "U10",
+   "uuid": "0782ccf5-c8bd-4eaa-b5a0-3f191d8b0e23",
+   "lib_id": "Package_DFN_QFN:QFN-56-1EP_7x7mm_P0.4mm_EP3.2x3.2mm_ThermalVias",
+   "pads_identical_to_library": true,
+   "graphics_removed": {
+    "F.Silkscreen/PCB_SHAPE": {
+     "board": 0,
+     "library": 9
+    }
+   },
+   "attributes": "identical"
+  },
+  {
+   "reference": "L91",
+   "uuid": "07fa1642-ddd8-4088-b66d-8b72653c67ae",
+   "lib_id": "Inductor_SMD:L_0603_1608Metric_Pad1.05x0.95mm_HandSolder",
+   "pads_identical_to_library": true,
+   "graphics_removed": {
+    "F.Silkscreen/PCB_SHAPE": {
+     "board": 0,
+     "library": 2
+    }
+   },
+   "attributes": "identical"
+  },
+  {
+   "reference": "C226",
+   "uuid": "08b47ef2-23b1-4c88-830c-39ca836c7353",
+   "lib_id": "Capacitor_SMD:C_0402_1005Metric",
+   "pads_identical_to_library": true,
+   "graphics_removed": {
+    "F.Silkscreen/PCB_SHAPE": {
+     "board": 0,
+     "library": 2
+    }
+   },
+   "attributes": "identical"
+  },
+  {
+   "reference": "R132",
+   "uuid": "08ba7c1e-945f-44ab-be3a-211554744e4f",
+   "lib_id": "Resistor_SMD:R_0402_1005Metric",
+   "pads_identical_to_library": true,
+   "graphics_removed": {
+    "F.Silkscreen/PCB_SHAPE": {
+     "board": 0,
+     "library": 2
+    }
+   },
+   "attributes": "identical"
+  },
+  {
+   "reference": "C256",
+   "uuid": "09b8e45d-e16d-40c3-a160-6e145ae85cc4",
+   "lib_id": "Capacitor_SMD:C_0402_1005Metric",
+   "pads_identical_to_library": true,
+   "graphics_removed": {
+    "F.Silkscreen/PCB_SHAPE": {
+     "board": 0,
+     "library": 2
+    }
+   },
+   "attributes": "identical"
+  },
+  {
+   "reference": "C247",
+   "uuid": "0cfc1921-7f14-4199-a541-aeae45333ab4",
+   "lib_id": "Capacitor_SMD:C_0603_1608Metric",
+   "pads_identical_to_library": true,
+   "graphics_removed": {
+    "F.Silkscreen/PCB_SHAPE": {
+     "board": 0,
+     "library": 2
+    }
+   },
+   "attributes": "identical"
+  },
+  {
+   "reference": "C284",
+   "uuid": "0e3fb55a-4883-48ea-a27e-7acc3d3585df",
+   "lib_id": "Capacitor_SMD:C_0402_1005Metric",
+   "pads_identical_to_library": true,
+   "graphics_removed": {
+    "F.Silkscreen/PCB_SHAPE": {
+     "board": 0,
+     "library": 2
+    }
+   },
+   "attributes": "identical"
+  },
+  {
+   "reference": "C4",
+   "uuid": "0ed8070f-ddc9-41b0-8e66-1cb5c6c8698e",
+   "lib_id": "Capacitor_SMD:C_0805_2012Metric",
+   "pads_identical_to_library": true,
+   "graphics_removed": {
+    "F.Silkscreen/PCB_SHAPE": {
+     "board": 0,
+     "library": 2
+    }
+   },
+   "attributes": "identical"
+  },
+  {
+   "reference": "C264",
+   "uuid": "0edf42d1-5cad-40f2-8e11-252fe2a58899",
+   "lib_id": "Capacitor_SMD:C_0402_1005Metric",
+   "pads_identical_to_library": true,
+   "graphics_removed": {
+    "F.Silkscreen/PCB_SHAPE": {
+     "board": 0,
+     "library": 2
+    }
+   },
+   "attributes": "identical"
+  },
+  {
+   "reference": "C71",
+   "uuid": "0f2d1d78-c3d4-4a8c-a067-8086abda62d3",
+   "lib_id": "Capacitor_SMD:C_1206_3216Metric",
+   "pads_identical_to_library": true,
+   "graphics_removed": {
+    "F.Silkscreen/PCB_SHAPE": {
+     "board": 0,
+     "library": 2
+    }
+   },
+   "attributes": "identical"
+  },
+  {
+   "reference": "C293",
+   "uuid": "10460201-f297-4995-bf1c-4a409c156dc5",
+   "lib_id": "Capacitor_SMD:C_0402_1005Metric",
+   "pads_identical_to_library": true,
+   "graphics_removed": {
+    "F.Silkscreen/PCB_SHAPE": {
+     "board": 0,
+     "library": 2
+    }
+   },
+   "attributes": "identical"
+  },
+  {
+   "reference": "C255",
+   "uuid": "1162d18e-e2db-42ee-b23a-670b256fcaf2",
+   "lib_id": "Capacitor_SMD:C_0402_1005Metric",
+   "pads_identical_to_library": true,
+   "graphics_removed": {
+    "F.Silkscreen/PCB_SHAPE": {
+     "board": 0,
+     "library": 2
+    }
+   },
+   "attributes": "identical"
+  },
+  {
+   "reference": "C3",
+   "uuid": "12bac2c7-b2bf-4fa7-b83f-8c6e8386ca0f",
+   "lib_id": "Capacitor_SMD:C_0805_2012Metric",
+   "pads_identical_to_library": true,
+   "graphics_removed": {
+    "F.Silkscreen/PCB_SHAPE": {
+     "board": 0,
+     "library": 2
+    }
+   },
+   "attributes": "identical"
+  },
+  {
+   "reference": "C272",
+   "uuid": "13c57335-62e6-4502-8f23-101ee2386f86",
+   "lib_id": "Capacitor_SMD:C_0402_1005Metric",
+   "pads_identical_to_library": true,
+   "graphics_removed": {
+    "F.Silkscreen/PCB_SHAPE": {
+     "board": 0,
+     "library": 2
+    }
+   },
+   "attributes": "identical"
+  },
+  {
+   "reference": "R73",
+   "uuid": "13c680bf-8f2c-4c0b-ad09-e5f2e38942ae",
+   "lib_id": "Resistor_SMD:R_0402_1005Metric",
+   "pads_identical_to_library": true,
+   "graphics_removed": {
+    "F.Silkscreen/PCB_SHAPE": {
+     "board": 0,
+     "library": 2
+    }
+   },
+   "attributes": "identical"
+  },
+  {
+   "reference": "R71",
+   "uuid": "1517aee7-74ed-4898-b474-e3053bdf3c5d",
+   "lib_id": "Resistor_SMD:R_0402_1005Metric",
+   "pads_identical_to_library": true,
+   "graphics_removed": {
+    "F.Silkscreen/PCB_SHAPE": {
+     "board": 0,
+     "library": 2
+    }
+   },
+   "attributes": "identical"
+  },
+  {
+   "reference": "C20",
+   "uuid": "16c6461a-7693-455a-a1cb-f81acd19b46c",
+   "lib_id": "Capacitor_SMD:C_0402_1005Metric",
+   "pads_identical_to_library": true,
+   "graphics_removed": {
+    "F.Silkscreen/PCB_SHAPE": {
+     "board": 0,
+     "library": 2
+    }
+   },
+   "attributes": "identical"
+  },
+  {
+   "reference": "C62",
+   "uuid": "16d2c2fe-d333-4a80-864c-8a22e8493b62",
+   "lib_id": "Capacitor_SMD:C_0805_2012Metric",
+   "pads_identical_to_library": true,
+   "graphics_removed": {
+    "F.Silkscreen/PCB_SHAPE": {
+     "board": 0,
+     "library": 2
+    }
+   },
+   "attributes": "identical"
+  },
+  {
+   "reference": "L85",
+   "uuid": "16e79f42-220f-4272-9583-ad0f14e9cd8d",
+   "lib_id": "Inductor_SMD:L_0603_1608Metric_Pad1.05x0.95mm_HandSolder",
+   "pads_identical_to_library": true,
+   "graphics_removed": {
+    "F.Silkscreen/PCB_SHAPE": {
+     "board": 0,
+     "library": 2
+    }
+   },
+   "attributes": "identical"
+  },
+  {
+   "reference": "R91",
+   "uuid": "170f749a-27d9-417b-8a51-d9393be077b5",
+   "lib_id": "Resistor_SMD:R_0402_1005Metric",
+   "pads_identical_to_library": true,
+   "graphics_removed": {
+    "F.Silkscreen/PCB_SHAPE": {
+     "board": 0,
+     "library": 2
+    }
+   },
+   "attributes": "identical"
+  },
+  {
+   "reference": "C262",
+   "uuid": "178a042a-a704-4f64-99e9-bf43bf5fc125",
+   "lib_id": "Capacitor_SMD:C_0402_1005Metric",
+   "pads_identical_to_library": true,
+   "graphics_removed": {
+    "F.Silkscreen/PCB_SHAPE": {
+     "board": 0,
+     "library": 2
+    }
+   },
+   "attributes": "identical"
+  },
+  {
+   "reference": "U21",
+   "uuid": "182ef503-de4e-4dfc-8c9b-d651ad10804e",
+   "lib_id": "Package_CSP:LFCSP-32-1EP_5x5mm_P0.5mm_EP3.6x3.6mm_ThermalVias",
+   "pads_identical_to_library": true,
+   "graphics_removed": {
+    "F.Silkscreen/PCB_SHAPE": {
+     "board": 0,
+     "library": 9
+    }
+   },
+   "attributes": "identical"
+  },
+  {
+   "reference": "C281",
+   "uuid": "1851a666-24f9-4005-aaef-99c84e839ecf",
+   "lib_id": "Capacitor_SMD:C_0805_2012Metric",
+   "pads_identical_to_library": true,
+   "graphics_removed": {
+    "F.Silkscreen/PCB_SHAPE": {
+     "board": 0,
+     "library": 2
+    }
+   },
+   "attributes": "identical"
+  },
+  {
+   "reference": "T60",
+   "uuid": "1cbc93b5-4d69-4810-b1e4-4154f6f9824b",
+   "lib_id": "Transformer_SMD:Transformer_MiniCircuits_AT224-1A",
+   "pads_identical_to_library": true,
+   "graphics_removed": {
+    "F.Silkscreen/PCB_SHAPE": {
+     "board": 0,
+     "library": 8
+    }
+   },
+   "attributes": "identical"
+  },
+  {
+   "reference": "C342",
+   "uuid": "1cf686e7-2b3e-4f33-8901-101790abd917",
+   "lib_id": "Capacitor_SMD:C_0402_1005Metric",
+   "pads_identical_to_library": true,
+   "graphics_removed": {
+    "F.Silkscreen/PCB_SHAPE": {
+     "board": 0,
+     "library": 2
+    }
+   },
+   "attributes": "identical"
+  },
+  {
+   "reference": "C308",
+   "uuid": "1d745d4d-9b8e-4beb-95ab-17e31aa08a7c",
+   "lib_id": "Capacitor_SMD:C_0402_1005Metric",
+   "pads_identical_to_library": true,
+   "graphics_removed": {
+    "F.Silkscreen/PCB_SHAPE": {
+     "board": 0,
+     "library": 2
+    }
+   },
+   "attributes": "identical"
+  },
+  {
+   "reference": "U73",
+   "uuid": "1dd5c794-55d2-470e-8037-a8112cc0f49d",
+   "lib_id": "Package_DFN_QFN:DFN-8-1EP_3x3mm_P0.5mm_EP1.65x2.38mm_ThermalVias",
+   "pads_identical_to_library": true,
+   "graphics_removed": {
+    "F.Silkscreen/PCB_SHAPE": {
+     "board": 0,
+     "library": 7
+    }
+   },
+   "attributes": "identical"
+  },
+  {
+   "reference": "FB1",
+   "uuid": "1e69b113-826e-477a-8b35-3ff5b4f42028",
+   "lib_id": "CodeSDR:Inductor_0805_HandSolder",
+   "pads_identical_to_library": true,
+   "graphics_removed": {
+    "F.Silkscreen/PCB_SHAPE": {
+     "board": 0,
+     "library": 2
+    }
+   },
+   "attributes": "identical"
+  },
+  {
+   "reference": "C72",
+   "uuid": "1ed8ceea-ce2c-4349-b6b9-f73c2bddc254",
+   "lib_id": "Capacitor_SMD:C_0402_1005Metric",
+   "pads_identical_to_library": true,
+   "graphics_removed": {
+    "F.Silkscreen/PCB_SHAPE": {
+     "board": 0,
+     "library": 2
+    }
+   },
+   "attributes": "identical"
+  },
+  {
+   "reference": "R40",
+   "uuid": "1eecf360-4126-4307-bb9e-616fc8353bd1",
+   "lib_id": "Resistor_SMD:R_0402_1005Metric",
+   "pads_identical_to_library": true,
+   "graphics_removed": {
+    "F.Silkscreen/PCB_SHAPE": {
+     "board": 0,
+     "library": 2
+    }
+   },
+   "attributes": "identical"
+  },
+  {
+   "reference": "R95",
+   "uuid": "1fa67695-2302-4225-8f02-67e7d2c9d10c",
+   "lib_id": "Resistor_SMD:R_0402_1005Metric",
+   "pads_identical_to_library": true,
+   "graphics_removed": {
+    "F.Silkscreen/PCB_SHAPE": {
+     "board": 0,
+     "library": 2
+    }
+   },
+   "attributes": "identical"
+  },
+  {
+   "reference": "C278",
+   "uuid": "22052af4-8788-445f-a743-cc39d3702cca",
+   "lib_id": "Capacitor_SMD:C_0402_1005Metric",
+   "pads_identical_to_library": true,
+   "graphics_removed": {
+    "F.Silkscreen/PCB_SHAPE": {
+     "board": 0,
+     "library": 2
+    }
+   },
+   "attributes": "identical"
+  },
+  {
+   "reference": "C273",
+   "uuid": "22dffa3c-028b-4c88-80cc-54b6a47ce727",
+   "lib_id": "Capacitor_SMD:C_0402_1005Metric",
+   "pads_identical_to_library": true,
+   "graphics_removed": {
+    "F.Silkscreen/PCB_SHAPE": {
+     "board": 0,
+     "library": 2
+    }
+   },
+   "attributes": "identical"
+  },
+  {
+   "reference": "C5",
+   "uuid": "231957f5-c16b-4b02-aa03-d42f3aa0bdc9",
+   "lib_id": "Capacitor_SMD:C_0402_1005Metric",
+   "pads_identical_to_library": true,
+   "graphics_removed": {
+    "F.Silkscreen/PCB_SHAPE": {
+     "board": 0,
+     "library": 2
+    }
+   },
+   "attributes": "identical"
+  },
+  {
+   "reference": "R90",
+   "uuid": "28b50a3a-8d9a-46f3-a4b7-c8d9237655cc",
+   "lib_id": "Resistor_SMD:R_0402_1005Metric",
+   "pads_identical_to_library": true,
+   "graphics_removed": {
+    "F.Silkscreen/PCB_SHAPE": {
+     "board": 0,
+     "library": 2
+    }
+   },
+   "attributes": "identical"
+  },
+  {
+   "reference": "L80",
+   "uuid": "2916cd4a-a28a-426a-aec1-72235f853e5d",
+   "lib_id": "Inductor_SMD:L_0603_1608Metric_Pad1.05x0.95mm_HandSolder",
+   "pads_identical_to_library": true,
+   "graphics_removed": {
+    "F.Silkscreen/PCB_SHAPE": {
+     "board": 0,
+     "library": 2
+    }
+   },
+   "attributes": "identical"
+  },
+  {
+   "reference": "R41",
+   "uuid": "2cee77c8-5bc9-473e-89c3-06f07a1b477d",
+   "lib_id": "Resistor_SMD:R_0402_1005Metric",
+   "pads_identical_to_library": true,
+   "graphics_removed": {
+    "F.Silkscreen/PCB_SHAPE": {
+     "board": 0,
+     "library": 2
+    }
+   },
+   "attributes": "identical"
+  },
+  {
+   "reference": "U30",
+   "uuid": "2d6d2de0-9df8-4eab-85e4-44ee234d413b",
+   "lib_id": "Package_DFN_QFN:QFN-48-1EP_7x7mm_P0.5mm_EP3.5x3.5mm_ThermalVias",
+   "pads_identical_to_library": true,
+   "graphics_removed": {
+    "F.Silkscreen/PCB_SHAPE": {
+     "board": 0,
+     "library": 9
+    }
+   },
+   "attributes": "identical"
+  },
+  {
+   "reference": "R133",
+   "uuid": "307288fc-bb31-4c20-baf9-7b0ab10ed07c",
+   "lib_id": "Resistor_SMD:R_0402_1005Metric",
+   "pads_identical_to_library": true,
+   "graphics_removed": {
+    "F.Silkscreen/PCB_SHAPE": {
+     "board": 0,
+     "library": 2
+    }
+   },
+   "attributes": "identical"
+  },
+  {
+   "reference": "C271",
+   "uuid": "308f2b2e-7606-44a7-9269-0831f566efe4",
+   "lib_id": "Capacitor_SMD:C_0603_1608Metric",
+   "pads_identical_to_library": true,
+   "graphics_removed": {
+    "F.Silkscreen/PCB_SHAPE": {
+     "board": 0,
+     "library": 2
+    }
+   },
+   "attributes": "identical"
+  },
+  {
+   "reference": "R70",
+   "uuid": "31d96924-9a93-4cc5-b773-6fae8b152cb3",
+   "lib_id": "Resistor_SMD:R_0402_1005Metric",
+   "pads_identical_to_library": true,
+   "graphics_removed": {
+    "F.Silkscreen/PCB_SHAPE": {
+     "board": 0,
+     "library": 2
+    }
+   },
+   "attributes": "identical"
+  },
+  {
+   "reference": "L87",
+   "uuid": "321a6e53-72a4-4f29-96c6-e9cc77a05fb2",
+   "lib_id": "Inductor_SMD:L_0603_1608Metric_Pad1.05x0.95mm_HandSolder",
+   "pads_identical_to_library": true,
+   "graphics_removed": {
+    "F.Silkscreen/PCB_SHAPE": {
+     "board": 0,
+     "library": 2
+    }
+   },
+   "attributes": "identical"
+  },
+  {
+   "reference": "C26",
+   "uuid": "324cab35-cd42-455e-b3ef-b8fa1cd4bb34",
+   "lib_id": "Capacitor_SMD:C_0402_1005Metric",
+   "pads_identical_to_library": true,
+   "graphics_removed": {
+    "F.Silkscreen/PCB_SHAPE": {
+     "board": 0,
+     "library": 2
+    }
+   },
+   "attributes": "identical"
+  },
+  {
+   "reference": "L97",
+   "uuid": "3442df19-76ca-4192-ad88-32f39677cb62",
+   "lib_id": "Inductor_SMD:L_0402_1005Metric_Pad0.77x0.64mm_HandSolder",
+   "pads_identical_to_library": true,
+   "graphics_removed": {
+    "F.Silkscreen/PCB_SHAPE": {
+     "board": 0,
+     "library": 2
+    }
+   },
+   "attributes": "identical"
+  },
+  {
+   "reference": "R135",
+   "uuid": "346503e5-eac1-4a5e-b4bf-d7665735fac1",
+   "lib_id": "Resistor_SMD:R_0402_1005Metric",
+   "pads_identical_to_library": true,
+   "graphics_removed": {
+    "F.Silkscreen/PCB_SHAPE": {
+     "board": 0,
+     "library": 2
+    }
+   },
+   "attributes": "identical"
+  },
+  {
+   "reference": "C67",
+   "uuid": "348877a8-116f-4f69-9235-0f0dddc86517",
+   "lib_id": "Capacitor_SMD:C_0805_2012Metric",
+   "pads_identical_to_library": true,
+   "graphics_removed": {
+    "F.Silkscreen/PCB_SHAPE": {
+     "board": 0,
+     "library": 2
+    }
+   },
+   "attributes": "identical"
+  },
+  {
+   "reference": "C174",
+   "uuid": "34d681e5-a22d-4b10-9071-f3e9f02c767a",
+   "lib_id": "Capacitor_SMD:C_0402_1005Metric",
+   "pads_identical_to_library": true,
+   "graphics_removed": {
+    "F.Silkscreen/PCB_SHAPE": {
+     "board": 0,
+     "library": 2
+    }
+   },
+   "attributes": "identical"
+  },
+  {
+   "reference": "C101",
+   "uuid": "35f0d5e0-c7ce-4fac-83f8-09ed12f94ac5",
+   "lib_id": "Capacitor_SMD:C_0402_1005Metric",
+   "pads_identical_to_library": true,
+   "graphics_removed": {
+    "F.Silkscreen/PCB_SHAPE": {
+     "board": 0,
+     "library": 2
+    }
+   },
+   "attributes": "identical"
+  },
+  {
+   "reference": "C100",
+   "uuid": "3643d6ad-8e03-4045-8dfd-364e402a70ff",
+   "lib_id": "Capacitor_SMD:C_0402_1005Metric",
+   "pads_identical_to_library": true,
+   "graphics_removed": {
+    "F.Silkscreen/PCB_SHAPE": {
+     "board": 0,
+     "library": 2
+    }
+   },
+   "attributes": "identical"
+  },
+  {
+   "reference": "R21",
+   "uuid": "369c8de1-54df-45d1-ad0a-6bfcb9e78cd8",
+   "lib_id": "Resistor_SMD:R_0402_1005Metric",
+   "pads_identical_to_library": true,
+   "graphics_removed": {
+    "F.Silkscreen/PCB_SHAPE": {
+     "board": 0,
+     "library": 2
+    }
+   },
+   "attributes": "identical"
+  },
+  {
+   "reference": "L92",
+   "uuid": "377bcc99-d402-439f-8c8e-3181554e04e5",
+   "lib_id": "Inductor_SMD:L_0603_1608Metric_Pad1.05x0.95mm_HandSolder",
+   "pads_identical_to_library": true,
+   "graphics_removed": {
+    "F.Silkscreen/PCB_SHAPE": {
+     "board": 0,
+     "library": 2
+    }
+   },
+   "attributes": "identical"
+  },
+  {
+   "reference": "C150",
+   "uuid": "395461a4-1d52-402e-b966-952e9d281b64",
+   "lib_id": "Capacitor_SMD:C_0402_1005Metric",
+   "pads_identical_to_library": true,
+   "graphics_removed": {
+    "F.Silkscreen/PCB_SHAPE": {
+     "board": 0,
+     "library": 2
+    }
+   },
+   "attributes": "identical"
+  },
+  {
+   "reference": "J30",
+   "uuid": "39bf4d5e-7f77-4bec-bfad-bfc1d606199e",
+   "lib_id": "Connector_RJ:RJ45_Pulse_JK0654219NL_Horizontal",
+   "pads_identical_to_library": true,
+   "graphics_removed": {
+    "F.Silkscreen/PCB_SHAPE": {
+     "board": 0,
+     "library": 9
+    }
+   },
+   "attributes": "identical"
+  },
+  {
+   "reference": "C10",
+   "uuid": "3b2e2100-2a0d-4193-9587-1554bec7fa74",
+   "lib_id": "Capacitor_SMD:C_0603_1608Metric",
+   "pads_identical_to_library": true,
+   "graphics_removed": {
+    "F.Silkscreen/PCB_SHAPE": {
+     "board": 0,
+     "library": 2
+    }
+   },
+   "attributes": "identical"
+  },
+  {
+   "reference": "C102",
+   "uuid": "3f347e4f-5c86-4745-8f43-5ca81ca1d766",
+   "lib_id": "Capacitor_SMD:C_0402_1005Metric",
+   "pads_identical_to_library": true,
+   "graphics_removed": {
+    "F.Silkscreen/PCB_SHAPE": {
+     "board": 0,
+     "library": 2
+    }
+   },
+   "attributes": "identical"
+  },
+  {
+   "reference": "R153",
+   "uuid": "44b5be69-bf35-424a-a712-937f65f76043",
+   "lib_id": "Resistor_SMD:R_0402_1005Metric",
+   "pads_identical_to_library": true,
+   "graphics_removed": {
+    "F.Silkscreen/PCB_SHAPE": {
+     "board": 0,
+     "library": 2
+    }
+   },
+   "attributes": "DNP set on board (0R option jumper)"
+  },
+  {
+   "reference": "L1",
+   "uuid": "4571e40d-255f-4e41-8929-32e6820d68c9",
+   "lib_id": "CodeSDR:Inductor_0805_HandSolder",
+   "pads_identical_to_library": true,
+   "graphics_removed": {
+    "F.Silkscreen/PCB_SHAPE": {
+     "board": 0,
+     "library": 2
+    }
+   },
+   "attributes": "identical"
+  },
+  {
+   "reference": "C211",
+   "uuid": "474eaf67-7162-43fd-a5b6-896d5460a9c1",
+   "lib_id": "Capacitor_SMD:C_0402_1005Metric",
+   "pads_identical_to_library": true,
+   "graphics_removed": {
+    "F.Silkscreen/PCB_SHAPE": {
+     "board": 0,
+     "library": 2
+    }
+   },
+   "attributes": "identical"
+  },
+  {
+   "reference": "C105",
+   "uuid": "4ad14a8c-ffb1-468c-87b6-8a63e89fa2f3",
+   "lib_id": "Capacitor_SMD:C_0402_1005Metric",
+   "pads_identical_to_library": true,
+   "graphics_removed": {
+    "F.Silkscreen/PCB_SHAPE": {
+     "board": 0,
+     "library": 2
+    }
+   },
+   "attributes": "identical"
+  },
+  {
+   "reference": "C307",
+   "uuid": "4c0979bc-2fd5-4fdd-a0c1-70f1059f454c",
+   "lib_id": "Capacitor_SMD:C_0402_1005Metric",
+   "pads_identical_to_library": true,
+   "graphics_removed": {
+    "F.Silkscreen/PCB_SHAPE": {
+     "board": 0,
+     "library": 2
+    }
+   },
+   "attributes": "identical"
+  },
+  {
+   "reference": "C69",
+   "uuid": "4c96cac2-1841-40f8-9e62-e705b997b16a",
+   "lib_id": "Capacitor_SMD:C_0402_1005Metric",
+   "pads_identical_to_library": true,
+   "graphics_removed": {
+    "F.Silkscreen/PCB_SHAPE": {
+     "board": 0,
+     "library": 2
+    }
+   },
+   "attributes": "identical"
+  },
+  {
+   "reference": "R58",
+   "uuid": "4cde65be-6e49-416c-83e9-d14273026419",
+   "lib_id": "Resistor_SMD:R_0402_1005Metric",
+   "pads_identical_to_library": true,
+   "graphics_removed": {
+    "F.Silkscreen/PCB_SHAPE": {
+     "board": 0,
+     "library": 2
+    }
+   },
+   "attributes": "identical"
+  },
+  {
+   "reference": "R56",
+   "uuid": "4d2f17a4-ae7e-42eb-82d7-77fa26d4e585",
+   "lib_id": "Resistor_SMD:R_0402_1005Metric",
+   "pads_identical_to_library": true,
+   "graphics_removed": {
+    "F.Silkscreen/PCB_SHAPE": {
+     "board": 0,
+     "library": 2
+    }
+   },
+   "attributes": "identical"
+  },
+  {
+   "reference": "U41",
+   "uuid": "4d7d9cf2-618f-4838-b28e-99e095e140a9",
+   "lib_id": "Package_CSP:LFCSP-24-1EP_4x4mm_P0.5mm_EP2.5x2.5mm_ThermalVias",
+   "pads_identical_to_library": true,
+   "graphics_removed": {
+    "F.Silkscreen/PCB_SHAPE": {
+     "board": 0,
+     "library": 9
+    }
+   },
+   "attributes": "identical"
+  },
+  {
+   "reference": "FB30",
+   "uuid": "4d942c54-9be1-4cb8-bfe6-11de277a0527",
+   "lib_id": "Inductor_SMD:L_0603_1608Metric_Pad1.05x0.95mm_HandSolder",
+   "pads_identical_to_library": true,
+   "graphics_removed": {
+    "F.Silkscreen/PCB_SHAPE": {
+     "board": 0,
+     "library": 2
+    }
+   },
+   "attributes": "identical"
+  },
+  {
+   "reference": "C345",
+   "uuid": "4e106e40-d094-42b8-9255-7f56e030a7df",
+   "lib_id": "Capacitor_SMD:C_0805_2012Metric",
+   "pads_identical_to_library": true,
+   "graphics_removed": {
+    "F.Silkscreen/PCB_SHAPE": {
+     "board": 0,
+     "library": 2
+    }
+   },
+   "attributes": "identical"
+  },
+  {
+   "reference": "L89",
+   "uuid": "4e91bb32-a702-4d24-8b28-b59e2ed41fdd",
+   "lib_id": "Inductor_SMD:L_0603_1608Metric_Pad1.05x0.95mm_HandSolder",
+   "pads_identical_to_library": true,
+   "graphics_removed": {
+    "F.Silkscreen/PCB_SHAPE": {
+     "board": 0,
+     "library": 2
+    }
+   },
+   "attributes": "identical"
+  },
+  {
+   "reference": "C347",
+   "uuid": "4ea2fd78-147c-45ab-b8d7-997b8d40f384",
+   "lib_id": "Capacitor_SMD:C_0402_1005Metric",
+   "pads_identical_to_library": true,
+   "graphics_removed": {
+    "F.Silkscreen/PCB_SHAPE": {
+     "board": 0,
+     "library": 2
+    }
+   },
+   "attributes": "identical"
+  },
+  {
+   "reference": "C341",
+   "uuid": "4f2804e3-d711-4c6b-9557-4ebee648c46c",
+   "lib_id": "Capacitor_SMD:C_0402_1005Metric",
+   "pads_identical_to_library": true,
+   "graphics_removed": {
+    "F.Silkscreen/PCB_SHAPE": {
+     "board": 0,
+     "library": 2
+    }
+   },
+   "attributes": "identical"
+  },
+  {
+   "reference": "R138",
+   "uuid": "4f97f1be-3c7c-4e2b-bba3-33f53a69908e",
+   "lib_id": "Resistor_SMD:R_0402_1005Metric",
+   "pads_identical_to_library": true,
+   "graphics_removed": {
+    "F.Silkscreen/PCB_SHAPE": {
+     "board": 0,
+     "library": 2
+    }
+   },
+   "attributes": "identical"
+  },
+  {
+   "reference": "C21",
+   "uuid": "50258826-ba35-4914-9c65-82e4398995be",
+   "lib_id": "Capacitor_SMD:C_0402_1005Metric",
+   "pads_identical_to_library": true,
+   "graphics_removed": {
+    "F.Silkscreen/PCB_SHAPE": {
+     "board": 0,
+     "library": 2
+    }
+   },
+   "attributes": "identical"
+  },
+  {
+   "reference": "C73",
+   "uuid": "51532ef0-b0d3-4b51-b584-417e44f4610d",
+   "lib_id": "Capacitor_SMD:C_0805_2012Metric",
+   "pads_identical_to_library": true,
+   "graphics_removed": {
+    "F.Silkscreen/PCB_SHAPE": {
+     "board": 0,
+     "library": 2
+    }
+   },
+   "attributes": "identical"
+  },
+  {
+   "reference": "C74",
+   "uuid": "519d472d-7d4a-4fb0-8e7a-bf579639a77f",
+   "lib_id": "Capacitor_SMD:C_0402_1005Metric",
+   "pads_identical_to_library": true,
+   "graphics_removed": {
+    "F.Silkscreen/PCB_SHAPE": {
+     "board": 0,
+     "library": 2
+    }
+   },
+   "attributes": "identical"
+  },
+  {
+   "reference": "R74",
+   "uuid": "519f5457-a812-4f61-8046-cf56f228cc05",
+   "lib_id": "Resistor_SMD:R_0402_1005Metric",
+   "pads_identical_to_library": true,
+   "graphics_removed": {
+    "F.Silkscreen/PCB_SHAPE": {
+     "board": 0,
+     "library": 2
+    }
+   },
+   "attributes": "identical"
+  },
+  {
+   "reference": "C153",
+   "uuid": "52e25033-3499-445a-84c3-fe45a4478a21",
+   "lib_id": "Capacitor_SMD:C_0402_1005Metric",
+   "pads_identical_to_library": true,
+   "graphics_removed": {
+    "F.Silkscreen/PCB_SHAPE": {
+     "board": 0,
+     "library": 2
+    }
+   },
+   "attributes": "identical"
+  },
+  {
+   "reference": "R60",
+   "uuid": "5322be28-699d-4125-8550-c78ac6c282bc",
+   "lib_id": "Resistor_SMD:R_0402_1005Metric",
+   "pads_identical_to_library": true,
+   "graphics_removed": {
+    "F.Silkscreen/PCB_SHAPE": {
+     "board": 0,
+     "library": 2
+    }
+   },
+   "attributes": "identical"
+  },
+  {
+   "reference": "R120",
+   "uuid": "53253b62-881f-4e07-aee5-7ce8ed527c44",
+   "lib_id": "Resistor_SMD:R_0402_1005Metric",
+   "pads_identical_to_library": true,
+   "graphics_removed": {
+    "F.Silkscreen/PCB_SHAPE": {
+     "board": 0,
+     "library": 2
+    }
+   },
+   "attributes": "identical"
+  },
+  {
+   "reference": "C65",
+   "uuid": "532f4562-f559-4ba6-897d-e93750e99d7a",
+   "lib_id": "Capacitor_SMD:C_0805_2012Metric",
+   "pads_identical_to_library": true,
+   "graphics_removed": {
+    "F.Silkscreen/PCB_SHAPE": {
+     "board": 0,
+     "library": 2
+    }
+   },
+   "attributes": "identical"
+  },
+  {
+   "reference": "R55",
+   "uuid": "5341b469-a0bc-4ee6-95a6-d2ca0080ba66",
+   "lib_id": "Resistor_SMD:R_0402_1005Metric",
+   "pads_identical_to_library": true,
+   "graphics_removed": {
+    "F.Silkscreen/PCB_SHAPE": {
+     "board": 0,
+     "library": 2
+    }
+   },
+   "attributes": "identical"
+  },
+  {
+   "reference": "U6",
+   "uuid": "53d516d4-6348-4d84-a9fe-b632563232df",
+   "lib_id": "Package_SON:WSON-6_1.5x1.5mm_P0.5mm",
+   "pads_identical_to_library": true,
+   "graphics_removed": {
+    "F.Silkscreen/PCB_SHAPE": {
+     "board": 0,
+     "library": 3
+    }
+   },
+   "attributes": "identical"
+  },
+  {
+   "reference": "C75",
+   "uuid": "53f822c1-3d36-40a8-9a00-d472a87254fc",
+   "lib_id": "Capacitor_SMD:C_0805_2012Metric",
+   "pads_identical_to_library": true,
+   "graphics_removed": {
+    "F.Silkscreen/PCB_SHAPE": {
+     "board": 0,
+     "library": 2
+    }
+   },
+   "attributes": "identical"
+  },
+  {
+   "reference": "F1",
+   "uuid": "554a0f2e-b7ac-49d6-a763-2ff2d229f07e",
+   "lib_id": "Fuse:Fuse_1812_4532Metric",
+   "pads_identical_to_library": true,
+   "graphics_removed": {
+    "F.Silkscreen/PCB_SHAPE": {
+     "board": 0,
+     "library": 2
+    }
+   },
+   "attributes": "identical"
+  },
+  {
+   "reference": "R81",
+   "uuid": "559fb871-5b96-4a5c-a165-c2caf3c40691",
+   "lib_id": "Resistor_SMD:R_0402_1005Metric",
+   "pads_identical_to_library": true,
+   "graphics_removed": {
+    "F.Silkscreen/PCB_SHAPE": {
+     "board": 0,
+     "library": 2
+    }
+   },
+   "attributes": "identical"
+  },
+  {
+   "reference": "R140",
+   "uuid": "5712f31e-3550-4acc-9717-05d66d50ccd5",
+   "lib_id": "Resistor_SMD:R_0402_1005Metric",
+   "pads_identical_to_library": true,
+   "graphics_removed": {
+    "F.Silkscreen/PCB_SHAPE": {
+     "board": 0,
+     "library": 2
+    }
+   },
+   "attributes": "identical"
+  },
+  {
+   "reference": "C7",
+   "uuid": "57ea502b-9b01-4f2c-8cb7-6edeeae3cd5c",
+   "lib_id": "Capacitor_SMD:C_0805_2012Metric",
+   "pads_identical_to_library": true,
+   "graphics_removed": {
+    "F.Silkscreen/PCB_SHAPE": {
+     "board": 0,
+     "library": 2
+    }
+   },
+   "attributes": "identical"
+  },
+  {
+   "reference": "J63",
+   "uuid": "5a42a648-94af-4a40-8a57-577347807428",
+   "lib_id": "Connector_Coaxial:SMA_Molex_73251-1153_EdgeMount_Horizontal",
+   "pads_identical_to_library": true,
+   "graphics_removed": {
+    "F.Silkscreen/PCB_SHAPE": {
+     "board": 0,
+     "library": 3
+    }
+   },
+   "attributes": "identical"
+  },
+  {
+   "reference": "J60",
+   "uuid": "5a605379-15dc-4513-879a-9c115abbf220",
+   "lib_id": "Connector_Coaxial:SMA_Molex_73251-1153_EdgeMount_Horizontal",
+   "pads_identical_to_library": true,
+   "graphics_removed": {
+    "F.Silkscreen/PCB_SHAPE": {
+     "board": 0,
+     "library": 3
+    }
+   },
+   "attributes": "identical"
+  },
+  {
+   "reference": "R124",
+   "uuid": "5b52f4ec-778d-4259-ba1f-cd5b97729f85",
+   "lib_id": "Resistor_SMD:R_0402_1005Metric",
+   "pads_identical_to_library": true,
+   "graphics_removed": {
+    "F.Silkscreen/PCB_SHAPE": {
+     "board": 0,
+     "library": 2
+    }
+   },
+   "attributes": "identical"
+  },
+  {
+   "reference": "C212",
+   "uuid": "5ba273bc-f976-46a9-80ca-f78d1f0da304",
+   "lib_id": "Capacitor_SMD:C_0402_1005Metric",
+   "pads_identical_to_library": true,
+   "graphics_removed": {
+    "F.Silkscreen/PCB_SHAPE": {
+     "board": 0,
+     "library": 2
+    }
+   },
+   "attributes": "identical"
+  },
+  {
+   "reference": "R20",
+   "uuid": "5bdceea8-79b1-4505-873a-4a269d14fcad",
+   "lib_id": "Resistor_SMD:R_0402_1005Metric",
+   "pads_identical_to_library": true,
+   "graphics_removed": {
+    "F.Silkscreen/PCB_SHAPE": {
+     "board": 0,
+     "library": 2
+    }
+   },
+   "attributes": "identical"
+  },
+  {
+   "reference": "R125",
+   "uuid": "5bf473b8-ad0e-4f34-bf0f-df6c35f92f69",
+   "lib_id": "Resistor_SMD:R_0402_1005Metric",
+   "pads_identical_to_library": true,
+   "graphics_removed": {
+    "F.Silkscreen/PCB_SHAPE": {
+     "board": 0,
+     "library": 2
+    }
+   },
+   "attributes": "identical"
+  },
+  {
+   "reference": "R142",
+   "uuid": "5c49a8cb-4e82-46f2-a602-9229148f6b4b",
+   "lib_id": "Resistor_SMD:R_0402_1005Metric",
+   "pads_identical_to_library": true,
+   "graphics_removed": {
+    "F.Silkscreen/PCB_SHAPE": {
+     "board": 0,
+     "library": 2
+    }
+   },
+   "attributes": "identical"
+  },
+  {
+   "reference": "C8",
+   "uuid": "5ddba58a-e65b-4077-a357-3627c096cd99",
+   "lib_id": "Capacitor_SMD:C_0402_1005Metric",
+   "pads_identical_to_library": true,
+   "graphics_removed": {
+    "F.Silkscreen/PCB_SHAPE": {
+     "board": 0,
+     "library": 2
+    }
+   },
+   "attributes": "identical"
+  },
+  {
+   "reference": "C23",
+   "uuid": "608b972d-8b07-4c59-b95e-452a0dd8a303",
+   "lib_id": "Capacitor_SMD:C_0402_1005Metric",
+   "pads_identical_to_library": true,
+   "graphics_removed": {
+    "F.Silkscreen/PCB_SHAPE": {
+     "board": 0,
+     "library": 2
+    }
+   },
+   "attributes": "identical"
+  },
+  {
+   "reference": "C224",
+   "uuid": "618b9f37-c69e-49f9-8fc1-4e7549a46217",
+   "lib_id": "Capacitor_SMD:C_0402_1005Metric",
+   "pads_identical_to_library": true,
+   "graphics_removed": {
+    "F.Silkscreen/PCB_SHAPE": {
+     "board": 0,
+     "library": 2
+    }
+   },
+   "attributes": "identical"
+  },
+  {
+   "reference": "C282",
+   "uuid": "6263d900-9494-4d14-af9d-a9685f317ff3",
+   "lib_id": "Capacitor_SMD:C_0402_1005Metric",
+   "pads_identical_to_library": true,
+   "graphics_removed": {
+    "F.Silkscreen/PCB_SHAPE": {
+     "board": 0,
+     "library": 2
+    }
+   },
+   "attributes": "identical"
+  },
+  {
+   "reference": "R145",
+   "uuid": "6362d076-ee4e-47c8-b0ea-20210bc4a0a0",
+   "lib_id": "Resistor_SMD:R_0402_1005Metric",
+   "pads_identical_to_library": true,
+   "graphics_removed": {
+    "F.Silkscreen/PCB_SHAPE": {
+     "board": 0,
+     "library": 2
+    }
+   },
+   "attributes": "identical"
+  },
+  {
+   "reference": "C152",
+   "uuid": "63e9f966-04bd-4dc0-86a2-03b102c2ae5d",
+   "lib_id": "Capacitor_SMD:C_0402_1005Metric",
+   "pads_identical_to_library": true,
+   "graphics_removed": {
+    "F.Silkscreen/PCB_SHAPE": {
+     "board": 0,
+     "library": 2
+    }
+   },
+   "attributes": "identical"
+  },
+  {
+   "reference": "R155",
+   "uuid": "63f47385-0a6d-40bd-a838-e1f71506ef96",
+   "lib_id": "Resistor_SMD:R_0402_1005Metric",
+   "pads_identical_to_library": true,
+   "graphics_removed": {
+    "F.Silkscreen/PCB_SHAPE": {
+     "board": 0,
+     "library": 2
+    }
+   },
+   "attributes": "identical"
+  },
+  {
+   "reference": "FB33",
+   "uuid": "65f7194b-ff8c-4f19-b1ad-14692c8b33ec",
+   "lib_id": "Inductor_SMD:L_0805_2012Metric",
+   "pads_identical_to_library": true,
+   "graphics_removed": {
+    "F.Silkscreen/PCB_SHAPE": {
+     "board": 0,
+     "library": 2
+    }
+   },
+   "attributes": "identical"
+  },
+  {
+   "reference": "R126",
+   "uuid": "6806773f-91b2-47bb-bee2-3e2f21e60952",
+   "lib_id": "Resistor_SMD:R_0402_1005Metric",
+   "pads_identical_to_library": true,
+   "graphics_removed": {
+    "F.Silkscreen/PCB_SHAPE": {
+     "board": 0,
+     "library": 2
+    }
+   },
+   "attributes": "identical"
+  },
+  {
+   "reference": "C280",
+   "uuid": "6a733969-dca4-428d-8e6d-beb52f28b0c4",
+   "lib_id": "Capacitor_SMD:C_0805_2012Metric",
+   "pads_identical_to_library": true,
+   "graphics_removed": {
+    "F.Silkscreen/PCB_SHAPE": {
+     "board": 0,
+     "library": 2
+    }
+   },
+   "attributes": "identical"
+  },
+  {
+   "reference": "U9",
+   "uuid": "6d5fcab2-8268-460d-94eb-4045d3d49e8c",
+   "lib_id": "Package_SON:WSON-6_1.5x1.5mm_P0.5mm",
+   "pads_identical_to_library": true,
+   "graphics_removed": {
+    "F.Silkscreen/PCB_SHAPE": {
+     "board": 0,
+     "library": 3
+    }
+   },
+   "attributes": "identical"
+  },
+  {
+   "reference": "C157",
+   "uuid": "6df4a032-5462-4d0c-98a9-f60eafd1b1aa",
+   "lib_id": "Capacitor_SMD:C_0402_1005Metric",
+   "pads_identical_to_library": true,
+   "graphics_removed": {
+    "F.Silkscreen/PCB_SHAPE": {
+     "board": 0,
+     "library": 2
+    }
+   },
+   "attributes": "identical"
+  },
+  {
+   "reference": "C225",
+   "uuid": "6f127772-bb57-456c-bd07-e681809b84a2",
+   "lib_id": "Capacitor_SMD:C_0402_1005Metric",
+   "pads_identical_to_library": true,
+   "graphics_removed": {
+    "F.Silkscreen/PCB_SHAPE": {
+     "board": 0,
+     "library": 2
+    }
+   },
+   "attributes": "identical"
+  },
+  {
+   "reference": "R152",
+   "uuid": "6fd23906-e55b-4552-a82e-572b865bac8a",
+   "lib_id": "Resistor_SMD:R_0402_1005Metric",
+   "pads_identical_to_library": true,
+   "graphics_removed": {
+    "F.Silkscreen/PCB_SHAPE": {
+     "board": 0,
+     "library": 2
+    }
+   },
+   "attributes": "identical"
+  },
+  {
+   "reference": "R61",
+   "uuid": "6fd539c3-7ee1-47f7-adf4-35aa75bcc6a9",
+   "lib_id": "Resistor_SMD:R_0402_1005Metric",
+   "pads_identical_to_library": true,
+   "graphics_removed": {
+    "F.Silkscreen/PCB_SHAPE": {
+     "board": 0,
+     "library": 2
+    }
+   },
+   "attributes": "identical"
+  },
+  {
+   "reference": "C83",
+   "uuid": "708fe0f2-de29-424a-9ca0-e18e1be0125f",
+   "lib_id": "Capacitor_SMD:C_0805_2012Metric",
+   "pads_identical_to_library": true,
+   "graphics_removed": {
+    "F.Silkscreen/PCB_SHAPE": {
+     "board": 0,
+     "library": 2
+    }
+   },
+   "attributes": "identical"
+  },
+  {
+   "reference": "U11",
+   "uuid": "70c1bca2-311d-4b27-9c91-1fa9beac0af7",
+   "lib_id": "Package_SO:SOIC-8_3.9x4.9mm_P1.27mm",
+   "pads_identical_to_library": true,
+   "graphics_removed": {
+    "F.Silkscreen/PCB_SHAPE": {
+     "board": 0,
+     "library": 7
+    }
+   },
+   "attributes": "identical"
+  },
+  {
+   "reference": "C25",
+   "uuid": "72b228c7-0b35-44c5-879a-7aa225b1c5a3",
+   "lib_id": "Capacitor_SMD:C_0402_1005Metric",
+   "pads_identical_to_library": true,
+   "graphics_removed": {
+    "F.Silkscreen/PCB_SHAPE": {
+     "board": 0,
+     "library": 2
+    }
+   },
+   "attributes": "identical"
+  },
+  {
+   "reference": "R149",
+   "uuid": "72e37545-1419-413a-8afb-c72829e0a26d",
+   "lib_id": "Resistor_SMD:R_0402_1005Metric",
+   "pads_identical_to_library": true,
+   "graphics_removed": {
+    "F.Silkscreen/PCB_SHAPE": {
+     "board": 0,
+     "library": 2
+    }
+   },
+   "attributes": "identical"
+  },
+  {
+   "reference": "C260",
+   "uuid": "73d4b922-3396-4da6-bb1d-e49cc358f9bc",
+   "lib_id": "Capacitor_SMD:C_0402_1005Metric",
+   "pads_identical_to_library": true,
+   "graphics_removed": {
+    "F.Silkscreen/PCB_SHAPE": {
+     "board": 0,
+     "library": 2
+    }
+   },
+   "attributes": "identical"
+  },
+  {
+   "reference": "R4",
+   "uuid": "746a876d-2759-4616-91ba-cb208c9c4204",
+   "lib_id": "Resistor_SMD:R_0402_1005Metric",
+   "pads_identical_to_library": true,
+   "graphics_removed": {
+    "F.Silkscreen/PCB_SHAPE": {
+     "board": 0,
+     "library": 2
+    }
+   },
+   "attributes": "identical"
+  },
+  {
+   "reference": "L93",
+   "uuid": "74c2d609-4c8f-4f01-ab20-ef2ec367ba28",
+   "lib_id": "Inductor_SMD:L_0603_1608Metric_Pad1.05x0.95mm_HandSolder",
+   "pads_identical_to_library": true,
+   "graphics_removed": {
+    "F.Silkscreen/PCB_SHAPE": {
+     "board": 0,
+     "library": 2
+    }
+   },
+   "attributes": "identical"
+  },
+  {
+   "reference": "C24",
+   "uuid": "74d38a50-01f3-455e-8505-9e28bc3fb30a",
+   "lib_id": "Capacitor_SMD:C_0402_1005Metric",
+   "pads_identical_to_library": true,
+   "graphics_removed": {
+    "F.Silkscreen/PCB_SHAPE": {
+     "board": 0,
+     "library": 2
+    }
+   },
+   "attributes": "identical"
+  },
+  {
+   "reference": "C70",
+   "uuid": "758e873c-b066-43e7-af17-27c129301c2e",
+   "lib_id": "Capacitor_SMD:C_0402_1005Metric",
+   "pads_identical_to_library": true,
+   "graphics_removed": {
+    "F.Silkscreen/PCB_SHAPE": {
+     "board": 0,
+     "library": 2
+    }
+   },
+   "attributes": "identical"
+  },
+  {
+   "reference": "U5",
+   "uuid": "75df6a5f-fea2-4c1d-ab5a-42c4dd05ba7a",
+   "lib_id": "Package_SON:WSON-6_1.5x1.5mm_P0.5mm",
+   "pads_identical_to_library": true,
+   "graphics_removed": {
+    "F.Silkscreen/PCB_SHAPE": {
+     "board": 0,
+     "library": 3
+    }
+   },
+   "attributes": "identical"
+  },
+  {
+   "reference": "C344",
+   "uuid": "76a7c03f-4de4-4469-93bf-d7c3898dc00d",
+   "lib_id": "Capacitor_SMD:C_0402_1005Metric",
+   "pads_identical_to_library": true,
+   "graphics_removed": {
+    "F.Silkscreen/PCB_SHAPE": {
+     "board": 0,
+     "library": 2
+    }
+   },
+   "attributes": "identical"
+  },
+  {
+   "reference": "R144",
+   "uuid": "770e337d-b627-422a-82f6-7ba2dc8c3cfa",
+   "lib_id": "Resistor_SMD:R_0402_1005Metric",
+   "pads_identical_to_library": true,
+   "graphics_removed": {
+    "F.Silkscreen/PCB_SHAPE": {
+     "board": 0,
+     "library": 2
+    }
+   },
+   "attributes": "identical"
+  },
+  {
+   "reference": "R151",
+   "uuid": "7892aa5a-d2fc-42fa-a7d9-5b5ea0e355dc",
+   "lib_id": "Resistor_SMD:R_0402_1005Metric",
+   "pads_identical_to_library": true,
+   "graphics_removed": {
+    "F.Silkscreen/PCB_SHAPE": {
+     "board": 0,
+     "library": 2
+    }
+   },
+   "attributes": "identical"
+  },
+  {
+   "reference": "R136",
+   "uuid": "78d14b32-d9e9-44f2-a38d-423530a63706",
+   "lib_id": "Resistor_SMD:R_0402_1005Metric",
+   "pads_identical_to_library": true,
+   "graphics_removed": {
+    "F.Silkscreen/PCB_SHAPE": {
+     "board": 0,
+     "library": 2
+    }
+   },
+   "attributes": "identical"
+  },
+  {
+   "reference": "Y40",
+   "uuid": "7b70efc4-bbec-4cf1-a08b-3251a188c9d2",
+   "lib_id": "Oscillator:Oscillator_SMD_SiT_PQFN-4Pin_3.2x2.5mm",
+   "pads_identical_to_library": true,
+   "graphics_removed": {
+    "F.Silkscreen/PCB_SHAPE": {
+     "board": 0,
+     "library": 2
+    }
+   },
+   "attributes": "identical"
+  },
+  {
+   "reference": "C81",
+   "uuid": "7c02f7aa-415d-453c-8580-261af2bb3daf",
+   "lib_id": "Capacitor_SMD:C_0402_1005Metric",
+   "pads_identical_to_library": true,
+   "graphics_removed": {
+    "F.Silkscreen/PCB_SHAPE": {
+     "board": 0,
+     "library": 2
+    }
+   },
+   "attributes": "identical"
+  },
+  {
+   "reference": "R22",
+   "uuid": "7c3bb7d9-d8ac-45ad-a1b0-4f4cc7448f9f",
+   "lib_id": "Resistor_SMD:R_0402_1005Metric",
+   "pads_identical_to_library": true,
+   "graphics_removed": {
+    "F.Silkscreen/PCB_SHAPE": {
+     "board": 0,
+     "library": 2
+    }
+   },
+   "attributes": "identical"
+  },
+  {
+   "reference": "C27",
+   "uuid": "7c489cb8-b3ae-4b6d-80c6-aff8ac53d94b",
+   "lib_id": "Capacitor_SMD:C_0402_1005Metric",
+   "pads_identical_to_library": true,
+   "graphics_removed": {
+    "F.Silkscreen/PCB_SHAPE": {
+     "board": 0,
+     "library": 2
+    }
+   },
+   "attributes": "identical"
+  },
+  {
+   "reference": "R147",
+   "uuid": "7f166d73-a8ac-4d70-945c-e9a166ae593c",
+   "lib_id": "Resistor_SMD:R_0402_1005Metric",
+   "pads_identical_to_library": true,
+   "graphics_removed": {
+    "F.Silkscreen/PCB_SHAPE": {
+     "board": 0,
+     "library": 2
+    }
+   },
+   "attributes": "identical"
+  },
+  {
+   "reference": "R30",
+   "uuid": "7f1b8842-aeed-4abb-9851-dc1169488cfd",
+   "lib_id": "Resistor_SMD:R_0402_1005Metric",
+   "pads_identical_to_library": true,
+   "graphics_removed": {
+    "F.Silkscreen/PCB_SHAPE": {
+     "board": 0,
+     "library": 2
+    }
+   },
+   "attributes": "identical"
+  },
+  {
+   "reference": "C68",
+   "uuid": "80365c74-caac-450f-bf33-b37f7bf6d3ad",
+   "lib_id": "Capacitor_SMD:C_0603_1608Metric",
+   "pads_identical_to_library": true,
+   "graphics_removed": {
+    "F.Silkscreen/PCB_SHAPE": {
+     "board": 0,
+     "library": 2
+    }
+   },
+   "attributes": "identical"
+  },
+  {
+   "reference": "R139",
+   "uuid": "8046e51b-a591-4b58-a515-aab2075fa80d",
+   "lib_id": "Resistor_SMD:R_0402_1005Metric",
+   "pads_identical_to_library": true,
+   "graphics_removed": {
+    "F.Silkscreen/PCB_SHAPE": {
+     "board": 0,
+     "library": 2
+    }
+   },
+   "attributes": "identical"
+  },
+  {
+   "reference": "Y10",
+   "uuid": "804c5e77-0b67-47b1-a6b3-2ce0a26ce1d8",
+   "lib_id": "Crystal:Crystal_SMD_3225-4Pin_3.2x2.5mm",
+   "pads_identical_to_library": true,
+   "graphics_removed": {
+    "F.Silkscreen/PCB_SHAPE": {
+     "board": 0,
+     "library": 2
+    }
+   },
+   "attributes": "identical"
+  },
+  {
+   "reference": "R33",
+   "uuid": "82ce124b-b829-47c1-9a59-fe97570865be",
+   "lib_id": "Resistor_SMD:R_0402_1005Metric",
+   "pads_identical_to_library": true,
+   "graphics_removed": {
+    "F.Silkscreen/PCB_SHAPE": {
+     "board": 0,
+     "library": 2
+    }
+   },
+   "attributes": "identical"
+  },
+  {
+   "reference": "R50",
+   "uuid": "841bc310-bc59-4038-9dee-8fc3d4343272",
+   "lib_id": "Resistor_SMD:R_0402_1005Metric",
+   "pads_identical_to_library": true,
+   "graphics_removed": {
+    "F.Silkscreen/PCB_SHAPE": {
+     "board": 0,
+     "library": 2
+    }
+   },
+   "attributes": "identical"
+  },
+  {
+   "reference": "R75",
+   "uuid": "854295be-f744-4ff1-bb9c-b22fc8fde380",
+   "lib_id": "Resistor_SMD:R_0402_1005Metric",
+   "pads_identical_to_library": true,
+   "graphics_removed": {
+    "F.Silkscreen/PCB_SHAPE": {
+     "board": 0,
+     "library": 2
+    }
+   },
+   "attributes": "identical"
+  },
+  {
+   "reference": "R141",
+   "uuid": "8562e144-1dca-424b-b9b1-60afbfc73a07",
+   "lib_id": "Resistor_SMD:R_0402_1005Metric",
+   "pads_identical_to_library": true,
+   "graphics_removed": {
+    "F.Silkscreen/PCB_SHAPE": {
+     "board": 0,
+     "library": 2
+    }
+   },
+   "attributes": "identical"
+  },
+  {
+   "reference": "R72",
+   "uuid": "85e5ee24-c27c-4a09-9c4d-c658e8f2984e",
+   "lib_id": "Resistor_SMD:R_0402_1005Metric",
+   "pads_identical_to_library": true,
+   "graphics_removed": {
+    "F.Silkscreen/PCB_SHAPE": {
+     "board": 0,
+     "library": 2
+    }
+   },
+   "attributes": "identical"
+  },
+  {
+   "reference": "C11",
+   "uuid": "876c0b34-ffbc-49c3-971b-97249842839d",
+   "lib_id": "Capacitor_SMD:C_1206_3216Metric",
+   "pads_identical_to_library": true,
+   "graphics_removed": {
+    "F.Silkscreen/PCB_SHAPE": {
+     "board": 0,
+     "library": 2
+    }
+   },
+   "attributes": "identical"
+  },
+  {
+   "reference": "U3",
+   "uuid": "87bdab01-b4e9-4d15-9d7f-79df42f424b0",
+   "lib_id": "Package_TO_SOT_SMD:SOT-23-5",
+   "pads_identical_to_library": true,
+   "graphics_removed": {
+    "F.Silkscreen/PCB_SHAPE": {
+     "board": 0,
+     "library": 8
+    }
+   },
+   "attributes": "identical"
+  },
+  {
+   "reference": "C254",
+   "uuid": "89d1910a-e68b-4ef5-97c1-321f3d6c11d9",
+   "lib_id": "Capacitor_SMD:C_0402_1005Metric",
+   "pads_identical_to_library": true,
+   "graphics_removed": {
+    "F.Silkscreen/PCB_SHAPE": {
+     "board": 0,
+     "library": 2
+    }
+   },
+   "attributes": "identical"
+  },
+  {
+   "reference": "U7",
+   "uuid": "89e2f5d9-4dc7-44b4-a540-9f2d93c0a39e",
+   "lib_id": "Package_SON:WSON-6_1.5x1.5mm_P0.5mm",
+   "pads_identical_to_library": true,
+   "graphics_removed": {
+    "F.Silkscreen/PCB_SHAPE": {
+     "board": 0,
+     "library": 3
+    }
+   },
+   "attributes": "identical"
+  },
+  {
+   "reference": "R59",
+   "uuid": "8b54ff91-b90a-42b0-b24f-209fb28ccc14",
+   "lib_id": "Resistor_SMD:R_0402_1005Metric",
+   "pads_identical_to_library": true,
+   "graphics_removed": {
+    "F.Silkscreen/PCB_SHAPE": {
+     "board": 0,
+     "library": 2
+    }
+   },
+   "attributes": "identical"
+  },
+  {
+   "reference": "U8",
+   "uuid": "8d7f5a96-daca-4610-ab2c-e6c3e5cabf10",
+   "lib_id": "Package_SON:WSON-6_1.5x1.5mm_P0.5mm",
+   "pads_identical_to_library": true,
+   "graphics_removed": {
+    "F.Silkscreen/PCB_SHAPE": {
+     "board": 0,
+     "library": 3
+    }
+   },
+   "attributes": "identical"
+  },
+  {
+   "reference": "C283",
+   "uuid": "8f6c3e21-0183-48df-9d8a-7564b4413650",
+   "lib_id": "Capacitor_SMD:C_0402_1005Metric",
+   "pads_identical_to_library": true,
+   "graphics_removed": {
+    "F.Silkscreen/PCB_SHAPE": {
+     "board": 0,
+     "library": 2
+    }
+   },
+   "attributes": "identical"
+  },
+  {
+   "reference": "SW1",
+   "uuid": "907fc9e5-194f-4722-b08f-01dab499d03d",
+   "lib_id": "Button_Switch_SMD:SW_SPST_TL3342",
+   "pads_identical_to_library": true,
+   "graphics_removed": {
+    "F.Silkscreen/PCB_SHAPE": {
+     "board": 0,
+     "library": 8
+    }
+   },
+   "attributes": "identical"
+  },
+  {
+   "reference": "SW2",
+   "uuid": "90cc278b-42de-48cd-bc04-1099147e1448",
+   "lib_id": "Button_Switch_SMD:SW_SPST_TL3342",
+   "pads_identical_to_library": true,
+   "graphics_removed": {
+    "F.Silkscreen/PCB_SHAPE": {
+     "board": 0,
+     "library": 8
+    }
+   },
+   "attributes": "identical"
+  },
+  {
+   "reference": "U12",
+   "uuid": "90e5d3a9-417b-4dff-bda9-0eb7111173e1",
+   "lib_id": "Package_TO_SOT_SMD:SOT-23-6",
+   "pads_identical_to_library": true,
+   "graphics_removed": {
+    "F.Silkscreen/PCB_SHAPE": {
+     "board": 0,
+     "library": 7
+    }
+   },
+   "attributes": "identical"
+  },
+  {
+   "reference": "C266",
+   "uuid": "9232f5c8-9af0-4bfd-ac40-993b2030a2b1",
+   "lib_id": "Capacitor_SMD:C_0402_1005Metric",
+   "pads_identical_to_library": true,
+   "graphics_removed": {
+    "F.Silkscreen/PCB_SHAPE": {
+     "board": 0,
+     "library": 2
+    }
+   },
+   "attributes": "identical"
+  },
+  {
+   "reference": "R42",
+   "uuid": "95172890-8d9d-461a-9e3e-3bb121590473",
+   "lib_id": "Resistor_SMD:R_0402_1005Metric",
+   "pads_identical_to_library": true,
+   "graphics_removed": {
+    "F.Silkscreen/PCB_SHAPE": {
+     "board": 0,
+     "library": 2
+    }
+   },
+   "attributes": "identical"
+  },
+  {
+   "reference": "FB32",
+   "uuid": "95e611df-8f86-40dd-b2e4-a679dcbdf620",
+   "lib_id": "Inductor_SMD:L_0603_1608Metric_Pad1.05x0.95mm_HandSolder",
+   "pads_identical_to_library": true,
+   "graphics_removed": {
+    "F.Silkscreen/PCB_SHAPE": {
+     "board": 0,
+     "library": 2
+    }
+   },
+   "attributes": "identical"
+  },
+  {
+   "reference": "U40",
+   "uuid": "95ec5025-d6a0-4632-b96a-37ae902d5efd",
+   "lib_id": "Package_DFN_QFN:Texas_RHA0040B_VQFN-40-1EP_6x6mm_P0.5mm_EP4.15x4.15mm_ThermalVias",
+   "pads_identical_to_library": true,
+   "graphics_removed": {
+    "F.Silkscreen/PCB_SHAPE": {
+     "board": 0,
+     "library": 9
+    }
+   },
+   "attributes": "identical"
+  },
+  {
+   "reference": "C277",
+   "uuid": "97025b05-cc6f-46f0-95ea-4f40ce26d2d2",
+   "lib_id": "Capacitor_SMD:C_0402_1005Metric",
+   "pads_identical_to_library": true,
+   "graphics_removed": {
+    "F.Silkscreen/PCB_SHAPE": {
+     "board": 0,
+     "library": 2
+    }
+   },
+   "attributes": "identical"
+  },
+  {
+   "reference": "C151",
+   "uuid": "9737d659-a943-42dc-bfdf-a4ba38e7bbd4",
+   "lib_id": "Capacitor_SMD:C_0402_1005Metric",
+   "pads_identical_to_library": true,
+   "graphics_removed": {
+    "F.Silkscreen/PCB_SHAPE": {
+     "board": 0,
+     "library": 2
+    }
+   },
+   "attributes": "identical"
+  },
+  {
+   "reference": "C270",
+   "uuid": "9743a05e-15a7-4e94-8bd7-a0364f9cb743",
+   "lib_id": "Capacitor_SMD:C_0402_1005Metric",
+   "pads_identical_to_library": true,
+   "graphics_removed": {
+    "F.Silkscreen/PCB_SHAPE": {
+     "board": 0,
+     "library": 2
+    }
+   },
+   "attributes": "identical"
+  },
+  {
+   "reference": "L94",
+   "uuid": "9851a118-d1fd-472a-8cdf-506150bd9653",
+   "lib_id": "Inductor_SMD:L_0603_1608Metric_Pad1.05x0.95mm_HandSolder",
+   "pads_identical_to_library": true,
+   "graphics_removed": {
+    "F.Silkscreen/PCB_SHAPE": {
+     "board": 0,
+     "library": 2
+    }
+   },
+   "attributes": "identical"
+  },
+  {
+   "reference": "C213",
+   "uuid": "991b18a4-3e60-49fe-aab4-be1235811f7e",
+   "lib_id": "Capacitor_SMD:C_0402_1005Metric",
+   "pads_identical_to_library": true,
+   "graphics_removed": {
+    "F.Silkscreen/PCB_SHAPE": {
+     "board": 0,
+     "library": 2
+    }
+   },
+   "attributes": "identical"
+  },
+  {
+   "reference": "C214",
+   "uuid": "9a45db7d-c9e6-417a-b524-9a23715d1eef",
+   "lib_id": "Capacitor_SMD:C_0402_1005Metric",
+   "pads_identical_to_library": true,
+   "graphics_removed": {
+    "F.Silkscreen/PCB_SHAPE": {
+     "board": 0,
+     "library": 2
+    }
+   },
+   "attributes": "identical"
+  },
+  {
+   "reference": "L84",
+   "uuid": "9cc2c613-cfc6-4b4a-a3fb-ab3662b1809d",
+   "lib_id": "Inductor_SMD:L_0402_1005Metric_Pad0.77x0.64mm_HandSolder",
+   "pads_identical_to_library": true,
+   "graphics_removed": {
+    "F.Silkscreen/PCB_SHAPE": {
+     "board": 0,
+     "library": 2
+    }
+   },
+   "attributes": "identical"
+  },
+  {
+   "reference": "R79",
+   "uuid": "9cdb6a34-ce96-4af3-8c67-12df8f29d1ee",
+   "lib_id": "Resistor_SMD:R_0402_1005Metric",
+   "pads_identical_to_library": true,
+   "graphics_removed": {
+    "F.Silkscreen/PCB_SHAPE": {
+     "board": 0,
+     "library": 2
+    }
+   },
+   "attributes": "identical"
+  },
+  {
+   "reference": "U2",
+   "uuid": "9e3419cd-546b-4d68-ad6f-895563135803",
+   "lib_id": "Package_TO_SOT_SMD:SOT-23-5",
+   "pads_identical_to_library": true,
+   "graphics_removed": {
+    "F.Silkscreen/PCB_SHAPE": {
+     "board": 0,
+     "library": 8
+    }
+   },
+   "attributes": "identical"
+  },
+  {
+   "reference": "L2",
+   "uuid": "9ee128cc-0ec3-49c1-b213-34fccb0928cb",
+   "lib_id": "CodeSDR:Inductor_0805_HandSolder",
+   "pads_identical_to_library": true,
+   "graphics_removed": {
+    "F.Silkscreen/PCB_SHAPE": {
+     "board": 0,
+     "library": 2
+    }
+   },
+   "attributes": "identical"
+  },
+  {
+   "reference": "J50",
+   "uuid": "9fcbc380-746b-45d5-8daa-5d591c450b9e",
+   "lib_id": "Connector_Coaxial:SMA_Molex_73251-1153_EdgeMount_Horizontal",
+   "pads_identical_to_library": true,
+   "graphics_removed": {
+    "F.Silkscreen/PCB_SHAPE": {
+     "board": 0,
+     "library": 3
+    }
+   },
+   "attributes": "identical"
+  },
+  {
+   "reference": "R80",
+   "uuid": "a0974d4c-e519-4b2b-aafc-52310d0c951c",
+   "lib_id": "Resistor_SMD:R_0402_1005Metric",
+   "pads_identical_to_library": true,
+   "graphics_removed": {
+    "F.Silkscreen/PCB_SHAPE": {
+     "board": 0,
+     "library": 2
+    }
+   },
+   "attributes": "identical"
+  },
+  {
+   "reference": "C343",
+   "uuid": "a1332e69-0f92-4f0e-8c1d-2cf0c45ed46f",
+   "lib_id": "Capacitor_SMD:C_0402_1005Metric",
+   "pads_identical_to_library": true,
+   "graphics_removed": {
+    "F.Silkscreen/PCB_SHAPE": {
+     "board": 0,
+     "library": 2
+    }
+   },
+   "attributes": "identical"
+  },
+  {
+   "reference": "R121",
+   "uuid": "a1655986-5465-43c8-b6dc-4042ad9edc11",
+   "lib_id": "Resistor_SMD:R_0402_1005Metric",
+   "pads_identical_to_library": true,
+   "graphics_removed": {
+    "F.Silkscreen/PCB_SHAPE": {
+     "board": 0,
+     "library": 2
+    }
+   },
+   "attributes": "identical"
+  },
+  {
+   "reference": "R2",
+   "uuid": "a29ebef9-9129-40fa-ad2b-84022a5608e0",
+   "lib_id": "Resistor_SMD:R_0402_1005Metric",
+   "pads_identical_to_library": true,
+   "graphics_removed": {
+    "F.Silkscreen/PCB_SHAPE": {
+     "board": 0,
+     "library": 2
+    }
+   },
+   "attributes": "identical"
+  },
+  {
+   "reference": "R3",
+   "uuid": "a312f208-b4d9-431a-9a90-0eb89232fbf2",
+   "lib_id": "Resistor_SMD:R_0402_1005Metric",
+   "pads_identical_to_library": true,
+   "graphics_removed": {
+    "F.Silkscreen/PCB_SHAPE": {
+     "board": 0,
+     "library": 2
+    }
+   },
+   "attributes": "identical"
+  },
+  {
+   "reference": "R94",
+   "uuid": "a776356f-e776-43cd-a6c7-3625fb811b8c",
+   "lib_id": "Resistor_SMD:R_0402_1005Metric",
+   "pads_identical_to_library": true,
+   "graphics_removed": {
+    "F.Silkscreen/PCB_SHAPE": {
+     "board": 0,
+     "library": 2
+    }
+   },
+   "attributes": "identical"
+  },
+  {
+   "reference": "R134",
+   "uuid": "a83d6893-d2ea-4a22-b819-4c5946a87241",
+   "lib_id": "Resistor_SMD:R_0402_1005Metric",
+   "pads_identical_to_library": true,
+   "graphics_removed": {
+    "F.Silkscreen/PCB_SHAPE": {
+     "board": 0,
+     "library": 2
+    }
+   },
+   "attributes": "identical"
+  },
+  {
+   "reference": "C28",
+   "uuid": "a964f72b-5ab0-4c54-9414-cd2315f5c1c0",
+   "lib_id": "Capacitor_SMD:C_0402_1005Metric",
+   "pads_identical_to_library": true,
+   "graphics_removed": {
+    "F.Silkscreen/PCB_SHAPE": {
+     "board": 0,
+     "library": 2
+    }
+   },
+   "attributes": "identical"
+  },
+  {
+   "reference": "C93",
+   "uuid": "aa2c9232-a1f8-46df-9cbe-840d876da305",
+   "lib_id": "Capacitor_SMD:C_0402_1005Metric",
+   "pads_identical_to_library": true,
+   "graphics_removed": {
+    "F.Silkscreen/PCB_SHAPE": {
+     "board": 0,
+     "library": 2
+    }
+   },
+   "attributes": "identical"
+  },
+  {
+   "reference": "L95",
+   "uuid": "aa3407ea-eb92-4cda-a40a-67ed4e9d9fd7",
+   "lib_id": "Inductor_SMD:L_0603_1608Metric_Pad1.05x0.95mm_HandSolder",
+   "pads_identical_to_library": true,
+   "graphics_removed": {
+    "F.Silkscreen/PCB_SHAPE": {
+     "board": 0,
+     "library": 2
+    }
+   },
+   "attributes": "identical"
+  },
+  {
+   "reference": "C76",
+   "uuid": "ac34c99a-894a-4418-a1eb-9ab4b82b2b0c",
+   "lib_id": "Capacitor_SMD:C_0402_1005Metric",
+   "pads_identical_to_library": true,
+   "graphics_removed": {
+    "F.Silkscreen/PCB_SHAPE": {
+     "board": 0,
+     "library": 2
+    }
+   },
+   "attributes": "identical"
+  },
+  {
+   "reference": "R148",
+   "uuid": "adc247c4-555c-4188-8902-ea85e5d5a0b2",
+   "lib_id": "Resistor_SMD:R_0402_1005Metric",
+   "pads_identical_to_library": true,
+   "graphics_removed": {
+    "F.Silkscreen/PCB_SHAPE": {
+     "board": 0,
+     "library": 2
+    }
+   },
+   "attributes": "identical"
+  },
+  {
+   "reference": "R51",
+   "uuid": "ae6b7767-a690-4862-8ae2-276683c95343",
+   "lib_id": "Resistor_SMD:R_0402_1005Metric",
+   "pads_identical_to_library": true,
+   "graphics_removed": {
+    "F.Silkscreen/PCB_SHAPE": {
+     "board": 0,
+     "library": 2
+    }
+   },
+   "attributes": "identical"
+  },
+  {
+   "reference": "R156",
+   "uuid": "aef29995-2aea-4b39-8642-54b5c87f5185",
+   "lib_id": "Resistor_SMD:R_0402_1005Metric",
+   "pads_identical_to_library": true,
+   "graphics_removed": {
+    "F.Silkscreen/PCB_SHAPE": {
+     "board": 0,
+     "library": 2
+    }
+   },
+   "attributes": "DNP set on board (0R option jumper)"
+  },
+  {
+   "reference": "C6",
+   "uuid": "b0b8cf80-c120-4b38-94b5-e0a144ef8171",
+   "lib_id": "Capacitor_SMD:C_0805_2012Metric",
+   "pads_identical_to_library": true,
+   "graphics_removed": {
+    "F.Silkscreen/PCB_SHAPE": {
+     "board": 0,
+     "library": 2
+    }
+   },
+   "attributes": "identical"
+  },
+  {
+   "reference": "C80",
+   "uuid": "b2a8298d-0680-4081-b21a-1e988ed9abd5",
+   "lib_id": "Capacitor_SMD:C_0402_1005Metric",
+   "pads_identical_to_library": true,
+   "graphics_removed": {
+    "F.Silkscreen/PCB_SHAPE": {
+     "board": 0,
+     "library": 2
+    }
+   },
+   "attributes": "identical"
+  },
+  {
+   "reference": "R78",
+   "uuid": "b3f44c12-ef02-489b-83aa-068dd370813f",
+   "lib_id": "Resistor_SMD:R_0402_1005Metric",
+   "pads_identical_to_library": true,
+   "graphics_removed": {
+    "F.Silkscreen/PCB_SHAPE": {
+     "board": 0,
+     "library": 2
+    }
+   },
+   "attributes": "identical"
+  },
+  {
+   "reference": "R161",
+   "uuid": "b53ff4d7-9333-4615-96be-605875eaec69",
+   "lib_id": "Resistor_SMD:R_0402_1005Metric",
+   "pads_identical_to_library": true,
+   "graphics_removed": {
+    "F.Silkscreen/PCB_SHAPE": {
+     "board": 0,
+     "library": 2
+    }
+   },
+   "attributes": "identical"
+  },
+  {
+   "reference": "J1",
+   "uuid": "b542729a-390f-4efa-bad1-8425ad89f43d",
+   "lib_id": "TerminalBlock_Phoenix:TerminalBlock_Phoenix_MKDS-1,5-2_1x02_P5.00mm_Horizontal",
+   "pads_identical_to_library": true,
+   "graphics_removed": {
+    "F.Silkscreen/PCB_SHAPE": {
+     "board": 0,
+     "library": 9
+    }
+   },
+   "attributes": "identical"
+  },
+  {
+   "reference": "R54",
+   "uuid": "b9c141e0-b522-4b66-86ca-fa1e507bf865",
+   "lib_id": "Resistor_SMD:R_0402_1005Metric",
+   "pads_identical_to_library": true,
+   "graphics_removed": {
+    "F.Silkscreen/PCB_SHAPE": {
+     "board": 0,
+     "library": 2
+    }
+   },
+   "attributes": "identical"
+  },
+  {
+   "reference": "R143",
+   "uuid": "ba5ba36b-e4c5-47cd-942b-8e46b85f32e4",
+   "lib_id": "Resistor_SMD:R_0402_1005Metric",
+   "pads_identical_to_library": true,
+   "graphics_removed": {
+    "F.Silkscreen/PCB_SHAPE": {
+     "board": 0,
+     "library": 2
+    }
+   },
+   "attributes": "identical"
+  },
+  {
+   "reference": "C279",
+   "uuid": "ba5f3710-97bd-4dc3-96f4-cf35aeaf0687",
+   "lib_id": "Capacitor_SMD:C_0805_2012Metric",
+   "pads_identical_to_library": true,
+   "graphics_removed": {
+    "F.Silkscreen/PCB_SHAPE": {
+     "board": 0,
+     "library": 2
+    }
+   },
+   "attributes": "identical"
+  },
+  {
+   "reference": "L86",
+   "uuid": "bbc3dfe4-3351-40fa-b2ee-4a35c68eaa65",
+   "lib_id": "Inductor_SMD:L_0603_1608Metric_Pad1.05x0.95mm_HandSolder",
+   "pads_identical_to_library": true,
+   "graphics_removed": {
+    "F.Silkscreen/PCB_SHAPE": {
+     "board": 0,
+     "library": 2
+    }
+   },
+   "attributes": "identical"
+  },
+  {
+   "reference": "U1",
+   "uuid": "c0371021-97b7-4f19-b3bf-dfe2726e6df7",
+   "lib_id": "Package_TO_SOT_SMD:SOT-23-5",
+   "pads_identical_to_library": true,
+   "graphics_removed": {
+    "F.Silkscreen/PCB_SHAPE": {
+     "board": 0,
+     "library": 8
+    }
+   },
+   "attributes": "identical"
+  },
+  {
+   "reference": "D1",
+   "uuid": "c06a4fba-10f9-4c92-854c-ed16c28dc170",
+   "lib_id": "Diode_SMD:D_SMA",
+   "pads_identical_to_library": true,
+   "graphics_removed": {
+    "F.Silkscreen/PCB_SHAPE": {
+     "board": 0,
+     "library": 3
+    }
+   },
+   "attributes": "identical"
+  },
+  {
+   "reference": "R154",
+   "uuid": "c1a18af0-c0da-4d01-81b9-ff1e9be98a4d",
+   "lib_id": "Resistor_SMD:R_0402_1005Metric",
+   "pads_identical_to_library": true,
+   "graphics_removed": {
+    "F.Silkscreen/PCB_SHAPE": {
+     "board": 0,
+     "library": 2
+    }
+   },
+   "attributes": "identical"
+  },
+  {
+   "reference": "R77",
+   "uuid": "c551ee1e-781d-4e07-bbf0-84850a83f8a1",
+   "lib_id": "Resistor_SMD:R_0402_1005Metric",
+   "pads_identical_to_library": true,
+   "graphics_removed": {
+    "F.Silkscreen/PCB_SHAPE": {
+     "board": 0,
+     "library": 2
+    }
+   },
+   "attributes": "identical"
+  },
+  {
+   "reference": "R32",
+   "uuid": "c5b9e726-c2dc-4b35-b495-866a9b80f0ef",
+   "lib_id": "Resistor_SMD:R_0402_1005Metric",
+   "pads_identical_to_library": true,
+   "graphics_removed": {
+    "F.Silkscreen/PCB_SHAPE": {
+     "board": 0,
+     "library": 2
+    }
+   },
+   "attributes": "identical"
+  },
+  {
+   "reference": "L88",
+   "uuid": "c8641928-76e9-4ac9-ba9b-10dc26db5b63",
+   "lib_id": "Inductor_SMD:L_0603_1608Metric_Pad1.05x0.95mm_HandSolder",
+   "pads_identical_to_library": true,
+   "graphics_removed": {
+    "F.Silkscreen/PCB_SHAPE": {
+     "board": 0,
+     "library": 2
+    }
+   },
+   "attributes": "identical"
+  },
+  {
+   "reference": "C64",
+   "uuid": "ca48201c-77c3-4b75-a9b2-8c7df3040c16",
+   "lib_id": "Capacitor_SMD:C_0603_1608Metric",
+   "pads_identical_to_library": true,
+   "graphics_removed": {
+    "F.Silkscreen/PCB_SHAPE": {
+     "board": 0,
+     "library": 2
+    }
+   },
+   "attributes": "identical"
+  },
+  {
+   "reference": "U72",
+   "uuid": "cd88770a-4f16-4a94-a2f4-29cbd3e408cd",
+   "lib_id": "Package_DFN_QFN:QFN-20-1EP_4x4mm_P0.5mm_EP2.6x2.6mm_ThermalVias",
+   "pads_identical_to_library": true,
+   "graphics_removed": {
+    "F.Silkscreen/PCB_SHAPE": {
+     "board": 0,
+     "library": 9
+    }
+   },
+   "attributes": "identical"
+  },
+  {
+   "reference": "C268",
+   "uuid": "cefb2525-6081-43d1-9d36-13b47dd0a69c",
+   "lib_id": "Capacitor_SMD:C_0402_1005Metric",
+   "pads_identical_to_library": true,
+   "graphics_removed": {
+    "F.Silkscreen/PCB_SHAPE": {
+     "board": 0,
+     "library": 2
+    }
+   },
+   "attributes": "identical"
+  },
+  {
+   "reference": "R127",
+   "uuid": "cfaea55a-eb3e-4d1d-adf3-7a981ba99f98",
+   "lib_id": "Resistor_SMD:R_0402_1005Metric",
+   "pads_identical_to_library": true,
+   "graphics_removed": {
+    "F.Silkscreen/PCB_SHAPE": {
+     "board": 0,
+     "library": 2
+    }
+   },
+   "attributes": "identical"
+  },
+  {
+   "reference": "R129",
+   "uuid": "d0d41701-1c56-4fa7-bbf0-eba07f5e36b8",
+   "lib_id": "Resistor_SMD:R_0402_1005Metric",
+   "pads_identical_to_library": true,
+   "graphics_removed": {
+    "F.Silkscreen/PCB_SHAPE": {
+     "board": 0,
+     "library": 2
+    }
+   },
+   "attributes": "identical"
+  },
+  {
+   "reference": "R93",
+   "uuid": "d26e35e6-d109-4ecf-b55a-e02033e57099",
+   "lib_id": "Resistor_SMD:R_0402_1005Metric",
+   "pads_identical_to_library": true,
+   "graphics_removed": {
+    "F.Silkscreen/PCB_SHAPE": {
+     "board": 0,
+     "library": 2
+    }
+   },
+   "attributes": "identical"
+  }
+ ],
+ "board_sha256_history": [
+  "bfab3547c5334301b621434be2ed946a6d42bafdae69ae1112035df534a9b6e3"
+ ],
+ "revalidated": "2026-11-12 after removing 6 single-layer GND vias: same 199 (reference, uuid) identities, pads identical"
+}

@@ -1,0 +1,48 @@
+{
+ "schema": "code-sdr/drc-waiver/1",
+ "rule": "track_dangling (open items from dangling_items_20261112.json)",
+ "board_sha256_before": "fdef9e97c288d67f55aac2c4af2492c0bd4b44457da3d2adeed83f2f211a5b69",
+ "board_sha256_after": "9ee6b2ec6cdb1be433d424bb73b350e6ba737d6b957406dad944e73a52d0c65b",
+ "kicad": "9.0.7",
+ "generated": "2026-11-18",
+ "method": "Items matched by DRC uuid. Dead copper found by cs_g1_dead_branches.py (split at T-junctions/vias/crossed pads, iterative pruning of free ends). Fix verified by kicad-cli pcb drc --schematic-parity --severity-all (216 -> 215, 0 added identities, 0 unconnected, parity identical) and kicad-cli pcb export ipcd356 (byte-identical before/after).",
+ "items": [
+  {
+   "item": "Track [FPGA_AUX_2V5] on F.Cu, length 0.8427 mm",
+   "uuid": "65a5838e-65f7-4de8-84db-00396765ec57",
+   "verdict": "FIXED",
+   "change": "end (49.542476, 66.054203) -> (49.838339, 65.758339), collinear, inside C323.1; removes 0.4184 mm overhang beyond the pad",
+   "why_previous_ablation_inconclusive": "position matching: start point shared by 6123ed84 and eeda488c"
+  },
+  {
+   "item": "Track [GRF2013_RFOUT_VDD] on F.Cu, length 4.6519 mm",
+   "uuid": "3c92c037-d145-46a9-8fd2-4305d689cbe0",
+   "verdict": "OPEN_OWNER_DECISION",
+   "reason": "U71 GRF2013 pin 4 RFOUT/VDD output node (C235 DC block to IF_GAIN_OUT, L84 choke to +5V_RF): signal-chain net, removal changes node parasitics; not rerouted in this pass",
+   "dead_length_mm": 2.5439,
+   "duplicate_on_trunk_mm": 2.108
+  },
+  {
+   "item": "Track [GRF2013_RFOUT_VDD] on F.Cu, length 0.4123 mm",
+   "uuid": "5286bb29-05de-4882-aa0c-93f4cf72b96a",
+   "verdict": "WAIVER_RATIONALE_INCORRECT",
+   "reason": "tip of a 13.902 mm dead branch; not load-bearing (unconnected_after_removal was 0). Same owner decision as 3c92c037"
+  }
+ ],
+ "dead_overhang_on_other_waived_items_mm": {
+  "+3V3_ANA 71bfce04": 4.8609,
+  "GND 4323a962": 1.644,
+  "RGMII_TXD0 f8a18475": 0.806,
+  "RGMII_TXD2 7348c5d1": 0.517,
+  "ADC_D6 671d4cf3": 0.495
+ },
+ "drc_after": {
+  "warnings": 215,
+  "track_dangling": 9,
+  "via_dangling": 7,
+  "lib_footprint_mismatch": 199,
+  "errors": 0,
+  "unconnected": 0,
+  "schematic_parity": 4
+ }
+}

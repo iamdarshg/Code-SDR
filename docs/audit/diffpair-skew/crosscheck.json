@@ -1,0 +1,752 @@
+{
+ "validate_route_metric": [
+  {
+   "pair": "ADC analog input",
+   "p": [
+    "ADC_VIN_P"
+   ],
+   "n": [
+    "ADC_VIN_N"
+   ],
+   "repo_track_p_mm": 44.618,
+   "repo_track_n_mm": 41.993,
+   "repo_vias": "4/2",
+   "repo_skew_mm": 2.625,
+   "ours_track_only_skew_mm": 2.6252,
+   "ours_with_barrels_skew_mm": 5.7552,
+   "ours_skew_ps": 37.009,
+   "ours_pad_to_pad": [],
+   "deviation_track_only_mm": 0.0002,
+   "limits": {
+    "validate_route.py": 0.5,
+    "sensitive_route_contract.py": 0.5
+   },
+   "repo_verdict": {
+    "validate_route.py": "FAIL",
+    "sensitive_route_contract.py": "FAIL"
+   }
+  },
+  {
+   "pair": "ADC driver input",
+   "p": [
+    "AD8351_IN_P"
+   ],
+   "n": [
+    "AD8351_IN_N"
+   ],
+   "repo_track_p_mm": 2.064,
+   "repo_track_n_mm": 1.857,
+   "repo_vias": "0/0",
+   "repo_skew_mm": 0.207,
+   "ours_track_only_skew_mm": 0.2071,
+   "ours_with_barrels_skew_mm": 0.2071,
+   "ours_skew_ps": 1.211,
+   "ours_pad_to_pad": [
+    {
+     "refs": "single path each (refs differ)",
+     "p_path": "C254.2-U74.3",
+     "n_path": "C255.2-U74.4",
+     "p_mm": 1.2162,
+     "n_mm": 1.8566,
+     "skew_mm": 0.6404,
+     "skew_ps": 3.745
+    }
+   ],
+   "deviation_track_only_mm": 0.0001,
+   "limits": {
+    "validate_route.py": 0.5,
+    "sensitive_route_contract.py": 0.5
+   },
+   "repo_verdict": {
+    "validate_route.py": "PASS",
+    "sensitive_route_contract.py": "PASS"
+   }
+  },
+  {
+   "pair": "ADC driver output",
+   "p": [
+    "AD8351_OUT_P"
+   ],
+   "n": [
+    "AD8351_OUT_N"
+   ],
+   "repo_track_p_mm": 5.15,
+   "repo_track_n_mm": 1.827,
+   "repo_vias": "0/0",
+   "repo_skew_mm": 3.323,
+   "ours_track_only_skew_mm": 3.3237,
+   "ours_with_barrels_skew_mm": 3.3237,
+   "ours_skew_ps": 19.437,
+   "ours_pad_to_pad": [
+    {
+     "refs": "single path each (refs differ)",
+     "p_path": "R73.1-U74.8",
+     "n_path": "R74.1-U74.7",
+     "p_mm": 4.8335,
+     "n_mm": 1.8266,
+     "skew_mm": 3.0069,
+     "skew_ps": 17.585
+    }
+   ],
+   "deviation_track_only_mm": 0.0007,
+   "limits": {
+    "validate_route.py": 0.5,
+    "sensitive_route_contract.py": 0.5
+   },
+   "repo_verdict": {
+    "validate_route.py": "FAIL",
+    "sensitive_route_contract.py": "FAIL"
+   }
+  },
+  {
+   "pair": "ADF second LO",
+   "p": [
+    "ADF_LO2_P_RAW"
+   ],
+   "n": [
+    "ADF_LO2_N_RAW"
+   ],
+   "repo_track_p_mm": 36.806,
+   "repo_track_n_mm": 20.587,
+   "repo_vias": "0/0",
+   "repo_skew_mm": 16.219,
+   "ours_track_only_skew_mm": 16.219,
+   "ours_with_barrels_skew_mm": 16.219,
+   "ours_skew_ps": 96.378,
+   "ours_pad_to_pad": [],
+   "deviation_track_only_mm": 0.0,
+   "limits": {
+    "validate_route.py": 0.75,
+    "sensitive_route_contract.py": 0.25
+   },
+   "repo_verdict": {
+    "validate_route.py": "FAIL",
+    "sensitive_route_contract.py": "FAIL"
+   }
+  },
+  {
+   "pair": "Ethernet MDI A",
+   "p": [
+    "MDI_A_P"
+   ],
+   "n": [
+    "MDI_A_N"
+   ],
+   "repo_track_p_mm": 35.44,
+   "repo_track_n_mm": 42.524,
+   "repo_vias": "2/2",
+   "repo_skew_mm": 7.084,
+   "ours_track_only_skew_mm": 7.0835,
+   "ours_with_barrels_skew_mm": 5.8485,
+   "ours_skew_ps": 50.062,
+   "ours_pad_to_pad": [
+    {
+     "refs": "J30-U30",
+     "p_path": "U30.2-J30.11",
+     "n_path": "U30.3-J30.10",
+     "p_mm": 36.9164,
+     "n_mm": 41.7933,
+     "skew_mm": 4.8769,
+     "skew_ps": 42.965
+    }
+   ],
+   "deviation_track_only_mm": 0.0005,
+   "limits": {
+    "validate_route.py": 1.0,
+    "sensitive_route_contract.py": 1.0
+   },
+   "repo_verdict": {
+    "validate_route.py": "FAIL",
+    "sensitive_route_contract.py": "FAIL"
+   }
+  },
+  {
+   "pair": "Ethernet MDI B",
+   "p": [
+    "MDI_B_P"
+   ],
+   "n": [
+    "MDI_B_N"
+   ],
+   "repo_track_p_mm": 36.527,
+   "repo_track_n_mm": 24.78,
+   "repo_vias": "4/2",
+   "repo_skew_mm": 11.747,
+   "ours_track_only_skew_mm": 11.7477,
+   "ours_with_barrels_skew_mm": 15.0427,
+   "ours_skew_ps": 68.896,
+   "ours_pad_to_pad": [
+    {
+     "refs": "J30-U30",
+     "p_path": "U30.5-J30.4",
+     "n_path": "U30.6-J30.5",
+     "p_mm": 38.8909,
+     "n_mm": 22.3688,
+     "skew_mm": 16.5221,
+     "skew_ps": 81.017
+    }
+   ],
+   "deviation_track_only_mm": 0.0007,
+   "limits": {
+    "validate_route.py": 1.0,
+    "sensitive_route_contract.py": 1.0
+   },
+   "repo_verdict": {
+    "validate_route.py": "FAIL",
+    "sensitive_route_contract.py": "FAIL"
+   }
+  },
+  {
+   "pair": "Ethernet MDI C",
+   "p": [
+    "MDI_C_P"
+   ],
+   "n": [
+    "MDI_C_N"
+   ],
+   "repo_track_p_mm": 20.876,
+   "repo_track_n_mm": 18.088,
+   "repo_vias": "1/1",
+   "repo_skew_mm": 2.788,
+   "ours_track_only_skew_mm": 2.788,
+   "ours_with_barrels_skew_mm": 2.788,
+   "ours_skew_ps": 15.983,
+   "ours_pad_to_pad": [],
+   "deviation_track_only_mm": 0.0,
+   "limits": {
+    "validate_route.py": 1.0,
+    "sensitive_route_contract.py": 1.0
+   },
+   "repo_verdict": {
+    "validate_route.py": "FAIL",
+    "sensitive_route_contract.py": "FAIL"
+   }
+  },
+  {
+   "pair": "Ethernet MDI D",
+   "p": [
+    "MDI_D_P"
+   ],
+   "n": [
+    "MDI_D_N"
+   ],
+   "repo_track_p_mm": 16.365,
+   "repo_track_n_mm": 17.249,
+   "repo_vias": "0/3",
+   "repo_skew_mm": 0.884,
+   "ours_track_only_skew_mm": 0.8842,
+   "ours_with_barrels_skew_mm": 2.7792,
+   "ours_skew_ps": 21.578,
+   "ours_pad_to_pad": [
+    {
+     "refs": "J30-U30",
+     "p_path": "U30.10-J30.8",
+     "n_path": "U30.11-J30.9",
+     "p_mm": 15.9216,
+     "n_mm": 18.0398,
+     "skew_mm": 2.1182,
+     "skew_ps": 17.666
+    }
+   ],
+   "deviation_track_only_mm": 0.0002,
+   "limits": {
+    "validate_route.py": 1.0,
+    "sensitive_route_contract.py": 1.0
+   },
+   "repo_verdict": {
+    "validate_route.py": "FAIL",
+    "sensitive_route_contract.py": "FAIL"
+   }
+  },
+  {
+   "pair": "High-band IF",
+   "p": [
+    "IF_HIGH_P"
+   ],
+   "n": [
+    "IF_HIGH_N"
+   ],
+   "repo_track_p_mm": 52.64,
+   "repo_track_n_mm": 49.748,
+   "repo_vias": "2/2",
+   "repo_skew_mm": 2.892,
+   "ours_track_only_skew_mm": 2.8919,
+   "ours_with_barrels_skew_mm": 2.8919,
+   "ours_skew_ps": 19.039,
+   "ours_pad_to_pad": [
+    {
+     "refs": "T60-U63",
+     "p_path": "T60.6-U63.2",
+     "n_path": "T60.4-U63.3",
+     "p_mm": 52.7072,
+     "n_mm": 50.0296,
+     "skew_mm": 2.6776,
+     "skew_ps": 17.753
+    }
+   ],
+   "deviation_track_only_mm": 0.0001,
+   "limits": {
+    "validate_route.py": 0.75,
+    "sensitive_route_contract.py": 0.25
+   },
+   "repo_verdict": {
+    "validate_route.py": "FAIL",
+    "sensitive_route_contract.py": "FAIL"
+   }
+  },
+  {
+   "pair": "IF2 filter 1",
+   "p": [
+    "IF2_F1_P"
+   ],
+   "n": [
+    "IF2_F1_N"
+   ],
+   "repo_track_p_mm": 5.395,
+   "repo_track_n_mm": 4.016,
+   "repo_vias": "0/0",
+   "repo_skew_mm": 1.379,
+   "ours_track_only_skew_mm": 1.3784,
+   "ours_with_barrels_skew_mm": 1.3784,
+   "ours_skew_ps": 8.061,
+   "ours_pad_to_pad": [],
+   "deviation_track_only_mm": 0.0006,
+   "limits": {
+    "validate_route.py": 0.5,
+    "sensitive_route_contract.py": 0.5
+   },
+   "repo_verdict": {
+    "validate_route.py": "FAIL",
+    "sensitive_route_contract.py": "FAIL"
+   }
+  },
+  {
+   "pair": "IF2 filter 2",
+   "p": [
+    "IF2_F2_P"
+   ],
+   "n": [
+    "IF2_F2_N"
+   ],
+   "repo_track_p_mm": 5.208,
+   "repo_track_n_mm": 5.704,
+   "repo_vias": "0/0",
+   "repo_skew_mm": 0.496,
+   "ours_track_only_skew_mm": 0.4959,
+   "ours_with_barrels_skew_mm": 0.4959,
+   "ours_skew_ps": 2.9,
+   "ours_pad_to_pad": [
+    {
+     "refs": "single path each (refs differ)",
+     "p_path": "C264.1-L89.2",
+     "n_path": "C264.2-L92.1",
+     "p_mm": 5.2083,
+     "n_mm": 5.7041,
+     "skew_mm": 0.4958,
+     "skew_ps": 2.9
+    }
+   ],
+   "deviation_track_only_mm": 0.0001,
+   "limits": {
+    "validate_route.py": 0.5,
+    "sensitive_route_contract.py": 0.5
+   },
+   "repo_verdict": {
+    "validate_route.py": "PASS",
+    "sensitive_route_contract.py": "PASS"
+   }
+  },
+  {
+   "pair": "IF2 filter 3",
+   "p": [
+    "IF2_F3_P"
+   ],
+   "n": [
+    "IF2_F3_N"
+   ],
+   "repo_track_p_mm": 7.067,
+   "repo_track_n_mm": 11.918,
+   "repo_vias": "0/3",
+   "repo_skew_mm": 4.851,
+   "ours_track_only_skew_mm": 4.8508,
+   "ours_with_barrels_skew_mm": 9.5458,
+   "ours_skew_ps": 60.464,
+   "ours_pad_to_pad": [],
+   "deviation_track_only_mm": 0.0002,
+   "limits": {
+    "validate_route.py": 0.5,
+    "sensitive_route_contract.py": 0.5
+   },
+   "repo_verdict": {
+    "validate_route.py": "FAIL",
+    "sensitive_route_contract.py": "FAIL"
+   }
+  },
+  {
+   "pair": "IF2 filter 4",
+   "p": [
+    "IF2_F4_P"
+   ],
+   "n": [
+    "IF2_F4_N"
+   ],
+   "repo_track_p_mm": 13.33,
+   "repo_track_n_mm": 14.255,
+   "repo_vias": "0/3",
+   "repo_skew_mm": 0.925,
+   "ours_track_only_skew_mm": 0.925,
+   "ours_with_barrels_skew_mm": 5.62,
+   "ours_skew_ps": 37.505,
+   "ours_pad_to_pad": [],
+   "deviation_track_only_mm": 0.0,
+   "limits": {
+    "validate_route.py": 0.5,
+    "sensitive_route_contract.py": 0.5
+   },
+   "repo_verdict": {
+    "validate_route.py": "FAIL",
+    "sensitive_route_contract.py": "FAIL"
+   }
+  },
+  {
+   "pair": "IF2 filter output",
+   "p": [
+    "IF2_LPF_P"
+   ],
+   "n": [
+    "IF2_LPF_N"
+   ],
+   "repo_track_p_mm": 10.412,
+   "repo_track_n_mm": 6.694,
+   "repo_vias": "3/3",
+   "repo_skew_mm": 3.718,
+   "ours_track_only_skew_mm": 3.7173,
+   "ours_with_barrels_skew_mm": 3.7173,
+   "ours_skew_ps": 21.739,
+   "ours_pad_to_pad": [],
+   "deviation_track_only_mm": 0.0007,
+   "limits": {
+    "validate_route.py": 0.5,
+    "sensitive_route_contract.py": 0.5
+   },
+   "repo_verdict": {
+    "validate_route.py": "FAIL",
+    "sensitive_route_contract.py": "FAIL"
+   }
+  },
+  {
+   "pair": "LMX low-band LO",
+   "p": [
+    "LMX_LO_LOW_P_RAW"
+   ],
+   "n": [
+    "LMX_LO_LOW_N_RAW"
+   ],
+   "repo_track_p_mm": 3.732,
+   "repo_track_n_mm": 5.26,
+   "repo_vias": "0/0",
+   "repo_skew_mm": 1.528,
+   "ours_track_only_skew_mm": 1.5272,
+   "ours_with_barrels_skew_mm": 1.5272,
+   "ours_skew_ps": 9.075,
+   "ours_pad_to_pad": [],
+   "deviation_track_only_mm": 0.0008,
+   "limits": {
+    "validate_route.py": 0.75,
+    "sensitive_route_contract.py": 0.25
+   },
+   "repo_verdict": {
+    "validate_route.py": "FAIL",
+    "sensitive_route_contract.py": "FAIL"
+   }
+  },
+  {
+   "pair": "LT5560 RF",
+   "p": [
+    "LT_IN_P"
+   ],
+   "n": [
+    "LT_IN_N"
+   ],
+   "repo_track_p_mm": 9.345,
+   "repo_track_n_mm": 7.05,
+   "repo_vias": "2/2",
+   "repo_skew_mm": 2.295,
+   "ours_track_only_skew_mm": 2.2949,
+   "ours_with_barrels_skew_mm": 2.2949,
+   "ours_skew_ps": 13.509,
+   "ours_pad_to_pad": [
+    {
+     "refs": "T70-U73",
+     "p_path": "U73.3-T70.3",
+     "n_path": "U73.4-T70.4",
+     "p_mm": 12.4609,
+     "n_mm": 9.8237,
+     "skew_mm": 2.6372,
+     "skew_ps": 15.487
+    }
+   ],
+   "deviation_track_only_mm": 0.0001,
+   "limits": {
+    "validate_route.py": 0.75,
+    "sensitive_route_contract.py": 0.25
+   },
+   "repo_verdict": {
+    "validate_route.py": "FAIL",
+    "sensitive_route_contract.py": "FAIL"
+   }
+  },
+  {
+   "pair": "Low-band IF",
+   "p": [
+    "IF_LOW_P"
+   ],
+   "n": [
+    "IF_LOW_N"
+   ],
+   "repo_track_p_mm": 12.008,
+   "repo_track_n_mm": 12.009,
+   "repo_vias": "3/2",
+   "repo_skew_mm": 0.001,
+   "ours_track_only_skew_mm": 0.0008,
+   "ours_with_barrels_skew_mm": 1.5642,
+   "ours_skew_ps": 10.932,
+   "ours_pad_to_pad": [
+    {
+     "refs": "L98-T50",
+     "p_path": "L98.1-T50.3",
+     "n_path": "L98.2-T50.4",
+     "p_mm": 13.9609,
+     "n_mm": 12.6867,
+     "skew_mm": 1.2742,
+     "skew_ps": 7.667
+    },
+    {
+     "refs": "L98-U51",
+     "p_path": "L98.1-U51.20",
+     "n_path": "L98.2-U51.21",
+     "p_mm": 5.1527,
+     "n_mm": 2.0514,
+     "skew_mm": 3.1013,
+     "skew_ps": 21.303
+    },
+    {
+     "refs": "T50-U51",
+     "p_path": "T50.3-U51.20",
+     "n_path": "T50.4-U51.21",
+     "p_mm": 13.6032,
+     "n_mm": 14.7382,
+     "skew_mm": 1.135,
+     "skew_ps": 6.497
+    }
+   ],
+   "deviation_track_only_mm": 0.0002,
+   "limits": {
+    "validate_route.py": 0.75,
+    "sensitive_route_contract.py": 0.25
+   },
+   "repo_verdict": {
+    "validate_route.py": "FAIL",
+    "sensitive_route_contract.py": "FAIL"
+   }
+  },
+  {
+   "pair": "Low-band LO",
+   "p": [
+    "LO_LOW_P"
+   ],
+   "n": [
+    "LO_LOW_N"
+   ],
+   "repo_track_p_mm": 34.75,
+   "repo_track_n_mm": 34.95,
+   "repo_vias": "2/2",
+   "repo_skew_mm": 0.2,
+   "ours_track_only_skew_mm": 0.2,
+   "ours_with_barrels_skew_mm": 0.2,
+   "ours_skew_ps": 1.188,
+   "ours_pad_to_pad": [
+    {
+     "refs": "single path each (refs differ)",
+     "p_path": "C203.2-U51.3",
+     "n_path": "C204.2-U51.4",
+     "p_mm": 37.5524,
+     "n_mm": 38.0796,
+     "skew_mm": 0.5272,
+     "skew_ps": 3.133
+    }
+   ],
+   "deviation_track_only_mm": 0.0,
+   "limits": {
+    "validate_route.py": 0.75,
+    "sensitive_route_contract.py": 0.25
+   },
+   "repo_verdict": {
+    "validate_route.py": "PASS",
+    "sensitive_route_contract.py": "PASS"
+   }
+  },
+  {
+   "pair": "Second IF",
+   "p": [
+    "IF2_P"
+   ],
+   "n": [
+    "IF2_N"
+   ],
+   "repo_track_p_mm": 12.105,
+   "repo_track_n_mm": 8.543,
+   "repo_vias": "3/2",
+   "repo_skew_mm": 3.562,
+   "ours_track_only_skew_mm": 3.5623,
+   "ours_with_barrels_skew_mm": 5.1273,
+   "ours_skew_ps": 31.531,
+   "ours_pad_to_pad": [
+    {
+     "refs": "R79-U73",
+     "p_path": "U73.6-R79.1",
+     "n_path": "U73.5-R79.2",
+     "p_mm": 9.69,
+     "n_mm": 10.0951,
+     "skew_mm": 0.4051,
+     "skew_ps": 2.369
+    }
+   ],
+   "deviation_track_only_mm": 0.0003,
+   "limits": {
+    "validate_route.py": 0.5,
+    "sensitive_route_contract.py": 0.5
+   },
+   "repo_verdict": {
+    "validate_route.py": "FAIL",
+    "sensitive_route_contract.py": "FAIL"
+   }
+  },
+  {
+   "pair": "Second LO",
+   "p": [
+    "LO2_P"
+   ],
+   "n": [
+    "LO2_N"
+   ],
+   "repo_track_p_mm": 70.592,
+   "repo_track_n_mm": 62.94,
+   "repo_vias": "2/7",
+   "repo_skew_mm": 7.652,
+   "ours_track_only_skew_mm": 7.6522,
+   "ours_with_barrels_skew_mm": 6.9922,
+   "ours_skew_ps": 67.164,
+   "ours_pad_to_pad": [
+    {
+     "refs": "single path each (refs differ)",
+     "p_path": "U73.8-C206.2",
+     "n_path": "U73.1-C207.2",
+     "p_mm": 72.0966,
+     "n_mm": 65.3997,
+     "skew_mm": 6.6969,
+     "skew_ps": 64.557
+    }
+   ],
+   "deviation_track_only_mm": 0.0002,
+   "limits": {
+    "validate_route.py": 0.75,
+    "sensitive_route_contract.py": 0.25
+   },
+   "repo_verdict": {
+    "validate_route.py": "FAIL",
+    "sensitive_route_contract.py": "FAIL"
+   }
+  },
+  {
+   "pair": "USB",
+   "p": [
+    "USB_DP_CONN",
+    "USB_DP"
+   ],
+   "n": [
+    "USB_DM_CONN",
+    "USB_DM"
+   ],
+   "repo_track_p_mm": 59.839,
+   "repo_track_n_mm": 62.119,
+   "repo_vias": "6/6",
+   "repo_skew_mm": 2.28,
+   "ours_track_only_skew_mm": 2.2804,
+   "ours_with_barrels_skew_mm": 2.2804,
+   "ours_skew_ps": 13.293,
+   "ours_pad_to_pad": [],
+   "deviation_track_only_mm": 0.0004,
+   "limits": {
+    "validate_route.py": 1.0,
+    "sensitive_route_contract.py": 0.5
+   },
+   "repo_verdict": {
+    "validate_route.py": "FAIL",
+    "sensitive_route_contract.py": "FAIL"
+   }
+  }
+ ],
+ "max_track_only_deviation_mm": 0.0008,
+ "tune_sensitive_pairs_route_length": [
+  {
+   "pair": "LO_LOW_P/LO_LOW_N",
+   "limit_mm": 0.25,
+   "route_length_p": 34.7496,
+   "route_length_n": 34.9496,
+   "skew_mm": 0.2,
+   "verdict": "PASS",
+   "ours_track_only_skew_mm": 0.2
+  },
+  {
+   "pair": "IF_LOW_P/IF_LOW_N",
+   "limit_mm": 0.25,
+   "route_length_p": 12.0079,
+   "route_length_n": 12.0087,
+   "skew_mm": 0.0008,
+   "verdict": "PASS",
+   "ours_track_only_skew_mm": 0.0008
+  },
+  {
+   "pair": "IF_HIGH_P/IF_HIGH_N",
+   "limit_mm": 0.25,
+   "route_length_p": 52.6398,
+   "route_length_n": 49.7479,
+   "skew_mm": 2.8919,
+   "verdict": "FAIL",
+   "ours_track_only_skew_mm": 2.8919
+  },
+  {
+   "pair": "LT_IN_P/LT_IN_N",
+   "limit_mm": 0.25,
+   "route_length_p": 9.345,
+   "route_length_n": 7.0501,
+   "skew_mm": 2.2949,
+   "verdict": "FAIL",
+   "ours_track_only_skew_mm": 2.2949
+  },
+  {
+   "pair": "AD8351_OUT_P/AD8351_OUT_N",
+   "limit_mm": 0.5,
+   "route_length_p": 5.1503,
+   "route_length_n": 1.8266,
+   "skew_mm": 3.3237,
+   "verdict": "FAIL",
+   "ours_track_only_skew_mm": 3.3237
+  },
+  {
+   "pair": "ADC_VIN_P/ADC_VIN_N",
+   "limit_mm": 0.5,
+   "route_length_p": 44.618,
+   "route_length_n": 41.9928,
+   "skew_mm": 2.6252,
+   "verdict": "FAIL",
+   "ours_track_only_skew_mm": 2.6252
+  }
+ ],
+ "counts": {
+  "groups": 21,
+  "validate_route_fail": 18,
+  "contract_fail": 18
+ }
+}

@@ -1,0 +1,9 @@
+{
+ "fill_ok": true,
+ "tracks_and_vias": 12247,
+ "changed_filled_area_mm2": {
+  "In2.Cu|+3V3_DIG": 2.2861,
+  "In2.Cu|+3V3_ANA": 0.4611
+ },
+ "total_change_mm2": 2.7472
+}

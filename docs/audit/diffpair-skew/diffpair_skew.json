@@ -1,0 +1,6432 @@
+{
+ "board": "Code-SDR-V2.kicad_pcb",
+ "board_sha256": "9ee6b2ec6cdb1be433d424bb73b350e6ba737d6b957406dad944e73a52d0c65b",
+ "kicad": "9.0.7",
+ "stackup": {
+  "copper": {
+   "F.Cu": {
+    "z_top": 0.0,
+    "z_mid": 0.0175,
+    "z_bot": 0.035,
+    "t": 0.035
+   },
+   "In1.Cu": {
+    "z_top": 0.165,
+    "z_mid": 0.1825,
+    "z_bot": 0.2,
+    "t": 0.035
+   },
+   "In2.Cu": {
+    "z_top": 1.4,
+    "z_mid": 1.4175,
+    "z_bot": 1.435,
+    "t": 0.035
+   },
+   "B.Cu": {
+    "z_top": 1.565,
+    "z_mid": 1.5825,
+    "z_bot": 1.6,
+    "t": 0.035
+   }
+  },
+  "dielectrics": [
+   {
+    "z_top": 0.035,
+    "z_bot": 0.165,
+    "t": 0.13,
+    "er": 4.2,
+    "name": "dielectric 1",
+    "type": "prepreg"
+   },
+   {
+    "z_top": 0.2,
+    "z_bot": 1.4,
+    "t": 1.2,
+    "er": 4.2,
+    "name": "dielectric 2",
+    "type": "core"
+   },
+   {
+    "z_top": 1.4349999999999998,
+    "z_bot": 1.565,
+    "t": 0.13,
+    "er": 4.2,
+    "name": "dielectric 3",
+    "type": "prepreg"
+   }
+  ],
+  "total_mm": 1.6
+ },
+ "assumptions": [
+  "routed length = sum of track/arc lengths (all branches of the net) + via barrel between outermost connected copper layers (copper-centre to copper-centre)",
+  "outer-layer delay: quasi-static microstrip eps_eff (Hammerstad) per segment width and adjacent dielectric; solder mask, odd/even-mode split and dispersion ignored",
+  "inner-layer delay: eps_eff = er; via barrel delay: eps_eff = mean dielectric er",
+  "uncoupled length reported at two thresholds: same-layer edge gap > 2 x netclass diff_pair_gap, and > 1.0 mm; gap stats over samples whose same-layer partner is within 1.0 mm edge gap",
+  "series parts (resistors, ESD, chokes) are not part of any net length"
+ ],
+ "dru_diffpair_rules": [],
+ "netclass_diff_pair_settings": {
+  "Default": {
+   "diff_pair_gap": 0.15,
+   "diff_pair_width": 0.15
+  },
+  "DIGITAL_HS": {
+   "diff_pair_gap": 0.15,
+   "diff_pair_width": 0.15
+  },
+  "IF_DIFF": {
+   "diff_pair_gap": 0.2,
+   "diff_pair_width": 0.2
+  },
+  "POWER": {
+   "diff_pair_gap": 0.2,
+   "diff_pair_width": 0.2
+  },
+  "RF_50": {
+   "diff_pair_gap": 0.2,
+   "diff_pair_width": 0.2
+  }
+ },
+ "pairs": [
+  {
+   "name": "ADC analog input",
+   "p": [
+    "ADC_VIN_P"
+   ],
+   "n": [
+    "ADC_VIN_N"
+   ],
+   "sources": [
+    "limits file: hardware/v2/tools/sensitive_route_contract.py PAIR_GROUPS",
+    "limits file: hardware/v2/tools/validate_route.py MATCHED_PAIRS",
+    "name: token _P/_N"
+   ],
+   "netclass": "Default",
+   "status": "ROUTED",
+   "p_metrics": [
+    {
+     "net": "ADC_VIN_P",
+     "netclass": "Default",
+     "track_mm": 44.617984105807786,
+     "via_count": 4,
+     "via_barrel_mm": 6.26,
+     "routed_mm": 50.87798410580778,
+     "delay_ps": 305.2713559290919,
+     "layers": {
+      "B.Cu": 33.8831,
+      "F.Cu": 10.7349
+     },
+     "vias": [
+      {
+       "spans": [
+        "F.Cu-B.Cu"
+       ],
+       "connected_layers": [
+        "F.Cu",
+        "B.Cu"
+       ],
+       "barrel_mm": 1.565,
+       "x": 71.55,
+       "y": 63.714
+      },
+      {
+       "spans": [
+        "F.Cu-B.Cu"
+       ],
+       "connected_layers": [
+        "F.Cu",
+        "B.Cu"
+       ],
+       "barrel_mm": 1.565,
+       "x": 71.562,
+       "y": 55.722
+      },
+      {
+       "spans": [
+        "F.Cu-B.Cu"
+       ],
+       "connected_layers": [
+        "F.Cu",
+        "B.Cu"
+       ],
+       "barrel_mm": 1.565,
+       "x": 88.562,
+       "y": 30.222
+      },
+      {
+       "spans": [
+        "F.Cu-B.Cu"
+       ],
+       "connected_layers": [
+        "F.Cu",
+        "B.Cu"
+       ],
+       "barrel_mm": 1.565,
+       "x": 71.562,
+       "y": 62.622
+      }
+     ],
+     "eps_eff_used": {
+      "F.Cu@w=0.150": {
+       "eps_eff": 3.0739,
+       "model": "microstrip (Hammerstad)",
+       "h_mm": 0.13,
+       "er": 4.2
+      },
+      "F.Cu@w=0.100": {
+       "eps_eff": 2.9927,
+       "model": "microstrip (Hammerstad)",
+       "h_mm": 0.13,
+       "er": 4.2
+      },
+      "F.Cu@w=0.200": {
+       "eps_eff": 3.1394,
+       "model": "microstrip (Hammerstad)",
+       "h_mm": 0.13,
+       "er": 4.2
+      },
+      "B.Cu@w=0.200": {
+       "eps_eff": 3.1394,
+       "model": "microstrip (Hammerstad)",
+       "h_mm": 0.13,
+       "er": 4.2
+      }
+     },
+     "segments": 68,
+     "pads": 2,
+     "pad_to_pad": {
+      "R73.2-U21.29": {
+       "length_mm": 48.912,
+       "delay_ps": 293.709,
+       "refs": [
+        "R73",
+        "U21"
+       ]
+      }
+     }
+    }
+   ],
+   "n_metrics": [
+    {
+     "net": "ADC_VIN_N",
+     "netclass": "Default",
+     "track_mm": 41.99278063047957,
+     "via_count": 2,
+     "via_barrel_mm": 3.13,
+     "routed_mm": 45.122780630479575,
+     "delay_ps": 268.26237530289956,
+     "layers": {
+      "B.Cu": 1.5414,
+      "F.Cu": 40.4514
+     },
+     "vias": [
+      {
+       "spans": [
+        "F.Cu-B.Cu"
+       ],
+       "connected_layers": [
+        "F.Cu",
+        "B.Cu"
+       ],
+       "barrel_mm": 1.565,
+       "x": 71.038,
+       "y": 62.178
+      },
+      {
+       "spans": [
+        "F.Cu-B.Cu"
+       ],
+       "connected_layers": [
+        "F.Cu",
+        "B.Cu"
+       ],
+       "barrel_mm": 1.565,
+       "x": 70.938,
+       "y": 63.678
+      }
+     ],
+     "eps_eff_used": {
+      "F.Cu@w=0.100": {
+       "eps_eff": 2.9927,
+       "model": "microstrip (Hammerstad)",
+       "h_mm": 0.13,
+       "er": 4.2
+      },
+      "F.Cu@w=0.200": {
+       "eps_eff": 3.1394,
+       "model": "microstrip (Hammerstad)",
+       "h_mm": 0.13,
+       "er": 4.2
+      },
+      "B.Cu@w=0.200": {
+       "eps_eff": 3.1394,
+       "model": "microstrip (Hammerstad)",
+       "h_mm": 0.13,
+       "er": 4.2
+      }
+     },
+     "segments": 44,
+     "pads": 2,
+     "pad_to_pad": {
+      "U21.30-R74.2": {
+       "length_mm": null,
+       "delay_ps": null,
+       "refs": [
+        "R74",
+        "U21"
+       ],
+       "note": "no copper path"
+      }
+     }
+    }
+   ],
+   "P": {
+    "track_mm": 44.618,
+    "via_barrel_mm": 6.26,
+    "routed_mm": 50.878,
+    "delay_ps": 305.2714,
+    "via_count": 4
+   },
+   "N": {
+    "track_mm": 41.9928,
+    "via_barrel_mm": 3.13,
+    "routed_mm": 45.1228,
+    "delay_ps": 268.2624,
+    "via_count": 2
+   },
+   "skew_mm": 5.7552,
+   "skew_track_only_mm": 2.6252,
+   "skew_ps": 37.009,
+   "layers_p": [
+    "B.Cu",
+    "F.Cu"
+   ],
+   "layers_n": [
+    "B.Cu",
+    "F.Cu"
+   ],
+   "coupled_max_edge_gap_mm": 0.3,
+   "coupled_max_basis": "2 x netclass 'Default' diff_pair_gap 0.15 mm",
+   "coupling_p": [
+    {
+     "coupled_mm": 2.689,
+     "uncoupled_mm": 41.929,
+     "uncoupled_at_1mm_mm": 39.5,
+     "gap_stats_mm": {
+      "min": 0.137,
+      "median": 0.2572,
+      "p95": 0.9587,
+      "max": 0.997
+     }
+    }
+   ],
+   "coupling_n": [
+    {
+     "coupled_mm": 2.221,
+     "uncoupled_mm": 39.771,
+     "uncoupled_at_1mm_mm": 36.493,
+     "gap_stats_mm": {
+      "min": 0.137,
+      "median": 0.3237,
+      "p95": 0.9596,
+      "max": 0.9955
+     }
+    }
+   ],
+   "uncoupled_mm": {
+    "p": 41.929,
+    "n": 39.771
+   },
+   "uncoupled_at_1mm": {
+    "p": 39.5,
+    "n": 36.493
+   },
+   "pad_to_pad_skew": [],
+   "limits": [
+    {
+     "source": "hardware/v2/tools/validate_route.py MATCHED_PAIRS",
+     "max_skew_mm": 0.5,
+     "require_equal_vias": true
+    },
+    {
+     "source": "hardware/v2/tools/sensitive_route_contract.py PAIR_GROUPS",
+     "max_skew_mm": 0.5,
+     "require_equal_vias": true
+    }
+   ],
+   "limit_verdicts": [
+    {
+     "source": "hardware/v2/tools/validate_route.py MATCHED_PAIRS",
+     "max_skew_mm": 0.5,
+     "pass_track_only": false,
+     "pass_with_via_barrels": false,
+     "equal_vias": false
+    },
+    {
+     "source": "hardware/v2/tools/sensitive_route_contract.py PAIR_GROUPS",
+     "max_skew_mm": 0.5,
+     "pass_track_only": false,
+     "pass_with_via_barrels": false,
+     "equal_vias": false
+    }
+   ]
+  },
+  {
+   "name": "ADC driver input",
+   "p": [
+    "AD8351_IN_P"
+   ],
+   "n": [
+    "AD8351_IN_N"
+   ],
+   "sources": [
+    "limits file: hardware/v2/tools/sensitive_route_contract.py PAIR_GROUPS",
+    "limits file: hardware/v2/tools/validate_route.py MATCHED_PAIRS",
+    "name: token _P/_N"
+   ],
+   "netclass": "Default",
+   "status": "ROUTED",
+   "p_metrics": [
+    {
+     "net": "AD8351_IN_P",
+     "netclass": "Default",
+     "track_mm": 2.0637236636408574,
+     "via_count": 0,
+     "via_barrel_mm": 0.0,
+     "routed_mm": 2.0637236636408574,
+     "delay_ps": 12.06908184168073,
+     "layers": {
+      "F.Cu": 2.0637
+     },
+     "vias": [],
+     "eps_eff_used": {
+      "F.Cu@w=0.150": {
+       "eps_eff": 3.0739,
+       "model": "microstrip (Hammerstad)",
+       "h_mm": 0.13,
+       "er": 4.2
+      }
+     },
+     "segments": 2,
+     "pads": 2,
+     "pad_to_pad": {
+      "C254.2-U74.3": {
+       "length_mm": 1.2162,
+       "delay_ps": 7.113,
+       "refs": [
+        "C254",
+        "U74"
+       ]
+      }
+     }
+    }
+   ],
+   "n_metrics": [
+    {
+     "net": "AD8351_IN_N",
+     "netclass": "Default",
+     "track_mm": 1.85661688245431,
+     "via_count": 0,
+     "via_barrel_mm": 0.0,
+     "routed_mm": 1.85661688245431,
+     "delay_ps": 10.857878648081794,
+     "layers": {
+      "F.Cu": 1.8566
+     },
+     "vias": [],
+     "eps_eff_used": {
+      "F.Cu@w=0.150": {
+       "eps_eff": 3.0739,
+       "model": "microstrip (Hammerstad)",
+       "h_mm": 0.13,
+       "er": 4.2
+      }
+     },
+     "segments": 2,
+     "pads": 2,
+     "pad_to_pad": {
+      "C255.2-U74.4": {
+       "length_mm": 1.8566,
+       "delay_ps": 10.858,
+       "refs": [
+        "C255",
+        "U74"
+       ]
+      }
+     }
+    }
+   ],
+   "P": {
+    "track_mm": 2.0637,
+    "via_barrel_mm": 0.0,
+    "routed_mm": 2.0637,
+    "delay_ps": 12.0691,
+    "via_count": 0
+   },
+   "N": {
+    "track_mm": 1.8566,
+    "via_barrel_mm": 0.0,
+    "routed_mm": 1.8566,
+    "delay_ps": 10.8579,
+    "via_count": 0
+   },
+   "skew_mm": 0.2071,
+   "skew_track_only_mm": 0.2071,
+   "skew_ps": 1.211,
+   "layers_p": [
+    "F.Cu"
+   ],
+   "layers_n": [
+    "F.Cu"
+   ],
+   "coupled_max_edge_gap_mm": 0.3,
+   "coupled_max_basis": "2 x netclass 'Default' diff_pair_gap 0.15 mm",
+   "coupling_p": [
+    {
+     "coupled_mm": 0.0,
+     "uncoupled_mm": 2.064,
+     "uncoupled_at_1mm_mm": 0.292,
+     "gap_stats_mm": {
+      "min": 0.35,
+      "median": 0.3844,
+      "p95": 0.9567,
+      "max": 0.9946
+     }
+    }
+   ],
+   "coupling_n": [
+    {
+     "coupled_mm": 0.0,
+     "uncoupled_mm": 1.857,
+     "uncoupled_at_1mm_mm": 0.046,
+     "gap_stats_mm": {
+      "min": 0.35,
+      "median": 0.3557,
+      "p95": 0.9505,
+      "max": 0.9968
+     }
+    }
+   ],
+   "uncoupled_mm": {
+    "p": 2.064,
+    "n": 1.857
+   },
+   "uncoupled_at_1mm": {
+    "p": 0.292,
+    "n": 0.046
+   },
+   "pad_to_pad_skew": [
+    {
+     "refs": "single path each (refs differ)",
+     "p_path": "C254.2-U74.3",
+     "n_path": "C255.2-U74.4",
+     "p_mm": 1.2162,
+     "n_mm": 1.8566,
+     "skew_mm": 0.6404,
+     "skew_ps": 3.745
+    }
+   ],
+   "limits": [
+    {
+     "source": "hardware/v2/tools/validate_route.py MATCHED_PAIRS",
+     "max_skew_mm": 0.5,
+     "require_equal_vias": true
+    },
+    {
+     "source": "hardware/v2/tools/sensitive_route_contract.py PAIR_GROUPS",
+     "max_skew_mm": 0.5,
+     "require_equal_vias": true
+    }
+   ],
+   "limit_verdicts": [
+    {
+     "source": "hardware/v2/tools/validate_route.py MATCHED_PAIRS",
+     "max_skew_mm": 0.5,
+     "pass_track_only": true,
+     "pass_with_via_barrels": true,
+     "equal_vias": true
+    },
+    {
+     "source": "hardware/v2/tools/sensitive_route_contract.py PAIR_GROUPS",
+     "max_skew_mm": 0.5,
+     "pass_track_only": true,
+     "pass_with_via_barrels": true,
+     "equal_vias": true
+    }
+   ]
+  },
+  {
+   "name": "ADC driver output",
+   "p": [
+    "AD8351_OUT_P"
+   ],
+   "n": [
+    "AD8351_OUT_N"
+   ],
+   "sources": [
+    "limits file: hardware/v2/tools/sensitive_route_contract.py PAIR_GROUPS",
+    "limits file: hardware/v2/tools/validate_route.py MATCHED_PAIRS",
+    "name: token _P/_N"
+   ],
+   "netclass": "Default",
+   "status": "ROUTED",
+   "p_metrics": [
+    {
+     "net": "AD8351_OUT_P",
+     "netclass": "Default",
+     "track_mm": 5.150283837971575,
+     "via_count": 0,
+     "via_barrel_mm": 0.0,
+     "routed_mm": 5.150283837971575,
+     "delay_ps": 30.119922663823182,
+     "layers": {
+      "F.Cu": 5.1503
+     },
+     "vias": [],
+     "eps_eff_used": {
+      "F.Cu@w=0.150": {
+       "eps_eff": 3.0739,
+       "model": "microstrip (Hammerstad)",
+       "h_mm": 0.13,
+       "er": 4.2
+      }
+     },
+     "segments": 3,
+     "pads": 2,
+     "pad_to_pad": {
+      "R73.1-U74.8": {
+       "length_mm": 4.8335,
+       "delay_ps": 28.267,
+       "refs": [
+        "R73",
+        "U74"
+       ]
+      }
+     }
+    }
+   ],
+   "n_metrics": [
+    {
+     "net": "AD8351_OUT_N",
+     "netclass": "Default",
+     "track_mm": 1.826616882454323,
+     "via_count": 0,
+     "via_barrel_mm": 0.0,
+     "routed_mm": 1.826616882454323,
+     "delay_ps": 10.6824324574753,
+     "layers": {
+      "F.Cu": 1.8266
+     },
+     "vias": [],
+     "eps_eff_used": {
+      "F.Cu@w=0.150": {
+       "eps_eff": 3.0739,
+       "model": "microstrip (Hammerstad)",
+       "h_mm": 0.13,
+       "er": 4.2
+      }
+     },
+     "segments": 2,
+     "pads": 2,
+     "pad_to_pad": {
+      "R74.1-U74.7": {
+       "length_mm": 1.8266,
+       "delay_ps": 10.682,
+       "refs": [
+        "R74",
+        "U74"
+       ]
+      }
+     }
+    }
+   ],
+   "P": {
+    "track_mm": 5.1503,
+    "via_barrel_mm": 0.0,
+    "routed_mm": 5.1503,
+    "delay_ps": 30.1199,
+    "via_count": 0
+   },
+   "N": {
+    "track_mm": 1.8266,
+    "via_barrel_mm": 0.0,
+    "routed_mm": 1.8266,
+    "delay_ps": 10.6824,
+    "via_count": 0
+   },
+   "skew_mm": 3.3237,
+   "skew_track_only_mm": 3.3237,
+   "skew_ps": 19.437,
+   "layers_p": [
+    "F.Cu"
+   ],
+   "layers_n": [
+    "F.Cu"
+   ],
+   "coupled_max_edge_gap_mm": 0.3,
+   "coupled_max_basis": "2 x netclass 'Default' diff_pair_gap 0.15 mm",
+   "coupling_p": [
+    {
+     "coupled_mm": 1.524,
+     "uncoupled_mm": 3.626,
+     "uncoupled_at_1mm_mm": 2.55,
+     "gap_stats_mm": {
+      "min": 0.238,
+      "median": 0.252,
+      "p95": 0.9104,
+      "max": 0.9832
+     }
+    }
+   ],
+   "coupling_n": [
+    {
+     "coupled_mm": 1.41,
+     "uncoupled_mm": 0.417,
+     "uncoupled_at_1mm_mm": 0.0,
+     "gap_stats_mm": {
+      "min": 0.238,
+      "median": 0.238,
+      "p95": 0.5489,
+      "max": 0.5816
+     }
+    }
+   ],
+   "uncoupled_mm": {
+    "p": 3.626,
+    "n": 0.417
+   },
+   "uncoupled_at_1mm": {
+    "p": 2.55,
+    "n": 0.0
+   },
+   "pad_to_pad_skew": [
+    {
+     "refs": "single path each (refs differ)",
+     "p_path": "R73.1-U74.8",
+     "n_path": "R74.1-U74.7",
+     "p_mm": 4.8335,
+     "n_mm": 1.8266,
+     "skew_mm": 3.0069,
+     "skew_ps": 17.585
+    }
+   ],
+   "limits": [
+    {
+     "source": "hardware/v2/tools/validate_route.py MATCHED_PAIRS",
+     "max_skew_mm": 0.5,
+     "require_equal_vias": true
+    },
+    {
+     "source": "hardware/v2/tools/sensitive_route_contract.py PAIR_GROUPS",
+     "max_skew_mm": 0.5,
+     "require_equal_vias": true
+    }
+   ],
+   "limit_verdicts": [
+    {
+     "source": "hardware/v2/tools/validate_route.py MATCHED_PAIRS",
+     "max_skew_mm": 0.5,
+     "pass_track_only": false,
+     "pass_with_via_barrels": false,
+     "equal_vias": true
+    },
+    {
+     "source": "hardware/v2/tools/sensitive_route_contract.py PAIR_GROUPS",
+     "max_skew_mm": 0.5,
+     "pass_track_only": false,
+     "pass_with_via_barrels": false,
+     "equal_vias": true
+    }
+   ]
+  },
+  {
+   "name": "ADF second LO",
+   "p": [
+    "ADF_LO2_P_RAW"
+   ],
+   "n": [
+    "ADF_LO2_N_RAW"
+   ],
+   "sources": [
+    "limits file: hardware/v2/tools/sensitive_route_contract.py PAIR_GROUPS",
+    "limits file: hardware/v2/tools/validate_route.py MATCHED_PAIRS",
+    "name: token _P/_N"
+   ],
+   "netclass": "Default",
+   "status": "ROUTED",
+   "p_metrics": [
+    {
+     "net": "ADF_LO2_P_RAW",
+     "netclass": "Default",
+     "track_mm": 36.806496674637465,
+     "via_count": 0,
+     "via_barrel_mm": 0.0,
+     "routed_mm": 36.806496674637465,
+     "delay_ps": 218.7133013045213,
+     "layers": {
+      "F.Cu": 36.8065
+     },
+     "vias": [],
+     "eps_eff_used": {
+      "F.Cu@w=0.230": {
+       "eps_eff": 3.1735,
+       "model": "microstrip (Hammerstad)",
+       "h_mm": 0.13,
+       "er": 4.2
+      }
+     },
+     "segments": 24,
+     "pads": 3,
+     "pad_to_pad": {
+      "U41.4-C206.1": {
+       "length_mm": 35.9291,
+       "delay_ps": 213.5,
+       "refs": [
+        "C206",
+        "U41"
+       ]
+      },
+      "U41.4-R94.2": {
+       "length_mm": 32.069,
+       "delay_ps": 190.562,
+       "refs": [
+        "R94",
+        "U41"
+       ]
+      },
+      "C206.1-R94.2": {
+       "length_mm": 5.2761,
+       "delay_ps": 31.352,
+       "refs": [
+        "C206",
+        "R94"
+       ]
+      }
+     }
+    }
+   ],
+   "n_metrics": [
+    {
+     "net": "ADF_LO2_N_RAW",
+     "netclass": "Default",
+     "track_mm": 20.58744860103615,
+     "via_count": 0,
+     "via_barrel_mm": 0.0,
+     "routed_mm": 20.58744860103615,
+     "delay_ps": 122.33570852377562,
+     "layers": {
+      "F.Cu": 20.5874
+     },
+     "vias": [],
+     "eps_eff_used": {
+      "F.Cu@w=0.230": {
+       "eps_eff": 3.1735,
+       "model": "microstrip (Hammerstad)",
+       "h_mm": 0.13,
+       "er": 4.2
+      }
+     },
+     "segments": 14,
+     "pads": 3,
+     "pad_to_pad": {
+      "R95.2-U41.5": {
+       "length_mm": 20.0692,
+       "delay_ps": 119.256,
+       "refs": [
+        "R95",
+        "U41"
+       ]
+      },
+      "R95.2-C207.1": {
+       "length_mm": 5.1327,
+       "delay_ps": 30.5,
+       "refs": [
+        "C207",
+        "R95"
+       ]
+      },
+      "U41.5-C207.1": {
+       "length_mm": 14.9366,
+       "delay_ps": 88.757,
+       "refs": [
+        "C207",
+        "U41"
+       ]
+      }
+     }
+    }
+   ],
+   "P": {
+    "track_mm": 36.8065,
+    "via_barrel_mm": 0.0,
+    "routed_mm": 36.8065,
+    "delay_ps": 218.7133,
+    "via_count": 0
+   },
+   "N": {
+    "track_mm": 20.5874,
+    "via_barrel_mm": 0.0,
+    "routed_mm": 20.5874,
+    "delay_ps": 122.3357,
+    "via_count": 0
+   },
+   "skew_mm": 16.219,
+   "skew_track_only_mm": 16.219,
+   "skew_ps": 96.378,
+   "layers_p": [
+    "F.Cu"
+   ],
+   "layers_n": [
+    "F.Cu"
+   ],
+   "coupled_max_edge_gap_mm": 0.3,
+   "coupled_max_basis": "2 x netclass 'Default' diff_pair_gap 0.15 mm",
+   "coupling_p": [
+    {
+     "coupled_mm": 6.103,
+     "uncoupled_mm": 30.704,
+     "uncoupled_at_1mm_mm": 20.052,
+     "gap_stats_mm": {
+      "min": 0.1371,
+      "median": 0.3383,
+      "p95": 0.9015,
+      "max": 0.9933
+     }
+    }
+   ],
+   "coupling_n": [
+    {
+     "coupled_mm": 6.206,
+     "uncoupled_mm": 14.381,
+     "uncoupled_at_1mm_mm": 8.931,
+     "gap_stats_mm": {
+      "min": 0.1211,
+      "median": 0.2975,
+      "p95": 0.8769,
+      "max": 0.9831
+     }
+    }
+   ],
+   "uncoupled_mm": {
+    "p": 30.704,
+    "n": 14.381
+   },
+   "uncoupled_at_1mm": {
+    "p": 20.052,
+    "n": 8.931
+   },
+   "pad_to_pad_skew": [],
+   "limits": [
+    {
+     "source": "hardware/v2/tools/validate_route.py MATCHED_PAIRS",
+     "max_skew_mm": 0.75,
+     "require_equal_vias": true
+    },
+    {
+     "source": "hardware/v2/tools/sensitive_route_contract.py PAIR_GROUPS",
+     "max_skew_mm": 0.25,
+     "require_equal_vias": true
+    }
+   ],
+   "limit_verdicts": [
+    {
+     "source": "hardware/v2/tools/validate_route.py MATCHED_PAIRS",
+     "max_skew_mm": 0.75,
+     "pass_track_only": false,
+     "pass_with_via_barrels": false,
+     "equal_vias": true
+    },
+    {
+     "source": "hardware/v2/tools/sensitive_route_contract.py PAIR_GROUPS",
+     "max_skew_mm": 0.25,
+     "pass_track_only": false,
+     "pass_with_via_barrels": false,
+     "equal_vias": true
+    }
+   ]
+  },
+  {
+   "name": "Ethernet MDI A",
+   "p": [
+    "MDI_A_P"
+   ],
+   "n": [
+    "MDI_A_N"
+   ],
+   "sources": [
+    "limits file: hardware/v2/tools/sensitive_route_contract.py PAIR_GROUPS",
+    "limits file: hardware/v2/tools/validate_route.py MATCHED_PAIRS",
+    "name: token _P/_N"
+   ],
+   "netclass": "Default",
+   "status": "ROUTED",
+   "p_metrics": [
+    {
+     "net": "MDI_A_P",
+     "netclass": "Default",
+     "track_mm": 35.43995838532272,
+     "via_count": 2,
+     "via_barrel_mm": 2.8,
+     "routed_mm": 38.239958385322716,
+     "delay_ps": 232.06498537788968,
+     "layers": {
+      "F.Cu": 31.6943,
+      "In2.Cu": 3.7457
+     },
+     "vias": [
+      {
+       "spans": [
+        "F.Cu-B.Cu"
+       ],
+       "connected_layers": [
+        "F.Cu",
+        "In2.Cu"
+       ],
+       "barrel_mm": 1.4,
+       "x": 82.685,
+       "y": 72.043
+      },
+      {
+       "spans": [
+        "F.Cu-B.Cu"
+       ],
+       "connected_layers": [
+        "F.Cu",
+        "In2.Cu"
+       ],
+       "barrel_mm": 1.4,
+       "x": 79.26,
+       "y": 71.879
+      }
+     ],
+     "eps_eff_used": {
+      "F.Cu@w=0.200": {
+       "eps_eff": 3.1394,
+       "model": "microstrip (Hammerstad)",
+       "h_mm": 0.13,
+       "er": 4.2
+      },
+      "In2.Cu@w=0.200": {
+       "eps_eff": 4.2,
+       "model": "stripline (eps_eff = er)",
+       "er": 4.2
+      }
+     },
+     "segments": 24,
+     "pads": 2,
+     "pad_to_pad": {
+      "U30.2-J30.11": {
+       "length_mm": 36.9164,
+       "delay_ps": 223.944,
+       "refs": [
+        "J30",
+        "U30"
+       ]
+      }
+     }
+    }
+   ],
+   "n_metrics": [
+    {
+     "net": "MDI_A_N",
+     "netclass": "Default",
+     "track_mm": 42.52350668784879,
+     "via_count": 2,
+     "via_barrel_mm": 1.565,
+     "routed_mm": 44.088506687848785,
+     "delay_ps": 282.1270135902324,
+     "layers": {
+      "B.Cu": 20.0967,
+      "F.Cu": 0.6647,
+      "In1.Cu": 21.7621
+     },
+     "vias": [
+      {
+       "spans": [
+        "F.Cu-B.Cu"
+       ],
+       "connected_layers": [
+        "In1.Cu",
+        "B.Cu"
+       ],
+       "barrel_mm": 1.4,
+       "x": 79.0,
+       "y": 83.2
+      },
+      {
+       "spans": [
+        "F.Cu-B.Cu"
+       ],
+       "connected_layers": [
+        "F.Cu",
+        "In1.Cu"
+       ],
+       "barrel_mm": 0.165,
+       "x": 84.053,
+       "y": 72.25
+      }
+     ],
+     "eps_eff_used": {
+      "F.Cu@w=0.150": {
+       "eps_eff": 3.0739,
+       "model": "microstrip (Hammerstad)",
+       "h_mm": 0.13,
+       "er": 4.2
+      },
+      "B.Cu@w=0.200": {
+       "eps_eff": 3.1394,
+       "model": "microstrip (Hammerstad)",
+       "h_mm": 0.13,
+       "er": 4.2
+      },
+      "In1.Cu@w=0.150": {
+       "eps_eff": 4.2,
+       "model": "stripline (eps_eff = er)",
+       "er": 4.2
+      }
+     },
+     "segments": 100,
+     "pads": 2,
+     "pad_to_pad": {
+      "U30.3-J30.10": {
+       "length_mm": 41.7933,
+       "delay_ps": 266.909,
+       "refs": [
+        "J30",
+        "U30"
+       ]
+      }
+     }
+    }
+   ],
+   "P": {
+    "track_mm": 35.44,
+    "via_barrel_mm": 2.8,
+    "routed_mm": 38.24,
+    "delay_ps": 232.065,
+    "via_count": 2
+   },
+   "N": {
+    "track_mm": 42.5235,
+    "via_barrel_mm": 1.565,
+    "routed_mm": 44.0885,
+    "delay_ps": 282.127,
+    "via_count": 2
+   },
+   "skew_mm": 5.8485,
+   "skew_track_only_mm": 7.0835,
+   "skew_ps": 50.062,
+   "layers_p": [
+    "F.Cu",
+    "In2.Cu"
+   ],
+   "layers_n": [
+    "B.Cu",
+    "F.Cu",
+    "In1.Cu"
+   ],
+   "coupled_max_edge_gap_mm": 0.3,
+   "coupled_max_basis": "2 x netclass 'Default' diff_pair_gap 0.15 mm",
+   "coupling_p": [
+    {
+     "coupled_mm": 0.0,
+     "uncoupled_mm": 35.44,
+     "uncoupled_at_1mm_mm": 34.93,
+     "gap_stats_mm": {
+      "min": 0.3207,
+      "median": 0.4997,
+      "p95": 0.7178,
+      "max": 0.7178
+     }
+    }
+   ],
+   "coupling_n": [
+    {
+     "coupled_mm": 0.0,
+     "uncoupled_mm": 42.524,
+     "uncoupled_at_1mm_mm": 41.859,
+     "gap_stats_mm": {
+      "min": 0.3169,
+      "median": 0.5219,
+      "p95": 0.7023,
+      "max": 0.7023
+     }
+    }
+   ],
+   "uncoupled_mm": {
+    "p": 35.44,
+    "n": 42.524
+   },
+   "uncoupled_at_1mm": {
+    "p": 34.93,
+    "n": 41.859
+   },
+   "pad_to_pad_skew": [
+    {
+     "refs": "J30-U30",
+     "p_path": "U30.2-J30.11",
+     "n_path": "U30.3-J30.10",
+     "p_mm": 36.9164,
+     "n_mm": 41.7933,
+     "skew_mm": 4.8769,
+     "skew_ps": 42.965
+    }
+   ],
+   "limits": [
+    {
+     "source": "hardware/v2/tools/validate_route.py MATCHED_PAIRS",
+     "max_skew_mm": 1.0,
+     "require_equal_vias": true
+    },
+    {
+     "source": "hardware/v2/tools/sensitive_route_contract.py PAIR_GROUPS",
+     "max_skew_mm": 1.0,
+     "require_equal_vias": true
+    }
+   ],
+   "limit_verdicts": [
+    {
+     "source": "hardware/v2/tools/validate_route.py MATCHED_PAIRS",
+     "max_skew_mm": 1.0,
+     "pass_track_only": false,
+     "pass_with_via_barrels": false,
+     "equal_vias": true
+    },
+    {
+     "source": "hardware/v2/tools/sensitive_route_contract.py PAIR_GROUPS",
+     "max_skew_mm": 1.0,
+     "pass_track_only": false,
+     "pass_with_via_barrels": false,
+     "equal_vias": true
+    }
+   ]
+  },
+  {
+   "name": "Ethernet MDI B",
+   "p": [
+    "MDI_B_P"
+   ],
+   "n": [
+    "MDI_B_N"
+   ],
+   "sources": [
+    "limits file: hardware/v2/tools/sensitive_route_contract.py PAIR_GROUPS",
+    "limits file: hardware/v2/tools/validate_route.py MATCHED_PAIRS",
+    "name: token _P/_N"
+   ],
+   "netclass": "Default",
+   "status": "ROUTED",
+   "p_metrics": [
+    {
+     "net": "MDI_B_P",
+     "netclass": "Default",
+     "track_mm": 36.52716546738378,
+     "via_count": 4,
+     "via_barrel_mm": 6.26,
+     "routed_mm": 42.78716546738378,
+     "delay_ps": 255.8928210115515,
+     "layers": {
+      "B.Cu": 14.1747,
+      "F.Cu": 22.3525
+     },
+     "vias": [
+      {
+       "spans": [
+        "F.Cu-B.Cu"
+       ],
+       "connected_layers": [
+        "F.Cu",
+        "B.Cu"
+       ],
+       "barrel_mm": 1.565,
+       "x": 80.62,
+       "y": 74.418
+      },
+      {
+       "spans": [
+        "F.Cu-B.Cu"
+       ],
+       "connected_layers": [
+        "F.Cu",
+        "B.Cu"
+       ],
+       "barrel_mm": 1.565,
+       "x": 84.18,
+       "y": 73.28
+      },
+      {
+       "spans": [
+        "F.Cu-B.Cu"
+       ],
+       "connected_layers": [
+        "F.Cu",
+        "B.Cu"
+       ],
+       "barrel_mm": 1.565,
+       "x": 79.9,
+       "y": 83.618
+      },
+      {
+       "spans": [
+        "F.Cu-B.Cu"
+       ],
+       "connected_layers": [
+        "F.Cu",
+        "B.Cu"
+       ],
+       "barrel_mm": 1.565,
+       "x": 80.1,
+       "y": 72.0
+      }
+     ],
+     "eps_eff_used": {
+      "F.Cu@w=0.100": {
+       "eps_eff": 2.9927,
+       "model": "microstrip (Hammerstad)",
+       "h_mm": 0.13,
+       "er": 4.2
+      },
+      "F.Cu@w=0.200": {
+       "eps_eff": 3.1394,
+       "model": "microstrip (Hammerstad)",
+       "h_mm": 0.13,
+       "er": 4.2
+      },
+      "B.Cu@w=0.100": {
+       "eps_eff": 2.9927,
+       "model": "microstrip (Hammerstad)",
+       "h_mm": 0.13,
+       "er": 4.2
+      }
+     },
+     "segments": 63,
+     "pads": 2,
+     "pad_to_pad": {
+      "U30.5-J30.4": {
+       "length_mm": 38.8909,
+       "delay_ps": 233.045,
+       "refs": [
+        "J30",
+        "U30"
+       ]
+      }
+     }
+    }
+   ],
+   "n_metrics": [
+    {
+     "net": "MDI_B_N",
+     "netclass": "Default",
+     "track_mm": 24.77950148105407,
+     "via_count": 2,
+     "via_barrel_mm": 2.965,
+     "routed_mm": 27.74450148105407,
+     "delay_ps": 186.99634502907475,
+     "layers": {
+      "B.Cu": 0.1232,
+      "F.Cu": 2.5833,
+      "In2.Cu": 22.073
+     },
+     "vias": [
+      {
+       "spans": [
+        "F.Cu-B.Cu"
+       ],
+       "connected_layers": [
+        "F.Cu",
+        "In2.Cu"
+       ],
+       "barrel_mm": 1.4,
+       "x": 82.28,
+       "y": 74.08
+      },
+      {
+       "spans": [
+        "F.Cu-B.Cu"
+       ],
+       "connected_layers": [
+        "F.Cu",
+        "In1.Cu",
+        "In2.Cu",
+        "B.Cu"
+       ],
+       "barrel_mm": 1.565,
+       "x": 81.622,
+       "y": 94.817
+      }
+     ],
+     "eps_eff_used": {
+      "F.Cu@w=0.150": {
+       "eps_eff": 3.0739,
+       "model": "microstrip (Hammerstad)",
+       "h_mm": 0.13,
+       "er": 4.2
+      },
+      "B.Cu@w=0.200": {
+       "eps_eff": 3.1394,
+       "model": "microstrip (Hammerstad)",
+       "h_mm": 0.13,
+       "er": 4.2
+      },
+      "In2.Cu@w=0.150": {
+       "eps_eff": 4.2,
+       "model": "stripline (eps_eff = er)",
+       "er": 4.2
+      }
+     },
+     "segments": 30,
+     "pads": 2,
+     "pad_to_pad": {
+      "U30.6-J30.5": {
+       "length_mm": 22.3688,
+       "delay_ps": 152.028,
+       "refs": [
+        "J30",
+        "U30"
+       ]
+      }
+     }
+    }
+   ],
+   "P": {
+    "track_mm": 36.5272,
+    "via_barrel_mm": 6.26,
+    "routed_mm": 42.7872,
+    "delay_ps": 255.8928,
+    "via_count": 4
+   },
+   "N": {
+    "track_mm": 24.7795,
+    "via_barrel_mm": 2.965,
+    "routed_mm": 27.7445,
+    "delay_ps": 186.9963,
+    "via_count": 2
+   },
+   "skew_mm": 15.0427,
+   "skew_track_only_mm": 11.7477,
+   "skew_ps": 68.896,
+   "layers_p": [
+    "B.Cu",
+    "F.Cu"
+   ],
+   "layers_n": [
+    "B.Cu",
+    "F.Cu",
+    "In2.Cu"
+   ],
+   "coupled_max_edge_gap_mm": 0.3,
+   "coupled_max_basis": "2 x netclass 'Default' diff_pair_gap 0.15 mm",
+   "coupling_p": [
+    {
+     "coupled_mm": 1.468,
+     "uncoupled_mm": 35.059,
+     "uncoupled_at_1mm_mm": 33.684,
+     "gap_stats_mm": {
+      "min": 0.1649,
+      "median": 0.2824,
+      "p95": 0.9535,
+      "max": 0.9983
+     }
+    }
+   ],
+   "coupling_n": [
+    {
+     "coupled_mm": 1.883,
+     "uncoupled_mm": 22.896,
+     "uncoupled_at_1mm_mm": 22.896,
+     "gap_stats_mm": {
+      "min": 0.166,
+      "median": 0.244,
+      "p95": 0.2458,
+      "max": 0.2479
+     }
+    }
+   ],
+   "uncoupled_mm": {
+    "p": 35.059,
+    "n": 22.896
+   },
+   "uncoupled_at_1mm": {
+    "p": 33.684,
+    "n": 22.896
+   },
+   "pad_to_pad_skew": [
+    {
+     "refs": "J30-U30",
+     "p_path": "U30.5-J30.4",
+     "n_path": "U30.6-J30.5",
+     "p_mm": 38.8909,
+     "n_mm": 22.3688,
+     "skew_mm": 16.5221,
+     "skew_ps": 81.017
+    }
+   ],
+   "limits": [
+    {
+     "source": "hardware/v2/tools/validate_route.py MATCHED_PAIRS",
+     "max_skew_mm": 1.0,
+     "require_equal_vias": true
+    },
+    {
+     "source": "hardware/v2/tools/sensitive_route_contract.py PAIR_GROUPS",
+     "max_skew_mm": 1.0,
+     "require_equal_vias": true
+    }
+   ],
+   "limit_verdicts": [
+    {
+     "source": "hardware/v2/tools/validate_route.py MATCHED_PAIRS",
+     "max_skew_mm": 1.0,
+     "pass_track_only": false,
+     "pass_with_via_barrels": false,
+     "equal_vias": false
+    },
+    {
+     "source": "hardware/v2/tools/sensitive_route_contract.py PAIR_GROUPS",
+     "max_skew_mm": 1.0,
+     "pass_track_only": false,
+     "pass_with_via_barrels": false,
+     "equal_vias": false
+    }
+   ]
+  },
+  {
+   "name": "Ethernet MDI C",
+   "p": [
+    "MDI_C_P"
+   ],
+   "n": [
+    "MDI_C_N"
+   ],
+   "sources": [
+    "limits file: hardware/v2/tools/sensitive_route_contract.py PAIR_GROUPS",
+    "limits file: hardware/v2/tools/validate_route.py MATCHED_PAIRS",
+    "name: token _P/_N"
+   ],
+   "netclass": "Default",
+   "status": "ROUTED",
+   "p_metrics": [
+    {
+     "net": "MDI_C_P",
+     "netclass": "Default",
+     "track_mm": 20.876212271156973,
+     "via_count": 1,
+     "via_barrel_mm": 1.565,
+     "routed_mm": 22.441212271156974,
+     "delay_ps": 133.41375995725335,
+     "layers": {
+      "B.Cu": 18.896,
+      "F.Cu": 1.9802
+     },
+     "vias": [
+      {
+       "spans": [
+        "F.Cu-B.Cu"
+       ],
+       "connected_layers": [
+        "F.Cu",
+        "B.Cu"
+       ],
+       "barrel_mm": 1.565,
+       "x": 81.4,
+       "y": 74.4
+      }
+     ],
+     "eps_eff_used": {
+      "F.Cu@w=0.200": {
+       "eps_eff": 3.1394,
+       "model": "microstrip (Hammerstad)",
+       "h_mm": 0.13,
+       "er": 4.2
+      },
+      "F.Cu@w=0.150": {
+       "eps_eff": 3.0739,
+       "model": "microstrip (Hammerstad)",
+       "h_mm": 0.13,
+       "er": 4.2
+      },
+      "B.Cu@w=0.200": {
+       "eps_eff": 3.1394,
+       "model": "microstrip (Hammerstad)",
+       "h_mm": 0.13,
+       "er": 4.2
+      },
+      "B.Cu@w=0.150": {
+       "eps_eff": 3.0739,
+       "model": "microstrip (Hammerstad)",
+       "h_mm": 0.13,
+       "er": 4.2
+      }
+     },
+     "segments": 18,
+     "pads": 2,
+     "pad_to_pad": {
+      "U30.7-J30.3": {
+       "length_mm": 21.7713,
+       "delay_ps": 129.454,
+       "refs": [
+        "J30",
+        "U30"
+       ]
+      }
+     }
+    }
+   ],
+   "n_metrics": [
+    {
+     "net": "MDI_C_N",
+     "netclass": "Default",
+     "track_mm": 18.088255122249812,
+     "via_count": 1,
+     "via_barrel_mm": 1.565,
+     "routed_mm": 19.653255122249814,
+     "delay_ps": 117.43056265245066,
+     "layers": {
+      "B.Cu": 16.105,
+      "F.Cu": 1.9833
+     },
+     "vias": [
+      {
+       "spans": [
+        "F.Cu-B.Cu"
+       ],
+       "connected_layers": [
+        "F.Cu",
+        "B.Cu"
+       ],
+       "barrel_mm": 1.565,
+       "x": 81.6,
+       "y": 75.4
+      }
+     ],
+     "eps_eff_used": {
+      "F.Cu@w=0.200": {
+       "eps_eff": 3.1394,
+       "model": "microstrip (Hammerstad)",
+       "h_mm": 0.13,
+       "er": 4.2
+      },
+      "F.Cu@w=0.150": {
+       "eps_eff": 3.0739,
+       "model": "microstrip (Hammerstad)",
+       "h_mm": 0.13,
+       "er": 4.2
+      },
+      "B.Cu@w=0.200": {
+       "eps_eff": 3.1394,
+       "model": "microstrip (Hammerstad)",
+       "h_mm": 0.13,
+       "er": 4.2
+      },
+      "B.Cu@w=0.150": {
+       "eps_eff": 3.0739,
+       "model": "microstrip (Hammerstad)",
+       "h_mm": 0.13,
+       "er": 4.2
+      }
+     },
+     "segments": 14,
+     "pads": 2,
+     "pad_to_pad": {
+      "U30.8-J30.2": {
+       "length_mm": null,
+       "delay_ps": null,
+       "refs": [
+        "J30",
+        "U30"
+       ],
+       "note": "no copper path"
+      }
+     }
+    }
+   ],
+   "P": {
+    "track_mm": 20.8762,
+    "via_barrel_mm": 1.565,
+    "routed_mm": 22.4412,
+    "delay_ps": 133.4138,
+    "via_count": 1
+   },
+   "N": {
+    "track_mm": 18.0883,
+    "via_barrel_mm": 1.565,
+    "routed_mm": 19.6533,
+    "delay_ps": 117.4306,
+    "via_count": 1
+   },
+   "skew_mm": 2.788,
+   "skew_track_only_mm": 2.788,
+   "skew_ps": 15.983,
+   "layers_p": [
+    "B.Cu",
+    "F.Cu"
+   ],
+   "layers_n": [
+    "B.Cu",
+    "F.Cu"
+   ],
+   "coupled_max_edge_gap_mm": 0.3,
+   "coupled_max_basis": "2 x netclass 'Default' diff_pair_gap 0.15 mm",
+   "coupling_p": [
+    {
+     "coupled_mm": 5.781,
+     "uncoupled_mm": 15.096,
+     "uncoupled_at_1mm_mm": 3.345,
+     "gap_stats_mm": {
+      "min": 0.2,
+      "median": 0.4256,
+      "p95": 0.896,
+      "max": 0.9999
+     }
+    }
+   ],
+   "coupling_n": [
+    {
+     "coupled_mm": 4.581,
+     "uncoupled_mm": 13.508,
+     "uncoupled_at_1mm_mm": 2.045,
+     "gap_stats_mm": {
+      "min": 0.2,
+      "median": 0.4258,
+      "p95": 0.8596,
+      "max": 0.9962
+     }
+    }
+   ],
+   "uncoupled_mm": {
+    "p": 15.096,
+    "n": 13.508
+   },
+   "uncoupled_at_1mm": {
+    "p": 3.345,
+    "n": 2.045
+   },
+   "pad_to_pad_skew": [],
+   "limits": [
+    {
+     "source": "hardware/v2/tools/validate_route.py MATCHED_PAIRS",
+     "max_skew_mm": 1.0,
+     "require_equal_vias": true
+    },
+    {
+     "source": "hardware/v2/tools/sensitive_route_contract.py PAIR_GROUPS",
+     "max_skew_mm": 1.0,
+     "require_equal_vias": true
+    }
+   ],
+   "limit_verdicts": [
+    {
+     "source": "hardware/v2/tools/validate_route.py MATCHED_PAIRS",
+     "max_skew_mm": 1.0,
+     "pass_track_only": false,
+     "pass_with_via_barrels": false,
+     "equal_vias": true
+    },
+    {
+     "source": "hardware/v2/tools/sensitive_route_contract.py PAIR_GROUPS",
+     "max_skew_mm": 1.0,
+     "pass_track_only": false,
+     "pass_with_via_barrels": false,
+     "equal_vias": true
+    }
+   ]
+  },
+  {
+   "name": "Ethernet MDI D",
+   "p": [
+    "MDI_D_P"
+   ],
+   "n": [
+    "MDI_D_N"
+   ],
+   "sources": [
+    "limits file: hardware/v2/tools/sensitive_route_contract.py PAIR_GROUPS",
+    "limits file: hardware/v2/tools/validate_route.py MATCHED_PAIRS",
+    "name: token _P/_N"
+   ],
+   "netclass": "Default",
+   "status": "ROUTED",
+   "p_metrics": [
+    {
+     "net": "MDI_D_P",
+     "netclass": "Default",
+     "track_mm": 16.36463695155066,
+     "via_count": 0,
+     "via_barrel_mm": 0.0,
+     "routed_mm": 16.36463695155066,
+     "delay_ps": 96.65683416958038,
+     "layers": {
+      "F.Cu": 16.3646
+     },
+     "vias": [],
+     "eps_eff_used": {
+      "F.Cu@w=0.200": {
+       "eps_eff": 3.1394,
+       "model": "microstrip (Hammerstad)",
+       "h_mm": 0.13,
+       "er": 4.2
+      },
+      "F.Cu@w=0.150": {
+       "eps_eff": 3.0739,
+       "model": "microstrip (Hammerstad)",
+       "h_mm": 0.13,
+       "er": 4.2
+      }
+     },
+     "segments": 10,
+     "pads": 2,
+     "pad_to_pad": {
+      "U30.10-J30.8": {
+       "length_mm": 15.9216,
+       "delay_ps": 94.038,
+       "refs": [
+        "J30",
+        "U30"
+       ]
+      }
+     }
+    }
+   ],
+   "n_metrics": [
+    {
+     "net": "MDI_D_N",
+     "netclass": "Default",
+     "track_mm": 17.248858591168748,
+     "via_count": 3,
+     "via_barrel_mm": 1.895,
+     "routed_mm": 19.143858591168748,
+     "delay_ps": 118.23504417901523,
+     "layers": {
+      "B.Cu": 6.311,
+      "F.Cu": 7.2679,
+      "In1.Cu": 3.6699
+     },
+     "vias": [
+      {
+       "spans": [
+        "F.Cu-B.Cu"
+       ],
+       "connected_layers": [
+        "F.Cu",
+        "B.Cu"
+       ],
+       "barrel_mm": 1.565,
+       "x": 80.8,
+       "y": 84.2
+      },
+      {
+       "spans": [
+        "F.Cu-B.Cu"
+       ],
+       "connected_layers": [
+        "F.Cu",
+        "In1.Cu"
+       ],
+       "barrel_mm": 0.165,
+       "x": 80.005,
+       "y": 78.08
+      },
+      {
+       "spans": [
+        "F.Cu-B.Cu"
+       ],
+       "connected_layers": [
+        "F.Cu",
+        "In1.Cu"
+       ],
+       "barrel_mm": 0.165,
+       "x": 81.13,
+       "y": 81.28
+      }
+     ],
+     "eps_eff_used": {
+      "F.Cu@w=0.200": {
+       "eps_eff": 3.1394,
+       "model": "microstrip (Hammerstad)",
+       "h_mm": 0.13,
+       "er": 4.2
+      },
+      "F.Cu@w=0.150": {
+       "eps_eff": 3.0739,
+       "model": "microstrip (Hammerstad)",
+       "h_mm": 0.13,
+       "er": 4.2
+      },
+      "B.Cu@w=0.200": {
+       "eps_eff": 3.1394,
+       "model": "microstrip (Hammerstad)",
+       "h_mm": 0.13,
+       "er": 4.2
+      },
+      "In1.Cu@w=0.200": {
+       "eps_eff": 4.2,
+       "model": "stripline (eps_eff = er)",
+       "er": 4.2
+      }
+     },
+     "segments": 16,
+     "pads": 2,
+     "pad_to_pad": {
+      "U30.11-J30.9": {
+       "length_mm": 18.0398,
+       "delay_ps": 111.704,
+       "refs": [
+        "J30",
+        "U30"
+       ]
+      }
+     }
+    }
+   ],
+   "P": {
+    "track_mm": 16.3646,
+    "via_barrel_mm": 0.0,
+    "routed_mm": 16.3646,
+    "delay_ps": 96.6568,
+    "via_count": 0
+   },
+   "N": {
+    "track_mm": 17.2489,
+    "via_barrel_mm": 1.895,
+    "routed_mm": 19.1439,
+    "delay_ps": 118.235,
+    "via_count": 3
+   },
+   "skew_mm": 2.7792,
+   "skew_track_only_mm": 0.8842,
+   "skew_ps": 21.578,
+   "layers_p": [
+    "F.Cu"
+   ],
+   "layers_n": [
+    "B.Cu",
+    "F.Cu",
+    "In1.Cu"
+   ],
+   "coupled_max_edge_gap_mm": 0.3,
+   "coupled_max_basis": "2 x netclass 'Default' diff_pair_gap 0.15 mm",
+   "coupling_p": [
+    {
+     "coupled_mm": 0.349,
+     "uncoupled_mm": 16.016,
+     "uncoupled_at_1mm_mm": 9.523,
+     "gap_stats_mm": {
+      "min": 0.2745,
+      "median": 0.6055,
+      "p95": 0.9856,
+      "max": 0.9982
+     }
+    }
+   ],
+   "coupling_n": [
+    {
+     "coupled_mm": 0.049,
+     "uncoupled_mm": 17.199,
+     "uncoupled_at_1mm_mm": 13.325,
+     "gap_stats_mm": {
+      "min": 0.292,
+      "median": 0.5127,
+      "p95": 0.9615,
+      "max": 0.9955
+     }
+    }
+   ],
+   "uncoupled_mm": {
+    "p": 16.016,
+    "n": 17.199
+   },
+   "uncoupled_at_1mm": {
+    "p": 9.523,
+    "n": 13.325
+   },
+   "pad_to_pad_skew": [
+    {
+     "refs": "J30-U30",
+     "p_path": "U30.10-J30.8",
+     "n_path": "U30.11-J30.9",
+     "p_mm": 15.9216,
+     "n_mm": 18.0398,
+     "skew_mm": 2.1182,
+     "skew_ps": 17.666
+    }
+   ],
+   "limits": [
+    {
+     "source": "hardware/v2/tools/validate_route.py MATCHED_PAIRS",
+     "max_skew_mm": 1.0,
+     "require_equal_vias": true
+    },
+    {
+     "source": "hardware/v2/tools/sensitive_route_contract.py PAIR_GROUPS",
+     "max_skew_mm": 1.0,
+     "require_equal_vias": true
+    }
+   ],
+   "limit_verdicts": [
+    {
+     "source": "hardware/v2/tools/validate_route.py MATCHED_PAIRS",
+     "max_skew_mm": 1.0,
+     "pass_track_only": true,
+     "pass_with_via_barrels": false,
+     "equal_vias": false
+    },
+    {
+     "source": "hardware/v2/tools/sensitive_route_contract.py PAIR_GROUPS",
+     "max_skew_mm": 1.0,
+     "pass_track_only": true,
+     "pass_with_via_barrels": false,
+     "equal_vias": false
+    }
+   ]
+  },
+  {
+   "name": "High-band IF",
+   "p": [
+    "IF_HIGH_P"
+   ],
+   "n": [
+    "IF_HIGH_N"
+   ],
+   "sources": [
+    "limits file: hardware/v2/tools/sensitive_route_contract.py PAIR_GROUPS",
+    "limits file: hardware/v2/tools/validate_route.py MATCHED_PAIRS",
+    "name: token _P/_N"
+   ],
+   "netclass": "Default",
+   "status": "ROUTED",
+   "p_metrics": [
+    {
+     "net": "IF_HIGH_P",
+     "netclass": "Default",
+     "track_mm": 52.63976384540323,
+     "via_count": 2,
+     "via_barrel_mm": 0.32999999999999996,
+     "routed_mm": 52.96976384540323,
+     "delay_ps": 360.5567048813897,
+     "layers": {
+      "F.Cu": 1.4614,
+      "In1.Cu": 51.1784
+     },
+     "vias": [
+      {
+       "spans": [
+        "F.Cu-B.Cu"
+       ],
+       "connected_layers": [
+        "F.Cu",
+        "In1.Cu"
+       ],
+       "barrel_mm": 0.165,
+       "x": 81.01,
+       "y": 21.35
+      },
+      {
+       "spans": [
+        "F.Cu-B.Cu"
+       ],
+       "connected_layers": [
+        "F.Cu",
+        "In1.Cu"
+       ],
+       "barrel_mm": 0.165,
+       "x": 35.73,
+       "y": 35.59
+      }
+     ],
+     "eps_eff_used": {
+      "F.Cu@w=0.150": {
+       "eps_eff": 3.0739,
+       "model": "microstrip (Hammerstad)",
+       "h_mm": 0.13,
+       "er": 4.2
+      },
+      "F.Cu@w=0.100": {
+       "eps_eff": 2.9927,
+       "model": "microstrip (Hammerstad)",
+       "h_mm": 0.13,
+       "er": 4.2
+      },
+      "In1.Cu@w=0.150": {
+       "eps_eff": 4.2,
+       "model": "stripline (eps_eff = er)",
+       "er": 4.2
+      }
+     },
+     "segments": 10,
+     "pads": 2,
+     "pad_to_pad": {
+      "T60.6-U63.2": {
+       "length_mm": 52.7072,
+       "delay_ps": 358.988,
+       "refs": [
+        "T60",
+        "U63"
+       ]
+      }
+     }
+    }
+   ],
+   "n_metrics": [
+    {
+     "net": "IF_HIGH_N",
+     "netclass": "Default",
+     "track_mm": 49.74791017288264,
+     "via_count": 2,
+     "via_barrel_mm": 0.32999999999999996,
+     "routed_mm": 50.07791017288264,
+     "delay_ps": 341.51724111894407,
+     "layers": {
+      "F.Cu": 0.8269,
+      "In1.Cu": 48.921
+     },
+     "vias": [
+      {
+       "spans": [
+        "F.Cu-B.Cu"
+       ],
+       "connected_layers": [
+        "F.Cu",
+        "In1.Cu"
+       ],
+       "barrel_mm": 0.165,
+       "x": 81.49,
+       "y": 21.75
+      },
+      {
+       "spans": [
+        "F.Cu-B.Cu"
+       ],
+       "connected_layers": [
+        "F.Cu",
+        "In1.Cu"
+       ],
+       "barrel_mm": 0.165,
+       "x": 38.31,
+       "y": 35.61
+      }
+     ],
+     "eps_eff_used": {
+      "F.Cu@w=0.150": {
+       "eps_eff": 3.0739,
+       "model": "microstrip (Hammerstad)",
+       "h_mm": 0.13,
+       "er": 4.2
+      },
+      "In1.Cu@w=0.150": {
+       "eps_eff": 4.2,
+       "model": "stripline (eps_eff = er)",
+       "er": 4.2
+      }
+     },
+     "segments": 8,
+     "pads": 2,
+     "pad_to_pad": {
+      "T60.4-U63.3": {
+       "length_mm": 50.0296,
+       "delay_ps": 341.235,
+       "refs": [
+        "T60",
+        "U63"
+       ]
+      }
+     }
+    }
+   ],
+   "P": {
+    "track_mm": 52.6398,
+    "via_barrel_mm": 0.33,
+    "routed_mm": 52.9698,
+    "delay_ps": 360.5567,
+    "via_count": 2
+   },
+   "N": {
+    "track_mm": 49.7479,
+    "via_barrel_mm": 0.33,
+    "routed_mm": 50.0779,
+    "delay_ps": 341.5172,
+    "via_count": 2
+   },
+   "skew_mm": 2.8919,
+   "skew_track_only_mm": 2.8919,
+   "skew_ps": 19.039,
+   "layers_p": [
+    "F.Cu",
+    "In1.Cu"
+   ],
+   "layers_n": [
+    "F.Cu",
+    "In1.Cu"
+   ],
+   "coupled_max_edge_gap_mm": 0.3,
+   "coupled_max_basis": "2 x netclass 'Default' diff_pair_gap 0.15 mm",
+   "coupling_p": [
+    {
+     "coupled_mm": 3.915,
+     "uncoupled_mm": 48.725,
+     "uncoupled_at_1mm_mm": 21.127,
+     "gap_stats_mm": {
+      "min": 0.25,
+      "median": 0.77,
+      "p95": 0.77,
+      "max": 0.9861
+     }
+    }
+   ],
+   "coupling_n": [
+    {
+     "coupled_mm": 4.082,
+     "uncoupled_mm": 45.666,
+     "uncoupled_at_1mm_mm": 18.565,
+     "gap_stats_mm": {
+      "min": 0.25,
+      "median": 0.77,
+      "p95": 0.77,
+      "max": 0.9993
+     }
+    }
+   ],
+   "uncoupled_mm": {
+    "p": 48.725,
+    "n": 45.666
+   },
+   "uncoupled_at_1mm": {
+    "p": 21.127,
+    "n": 18.565
+   },
+   "pad_to_pad_skew": [
+    {
+     "refs": "T60-U63",
+     "p_path": "T60.6-U63.2",
+     "n_path": "T60.4-U63.3",
+     "p_mm": 52.7072,
+     "n_mm": 50.0296,
+     "skew_mm": 2.6776,
+     "skew_ps": 17.753
+    }
+   ],
+   "limits": [
+    {
+     "source": "hardware/v2/tools/validate_route.py MATCHED_PAIRS",
+     "max_skew_mm": 0.75,
+     "require_equal_vias": true
+    },
+    {
+     "source": "hardware/v2/tools/sensitive_route_contract.py PAIR_GROUPS",
+     "max_skew_mm": 0.25,
+     "require_equal_vias": true
+    }
+   ],
+   "limit_verdicts": [
+    {
+     "source": "hardware/v2/tools/validate_route.py MATCHED_PAIRS",
+     "max_skew_mm": 0.75,
+     "pass_track_only": false,
+     "pass_with_via_barrels": false,
+     "equal_vias": true
+    },
+    {
+     "source": "hardware/v2/tools/sensitive_route_contract.py PAIR_GROUPS",
+     "max_skew_mm": 0.25,
+     "pass_track_only": false,
+     "pass_with_via_barrels": false,
+     "equal_vias": true
+    }
+   ]
+  },
+  {
+   "name": "IF2 filter 1",
+   "p": [
+    "IF2_F1_P"
+   ],
+   "n": [
+    "IF2_F1_N"
+   ],
+   "sources": [
+    "limits file: hardware/v2/tools/sensitive_route_contract.py PAIR_GROUPS",
+    "limits file: hardware/v2/tools/validate_route.py MATCHED_PAIRS",
+    "name: token _P/_N"
+   ],
+   "netclass": "Default",
+   "status": "ROUTED",
+   "p_metrics": [
+    {
+     "net": "IF2_F1_P",
+     "netclass": "Default",
+     "track_mm": 5.394661248592317,
+     "via_count": 0,
+     "via_barrel_mm": 0.0,
+     "routed_mm": 5.394661248592317,
+     "delay_ps": 31.549092189280064,
+     "layers": {
+      "F.Cu": 5.3947
+     },
+     "vias": [],
+     "eps_eff_used": {
+      "F.Cu@w=0.150": {
+       "eps_eff": 3.0739,
+       "model": "microstrip (Hammerstad)",
+       "h_mm": 0.13,
+       "er": 4.2
+      }
+     },
+     "segments": 2,
+     "pads": 3,
+     "pad_to_pad": {
+      "C262.1-L87.2": {
+       "length_mm": null,
+       "delay_ps": null,
+       "refs": [
+        "C262",
+        "L87"
+       ],
+       "note": "no copper path"
+      },
+      "C262.1-L89.1": {
+       "length_mm": 5.2397,
+       "delay_ps": 30.643,
+       "refs": [
+        "C262",
+        "L89"
+       ]
+      },
+      "L87.2-L89.1": {
+       "length_mm": null,
+       "delay_ps": null,
+       "refs": [
+        "L87",
+        "L89"
+       ],
+       "note": "no copper path"
+      }
+     }
+    }
+   ],
+   "n_metrics": [
+    {
+     "net": "IF2_F1_N",
+     "netclass": "Default",
+     "track_mm": 4.016234123846129,
+     "via_count": 0,
+     "via_barrel_mm": 0.0,
+     "routed_mm": 4.016234123846129,
+     "delay_ps": 23.48776592043056,
+     "layers": {
+      "F.Cu": 4.0162
+     },
+     "vias": [],
+     "eps_eff_used": {
+      "F.Cu@w=0.150": {
+       "eps_eff": 3.0739,
+       "model": "microstrip (Hammerstad)",
+       "h_mm": 0.13,
+       "er": 4.2
+      }
+     },
+     "segments": 4,
+     "pads": 3,
+     "pad_to_pad": {
+      "C262.2-L88.2": {
+       "length_mm": 1.155,
+       "delay_ps": 6.755,
+       "refs": [
+        "C262",
+        "L88"
+       ]
+      },
+      "C262.2-L90.1": {
+       "length_mm": 3.2763,
+       "delay_ps": 19.161,
+       "refs": [
+        "C262",
+        "L90"
+       ]
+      },
+      "L88.2-L90.1": {
+       "length_mm": 2.1213,
+       "delay_ps": 12.406,
+       "refs": [
+        "L88",
+        "L90"
+       ]
+      }
+     }
+    }
+   ],
+   "P": {
+    "track_mm": 5.3947,
+    "via_barrel_mm": 0.0,
+    "routed_mm": 5.3947,
+    "delay_ps": 31.5491,
+    "via_count": 0
+   },
+   "N": {
+    "track_mm": 4.0162,
+    "via_barrel_mm": 0.0,
+    "routed_mm": 4.0162,
+    "delay_ps": 23.4878,
+    "via_count": 0
+   },
+   "skew_mm": 1.3784,
+   "skew_track_only_mm": 1.3784,
+   "skew_ps": 8.061,
+   "layers_p": [
+    "F.Cu"
+   ],
+   "layers_n": [
+    "F.Cu"
+   ],
+   "coupled_max_edge_gap_mm": 0.3,
+   "coupled_max_basis": "2 x netclass 'Default' diff_pair_gap 0.15 mm",
+   "coupling_p": [
+    {
+     "coupled_mm": 0.0,
+     "uncoupled_mm": 5.395,
+     "uncoupled_at_1mm_mm": 3.842,
+     "gap_stats_mm": {
+      "min": 0.6384,
+      "median": 0.7337,
+      "p95": 0.9404,
+      "max": 0.9754
+     }
+    }
+   ],
+   "coupling_n": [
+    {
+     "coupled_mm": 0.0,
+     "uncoupled_mm": 4.016,
+     "uncoupled_at_1mm_mm": 3.391,
+     "gap_stats_mm": {
+      "min": 0.6554,
+      "median": 0.8596,
+      "p95": 0.9829,
+      "max": 0.9829
+     }
+    }
+   ],
+   "uncoupled_mm": {
+    "p": 5.395,
+    "n": 4.016
+   },
+   "uncoupled_at_1mm": {
+    "p": 3.842,
+    "n": 3.391
+   },
+   "pad_to_pad_skew": [],
+   "limits": [
+    {
+     "source": "hardware/v2/tools/validate_route.py MATCHED_PAIRS",
+     "max_skew_mm": 0.5,
+     "require_equal_vias": true
+    },
+    {
+     "source": "hardware/v2/tools/sensitive_route_contract.py PAIR_GROUPS",
+     "max_skew_mm": 0.5,
+     "require_equal_vias": true
+    }
+   ],
+   "limit_verdicts": [
+    {
+     "source": "hardware/v2/tools/validate_route.py MATCHED_PAIRS",
+     "max_skew_mm": 0.5,
+     "pass_track_only": false,
+     "pass_with_via_barrels": false,
+     "equal_vias": true
+    },
+    {
+     "source": "hardware/v2/tools/sensitive_route_contract.py PAIR_GROUPS",
+     "max_skew_mm": 0.5,
+     "pass_track_only": false,
+     "pass_with_via_barrels": false,
+     "equal_vias": true
+    }
+   ]
+  },
+  {
+   "name": "IF2 filter 2",
+   "p": [
+    "IF2_F2_P"
+   ],
+   "n": [
+    "IF2_F2_N"
+   ],
+   "sources": [
+    "limits file: hardware/v2/tools/sensitive_route_contract.py PAIR_GROUPS",
+    "limits file: hardware/v2/tools/validate_route.py MATCHED_PAIRS",
+    "name: token _P/_N"
+   ],
+   "netclass": "Default",
+   "status": "ROUTED",
+   "p_metrics": [
+    {
+     "net": "IF2_F2_P",
+     "netclass": "Default",
+     "track_mm": 5.208265145524431,
+     "via_count": 0,
+     "via_barrel_mm": 0.0,
+     "routed_mm": 5.208265145524431,
+     "delay_ps": 30.459009315041065,
+     "layers": {
+      "F.Cu": 5.2083
+     },
+     "vias": [],
+     "eps_eff_used": {
+      "F.Cu@w=0.150": {
+       "eps_eff": 3.0739,
+       "model": "microstrip (Hammerstad)",
+       "h_mm": 0.13,
+       "er": 4.2
+      }
+     },
+     "segments": 2,
+     "pads": 3,
+     "pad_to_pad": {
+      "L91.1-C264.1": {
+       "length_mm": null,
+       "delay_ps": null,
+       "refs": [
+        "C264",
+        "L91"
+       ],
+       "note": "no copper path"
+      },
+      "L91.1-L89.2": {
+       "length_mm": null,
+       "delay_ps": null,
+       "refs": [
+        "L89",
+        "L91"
+       ],
+       "note": "no copper path"
+      },
+      "C264.1-L89.2": {
+       "length_mm": 5.2083,
+       "delay_ps": 30.459,
+       "refs": [
+        "C264",
+        "L89"
+       ]
+      }
+     }
+    }
+   ],
+   "n_metrics": [
+    {
+     "net": "IF2_F2_N",
+     "netclass": "Default",
+     "track_mm": 5.704123009900696,
+     "via_count": 0,
+     "via_barrel_mm": 0.0,
+     "routed_mm": 5.704123009900696,
+     "delay_ps": 33.358888427945224,
+     "layers": {
+      "F.Cu": 5.7041
+     },
+     "vias": [],
+     "eps_eff_used": {
+      "F.Cu@w=0.150": {
+       "eps_eff": 3.0739,
+       "model": "microstrip (Hammerstad)",
+       "h_mm": 0.13,
+       "er": 4.2
+      }
+     },
+     "segments": 2,
+     "pads": 3,
+     "pad_to_pad": {
+      "C264.2-L92.1": {
+       "length_mm": 5.7041,
+       "delay_ps": 33.359,
+       "refs": [
+        "C264",
+        "L92"
+       ]
+      },
+      "C264.2-L90.2": {
+       "length_mm": null,
+       "delay_ps": null,
+       "refs": [
+        "C264",
+        "L90"
+       ],
+       "note": "no copper path"
+      },
+      "L92.1-L90.2": {
+       "length_mm": null,
+       "delay_ps": null,
+       "refs": [
+        "L90",
+        "L92"
+       ],
+       "note": "no copper path"
+      }
+     }
+    }
+   ],
+   "P": {
+    "track_mm": 5.2083,
+    "via_barrel_mm": 0.0,
+    "routed_mm": 5.2083,
+    "delay_ps": 30.459,
+    "via_count": 0
+   },
+   "N": {
+    "track_mm": 5.7041,
+    "via_barrel_mm": 0.0,
+    "routed_mm": 5.7041,
+    "delay_ps": 33.3589,
+    "via_count": 0
+   },
+   "skew_mm": 0.4959,
+   "skew_track_only_mm": 0.4959,
+   "skew_ps": 2.9,
+   "layers_p": [
+    "F.Cu"
+   ],
+   "layers_n": [
+    "F.Cu"
+   ],
+   "coupled_max_edge_gap_mm": 0.3,
+   "coupled_max_basis": "2 x netclass 'Default' diff_pair_gap 0.15 mm",
+   "coupling_p": [
+    {
+     "coupled_mm": 0.0,
+     "uncoupled_mm": 5.208,
+     "uncoupled_at_1mm_mm": 3.624,
+     "gap_stats_mm": {
+      "min": 0.5289,
+      "median": 0.6359,
+      "p95": 0.9229,
+      "max": 0.9617
+     }
+    }
+   ],
+   "coupling_n": [
+    {
+     "coupled_mm": 0.0,
+     "uncoupled_mm": 5.704,
+     "uncoupled_at_1mm_mm": 5.025,
+     "gap_stats_mm": {
+      "min": 0.546,
+      "median": 0.7688,
+      "p95": 0.9916,
+      "max": 0.9916
+     }
+    }
+   ],
+   "uncoupled_mm": {
+    "p": 5.208,
+    "n": 5.704
+   },
+   "uncoupled_at_1mm": {
+    "p": 3.624,
+    "n": 5.025
+   },
+   "pad_to_pad_skew": [
+    {
+     "refs": "single path each (refs differ)",
+     "p_path": "C264.1-L89.2",
+     "n_path": "C264.2-L92.1",
+     "p_mm": 5.2083,
+     "n_mm": 5.7041,
+     "skew_mm": 0.4958,
+     "skew_ps": 2.9
+    }
+   ],
+   "limits": [
+    {
+     "source": "hardware/v2/tools/validate_route.py MATCHED_PAIRS",
+     "max_skew_mm": 0.5,
+     "require_equal_vias": true
+    },
+    {
+     "source": "hardware/v2/tools/sensitive_route_contract.py PAIR_GROUPS",
+     "max_skew_mm": 0.5,
+     "require_equal_vias": true
+    }
+   ],
+   "limit_verdicts": [
+    {
+     "source": "hardware/v2/tools/validate_route.py MATCHED_PAIRS",
+     "max_skew_mm": 0.5,
+     "pass_track_only": true,
+     "pass_with_via_barrels": true,
+     "equal_vias": true
+    },
+    {
+     "source": "hardware/v2/tools/sensitive_route_contract.py PAIR_GROUPS",
+     "max_skew_mm": 0.5,
+     "pass_track_only": true,
+     "pass_with_via_barrels": true,
+     "equal_vias": true
+    }
+   ]
+  },
+  {
+   "name": "IF2 filter 3",
+   "p": [
+    "IF2_F3_P"
+   ],
+   "n": [
+    "IF2_F3_N"
+   ],
+   "sources": [
+    "limits file: hardware/v2/tools/sensitive_route_contract.py PAIR_GROUPS",
+    "limits file: hardware/v2/tools/validate_route.py MATCHED_PAIRS",
+    "name: token _P/_N"
+   ],
+   "netclass": "Default",
+   "status": "ROUTED",
+   "p_metrics": [
+    {
+     "net": "IF2_F3_P",
+     "netclass": "Default",
+     "track_mm": 7.06739248818401,
+     "via_count": 0,
+     "via_barrel_mm": 0.0,
+     "routed_mm": 7.06739248818401,
+     "delay_ps": 41.33156965244565,
+     "layers": {
+      "F.Cu": 7.0674
+     },
+     "vias": [],
+     "eps_eff_used": {
+      "F.Cu@w=0.150": {
+       "eps_eff": 3.0739,
+       "model": "microstrip (Hammerstad)",
+       "h_mm": 0.13,
+       "er": 4.2
+      }
+     },
+     "segments": 4,
+     "pads": 3,
+     "pad_to_pad": {
+      "L91.2-L93.1": {
+       "length_mm": 6.9124,
+       "delay_ps": 40.425,
+       "refs": [
+        "L91",
+        "L93"
+       ]
+      },
+      "L91.2-C266.1": {
+       "length_mm": 2.3798,
+       "delay_ps": 13.918,
+       "refs": [
+        "C266",
+        "L91"
+       ]
+      },
+      "L93.1-C266.1": {
+       "length_mm": 4.5326,
+       "delay_ps": 26.507,
+       "refs": [
+        "C266",
+        "L93"
+       ]
+      }
+     }
+    }
+   ],
+   "n_metrics": [
+    {
+     "net": "IF2_F3_N",
+     "netclass": "Default",
+     "track_mm": 11.918231226837236,
+     "via_count": 3,
+     "via_barrel_mm": 4.695,
+     "routed_mm": 16.613231226837236,
+     "delay_ps": 101.79543512668816,
+     "layers": {
+      "B.Cu": 11.8491,
+      "F.Cu": 0.0691
+     },
+     "vias": [
+      {
+       "spans": [
+        "F.Cu-B.Cu"
+       ],
+       "connected_layers": [
+        "F.Cu",
+        "B.Cu"
+       ],
+       "barrel_mm": 1.565,
+       "x": 73.73,
+       "y": 31.0
+      },
+      {
+       "spans": [
+        "F.Cu-B.Cu"
+       ],
+       "connected_layers": [
+        "F.Cu",
+        "B.Cu"
+       ],
+       "barrel_mm": 1.565,
+       "x": 69.41,
+       "y": 35.87
+      },
+      {
+       "spans": [
+        "F.Cu-B.Cu"
+       ],
+       "connected_layers": [
+        "F.Cu",
+        "B.Cu"
+       ],
+       "barrel_mm": 1.565,
+       "x": 76.525,
+       "y": 35.36
+      }
+     ],
+     "eps_eff_used": {
+      "F.Cu@w=0.150": {
+       "eps_eff": 3.0739,
+       "model": "microstrip (Hammerstad)",
+       "h_mm": 0.13,
+       "er": 4.2
+      },
+      "B.Cu@w=0.150": {
+       "eps_eff": 3.0739,
+       "model": "microstrip (Hammerstad)",
+       "h_mm": 0.13,
+       "er": 4.2
+      }
+     },
+     "segments": 7,
+     "pads": 3,
+     "pad_to_pad": {
+      "L92.2-C266.2": {
+       "length_mm": 9.1116,
+       "delay_ps": 56.379,
+       "refs": [
+        "C266",
+        "L92"
+       ]
+      },
+      "L92.2-L94.1": {
+       "length_mm": 14.1871,
+       "delay_ps": 86.061,
+       "refs": [
+        "L92",
+        "L94"
+       ]
+      },
+      "C266.2-L94.1": {
+       "length_mm": 9.7894,
+       "delay_ps": 60.342,
+       "refs": [
+        "C266",
+        "L94"
+       ]
+      }
+     }
+    }
+   ],
+   "P": {
+    "track_mm": 7.0674,
+    "via_barrel_mm": 0.0,
+    "routed_mm": 7.0674,
+    "delay_ps": 41.3316,
+    "via_count": 0
+   },
+   "N": {
+    "track_mm": 11.9182,
+    "via_barrel_mm": 4.695,
+    "routed_mm": 16.6132,
+    "delay_ps": 101.7954,
+    "via_count": 3
+   },
+   "skew_mm": 9.5458,
+   "skew_track_only_mm": 4.8508,
+   "skew_ps": 60.464,
+   "layers_p": [
+    "F.Cu"
+   ],
+   "layers_n": [
+    "B.Cu",
+    "F.Cu"
+   ],
+   "coupled_max_edge_gap_mm": 0.3,
+   "coupled_max_basis": "2 x netclass 'Default' diff_pair_gap 0.15 mm",
+   "coupling_p": [
+    {
+     "coupled_mm": 0.0,
+     "uncoupled_mm": 7.067,
+     "uncoupled_at_1mm_mm": 7.067,
+     "gap_stats_mm": null
+    }
+   ],
+   "coupling_n": [
+    {
+     "coupled_mm": 0.0,
+     "uncoupled_mm": 11.918,
+     "uncoupled_at_1mm_mm": 11.918,
+     "gap_stats_mm": null
+    }
+   ],
+   "uncoupled_mm": {
+    "p": 7.067,
+    "n": 11.918
+   },
+   "uncoupled_at_1mm": {
+    "p": 7.067,
+    "n": 11.918
+   },
+   "pad_to_pad_skew": [],
+   "limits": [
+    {
+     "source": "hardware/v2/tools/validate_route.py MATCHED_PAIRS",
+     "max_skew_mm": 0.5,
+     "require_equal_vias": true
+    },
+    {
+     "source": "hardware/v2/tools/sensitive_route_contract.py PAIR_GROUPS",
+     "max_skew_mm": 0.5,
+     "require_equal_vias": true
+    }
+   ],
+   "limit_verdicts": [
+    {
+     "source": "hardware/v2/tools/validate_route.py MATCHED_PAIRS",
+     "max_skew_mm": 0.5,
+     "pass_track_only": false,
+     "pass_with_via_barrels": false,
+     "equal_vias": false
+    },
+    {
+     "source": "hardware/v2/tools/sensitive_route_contract.py PAIR_GROUPS",
+     "max_skew_mm": 0.5,
+     "pass_track_only": false,
+     "pass_with_via_barrels": false,
+     "equal_vias": false
+    }
+   ]
+  },
+  {
+   "name": "IF2 filter 4",
+   "p": [
+    "IF2_F4_P"
+   ],
+   "n": [
+    "IF2_F4_N"
+   ],
+   "sources": [
+    "limits file: hardware/v2/tools/sensitive_route_contract.py PAIR_GROUPS",
+    "limits file: hardware/v2/tools/validate_route.py MATCHED_PAIRS",
+    "name: token _P/_N"
+   ],
+   "netclass": "Default",
+   "status": "ROUTED",
+   "p_metrics": [
+    {
+     "net": "IF2_F4_P",
+     "netclass": "Default",
+     "track_mm": 13.330271122185046,
+     "via_count": 0,
+     "via_barrel_mm": 0.0,
+     "routed_mm": 13.330271122185046,
+     "delay_ps": 77.95817627133756,
+     "layers": {
+      "F.Cu": 13.3303
+     },
+     "vias": [],
+     "eps_eff_used": {
+      "F.Cu@w=0.150": {
+       "eps_eff": 3.0739,
+       "model": "microstrip (Hammerstad)",
+       "h_mm": 0.13,
+       "er": 4.2
+      }
+     },
+     "segments": 8,
+     "pads": 3,
+     "pad_to_pad": {
+      "L93.2-L95.1": {
+       "length_mm": 11.5955,
+       "delay_ps": 67.813,
+       "refs": [
+        "L93",
+        "L95"
+       ]
+      },
+      "L93.2-C268.1": {
+       "length_mm": 8.2739,
+       "delay_ps": 48.387,
+       "refs": [
+        "C268",
+        "L93"
+       ]
+      },
+      "L95.1-C268.1": {
+       "length_mm": 5.7448,
+       "delay_ps": 33.597,
+       "refs": [
+        "C268",
+        "L95"
+       ]
+      }
+     }
+    }
+   ],
+   "n_metrics": [
+    {
+     "net": "IF2_F4_N",
+     "netclass": "Default",
+     "track_mm": 14.255281731067097,
+     "via_count": 3,
+     "via_barrel_mm": 4.695,
+     "routed_mm": 18.950281731067097,
+     "delay_ps": 115.46298873409788,
+     "layers": {
+      "B.Cu": 12.1412,
+      "F.Cu": 2.1141
+     },
+     "vias": [
+      {
+       "spans": [
+        "F.Cu-B.Cu"
+       ],
+       "connected_layers": [
+        "F.Cu",
+        "B.Cu"
+       ],
+       "barrel_mm": 1.565,
+       "x": 72.78,
+       "y": 32.52
+      },
+      {
+       "spans": [
+        "F.Cu-B.Cu"
+       ],
+       "connected_layers": [
+        "F.Cu",
+        "B.Cu"
+       ],
+       "barrel_mm": 1.565,
+       "x": 71.225,
+       "y": 35.86
+      },
+      {
+       "spans": [
+        "F.Cu-B.Cu"
+       ],
+       "connected_layers": [
+        "F.Cu",
+        "B.Cu"
+       ],
+       "barrel_mm": 1.565,
+       "x": 79.175,
+       "y": 35.36
+      }
+     ],
+     "eps_eff_used": {
+      "F.Cu@w=0.150": {
+       "eps_eff": 3.0739,
+       "model": "microstrip (Hammerstad)",
+       "h_mm": 0.13,
+       "er": 4.2
+      },
+      "B.Cu@w=0.150": {
+       "eps_eff": 3.0739,
+       "model": "microstrip (Hammerstad)",
+       "h_mm": 0.13,
+       "er": 4.2
+      }
+     },
+     "segments": 9,
+     "pads": 3,
+     "pad_to_pad": {
+      "L94.2-C268.2": {
+       "length_mm": 9.1374,
+       "delay_ps": 56.529,
+       "refs": [
+        "C268",
+        "L94"
+       ]
+      },
+      "L94.2-L96.1": {
+       "length_mm": 11.2871,
+       "delay_ps": 69.101,
+       "refs": [
+        "L94",
+        "L96"
+       ]
+      },
+      "C268.2-L96.1": {
+       "length_mm": 17.2945,
+       "delay_ps": 104.234,
+       "refs": [
+        "C268",
+        "L96"
+       ]
+      }
+     }
+    }
+   ],
+   "P": {
+    "track_mm": 13.3303,
+    "via_barrel_mm": 0.0,
+    "routed_mm": 13.3303,
+    "delay_ps": 77.9582,
+    "via_count": 0
+   },
+   "N": {
+    "track_mm": 14.2553,
+    "via_barrel_mm": 4.695,
+    "routed_mm": 18.9503,
+    "delay_ps": 115.463,
+    "via_count": 3
+   },
+   "skew_mm": 5.62,
+   "skew_track_only_mm": 0.925,
+   "skew_ps": 37.505,
+   "layers_p": [
+    "F.Cu"
+   ],
+   "layers_n": [
+    "B.Cu",
+    "F.Cu"
+   ],
+   "coupled_max_edge_gap_mm": 0.3,
+   "coupled_max_basis": "2 x netclass 'Default' diff_pair_gap 0.15 mm",
+   "coupling_p": [
+    {
+     "coupled_mm": 0.0,
+     "uncoupled_mm": 13.33,
+     "uncoupled_at_1mm_mm": 8.954,
+     "gap_stats_mm": {
+      "min": 0.3063,
+      "median": 0.543,
+      "p95": 0.9294,
+      "max": 0.9905
+     }
+    }
+   ],
+   "coupling_n": [
+    {
+     "coupled_mm": 0.0,
+     "uncoupled_mm": 14.255,
+     "uncoupled_at_1mm_mm": 12.141,
+     "gap_stats_mm": {
+      "min": 0.3234,
+      "median": 0.4208,
+      "p95": 0.5288,
+      "max": 0.5417
+     }
+    }
+   ],
+   "uncoupled_mm": {
+    "p": 13.33,
+    "n": 14.255
+   },
+   "uncoupled_at_1mm": {
+    "p": 8.954,
+    "n": 12.141
+   },
+   "pad_to_pad_skew": [],
+   "limits": [
+    {
+     "source": "hardware/v2/tools/validate_route.py MATCHED_PAIRS",
+     "max_skew_mm": 0.5,
+     "require_equal_vias": true
+    },
+    {
+     "source": "hardware/v2/tools/sensitive_route_contract.py PAIR_GROUPS",
+     "max_skew_mm": 0.5,
+     "require_equal_vias": true
+    }
+   ],
+   "limit_verdicts": [
+    {
+     "source": "hardware/v2/tools/validate_route.py MATCHED_PAIRS",
+     "max_skew_mm": 0.5,
+     "pass_track_only": false,
+     "pass_with_via_barrels": false,
+     "equal_vias": false
+    },
+    {
+     "source": "hardware/v2/tools/sensitive_route_contract.py PAIR_GROUPS",
+     "max_skew_mm": 0.5,
+     "pass_track_only": false,
+     "pass_with_via_barrels": false,
+     "equal_vias": false
+    }
+   ]
+  },
+  {
+   "name": "IF2 filter output",
+   "p": [
+    "IF2_LPF_P"
+   ],
+   "n": [
+    "IF2_LPF_N"
+   ],
+   "sources": [
+    "limits file: hardware/v2/tools/sensitive_route_contract.py PAIR_GROUPS",
+    "limits file: hardware/v2/tools/validate_route.py MATCHED_PAIRS",
+    "name: token _P/_N"
+   ],
+   "netclass": "Default",
+   "status": "ROUTED",
+   "p_metrics": [
+    {
+     "net": "IF2_LPF_P",
+     "netclass": "Default",
+     "track_mm": 10.411601148599985,
+     "via_count": 3,
+     "via_barrel_mm": 4.695,
+     "routed_mm": 15.106601148599985,
+     "delay_ps": 92.98435153068803,
+     "layers": {
+      "B.Cu": 7.2515,
+      "F.Cu": 3.1601
+     },
+     "vias": [
+      {
+       "spans": [
+        "F.Cu-B.Cu"
+       ],
+       "connected_layers": [
+        "F.Cu",
+        "B.Cu"
+       ],
+       "barrel_mm": 1.565,
+       "x": 80.925,
+       "y": 33.64
+      },
+      {
+       "spans": [
+        "F.Cu-B.Cu"
+       ],
+       "connected_layers": [
+        "F.Cu",
+        "B.Cu"
+       ],
+       "barrel_mm": 1.565,
+       "x": 78.47,
+       "y": 34.461
+      },
+      {
+       "spans": [
+        "F.Cu-B.Cu"
+       ],
+       "connected_layers": [
+        "F.Cu",
+        "B.Cu"
+       ],
+       "barrel_mm": 1.565,
+       "x": 76.96,
+       "y": 30.63
+      }
+     ],
+     "eps_eff_used": {
+      "F.Cu@w=0.150": {
+       "eps_eff": 3.0739,
+       "model": "microstrip (Hammerstad)",
+       "h_mm": 0.13,
+       "er": 4.2
+      },
+      "B.Cu@w=0.150": {
+       "eps_eff": 3.0739,
+       "model": "microstrip (Hammerstad)",
+       "h_mm": 0.13,
+       "er": 4.2
+      }
+     },
+     "segments": 10,
+     "pads": 3,
+     "pad_to_pad": {
+      "C254.1-R80.1": {
+       "length_mm": 10.4951,
+       "delay_ps": 64.47,
+       "refs": [
+        "C254",
+        "R80"
+       ]
+      },
+      "C254.1-L95.2": {
+       "length_mm": 10.7209,
+       "delay_ps": 65.79,
+       "refs": [
+        "C254",
+        "L95"
+       ]
+      },
+      "R80.1-L95.2": {
+       "length_mm": 8.4943,
+       "delay_ps": 52.768,
+       "refs": [
+        "L95",
+        "R80"
+       ]
+      }
+     }
+    }
+   ],
+   "n_metrics": [
+    {
+     "net": "IF2_LPF_N",
+     "netclass": "Default",
+     "track_mm": 6.6943417715844635,
+     "via_count": 3,
+     "via_barrel_mm": 4.695,
+     "routed_mm": 11.389341771584464,
+     "delay_ps": 71.24505162422392,
+     "layers": {
+      "B.Cu": 6.6502,
+      "F.Cu": 0.0441
+     },
+     "vias": [
+      {
+       "spans": [
+        "F.Cu-B.Cu"
+       ],
+       "connected_layers": [
+        "F.Cu",
+        "B.Cu"
+       ],
+       "barrel_mm": 1.565,
+       "x": 77.19,
+       "y": 33.88
+      },
+      {
+       "spans": [
+        "F.Cu-B.Cu"
+       ],
+       "connected_layers": [
+        "F.Cu",
+        "B.Cu"
+       ],
+       "barrel_mm": 1.565,
+       "x": 76.72,
+       "y": 31.87
+      },
+      {
+       "spans": [
+        "F.Cu-B.Cu"
+       ],
+       "connected_layers": [
+        "F.Cu",
+        "B.Cu"
+       ],
+       "barrel_mm": 1.565,
+       "x": 80.925,
+       "y": 35.36
+      }
+     ],
+     "eps_eff_used": {
+      "F.Cu@w=0.150": {
+       "eps_eff": 3.0739,
+       "model": "microstrip (Hammerstad)",
+       "h_mm": 0.13,
+       "er": 4.2
+      },
+      "B.Cu@w=0.150": {
+       "eps_eff": 3.0739,
+       "model": "microstrip (Hammerstad)",
+       "h_mm": 0.13,
+       "er": 4.2
+      }
+     },
+     "segments": 10,
+     "pads": 3,
+     "pad_to_pad": {
+      "C255.1-R80.2": {
+       "length_mm": 5.3698,
+       "delay_ps": 34.496,
+       "refs": [
+        "C255",
+        "R80"
+       ]
+      },
+      "C255.1-L96.2": {
+       "length_mm": 9.7338,
+       "delay_ps": 60.017,
+       "refs": [
+        "C255",
+        "L96"
+       ]
+      },
+      "R80.2-L96.2": {
+       "length_mm": 7.494,
+       "delay_ps": 46.918,
+       "refs": [
+        "L96",
+        "R80"
+       ]
+      }
+     }
+    }
+   ],
+   "P": {
+    "track_mm": 10.4116,
+    "via_barrel_mm": 4.695,
+    "routed_mm": 15.1066,
+    "delay_ps": 92.9844,
+    "via_count": 3
+   },
+   "N": {
+    "track_mm": 6.6943,
+    "via_barrel_mm": 4.695,
+    "routed_mm": 11.3893,
+    "delay_ps": 71.2451,
+    "via_count": 3
+   },
+   "skew_mm": 3.7173,
+   "skew_track_only_mm": 3.7173,
+   "skew_ps": 21.739,
+   "layers_p": [
+    "B.Cu",
+    "F.Cu"
+   ],
+   "layers_n": [
+    "B.Cu",
+    "F.Cu"
+   ],
+   "coupled_max_edge_gap_mm": 0.3,
+   "coupled_max_basis": "2 x netclass 'Default' diff_pair_gap 0.15 mm",
+   "coupling_p": [
+    {
+     "coupled_mm": 0.097,
+     "uncoupled_mm": 10.315,
+     "uncoupled_at_1mm_mm": 3.763,
+     "gap_stats_mm": {
+      "min": 0.2678,
+      "median": 0.7535,
+      "p95": 0.9648,
+      "max": 0.9962
+     }
+    }
+   ],
+   "coupling_n": [
+    {
+     "coupled_mm": 0.38,
+     "uncoupled_mm": 6.315,
+     "uncoupled_at_1mm_mm": 2.708,
+     "gap_stats_mm": {
+      "min": 0.2513,
+      "median": 0.7214,
+      "p95": 0.9483,
+      "max": 0.9866
+     }
+    }
+   ],
+   "uncoupled_mm": {
+    "p": 10.315,
+    "n": 6.315
+   },
+   "uncoupled_at_1mm": {
+    "p": 3.763,
+    "n": 2.708
+   },
+   "pad_to_pad_skew": [],
+   "limits": [
+    {
+     "source": "hardware/v2/tools/validate_route.py MATCHED_PAIRS",
+     "max_skew_mm": 0.5,
+     "require_equal_vias": true
+    },
+    {
+     "source": "hardware/v2/tools/sensitive_route_contract.py PAIR_GROUPS",
+     "max_skew_mm": 0.5,
+     "require_equal_vias": true
+    }
+   ],
+   "limit_verdicts": [
+    {
+     "source": "hardware/v2/tools/validate_route.py MATCHED_PAIRS",
+     "max_skew_mm": 0.5,
+     "pass_track_only": false,
+     "pass_with_via_barrels": false,
+     "equal_vias": true
+    },
+    {
+     "source": "hardware/v2/tools/sensitive_route_contract.py PAIR_GROUPS",
+     "max_skew_mm": 0.5,
+     "pass_track_only": false,
+     "pass_with_via_barrels": false,
+     "equal_vias": true
+    }
+   ]
+  },
+  {
+   "name": "LMX low-band LO",
+   "p": [
+    "LMX_LO_LOW_P_RAW"
+   ],
+   "n": [
+    "LMX_LO_LOW_N_RAW"
+   ],
+   "sources": [
+    "limits file: hardware/v2/tools/sensitive_route_contract.py PAIR_GROUPS",
+    "limits file: hardware/v2/tools/validate_route.py MATCHED_PAIRS",
+    "name: token _P/_N"
+   ],
+   "netclass": "Default",
+   "status": "ROUTED",
+   "p_metrics": [
+    {
+     "net": "LMX_LO_LOW_P_RAW",
+     "netclass": "Default",
+     "track_mm": 3.732499999999998,
+     "via_count": 0,
+     "via_barrel_mm": 0.0,
+     "routed_mm": 3.732499999999998,
+     "delay_ps": 22.179437623077344,
+     "layers": {
+      "F.Cu": 3.7325
+     },
+     "vias": [],
+     "eps_eff_used": {
+      "F.Cu@w=0.230": {
+       "eps_eff": 3.1735,
+       "model": "microstrip (Hammerstad)",
+       "h_mm": 0.13,
+       "er": 4.2
+      }
+     },
+     "segments": 2,
+     "pads": 3,
+     "pad_to_pad": {
+      "U40.23-R54.2": {
+       "length_mm": 2.7525,
+       "delay_ps": 16.356,
+       "refs": [
+        "R54",
+        "U40"
+       ]
+      },
+      "U40.23-C203.1": {
+       "length_mm": 2.6925,
+       "delay_ps": 16.0,
+       "refs": [
+        "C203",
+        "U40"
+       ]
+      },
+      "R54.2-C203.1": {
+       "length_mm": 2.02,
+       "delay_ps": 12.003,
+       "refs": [
+        "C203",
+        "R54"
+       ]
+      }
+     }
+    }
+   ],
+   "n_metrics": [
+    {
+     "net": "LMX_LO_LOW_N_RAW",
+     "netclass": "Default",
+     "track_mm": 5.25967820793591,
+     "via_count": 0,
+     "via_barrel_mm": 0.0,
+     "routed_mm": 5.25967820793591,
+     "delay_ps": 31.254308032250183,
+     "layers": {
+      "F.Cu": 5.2597
+     },
+     "vias": [],
+     "eps_eff_used": {
+      "F.Cu@w=0.230": {
+       "eps_eff": 3.1735,
+       "model": "microstrip (Hammerstad)",
+       "h_mm": 0.13,
+       "er": 4.2
+      }
+     },
+     "segments": 6,
+     "pads": 3,
+     "pad_to_pad": {
+      "R55.2-U40.22": {
+       "length_mm": 4.5797,
+       "delay_ps": 27.214,
+       "refs": [
+        "R55",
+        "U40"
+       ]
+      },
+      "R55.2-C204.1": {
+       "length_mm": 2.833,
+       "delay_ps": 16.834,
+       "refs": [
+        "C204",
+        "R55"
+       ]
+      },
+      "U40.22-C204.1": {
+       "length_mm": 3.1067,
+       "delay_ps": 18.461,
+       "refs": [
+        "C204",
+        "U40"
+       ]
+      }
+     }
+    }
+   ],
+   "P": {
+    "track_mm": 3.7325,
+    "via_barrel_mm": 0.0,
+    "routed_mm": 3.7325,
+    "delay_ps": 22.1794,
+    "via_count": 0
+   },
+   "N": {
+    "track_mm": 5.2597,
+    "via_barrel_mm": 0.0,
+    "routed_mm": 5.2597,
+    "delay_ps": 31.2543,
+    "via_count": 0
+   },
+   "skew_mm": 1.5272,
+   "skew_track_only_mm": 1.5272,
+   "skew_ps": 9.075,
+   "layers_p": [
+    "F.Cu"
+   ],
+   "layers_n": [
+    "F.Cu"
+   ],
+   "coupled_max_edge_gap_mm": 0.3,
+   "coupled_max_basis": "2 x netclass 'Default' diff_pair_gap 0.15 mm",
+   "coupling_p": [
+    {
+     "coupled_mm": 1.197,
+     "uncoupled_mm": 2.536,
+     "uncoupled_at_1mm_mm": 0.994,
+     "gap_stats_mm": {
+      "min": 0.27,
+      "median": 0.3853,
+      "p95": 0.9413,
+      "max": 0.9766
+     }
+    }
+   ],
+   "coupling_n": [
+    {
+     "coupled_mm": 1.061,
+     "uncoupled_mm": 4.198,
+     "uncoupled_at_1mm_mm": 3.223,
+     "gap_stats_mm": {
+      "min": 0.27,
+      "median": 0.2786,
+      "p95": 0.9079,
+      "max": 0.9769
+     }
+    }
+   ],
+   "uncoupled_mm": {
+    "p": 2.536,
+    "n": 4.198
+   },
+   "uncoupled_at_1mm": {
+    "p": 0.994,
+    "n": 3.223
+   },
+   "pad_to_pad_skew": [],
+   "limits": [
+    {
+     "source": "hardware/v2/tools/validate_route.py MATCHED_PAIRS",
+     "max_skew_mm": 0.75,
+     "require_equal_vias": true
+    },
+    {
+     "source": "hardware/v2/tools/sensitive_route_contract.py PAIR_GROUPS",
+     "max_skew_mm": 0.25,
+     "require_equal_vias": true
+    }
+   ],
+   "limit_verdicts": [
+    {
+     "source": "hardware/v2/tools/validate_route.py MATCHED_PAIRS",
+     "max_skew_mm": 0.75,
+     "pass_track_only": false,
+     "pass_with_via_barrels": false,
+     "equal_vias": true
+    },
+    {
+     "source": "hardware/v2/tools/sensitive_route_contract.py PAIR_GROUPS",
+     "max_skew_mm": 0.25,
+     "pass_track_only": false,
+     "pass_with_via_barrels": false,
+     "equal_vias": true
+    }
+   ]
+  },
+  {
+   "name": "LMX_LO_HIGH_P_RAW / LMX_LO_HIGH_N_RAW",
+   "p": [
+    "LMX_LO_HIGH_P_RAW"
+   ],
+   "n": [
+    "LMX_LO_HIGH_N_RAW"
+   ],
+   "sources": [
+    "name: token _P/_N"
+   ],
+   "netclass": "Default",
+   "status": "ROUTED",
+   "p_metrics": [
+    {
+     "net": "LMX_LO_HIGH_P_RAW",
+     "netclass": "Default",
+     "track_mm": 3.5354151392239936,
+     "via_count": 0,
+     "via_barrel_mm": 0.0,
+     "routed_mm": 3.5354151392239936,
+     "delay_ps": 21.008310663657575,
+     "layers": {
+      "F.Cu": 3.5354
+     },
+     "vias": [],
+     "eps_eff_used": {
+      "F.Cu@w=0.230": {
+       "eps_eff": 3.1735,
+       "model": "microstrip (Hammerstad)",
+       "h_mm": 0.13,
+       "er": 4.2
+      }
+     },
+     "segments": 5,
+     "pads": 3,
+     "pad_to_pad": {
+      "C201.1-U40.19": {
+       "length_mm": 3.1153,
+       "delay_ps": 18.512,
+       "refs": [
+        "C201",
+        "U40"
+       ]
+      },
+      "C201.1-R52.2": {
+       "length_mm": 1.28,
+       "delay_ps": 7.606,
+       "refs": [
+        "C201",
+        "R52"
+       ]
+      },
+      "U40.19-R52.2": {
+       "length_mm": 1.8353,
+       "delay_ps": 10.906,
+       "refs": [
+        "R52",
+        "U40"
+       ]
+      }
+     }
+    }
+   ],
+   "n_metrics": [
+    {
+     "net": "LMX_LO_HIGH_N_RAW",
+     "netclass": "Default",
+     "track_mm": 3.8325000000000067,
+     "via_count": 0,
+     "via_barrel_mm": 0.0,
+     "routed_mm": 3.8325000000000067,
+     "delay_ps": 22.77366234171309,
+     "layers": {
+      "F.Cu": 3.8325
+     },
+     "vias": [],
+     "eps_eff_used": {
+      "F.Cu@w=0.230": {
+       "eps_eff": 3.1735,
+       "model": "microstrip (Hammerstad)",
+       "h_mm": 0.13,
+       "er": 4.2
+      }
+     },
+     "segments": 2,
+     "pads": 3,
+     "pad_to_pad": {
+      "C202.1-U40.18": {
+       "length_mm": 2.7425,
+       "delay_ps": 16.297,
+       "refs": [
+        "C202",
+        "U40"
+       ]
+      },
+      "C202.1-R53.2": {
+       "length_mm": 2.67,
+       "delay_ps": 15.866,
+       "refs": [
+        "C202",
+        "R53"
+       ]
+      },
+      "U40.18-R53.2": {
+       "length_mm": 2.2525,
+       "delay_ps": 13.385,
+       "refs": [
+        "R53",
+        "U40"
+       ]
+      }
+     }
+    }
+   ],
+   "P": {
+    "track_mm": 3.5354,
+    "via_barrel_mm": 0.0,
+    "routed_mm": 3.5354,
+    "delay_ps": 21.0083,
+    "via_count": 0
+   },
+   "N": {
+    "track_mm": 3.8325,
+    "via_barrel_mm": 0.0,
+    "routed_mm": 3.8325,
+    "delay_ps": 22.7737,
+    "via_count": 0
+   },
+   "skew_mm": 0.2971,
+   "skew_track_only_mm": 0.2971,
+   "skew_ps": 1.765,
+   "layers_p": [
+    "F.Cu"
+   ],
+   "layers_n": [
+    "F.Cu"
+   ],
+   "coupled_max_edge_gap_mm": 0.3,
+   "coupled_max_basis": "2 x netclass 'Default' diff_pair_gap 0.15 mm",
+   "coupling_p": [
+    {
+     "coupled_mm": 0.611,
+     "uncoupled_mm": 2.924,
+     "uncoupled_at_1mm_mm": 1.945,
+     "gap_stats_mm": {
+      "min": 0.27,
+      "median": 0.4258,
+      "p95": 0.945,
+      "max": 0.9796
+     }
+    }
+   ],
+   "coupling_n": [
+    {
+     "coupled_mm": 0.748,
+     "uncoupled_mm": 3.085,
+     "uncoupled_at_1mm_mm": 1.443,
+     "gap_stats_mm": {
+      "min": 0.27,
+      "median": 0.5599,
+      "p95": 0.9536,
+      "max": 0.9965
+     }
+    }
+   ],
+   "uncoupled_mm": {
+    "p": 2.924,
+    "n": 3.085
+   },
+   "uncoupled_at_1mm": {
+    "p": 1.945,
+    "n": 1.443
+   },
+   "pad_to_pad_skew": [],
+   "limits": [],
+   "limit_verdicts": "no limit declared"
+  },
+  {
+   "name": "LT5560 RF",
+   "p": [
+    "LT_IN_P"
+   ],
+   "n": [
+    "LT_IN_N"
+   ],
+   "sources": [
+    "limits file: hardware/v2/tools/sensitive_route_contract.py PAIR_GROUPS",
+    "limits file: hardware/v2/tools/validate_route.py MATCHED_PAIRS",
+    "name: token _P/_N"
+   ],
+   "netclass": "Default",
+   "status": "ROUTED",
+   "p_metrics": [
+    {
+     "net": "LT_IN_P",
+     "netclass": "Default",
+     "track_mm": 9.345009030984869,
+     "via_count": 2,
+     "via_barrel_mm": 3.13,
+     "routed_mm": 12.475009030984868,
+     "delay_ps": 76.10398725272088,
+     "layers": {
+      "B.Cu": 7.5108,
+      "F.Cu": 1.8342
+     },
+     "vias": [
+      {
+       "spans": [
+        "F.Cu-B.Cu"
+       ],
+       "connected_layers": [
+        "F.Cu",
+        "B.Cu"
+       ],
+       "barrel_mm": 1.565,
+       "x": 61.03,
+       "y": 31.24
+      },
+      {
+       "spans": [
+        "F.Cu-B.Cu"
+       ],
+       "connected_layers": [
+        "F.Cu",
+        "B.Cu"
+       ],
+       "barrel_mm": 1.565,
+       "x": 63.21,
+       "y": 25.025
+      }
+     ],
+     "eps_eff_used": {
+      "F.Cu@w=0.150": {
+       "eps_eff": 3.0739,
+       "model": "microstrip (Hammerstad)",
+       "h_mm": 0.13,
+       "er": 4.2
+      },
+      "F.Cu@w=0.200": {
+       "eps_eff": 3.1394,
+       "model": "microstrip (Hammerstad)",
+       "h_mm": 0.13,
+       "er": 4.2
+      },
+      "B.Cu@w=0.200": {
+       "eps_eff": 3.1394,
+       "model": "microstrip (Hammerstad)",
+       "h_mm": 0.13,
+       "er": 4.2
+      },
+      "B.Cu@w=0.150": {
+       "eps_eff": 3.0739,
+       "model": "microstrip (Hammerstad)",
+       "h_mm": 0.13,
+       "er": 4.2
+      }
+     },
+     "segments": 12,
+     "pads": 2,
+     "pad_to_pad": {
+      "U73.3-T70.3": {
+       "length_mm": 12.4609,
+       "delay_ps": 76.021,
+       "refs": [
+        "T70",
+        "U73"
+       ]
+      }
+     }
+    }
+   ],
+   "n_metrics": [
+    {
+     "net": "LT_IN_N",
+     "netclass": "Default",
+     "track_mm": 7.050113976474369,
+     "via_count": 2,
+     "via_barrel_mm": 3.13,
+     "routed_mm": 10.18011397647437,
+     "delay_ps": 62.595283463386764,
+     "layers": {
+      "B.Cu": 5.7106,
+      "F.Cu": 1.3395
+     },
+     "vias": [
+      {
+       "spans": [
+        "F.Cu-B.Cu"
+       ],
+       "connected_layers": [
+        "F.Cu",
+        "B.Cu"
+       ],
+       "barrel_mm": 1.565,
+       "x": 63.585,
+       "y": 26.7
+      },
+      {
+       "spans": [
+        "F.Cu-B.Cu"
+       ],
+       "connected_layers": [
+        "F.Cu",
+        "B.Cu"
+       ],
+       "barrel_mm": 1.565,
+       "x": 61.493,
+       "y": 31.801
+      }
+     ],
+     "eps_eff_used": {
+      "F.Cu@w=0.100": {
+       "eps_eff": 2.9927,
+       "model": "microstrip (Hammerstad)",
+       "h_mm": 0.13,
+       "er": 4.2
+      },
+      "F.Cu@w=0.150": {
+       "eps_eff": 3.0739,
+       "model": "microstrip (Hammerstad)",
+       "h_mm": 0.13,
+       "er": 4.2
+      },
+      "B.Cu@w=0.150": {
+       "eps_eff": 3.0739,
+       "model": "microstrip (Hammerstad)",
+       "h_mm": 0.13,
+       "er": 4.2
+      },
+      "B.Cu@w=0.100": {
+       "eps_eff": 2.9927,
+       "model": "microstrip (Hammerstad)",
+       "h_mm": 0.13,
+       "er": 4.2
+      }
+     },
+     "segments": 12,
+     "pads": 2,
+     "pad_to_pad": {
+      "U73.4-T70.4": {
+       "length_mm": 9.8237,
+       "delay_ps": 60.534,
+       "refs": [
+        "T70",
+        "U73"
+       ]
+      }
+     }
+    }
+   ],
+   "P": {
+    "track_mm": 9.345,
+    "via_barrel_mm": 3.13,
+    "routed_mm": 12.475,
+    "delay_ps": 76.104,
+    "via_count": 2
+   },
+   "N": {
+    "track_mm": 7.0501,
+    "via_barrel_mm": 3.13,
+    "routed_mm": 10.1801,
+    "delay_ps": 62.5953,
+    "via_count": 2
+   },
+   "skew_mm": 2.2949,
+   "skew_track_only_mm": 2.2949,
+   "skew_ps": 13.509,
+   "layers_p": [
+    "B.Cu",
+    "F.Cu"
+   ],
+   "layers_n": [
+    "B.Cu",
+    "F.Cu"
+   ],
+   "coupled_max_edge_gap_mm": 0.3,
+   "coupled_max_basis": "2 x netclass 'Default' diff_pair_gap 0.15 mm",
+   "coupling_p": [
+    {
+     "coupled_mm": 0.786,
+     "uncoupled_mm": 8.559,
+     "uncoupled_at_1mm_mm": 3.701,
+     "gap_stats_mm": {
+      "min": 0.19,
+      "median": 0.3877,
+      "p95": 0.9316,
+      "max": 0.9979
+     }
+    }
+   ],
+   "coupling_n": [
+    {
+     "coupled_mm": 0.649,
+     "uncoupled_mm": 6.401,
+     "uncoupled_at_1mm_mm": 2.731,
+     "gap_stats_mm": {
+      "min": 0.19,
+      "median": 0.3563,
+      "p95": 0.9144,
+      "max": 0.9993
+     }
+    }
+   ],
+   "uncoupled_mm": {
+    "p": 8.559,
+    "n": 6.401
+   },
+   "uncoupled_at_1mm": {
+    "p": 3.701,
+    "n": 2.731
+   },
+   "pad_to_pad_skew": [
+    {
+     "refs": "T70-U73",
+     "p_path": "U73.3-T70.3",
+     "n_path": "U73.4-T70.4",
+     "p_mm": 12.4609,
+     "n_mm": 9.8237,
+     "skew_mm": 2.6372,
+     "skew_ps": 15.487
+    }
+   ],
+   "limits": [
+    {
+     "source": "hardware/v2/tools/validate_route.py MATCHED_PAIRS",
+     "max_skew_mm": 0.75,
+     "require_equal_vias": true
+    },
+    {
+     "source": "hardware/v2/tools/sensitive_route_contract.py PAIR_GROUPS",
+     "max_skew_mm": 0.25,
+     "require_equal_vias": true
+    }
+   ],
+   "limit_verdicts": [
+    {
+     "source": "hardware/v2/tools/validate_route.py MATCHED_PAIRS",
+     "max_skew_mm": 0.75,
+     "pass_track_only": false,
+     "pass_with_via_barrels": false,
+     "equal_vias": true
+    },
+    {
+     "source": "hardware/v2/tools/sensitive_route_contract.py PAIR_GROUPS",
+     "max_skew_mm": 0.25,
+     "pass_track_only": false,
+     "pass_with_via_barrels": false,
+     "equal_vias": true
+    }
+   ]
+  },
+  {
+   "name": "Low-band IF",
+   "p": [
+    "IF_LOW_P"
+   ],
+   "n": [
+    "IF_LOW_N"
+   ],
+   "sources": [
+    "limits file: hardware/v2/tools/sensitive_route_contract.py PAIR_GROUPS",
+    "limits file: hardware/v2/tools/validate_route.py MATCHED_PAIRS",
+    "name: token _P/_N"
+   ],
+   "netclass": "Default",
+   "status": "ROUTED",
+   "p_metrics": [
+    {
+     "net": "IF_LOW_P",
+     "netclass": "Default",
+     "track_mm": 12.007892501779232,
+     "via_count": 3,
+     "via_barrel_mm": 4.695,
+     "routed_mm": 16.702892501779232,
+     "delay_ps": 102.41624403217713,
+     "layers": {
+      "B.Cu": 10.1395,
+      "F.Cu": 1.8684
+     },
+     "vias": [
+      {
+       "spans": [
+        "F.Cu-B.Cu"
+       ],
+       "connected_layers": [
+        "F.Cu",
+        "B.Cu"
+       ],
+       "barrel_mm": 1.565,
+       "x": 29.91,
+       "y": 29.07
+      },
+      {
+       "spans": [
+        "F.Cu-B.Cu"
+       ],
+       "connected_layers": [
+        "F.Cu",
+        "B.Cu"
+       ],
+       "barrel_mm": 1.565,
+       "x": 29.159,
+       "y": 28.534
+      },
+      {
+       "spans": [
+        "F.Cu-B.Cu"
+       ],
+       "connected_layers": [
+        "F.Cu",
+        "B.Cu"
+       ],
+       "barrel_mm": 1.565,
+       "x": 38.761,
+       "y": 28.075
+      }
+     ],
+     "eps_eff_used": {
+      "F.Cu@w=0.200": {
+       "eps_eff": 3.1394,
+       "model": "microstrip (Hammerstad)",
+       "h_mm": 0.13,
+       "er": 4.2
+      },
+      "F.Cu@w=0.150": {
+       "eps_eff": 3.0739,
+       "model": "microstrip (Hammerstad)",
+       "h_mm": 0.13,
+       "er": 4.2
+      },
+      "B.Cu@w=0.200": {
+       "eps_eff": 3.1394,
+       "model": "microstrip (Hammerstad)",
+       "h_mm": 0.13,
+       "er": 4.2
+      },
+      "B.Cu@w=0.150": {
+       "eps_eff": 3.0739,
+       "model": "microstrip (Hammerstad)",
+       "h_mm": 0.13,
+       "er": 4.2
+      }
+     },
+     "segments": 8,
+     "pads": 3,
+     "pad_to_pad": {
+      "L98.1-T50.3": {
+       "length_mm": 13.9609,
+       "delay_ps": 84.834,
+       "refs": [
+        "L98",
+        "T50"
+       ]
+      },
+      "L98.1-U51.20": {
+       "length_mm": 5.1527,
+       "delay_ps": 33.3,
+       "refs": [
+        "L98",
+        "U51"
+       ]
+      },
+      "T50.3-U51.20": {
+       "length_mm": 13.6032,
+       "delay_ps": 82.668,
+       "refs": [
+        "T50",
+        "U51"
+       ]
+      }
+     }
+    }
+   ],
+   "n_metrics": [
+    {
+     "net": "IF_LOW_N",
+     "netclass": "Default",
+     "track_mm": 12.008671487753709,
+     "via_count": 2,
+     "via_barrel_mm": 3.13,
+     "routed_mm": 15.138671487753708,
+     "delay_ps": 91.48472156972035,
+     "layers": {
+      "B.Cu": 8.8378,
+      "F.Cu": 3.1708
+     },
+     "vias": [
+      {
+       "spans": [
+        "F.Cu-B.Cu"
+       ],
+       "connected_layers": [
+        "F.Cu",
+        "B.Cu"
+       ],
+       "barrel_mm": 1.565,
+       "x": 37.675,
+       "y": 26.215
+      },
+      {
+       "spans": [
+        "F.Cu-B.Cu"
+       ],
+       "connected_layers": [
+        "F.Cu",
+        "B.Cu"
+       ],
+       "barrel_mm": 1.565,
+       "x": 30.09,
+       "y": 28.33
+      }
+     ],
+     "eps_eff_used": {
+      "F.Cu@w=0.100": {
+       "eps_eff": 2.9927,
+       "model": "microstrip (Hammerstad)",
+       "h_mm": 0.13,
+       "er": 4.2
+      },
+      "F.Cu@w=0.150": {
+       "eps_eff": 3.0739,
+       "model": "microstrip (Hammerstad)",
+       "h_mm": 0.13,
+       "er": 4.2
+      },
+      "B.Cu@w=0.150": {
+       "eps_eff": 3.0739,
+       "model": "microstrip (Hammerstad)",
+       "h_mm": 0.13,
+       "er": 4.2
+      },
+      "B.Cu@w=0.100": {
+       "eps_eff": 2.9927,
+       "model": "microstrip (Hammerstad)",
+       "h_mm": 0.13,
+       "er": 4.2
+      }
+     },
+     "segments": 14,
+     "pads": 3,
+     "pad_to_pad": {
+      "L98.2-T50.4": {
+       "length_mm": 12.6867,
+       "delay_ps": 77.167,
+       "refs": [
+        "L98",
+        "T50"
+       ]
+      },
+      "L98.2-U51.21": {
+       "length_mm": 2.0514,
+       "delay_ps": 11.997,
+       "refs": [
+        "L98",
+        "U51"
+       ]
+      },
+      "T50.4-U51.21": {
+       "length_mm": 14.7382,
+       "delay_ps": 89.165,
+       "refs": [
+        "T50",
+        "U51"
+       ]
+      }
+     }
+    }
+   ],
+   "P": {
+    "track_mm": 12.0079,
+    "via_barrel_mm": 4.695,
+    "routed_mm": 16.7029,
+    "delay_ps": 102.4162,
+    "via_count": 3
+   },
+   "N": {
+    "track_mm": 12.0087,
+    "via_barrel_mm": 3.13,
+    "routed_mm": 15.1387,
+    "delay_ps": 91.4847,
+    "via_count": 2
+   },
+   "skew_mm": 1.5642,
+   "skew_track_only_mm": 0.0008,
+   "skew_ps": 10.932,
+   "layers_p": [
+    "B.Cu",
+    "F.Cu"
+   ],
+   "layers_n": [
+    "B.Cu",
+    "F.Cu"
+   ],
+   "coupled_max_edge_gap_mm": 0.3,
+   "coupled_max_basis": "2 x netclass 'Default' diff_pair_gap 0.15 mm",
+   "coupling_p": [
+    {
+     "coupled_mm": 0.226,
+     "uncoupled_mm": 11.782,
+     "uncoupled_at_1mm_mm": 6.109,
+     "gap_stats_mm": {
+      "min": 0.2955,
+      "median": 0.59,
+      "p95": 0.7995,
+      "max": 0.9708
+     }
+    }
+   ],
+   "coupling_n": [
+    {
+     "coupled_mm": 0.346,
+     "uncoupled_mm": 11.662,
+     "uncoupled_at_1mm_mm": 6.657,
+     "gap_stats_mm": {
+      "min": 0.2894,
+      "median": 0.59,
+      "p95": 0.8161,
+      "max": 0.9901
+     }
+    }
+   ],
+   "uncoupled_mm": {
+    "p": 11.782,
+    "n": 11.662
+   },
+   "uncoupled_at_1mm": {
+    "p": 6.109,
+    "n": 6.657
+   },
+   "pad_to_pad_skew": [
+    {
+     "refs": "L98-T50",
+     "p_path": "L98.1-T50.3",
+     "n_path": "L98.2-T50.4",
+     "p_mm": 13.9609,
+     "n_mm": 12.6867,
+     "skew_mm": 1.2742,
+     "skew_ps": 7.667
+    },
+    {
+     "refs": "L98-U51",
+     "p_path": "L98.1-U51.20",
+     "n_path": "L98.2-U51.21",
+     "p_mm": 5.1527,
+     "n_mm": 2.0514,
+     "skew_mm": 3.1013,
+     "skew_ps": 21.303
+    },
+    {
+     "refs": "T50-U51",
+     "p_path": "T50.3-U51.20",
+     "n_path": "T50.4-U51.21",
+     "p_mm": 13.6032,
+     "n_mm": 14.7382,
+     "skew_mm": 1.135,
+     "skew_ps": 6.497
+    }
+   ],
+   "limits": [
+    {
+     "source": "hardware/v2/tools/validate_route.py MATCHED_PAIRS",
+     "max_skew_mm": 0.75,
+     "require_equal_vias": true
+    },
+    {
+     "source": "hardware/v2/tools/sensitive_route_contract.py PAIR_GROUPS",
+     "max_skew_mm": 0.25,
+     "require_equal_vias": true
+    }
+   ],
+   "limit_verdicts": [
+    {
+     "source": "hardware/v2/tools/validate_route.py MATCHED_PAIRS",
+     "max_skew_mm": 0.75,
+     "pass_track_only": true,
+     "pass_with_via_barrels": false,
+     "equal_vias": false
+    },
+    {
+     "source": "hardware/v2/tools/sensitive_route_contract.py PAIR_GROUPS",
+     "max_skew_mm": 0.25,
+     "pass_track_only": true,
+     "pass_with_via_barrels": false,
+     "equal_vias": false
+    }
+   ]
+  },
+  {
+   "name": "Low-band LO",
+   "p": [
+    "LO_LOW_P"
+   ],
+   "n": [
+    "LO_LOW_N"
+   ],
+   "sources": [
+    "limits file: hardware/v2/tools/sensitive_route_contract.py PAIR_GROUPS",
+    "limits file: hardware/v2/tools/validate_route.py MATCHED_PAIRS",
+    "name: token _P/_N"
+   ],
+   "netclass": "Default",
+   "status": "ROUTED",
+   "p_metrics": [
+    {
+     "net": "LO_LOW_P",
+     "netclass": "Default",
+     "track_mm": 34.749604987322336,
+     "via_count": 2,
+     "via_barrel_mm": 3.13,
+     "routed_mm": 37.87960498732234,
+     "delay_ps": 227.8875154914606,
+     "layers": {
+      "B.Cu": 30.8728,
+      "F.Cu": 3.8768
+     },
+     "vias": [
+      {
+       "spans": [
+        "F.Cu-B.Cu"
+       ],
+       "connected_layers": [
+        "F.Cu",
+        "B.Cu"
+       ],
+       "barrel_mm": 1.565,
+       "x": 24.5,
+       "y": 31.25
+      },
+      {
+       "spans": [
+        "F.Cu-B.Cu"
+       ],
+       "connected_layers": [
+        "F.Cu",
+        "B.Cu"
+       ],
+       "barrel_mm": 1.565,
+       "x": 23.6,
+       "y": 61.75
+      }
+     ],
+     "eps_eff_used": {
+      "F.Cu@w=0.230": {
+       "eps_eff": 3.1735,
+       "model": "microstrip (Hammerstad)",
+       "h_mm": 0.13,
+       "er": 4.2
+      },
+      "B.Cu@w=0.230": {
+       "eps_eff": 3.1735,
+       "model": "microstrip (Hammerstad)",
+       "h_mm": 0.13,
+       "er": 4.2
+      }
+     },
+     "segments": 8,
+     "pads": 2,
+     "pad_to_pad": {
+      "C203.2-U51.3": {
+       "length_mm": 37.5524,
+       "delay_ps": 225.943,
+       "refs": [
+        "C203",
+        "U51"
+       ]
+      }
+     }
+    }
+   ],
+   "n_metrics": [
+    {
+     "net": "LO_LOW_N",
+     "netclass": "Default",
+     "track_mm": 34.949606781186546,
+     "via_count": 2,
+     "via_barrel_mm": 3.13,
+     "routed_mm": 38.07960678118655,
+     "delay_ps": 229.07597558831654,
+     "layers": {
+      "B.Cu": 32.0,
+      "F.Cu": 2.9496
+     },
+     "vias": [
+      {
+       "spans": [
+        "F.Cu-B.Cu"
+       ],
+       "connected_layers": [
+        "F.Cu",
+        "B.Cu"
+       ],
+       "barrel_mm": 1.565,
+       "x": 23.6,
+       "y": 63.25
+      },
+      {
+       "spans": [
+        "F.Cu-B.Cu"
+       ],
+       "connected_layers": [
+        "F.Cu",
+        "B.Cu"
+       ],
+       "barrel_mm": 1.565,
+       "x": 25.1,
+       "y": 32.75
+      }
+     ],
+     "eps_eff_used": {
+      "F.Cu@w=0.230": {
+       "eps_eff": 3.1735,
+       "model": "microstrip (Hammerstad)",
+       "h_mm": 0.13,
+       "er": 4.2
+      },
+      "B.Cu@w=0.230": {
+       "eps_eff": 3.1735,
+       "model": "microstrip (Hammerstad)",
+       "h_mm": 0.13,
+       "er": 4.2
+      }
+     },
+     "segments": 6,
+     "pads": 2,
+     "pad_to_pad": {
+      "C204.2-U51.4": {
+       "length_mm": 38.0796,
+       "delay_ps": 229.076,
+       "refs": [
+        "C204",
+        "U51"
+       ]
+      }
+     }
+    }
+   ],
+   "P": {
+    "track_mm": 34.7496,
+    "via_barrel_mm": 3.13,
+    "routed_mm": 37.8796,
+    "delay_ps": 227.8875,
+    "via_count": 2
+   },
+   "N": {
+    "track_mm": 34.9496,
+    "via_barrel_mm": 3.13,
+    "routed_mm": 38.0796,
+    "delay_ps": 229.076,
+    "via_count": 2
+   },
+   "skew_mm": 0.2,
+   "skew_track_only_mm": 0.2,
+   "skew_ps": 1.188,
+   "layers_p": [
+    "B.Cu",
+    "F.Cu"
+   ],
+   "layers_n": [
+    "B.Cu",
+    "F.Cu"
+   ],
+   "coupled_max_edge_gap_mm": 0.3,
+   "coupled_max_basis": "2 x netclass 'Default' diff_pair_gap 0.15 mm",
+   "coupling_p": [
+    {
+     "coupled_mm": 0.81,
+     "uncoupled_mm": 33.94,
+     "uncoupled_at_1mm_mm": 3.056,
+     "gap_stats_mm": {
+      "min": 0.27,
+      "median": 0.37,
+      "p95": 0.601,
+      "max": 0.9758
+     }
+    }
+   ],
+   "coupling_n": [
+    {
+     "coupled_mm": 0.81,
+     "uncoupled_mm": 34.14,
+     "uncoupled_at_1mm_mm": 4.03,
+     "gap_stats_mm": {
+      "min": 0.27,
+      "median": 0.37,
+      "p95": 0.4524,
+      "max": 0.9898
+     }
+    }
+   ],
+   "uncoupled_mm": {
+    "p": 33.94,
+    "n": 34.14
+   },
+   "uncoupled_at_1mm": {
+    "p": 3.056,
+    "n": 4.03
+   },
+   "pad_to_pad_skew": [
+    {
+     "refs": "single path each (refs differ)",
+     "p_path": "C203.2-U51.3",
+     "n_path": "C204.2-U51.4",
+     "p_mm": 37.5524,
+     "n_mm": 38.0796,
+     "skew_mm": 0.5272,
+     "skew_ps": 3.133
+    }
+   ],
+   "limits": [
+    {
+     "source": "hardware/v2/tools/validate_route.py MATCHED_PAIRS",
+     "max_skew_mm": 0.75,
+     "require_equal_vias": true
+    },
+    {
+     "source": "hardware/v2/tools/sensitive_route_contract.py PAIR_GROUPS",
+     "max_skew_mm": 0.25,
+     "require_equal_vias": true
+    }
+   ],
+   "limit_verdicts": [
+    {
+     "source": "hardware/v2/tools/validate_route.py MATCHED_PAIRS",
+     "max_skew_mm": 0.75,
+     "pass_track_only": true,
+     "pass_with_via_barrels": true,
+     "equal_vias": true
+    },
+    {
+     "source": "hardware/v2/tools/sensitive_route_contract.py PAIR_GROUPS",
+     "max_skew_mm": 0.25,
+     "pass_track_only": true,
+     "pass_with_via_barrels": true,
+     "equal_vias": true
+    }
+   ]
+  },
+  {
+   "name": "Second IF",
+   "p": [
+    "IF2_P"
+   ],
+   "n": [
+    "IF2_N"
+   ],
+   "sources": [
+    "limits file: hardware/v2/tools/sensitive_route_contract.py PAIR_GROUPS",
+    "limits file: hardware/v2/tools/validate_route.py MATCHED_PAIRS",
+    "name: token _P/_N"
+   ],
+   "netclass": "Default",
+   "status": "ROUTED",
+   "p_metrics": [
+    {
+     "net": "IF2_P",
+     "netclass": "Default",
+     "track_mm": 12.10498520703585,
+     "via_count": 3,
+     "via_barrel_mm": 4.695,
+     "routed_mm": 16.799985207035853,
+     "delay_ps": 102.88761094023687,
+     "layers": {
+      "B.Cu": 9.341,
+      "F.Cu": 2.764
+     },
+     "vias": [
+      {
+       "spans": [
+        "F.Cu-B.Cu"
+       ],
+       "connected_layers": [
+        "F.Cu",
+        "B.Cu"
+       ],
+       "barrel_mm": 1.565,
+       "x": 65.94,
+       "y": 31.12
+      },
+      {
+       "spans": [
+        "F.Cu-B.Cu"
+       ],
+       "connected_layers": [
+        "F.Cu",
+        "B.Cu"
+       ],
+       "barrel_mm": 1.565,
+       "x": 66.14,
+       "y": 37.37
+      },
+      {
+       "spans": [
+        "F.Cu-B.Cu"
+       ],
+       "connected_layers": [
+        "F.Cu",
+        "B.Cu"
+       ],
+       "barrel_mm": 1.565,
+       "x": 66.425,
+       "y": 28.35
+      }
+     ],
+     "eps_eff_used": {
+      "F.Cu@w=0.150": {
+       "eps_eff": 3.0739,
+       "model": "microstrip (Hammerstad)",
+       "h_mm": 0.13,
+       "er": 4.2
+      },
+      "B.Cu@w=0.150": {
+       "eps_eff": 3.0739,
+       "model": "microstrip (Hammerstad)",
+       "h_mm": 0.13,
+       "er": 4.2
+      }
+     },
+     "segments": 9,
+     "pads": 4,
+     "pad_to_pad": {
+      "L85.2-U73.6": {
+       "length_mm": 6.5845,
+       "delay_ps": 41.6,
+       "refs": [
+        "L85",
+        "U73"
+       ]
+      },
+      "L85.2-L87.1": {
+       "length_mm": 1.66,
+       "delay_ps": 9.708,
+       "refs": [
+        "L85",
+        "L87"
+       ]
+      },
+      "L85.2-R79.1": {
+       "length_mm": 12.1245,
+       "delay_ps": 73.999,
+       "refs": [
+        "L85",
+        "R79"
+       ]
+      },
+      "U73.6-L87.1": {
+       "length_mm": 8.2445,
+       "delay_ps": 51.308,
+       "refs": [
+        "L87",
+        "U73"
+       ]
+      },
+      "U73.6-R79.1": {
+       "length_mm": 9.69,
+       "delay_ps": 59.761,
+       "refs": [
+        "R79",
+        "U73"
+       ]
+      },
+      "L87.1-R79.1": {
+       "length_mm": 13.7845,
+       "delay_ps": 83.707,
+       "refs": [
+        "L87",
+        "R79"
+       ]
+      }
+     }
+    }
+   ],
+   "n_metrics": [
+    {
+     "net": "IF2_N",
+     "netclass": "Default",
+     "track_mm": 8.54273011923278,
+     "via_count": 2,
+     "via_barrel_mm": 3.13,
+     "routed_mm": 11.672730119232781,
+     "delay_ps": 71.35642158850855,
+     "layers": {
+      "B.Cu": 2.3047,
+      "F.Cu": 6.238
+     },
+     "vias": [
+      {
+       "spans": [
+        "F.Cu-B.Cu"
+       ],
+       "connected_layers": [
+        "F.Cu",
+        "B.Cu"
+       ],
+       "barrel_mm": 1.565,
+       "x": 67.112,
+       "y": 34.962
+      },
+      {
+       "spans": [
+        "F.Cu-B.Cu"
+       ],
+       "connected_layers": [
+        "F.Cu",
+        "B.Cu"
+       ],
+       "barrel_mm": 1.565,
+       "x": 67.13,
+       "y": 37.26
+      }
+     ],
+     "eps_eff_used": {
+      "F.Cu@w=0.150": {
+       "eps_eff": 3.0739,
+       "model": "microstrip (Hammerstad)",
+       "h_mm": 0.13,
+       "er": 4.2
+      },
+      "B.Cu@w=0.150": {
+       "eps_eff": 3.0739,
+       "model": "microstrip (Hammerstad)",
+       "h_mm": 0.13,
+       "er": 4.2
+      }
+     },
+     "segments": 11,
+     "pads": 4,
+     "pad_to_pad": {
+      "U73.5-R79.2": {
+       "length_mm": 10.0951,
+       "delay_ps": 62.13,
+       "refs": [
+        "R79",
+        "U73"
+       ]
+      },
+      "U73.5-L86.2": {
+       "length_mm": 5.9374,
+       "delay_ps": 34.723,
+       "refs": [
+        "L86",
+        "U73"
+       ]
+      },
+      "U73.5-L88.1": {
+       "length_mm": 2.3277,
+       "delay_ps": 13.613,
+       "refs": [
+        "L88",
+        "U73"
+       ]
+      },
+      "R79.2-L86.2": {
+       "length_mm": 6.1023,
+       "delay_ps": 38.779,
+       "refs": [
+        "L86",
+        "R79"
+       ]
+      },
+      "R79.2-L88.1": {
+       "length_mm": 7.7674,
+       "delay_ps": 48.517,
+       "refs": [
+        "L88",
+        "R79"
+       ]
+      },
+      "L86.2-L88.1": {
+       "length_mm": 3.6097,
+       "delay_ps": 21.11,
+       "refs": [
+        "L86",
+        "L88"
+       ]
+      }
+     }
+    }
+   ],
+   "P": {
+    "track_mm": 12.105,
+    "via_barrel_mm": 4.695,
+    "routed_mm": 16.8,
+    "delay_ps": 102.8876,
+    "via_count": 3
+   },
+   "N": {
+    "track_mm": 8.5427,
+    "via_barrel_mm": 3.13,
+    "routed_mm": 11.6727,
+    "delay_ps": 71.3564,
+    "via_count": 2
+   },
+   "skew_mm": 5.1273,
+   "skew_track_only_mm": 3.5623,
+   "skew_ps": 31.531,
+   "layers_p": [
+    "B.Cu",
+    "F.Cu"
+   ],
+   "layers_n": [
+    "B.Cu",
+    "F.Cu"
+   ],
+   "coupled_max_edge_gap_mm": 0.3,
+   "coupled_max_basis": "2 x netclass 'Default' diff_pair_gap 0.15 mm",
+   "coupling_p": [
+    {
+     "coupled_mm": 0.0,
+     "uncoupled_mm": 12.105,
+     "uncoupled_at_1mm_mm": 8.411,
+     "gap_stats_mm": {
+      "min": 0.3505,
+      "median": 0.8225,
+      "p95": 0.9083,
+      "max": 0.976
+     }
+    }
+   ],
+   "coupling_n": [
+    {
+     "coupled_mm": 0.0,
+     "uncoupled_mm": 8.543,
+     "uncoupled_at_1mm_mm": 5.18,
+     "gap_stats_mm": {
+      "min": 0.3669,
+      "median": 0.8225,
+      "p95": 0.967,
+      "max": 0.9926
+     }
+    }
+   ],
+   "uncoupled_mm": {
+    "p": 12.105,
+    "n": 8.543
+   },
+   "uncoupled_at_1mm": {
+    "p": 8.411,
+    "n": 5.18
+   },
+   "pad_to_pad_skew": [
+    {
+     "refs": "R79-U73",
+     "p_path": "U73.6-R79.1",
+     "n_path": "U73.5-R79.2",
+     "p_mm": 9.69,
+     "n_mm": 10.0951,
+     "skew_mm": 0.4051,
+     "skew_ps": 2.369
+    }
+   ],
+   "limits": [
+    {
+     "source": "hardware/v2/tools/validate_route.py MATCHED_PAIRS",
+     "max_skew_mm": 0.5,
+     "require_equal_vias": true
+    },
+    {
+     "source": "hardware/v2/tools/sensitive_route_contract.py PAIR_GROUPS",
+     "max_skew_mm": 0.5,
+     "require_equal_vias": true
+    }
+   ],
+   "limit_verdicts": [
+    {
+     "source": "hardware/v2/tools/validate_route.py MATCHED_PAIRS",
+     "max_skew_mm": 0.5,
+     "pass_track_only": false,
+     "pass_with_via_barrels": false,
+     "equal_vias": false
+    },
+    {
+     "source": "hardware/v2/tools/sensitive_route_contract.py PAIR_GROUPS",
+     "max_skew_mm": 0.5,
+     "pass_track_only": false,
+     "pass_with_via_barrels": false,
+     "equal_vias": false
+    }
+   ]
+  },
+  {
+   "name": "Second LO",
+   "p": [
+    "LO2_P"
+   ],
+   "n": [
+    "LO2_N"
+   ],
+   "sources": [
+    "limits file: hardware/v2/tools/sensitive_route_contract.py PAIR_GROUPS",
+    "limits file: hardware/v2/tools/validate_route.py MATCHED_PAIRS",
+    "name: token _P/_N"
+   ],
+   "netclass": "Default",
+   "status": "ROUTED",
+   "p_metrics": [
+    {
+     "net": "LO2_P",
+     "netclass": "Default",
+     "track_mm": 70.59222360521659,
+     "via_count": 2,
+     "via_barrel_mm": 2.8,
+     "routed_mm": 73.39222360521659,
+     "delay_ps": 501.0693349513571,
+     "layers": {
+      "F.Cu": 0.65,
+      "In2.Cu": 69.9422
+     },
+     "vias": [
+      {
+       "spans": [
+        "F.Cu-B.Cu"
+       ],
+       "connected_layers": [
+        "F.Cu",
+        "In2.Cu"
+       ],
+       "barrel_mm": 1.4,
+       "x": 65.083,
+       "y": 30.125
+      },
+      {
+       "spans": [
+        "F.Cu-B.Cu"
+       ],
+       "connected_layers": [
+        "F.Cu",
+        "In2.Cu"
+       ],
+       "barrel_mm": 1.4,
+       "x": 35.333,
+       "y": 70.524
+      }
+     ],
+     "eps_eff_used": {
+      "F.Cu@w=0.150": {
+       "eps_eff": 3.0739,
+       "model": "microstrip (Hammerstad)",
+       "h_mm": 0.13,
+       "er": 4.2
+      },
+      "In2.Cu@w=0.150": {
+       "eps_eff": 4.2,
+       "model": "stripline (eps_eff = er)",
+       "er": 4.2
+      }
+     },
+     "segments": 81,
+     "pads": 2,
+     "pad_to_pad": {
+      "U73.8-C206.2": {
+       "length_mm": 72.0966,
+       "delay_ps": 492.46,
+       "refs": [
+        "C206",
+        "U73"
+       ]
+      }
+     }
+    }
+   ],
+   "n_metrics": [
+    {
+     "net": "LO2_N",
+     "netclass": "Default",
+     "track_mm": 62.94005858378377,
+     "via_count": 7,
+     "via_barrel_mm": 3.46,
+     "routed_mm": 66.40005858378376,
+     "delay_ps": 433.9050835174536,
+     "layers": {
+      "F.Cu": 20.2543,
+      "In1.Cu": 25.9217,
+      "In2.Cu": 16.764
+     },
+     "vias": [
+      {
+       "spans": [
+        "F.Cu-B.Cu"
+       ],
+       "connected_layers": [
+        "F.Cu",
+        "In1.Cu"
+       ],
+       "barrel_mm": 0.165,
+       "x": 38.17,
+       "y": 70.629
+      },
+      {
+       "spans": [
+        "F.Cu-B.Cu"
+       ],
+       "connected_layers": [
+        "F.Cu",
+        "In2.Cu"
+       ],
+       "barrel_mm": 1.4,
+       "x": 47.57,
+       "y": 53.88
+      },
+      {
+       "spans": [
+        "F.Cu-B.Cu"
+       ],
+       "connected_layers": [
+        "F.Cu",
+        "In1.Cu"
+       ],
+       "barrel_mm": 0.165,
+       "x": 42.45,
+       "y": 64.86
+      },
+      {
+       "spans": [
+        "F.Cu-B.Cu"
+       ],
+       "connected_layers": [
+        "F.Cu",
+        "In1.Cu"
+       ],
+       "barrel_mm": 0.165,
+       "x": 54.34,
+       "y": 40.74
+      },
+      {
+       "spans": [
+        "F.Cu-B.Cu"
+       ],
+       "connected_layers": [
+        "F.Cu",
+        "In1.Cu"
+       ],
+       "barrel_mm": 0.165,
+       "x": 61.569,
+       "y": 29.68
+      },
+      {
+       "spans": [
+        "F.Cu-B.Cu"
+       ],
+       "connected_layers": [
+        "F.Cu",
+        "In1.Cu"
+       ],
+       "barrel_mm": 0.165,
+       "x": 40.8,
+       "y": 66.66
+      },
+      {
+       "spans": [
+        "F.Cu-B.Cu"
+       ],
+       "connected_layers": [
+        "In1.Cu",
+        "In2.Cu"
+       ],
+       "barrel_mm": 1.235,
+       "x": 48.71,
+       "y": 63.71
+      }
+     ],
+     "eps_eff_used": {
+      "F.Cu@w=0.150": {
+       "eps_eff": 3.0739,
+       "model": "microstrip (Hammerstad)",
+       "h_mm": 0.13,
+       "er": 4.2
+      },
+      "In1.Cu@w=0.150": {
+       "eps_eff": 4.2,
+       "model": "stripline (eps_eff = er)",
+       "er": 4.2
+      },
+      "In2.Cu@w=0.150": {
+       "eps_eff": 4.2,
+       "model": "stripline (eps_eff = er)",
+       "er": 4.2
+      }
+     },
+     "segments": 32,
+     "pads": 2,
+     "pad_to_pad": {
+      "U73.1-C207.2": {
+       "length_mm": 65.3997,
+       "delay_ps": 427.903,
+       "refs": [
+        "C207",
+        "U73"
+       ]
+      }
+     }
+    }
+   ],
+   "P": {
+    "track_mm": 70.5922,
+    "via_barrel_mm": 2.8,
+    "routed_mm": 73.3922,
+    "delay_ps": 501.0693,
+    "via_count": 2
+   },
+   "N": {
+    "track_mm": 62.9401,
+    "via_barrel_mm": 3.46,
+    "routed_mm": 66.4001,
+    "delay_ps": 433.9051,
+    "via_count": 7
+   },
+   "skew_mm": 6.9922,
+   "skew_track_only_mm": 7.6522,
+   "skew_ps": 67.164,
+   "layers_p": [
+    "F.Cu",
+    "In2.Cu"
+   ],
+   "layers_n": [
+    "F.Cu",
+    "In1.Cu",
+    "In2.Cu"
+   ],
+   "coupled_max_edge_gap_mm": 0.3,
+   "coupled_max_basis": "2 x netclass 'Default' diff_pair_gap 0.15 mm",
+   "coupling_p": [
+    {
+     "coupled_mm": 0.0,
+     "uncoupled_mm": 70.592,
+     "uncoupled_at_1mm_mm": 70.592,
+     "gap_stats_mm": null
+    }
+   ],
+   "coupling_n": [
+    {
+     "coupled_mm": 0.0,
+     "uncoupled_mm": 62.94,
+     "uncoupled_at_1mm_mm": 62.94,
+     "gap_stats_mm": null
+    }
+   ],
+   "uncoupled_mm": {
+    "p": 70.592,
+    "n": 62.94
+   },
+   "uncoupled_at_1mm": {
+    "p": 70.592,
+    "n": 62.94
+   },
+   "pad_to_pad_skew": [
+    {
+     "refs": "single path each (refs differ)",
+     "p_path": "U73.8-C206.2",
+     "n_path": "U73.1-C207.2",
+     "p_mm": 72.0966,
+     "n_mm": 65.3997,
+     "skew_mm": 6.6969,
+     "skew_ps": 64.557
+    }
+   ],
+   "limits": [
+    {
+     "source": "hardware/v2/tools/validate_route.py MATCHED_PAIRS",
+     "max_skew_mm": 0.75,
+     "require_equal_vias": true
+    },
+    {
+     "source": "hardware/v2/tools/sensitive_route_contract.py PAIR_GROUPS",
+     "max_skew_mm": 0.25,
+     "require_equal_vias": true
+    }
+   ],
+   "limit_verdicts": [
+    {
+     "source": "hardware/v2/tools/validate_route.py MATCHED_PAIRS",
+     "max_skew_mm": 0.75,
+     "pass_track_only": false,
+     "pass_with_via_barrels": false,
+     "equal_vias": false
+    },
+    {
+     "source": "hardware/v2/tools/sensitive_route_contract.py PAIR_GROUPS",
+     "max_skew_mm": 0.25,
+     "pass_track_only": false,
+     "pass_with_via_barrels": false,
+     "equal_vias": false
+    }
+   ]
+  },
+  {
+   "name": "USB",
+   "p": [
+    "USB_DP_CONN",
+    "USB_DP"
+   ],
+   "n": [
+    "USB_DM_CONN",
+    "USB_DM"
+   ],
+   "sources": [
+    "limits file: hardware/v2/tools/sensitive_route_contract.py PAIR_GROUPS",
+    "limits file: hardware/v2/tools/validate_route.py MATCHED_PAIRS"
+   ],
+   "netclass": "Default",
+   "status": "ROUTED",
+   "p_metrics": [
+    {
+     "net": "USB_DP_CONN",
+     "netclass": "Default",
+     "track_mm": 45.38959373760957,
+     "via_count": 4,
+     "via_barrel_mm": 6.26,
+     "routed_mm": 51.64959373760957,
+     "delay_ps": 313.40503878475846,
+     "layers": {
+      "B.Cu": 19.6353,
+      "F.Cu": 25.7543
+     },
+     "vias": [
+      {
+       "spans": [
+        "F.Cu-B.Cu"
+       ],
+       "connected_layers": [
+        "F.Cu",
+        "B.Cu"
+       ],
+       "barrel_mm": 1.565,
+       "x": 38.515,
+       "y": 85.305
+      },
+      {
+       "spans": [
+        "F.Cu-B.Cu"
+       ],
+       "connected_layers": [
+        "F.Cu",
+        "B.Cu"
+       ],
+       "barrel_mm": 1.565,
+       "x": 46.0,
+       "y": 92.775
+      },
+      {
+       "spans": [
+        "F.Cu-B.Cu"
+       ],
+       "connected_layers": [
+        "F.Cu",
+        "B.Cu"
+       ],
+       "barrel_mm": 1.565,
+       "x": 38.515,
+       "y": 87.855
+      },
+      {
+       "spans": [
+        "F.Cu-B.Cu"
+       ],
+       "connected_layers": [
+        "F.Cu",
+        "B.Cu"
+       ],
+       "barrel_mm": 1.565,
+       "x": 52.0,
+       "y": 79.775
+      }
+     ],
+     "eps_eff_used": {
+      "F.Cu@w=0.250": {
+       "eps_eff": 3.1946,
+       "model": "microstrip (Hammerstad)",
+       "h_mm": 0.13,
+       "er": 4.2
+      },
+      "B.Cu@w=0.250": {
+       "eps_eff": 3.1946,
+       "model": "microstrip (Hammerstad)",
+       "h_mm": 0.13,
+       "er": 4.2
+      }
+     },
+     "segments": 117,
+     "pads": 4,
+     "pad_to_pad": {
+      "R21.1-U12.3": {
+       "length_mm": 45.2029,
+       "delay_ps": 274.97,
+       "refs": [
+        "R21",
+        "U12"
+       ]
+      },
+      "R21.1-U12.4": {
+       "length_mm": 47.4779,
+       "delay_ps": 288.534,
+       "refs": [
+        "R21",
+        "U12"
+       ]
+      },
+      "R21.1-J10.3": {
+       "length_mm": 23.0985,
+       "delay_ps": 140.449,
+       "refs": [
+        "J10",
+        "R21"
+       ]
+      },
+      "U12.3-J10.3": {
+       "length_mm": 23.9044,
+       "delay_ps": 145.253,
+       "refs": [
+        "J10",
+        "U12"
+       ]
+      },
+      "U12.4-J10.3": {
+       "length_mm": 26.1794,
+       "delay_ps": 158.816,
+       "refs": [
+        "J10",
+        "U12"
+       ]
+      }
+     }
+    },
+    {
+     "net": "USB_DP",
+     "netclass": "Default",
+     "track_mm": 14.448796907442553,
+     "via_count": 2,
+     "via_barrel_mm": 3.13,
+     "routed_mm": 17.578796907442552,
+     "delay_ps": 105.25805982670676,
+     "layers": {
+      "B.Cu": 9.1412,
+      "F.Cu": 5.3076
+     },
+     "vias": [
+      {
+       "spans": [
+        "F.Cu-B.Cu"
+       ],
+       "connected_layers": [
+        "F.Cu",
+        "B.Cu"
+       ],
+       "barrel_mm": 1.565,
+       "x": 35.085,
+       "y": 83.802
+      },
+      {
+       "spans": [
+        "F.Cu-B.Cu"
+       ],
+       "connected_layers": [
+        "F.Cu",
+        "B.Cu"
+       ],
+       "barrel_mm": 1.565,
+       "x": 38.685,
+       "y": 76.153
+      }
+     ],
+     "eps_eff_used": {
+      "F.Cu@w=0.120": {
+       "eps_eff": 3.0276,
+       "model": "microstrip (Hammerstad)",
+       "h_mm": 0.13,
+       "er": 4.2
+      },
+      "B.Cu@w=0.120": {
+       "eps_eff": 3.0276,
+       "model": "microstrip (Hammerstad)",
+       "h_mm": 0.13,
+       "er": 4.2
+      }
+     },
+     "segments": 53,
+     "pads": 2,
+     "pad_to_pad": {
+      "U10.47-R21.2": {
+       "length_mm": 16.8543,
+       "delay_ps": 101.053,
+       "refs": [
+        "R21",
+        "U10"
+       ]
+      }
+     }
+    }
+   ],
+   "n_metrics": [
+    {
+     "net": "USB_DM_CONN",
+     "netclass": "Default",
+     "track_mm": 45.756876285460145,
+     "via_count": 4,
+     "via_barrel_mm": 6.26,
+     "routed_mm": 52.01687628546014,
+     "delay_ps": 315.59476709784315,
+     "layers": {
+      "B.Cu": 34.3422,
+      "F.Cu": 11.4146
+     },
+     "vias": [
+      {
+       "spans": [
+        "F.Cu-B.Cu"
+       ],
+       "connected_layers": [
+        "F.Cu",
+        "B.Cu"
+       ],
+       "barrel_mm": 1.565,
+       "x": 41.35,
+       "y": 96.125
+      },
+      {
+       "spans": [
+        "F.Cu-B.Cu"
+       ],
+       "connected_layers": [
+        "F.Cu",
+        "B.Cu"
+       ],
+       "barrel_mm": 1.565,
+       "x": 39.855,
+       "y": 92.355
+      },
+      {
+       "spans": [
+        "F.Cu-B.Cu"
+       ],
+       "connected_layers": [
+        "F.Cu",
+        "B.Cu"
+       ],
+       "barrel_mm": 1.565,
+       "x": 31.905,
+       "y": 84.405
+      },
+      {
+       "spans": [
+        "F.Cu-B.Cu"
+       ],
+       "connected_layers": [
+        "F.Cu",
+        "B.Cu"
+       ],
+       "barrel_mm": 1.565,
+       "x": 51.85,
+       "y": 77.375
+      }
+     ],
+     "eps_eff_used": {
+      "F.Cu@w=0.250": {
+       "eps_eff": 3.1946,
+       "model": "microstrip (Hammerstad)",
+       "h_mm": 0.13,
+       "er": 4.2
+      },
+      "B.Cu@w=0.250": {
+       "eps_eff": 3.1946,
+       "model": "microstrip (Hammerstad)",
+       "h_mm": 0.13,
+       "er": 4.2
+      }
+     },
+     "segments": 82,
+     "pads": 4,
+     "pad_to_pad": {
+      "R20.1-U12.1": {
+       "length_mm": 44.9478,
+       "delay_ps": 273.449,
+       "refs": [
+        "R20",
+        "U12"
+       ]
+      },
+      "R20.1-U12.6": {
+       "length_mm": 47.2228,
+       "delay_ps": 287.013,
+       "refs": [
+        "R20",
+        "U12"
+       ]
+      },
+      "R20.1-J10.2": {
+       "length_mm": 20.2471,
+       "delay_ps": 123.449,
+       "refs": [
+        "J10",
+        "R20"
+       ]
+      },
+      "U12.1-J10.2": {
+       "length_mm": 27.7578,
+       "delay_ps": 168.227,
+       "refs": [
+        "J10",
+        "U12"
+       ]
+      },
+      "U12.6-J10.2": {
+       "length_mm": 30.0328,
+       "delay_ps": 181.79,
+       "refs": [
+        "J10",
+        "U12"
+       ]
+      }
+     }
+    },
+    {
+     "net": "USB_DM",
+     "netclass": "Default",
+     "track_mm": 16.361908979503553,
+     "via_count": 2,
+     "via_barrel_mm": 3.13,
+     "routed_mm": 19.491908979503553,
+     "delay_ps": 116.36182446399111,
+     "layers": {
+      "B.Cu": 11.6997,
+      "F.Cu": 4.6622
+     },
+     "vias": [
+      {
+       "spans": [
+        "F.Cu-B.Cu"
+       ],
+       "connected_layers": [
+        "F.Cu",
+        "B.Cu"
+       ],
+       "barrel_mm": 1.565,
+       "x": 34.655,
+       "y": 81.853
+      },
+      {
+       "spans": [
+        "F.Cu-B.Cu"
+       ],
+       "connected_layers": [
+        "F.Cu",
+        "B.Cu"
+       ],
+       "barrel_mm": 1.565,
+       "x": 42.215,
+       "y": 75.252
+      }
+     ],
+     "eps_eff_used": {
+      "F.Cu@w=0.120": {
+       "eps_eff": 3.0276,
+       "model": "microstrip (Hammerstad)",
+       "h_mm": 0.13,
+       "er": 4.2
+      },
+      "B.Cu@w=0.120": {
+       "eps_eff": 3.0276,
+       "model": "microstrip (Hammerstad)",
+       "h_mm": 0.13,
+       "er": 4.2
+      }
+     },
+     "segments": 22,
+     "pads": 2,
+     "pad_to_pad": {
+      "U10.46-R20.2": {
+       "length_mm": 18.6044,
+       "delay_ps": 111.211,
+       "refs": [
+        "R20",
+        "U10"
+       ]
+      }
+     }
+    }
+   ],
+   "P": {
+    "track_mm": 59.8384,
+    "via_barrel_mm": 9.39,
+    "routed_mm": 69.2284,
+    "delay_ps": 418.6631,
+    "via_count": 6
+   },
+   "N": {
+    "track_mm": 62.1188,
+    "via_barrel_mm": 9.39,
+    "routed_mm": 71.5088,
+    "delay_ps": 431.9566,
+    "via_count": 6
+   },
+   "skew_mm": 2.2804,
+   "skew_track_only_mm": 2.2804,
+   "skew_ps": 13.293,
+   "layers_p": [
+    "B.Cu",
+    "F.Cu"
+   ],
+   "layers_n": [
+    "B.Cu",
+    "F.Cu"
+   ],
+   "coupled_max_edge_gap_mm": 0.3,
+   "coupled_max_basis": "2 x netclass 'Default' diff_pair_gap 0.15 mm",
+   "coupling_p": [
+    {
+     "coupled_mm": 4.374,
+     "uncoupled_mm": 41.016,
+     "uncoupled_at_1mm_mm": 20.567,
+     "gap_stats_mm": {
+      "min": 0.24,
+      "median": 0.4,
+      "p95": 0.6604,
+      "max": 0.9854
+     }
+    },
+    {
+     "coupled_mm": 1.337,
+     "uncoupled_mm": 13.112,
+     "uncoupled_at_1mm_mm": 10.089,
+     "gap_stats_mm": {
+      "min": 0.1911,
+      "median": 0.5023,
+      "p95": 0.9398,
+      "max": 0.9952
+     }
+    }
+   ],
+   "coupling_n": [
+    {
+     "coupled_mm": 5.105,
+     "uncoupled_mm": 40.652,
+     "uncoupled_at_1mm_mm": 20.413,
+     "gap_stats_mm": {
+      "min": 0.24,
+      "median": 0.4,
+      "p95": 0.6221,
+      "max": 0.9912
+     }
+    },
+    {
+     "coupled_mm": 1.51,
+     "uncoupled_mm": 14.852,
+     "uncoupled_at_1mm_mm": 11.211,
+     "gap_stats_mm": {
+      "min": 0.1911,
+      "median": 0.425,
+      "p95": 0.9289,
+      "max": 0.9937
+     }
+    }
+   ],
+   "uncoupled_mm": {
+    "p": 54.128,
+    "n": 55.504
+   },
+   "uncoupled_at_1mm": {
+    "p": 30.656,
+    "n": 31.624
+   },
+   "pad_to_pad_skew": [],
+   "limits": [
+    {
+     "source": "hardware/v2/tools/validate_route.py MATCHED_PAIRS",
+     "max_skew_mm": 1.0,
+     "require_equal_vias": true
+    },
+    {
+     "source": "hardware/v2/tools/sensitive_route_contract.py PAIR_GROUPS",
+     "max_skew_mm": 0.5,
+     "require_equal_vias": true
+    }
+   ],
+   "limit_verdicts": [
+    {
+     "source": "hardware/v2/tools/validate_route.py MATCHED_PAIRS",
+     "max_skew_mm": 1.0,
+     "pass_track_only": false,
+     "pass_with_via_barrels": false,
+     "equal_vias": true
+    },
+    {
+     "source": "hardware/v2/tools/sensitive_route_contract.py PAIR_GROUPS",
+     "max_skew_mm": 0.5,
+     "pass_track_only": false,
+     "pass_with_via_barrels": false,
+     "equal_vias": true
+    }
+   ]
+  },
+  {
+   "name": "USB_DP / USB_DM",
+   "p": [
+    "USB_DP"
+   ],
+   "n": [
+    "USB_DM"
+   ],
+   "sources": [
+    "name: token DP/DM/DN"
+   ],
+   "netclass": "Default",
+   "status": "ROUTED",
+   "p_metrics": [
+    {
+     "net": "USB_DP",
+     "netclass": "Default",
+     "track_mm": 14.448796907442553,
+     "via_count": 2,
+     "via_barrel_mm": 3.13,
+     "routed_mm": 17.578796907442552,
+     "delay_ps": 105.25805982670676,
+     "layers": {
+      "B.Cu": 9.1412,
+      "F.Cu": 5.3076
+     },
+     "vias": [
+      {
+       "spans": [
+        "F.Cu-B.Cu"
+       ],
+       "connected_layers": [
+        "F.Cu",
+        "B.Cu"
+       ],
+       "barrel_mm": 1.565,
+       "x": 35.085,
+       "y": 83.802
+      },
+      {
+       "spans": [
+        "F.Cu-B.Cu"
+       ],
+       "connected_layers": [
+        "F.Cu",
+        "B.Cu"
+       ],
+       "barrel_mm": 1.565,
+       "x": 38.685,
+       "y": 76.153
+      }
+     ],
+     "eps_eff_used": {
+      "F.Cu@w=0.120": {
+       "eps_eff": 3.0276,
+       "model": "microstrip (Hammerstad)",
+       "h_mm": 0.13,
+       "er": 4.2
+      },
+      "B.Cu@w=0.120": {
+       "eps_eff": 3.0276,
+       "model": "microstrip (Hammerstad)",
+       "h_mm": 0.13,
+       "er": 4.2
+      }
+     },
+     "segments": 53,
+     "pads": 2,
+     "pad_to_pad": {
+      "U10.47-R21.2": {
+       "length_mm": 16.8543,
+       "delay_ps": 101.053,
+       "refs": [
+        "R21",
+        "U10"
+       ]
+      }
+     }
+    }
+   ],
+   "n_metrics": [
+    {
+     "net": "USB_DM",
+     "netclass": "Default",
+     "track_mm": 16.361908979503553,
+     "via_count": 2,
+     "via_barrel_mm": 3.13,
+     "routed_mm": 19.491908979503553,
+     "delay_ps": 116.36182446399111,
+     "layers": {
+      "B.Cu": 11.6997,
+      "F.Cu": 4.6622
+     },
+     "vias": [
+      {
+       "spans": [
+        "F.Cu-B.Cu"
+       ],
+       "connected_layers": [
+        "F.Cu",
+        "B.Cu"
+       ],
+       "barrel_mm": 1.565,
+       "x": 34.655,
+       "y": 81.853
+      },
+      {
+       "spans": [
+        "F.Cu-B.Cu"
+       ],
+       "connected_layers": [
+        "F.Cu",
+        "B.Cu"
+       ],
+       "barrel_mm": 1.565,
+       "x": 42.215,
+       "y": 75.252
+      }
+     ],
+     "eps_eff_used": {
+      "F.Cu@w=0.120": {
+       "eps_eff": 3.0276,
+       "model": "microstrip (Hammerstad)",
+       "h_mm": 0.13,
+       "er": 4.2
+      },
+      "B.Cu@w=0.120": {
+       "eps_eff": 3.0276,
+       "model": "microstrip (Hammerstad)",
+       "h_mm": 0.13,
+       "er": 4.2
+      }
+     },
+     "segments": 22,
+     "pads": 2,
+     "pad_to_pad": {
+      "U10.46-R20.2": {
+       "length_mm": 18.6044,
+       "delay_ps": 111.211,
+       "refs": [
+        "R20",
+        "U10"
+       ]
+      }
+     }
+    }
+   ],
+   "P": {
+    "track_mm": 14.4488,
+    "via_barrel_mm": 3.13,
+    "routed_mm": 17.5788,
+    "delay_ps": 105.2581,
+    "via_count": 2
+   },
+   "N": {
+    "track_mm": 16.3619,
+    "via_barrel_mm": 3.13,
+    "routed_mm": 19.4919,
+    "delay_ps": 116.3618,
+    "via_count": 2
+   },
+   "skew_mm": 1.9131,
+   "skew_track_only_mm": 1.9131,
+   "skew_ps": 11.104,
+   "layers_p": [
+    "B.Cu",
+    "F.Cu"
+   ],
+   "layers_n": [
+    "B.Cu",
+    "F.Cu"
+   ],
+   "coupled_max_edge_gap_mm": 0.3,
+   "coupled_max_basis": "2 x netclass 'Default' diff_pair_gap 0.15 mm",
+   "coupling_p": [
+    {
+     "coupled_mm": 1.337,
+     "uncoupled_mm": 13.112,
+     "uncoupled_at_1mm_mm": 10.089,
+     "gap_stats_mm": {
+      "min": 0.1911,
+      "median": 0.5023,
+      "p95": 0.9398,
+      "max": 0.9952
+     }
+    }
+   ],
+   "coupling_n": [
+    {
+     "coupled_mm": 1.51,
+     "uncoupled_mm": 14.852,
+     "uncoupled_at_1mm_mm": 11.211,
+     "gap_stats_mm": {
+      "min": 0.1911,
+      "median": 0.425,
+      "p95": 0.9289,
+      "max": 0.9937
+     }
+    }
+   ],
+   "uncoupled_mm": {
+    "p": 13.112,
+    "n": 14.852
+   },
+   "uncoupled_at_1mm": {
+    "p": 10.089,
+    "n": 11.211
+   },
+   "pad_to_pad_skew": [
+    {
+     "refs": "single path each (refs differ)",
+     "p_path": "U10.47-R21.2",
+     "n_path": "U10.46-R20.2",
+     "p_mm": 16.8543,
+     "n_mm": 18.6044,
+     "skew_mm": 1.7501,
+     "skew_ps": 10.158
+    }
+   ],
+   "limits": [],
+   "limit_verdicts": "no limit declared"
+  },
+  {
+   "name": "USB_DP_CONN / USB_DM_CONN",
+   "p": [
+    "USB_DP_CONN"
+   ],
+   "n": [
+    "USB_DM_CONN"
+   ],
+   "sources": [
+    "name: token DP/DM/DN"
+   ],
+   "netclass": "Default",
+   "status": "ROUTED",
+   "p_metrics": [
+    {
+     "net": "USB_DP_CONN",
+     "netclass": "Default",
+     "track_mm": 45.38959373760957,
+     "via_count": 4,
+     "via_barrel_mm": 6.26,
+     "routed_mm": 51.64959373760957,
+     "delay_ps": 313.40503878475846,
+     "layers": {
+      "B.Cu": 19.6353,
+      "F.Cu": 25.7543
+     },
+     "vias": [
+      {
+       "spans": [
+        "F.Cu-B.Cu"
+       ],
+       "connected_layers": [
+        "F.Cu",
+        "B.Cu"
+       ],
+       "barrel_mm": 1.565,
+       "x": 38.515,
+       "y": 85.305
+      },
+      {
+       "spans": [
+        "F.Cu-B.Cu"
+       ],
+       "connected_layers": [
+        "F.Cu",
+        "B.Cu"
+       ],
+       "barrel_mm": 1.565,
+       "x": 46.0,
+       "y": 92.775
+      },
+      {
+       "spans": [
+        "F.Cu-B.Cu"
+       ],
+       "connected_layers": [
+        "F.Cu",
+        "B.Cu"
+       ],
+       "barrel_mm": 1.565,
+       "x": 38.515,
+       "y": 87.855
+      },
+      {
+       "spans": [
+        "F.Cu-B.Cu"
+       ],
+       "connected_layers": [
+        "F.Cu",
+        "B.Cu"
+       ],
+       "barrel_mm": 1.565,
+       "x": 52.0,
+       "y": 79.775
+      }
+     ],
+     "eps_eff_used": {
+      "F.Cu@w=0.250": {
+       "eps_eff": 3.1946,
+       "model": "microstrip (Hammerstad)",
+       "h_mm": 0.13,
+       "er": 4.2
+      },
+      "B.Cu@w=0.250": {
+       "eps_eff": 3.1946,
+       "model": "microstrip (Hammerstad)",
+       "h_mm": 0.13,
+       "er": 4.2
+      }
+     },
+     "segments": 117,
+     "pads": 4,
+     "pad_to_pad": {
+      "R21.1-U12.3": {
+       "length_mm": 45.2029,
+       "delay_ps": 274.97,
+       "refs": [
+        "R21",
+        "U12"
+       ]
+      },
+      "R21.1-U12.4": {
+       "length_mm": 47.4779,
+       "delay_ps": 288.534,
+       "refs": [
+        "R21",
+        "U12"
+       ]
+      },
+      "R21.1-J10.3": {
+       "length_mm": 23.0985,
+       "delay_ps": 140.449,
+       "refs": [
+        "J10",
+        "R21"
+       ]
+      },
+      "U12.3-J10.3": {
+       "length_mm": 23.9044,
+       "delay_ps": 145.253,
+       "refs": [
+        "J10",
+        "U12"
+       ]
+      },
+      "U12.4-J10.3": {
+       "length_mm": 26.1794,
+       "delay_ps": 158.816,
+       "refs": [
+        "J10",
+        "U12"
+       ]
+      }
+     }
+    }
+   ],
+   "n_metrics": [
+    {
+     "net": "USB_DM_CONN",
+     "netclass": "Default",
+     "track_mm": 45.756876285460145,
+     "via_count": 4,
+     "via_barrel_mm": 6.26,
+     "routed_mm": 52.01687628546014,
+     "delay_ps": 315.59476709784315,
+     "layers": {
+      "B.Cu": 34.3422,
+      "F.Cu": 11.4146
+     },
+     "vias": [
+      {
+       "spans": [
+        "F.Cu-B.Cu"
+       ],
+       "connected_layers": [
+        "F.Cu",
+        "B.Cu"
+       ],
+       "barrel_mm": 1.565,
+       "x": 41.35,
+       "y": 96.125
+      },
+      {
+       "spans": [
+        "F.Cu-B.Cu"
+       ],
+       "connected_layers": [
+        "F.Cu",
+        "B.Cu"
+       ],
+       "barrel_mm": 1.565,
+       "x": 39.855,
+       "y": 92.355
+      },
+      {
+       "spans": [
+        "F.Cu-B.Cu"
+       ],
+       "connected_layers": [
+        "F.Cu",
+        "B.Cu"
+       ],
+       "barrel_mm": 1.565,
+       "x": 31.905,
+       "y": 84.405
+      },
+      {
+       "spans": [
+        "F.Cu-B.Cu"
+       ],
+       "connected_layers": [
+        "F.Cu",
+        "B.Cu"
+       ],
+       "barrel_mm": 1.565,
+       "x": 51.85,
+       "y": 77.375
+      }
+     ],
+     "eps_eff_used": {
+      "F.Cu@w=0.250": {
+       "eps_eff": 3.1946,
+       "model": "microstrip (Hammerstad)",
+       "h_mm": 0.13,
+       "er": 4.2
+      },
+      "B.Cu@w=0.250": {
+       "eps_eff": 3.1946,
+       "model": "microstrip (Hammerstad)",
+       "h_mm": 0.13,
+       "er": 4.2
+      }
+     },
+     "segments": 82,
+     "pads": 4,
+     "pad_to_pad": {
+      "R20.1-U12.1": {
+       "length_mm": 44.9478,
+       "delay_ps": 273.449,
+       "refs": [
+        "R20",
+        "U12"
+       ]
+      },
+      "R20.1-U12.6": {
+       "length_mm": 47.2228,
+       "delay_ps": 287.013,
+       "refs": [
+        "R20",
+        "U12"
+       ]
+      },
+      "R20.1-J10.2": {
+       "length_mm": 20.2471,
+       "delay_ps": 123.449,
+       "refs": [
+        "J10",
+        "R20"
+       ]
+      },
+      "U12.1-J10.2": {
+       "length_mm": 27.7578,
+       "delay_ps": 168.227,
+       "refs": [
+        "J10",
+        "U12"
+       ]
+      },
+      "U12.6-J10.2": {
+       "length_mm": 30.0328,
+       "delay_ps": 181.79,
+       "refs": [
+        "J10",
+        "U12"
+       ]
+      }
+     }
+    }
+   ],
+   "P": {
+    "track_mm": 45.3896,
+    "via_barrel_mm": 6.26,
+    "routed_mm": 51.6496,
+    "delay_ps": 313.405,
+    "via_count": 4
+   },
+   "N": {
+    "track_mm": 45.7569,
+    "via_barrel_mm": 6.26,
+    "routed_mm": 52.0169,
+    "delay_ps": 315.5948,
+    "via_count": 4
+   },
+   "skew_mm": 0.3673,
+   "skew_track_only_mm": 0.3673,
+   "skew_ps": 2.19,
+   "layers_p": [
+    "B.Cu",
+    "F.Cu"
+   ],
+   "layers_n": [
+    "B.Cu",
+    "F.Cu"
+   ],
+   "coupled_max_edge_gap_mm": 0.3,
+   "coupled_max_basis": "2 x netclass 'Default' diff_pair_gap 0.15 mm",
+   "coupling_p": [
+    {
+     "coupled_mm": 4.374,
+     "uncoupled_mm": 41.016,
+     "uncoupled_at_1mm_mm": 20.567,
+     "gap_stats_mm": {
+      "min": 0.24,
+      "median": 0.4,
+      "p95": 0.6604,
+      "max": 0.9854
+     }
+    }
+   ],
+   "coupling_n": [
+    {
+     "coupled_mm": 5.105,
+     "uncoupled_mm": 40.652,
+     "uncoupled_at_1mm_mm": 20.413,
+     "gap_stats_mm": {
+      "min": 0.24,
+      "median": 0.4,
+      "p95": 0.6221,
+      "max": 0.9912
+     }
+    }
+   ],
+   "uncoupled_mm": {
+    "p": 41.016,
+    "n": 40.652
+   },
+   "uncoupled_at_1mm": {
+    "p": 20.567,
+    "n": 20.413
+   },
+   "pad_to_pad_skew": [
+    {
+     "refs": "J10-U12",
+     "p_path": "U12.3-J10.3",
+     "n_path": "U12.1-J10.2",
+     "p_mm": 23.9044,
+     "n_mm": 27.7578,
+     "skew_mm": 3.8534,
+     "skew_ps": 22.974
+    },
+    {
+     "refs": "J10-U12",
+     "p_path": "U12.3-J10.3",
+     "n_path": "U12.6-J10.2",
+     "p_mm": 23.9044,
+     "n_mm": 30.0328,
+     "skew_mm": 6.1284,
+     "skew_ps": 36.537
+    },
+    {
+     "refs": "J10-U12",
+     "p_path": "U12.4-J10.3",
+     "n_path": "U12.1-J10.2",
+     "p_mm": 26.1794,
+     "n_mm": 27.7578,
+     "skew_mm": 1.5784,
+     "skew_ps": 9.411
+    },
+    {
+     "refs": "J10-U12",
+     "p_path": "U12.4-J10.3",
+     "n_path": "U12.6-J10.2",
+     "p_mm": 26.1794,
+     "n_mm": 30.0328,
+     "skew_mm": 3.8534,
+     "skew_ps": 22.974
+    }
+   ],
+   "limits": [],
+   "limit_verdicts": "no limit declared"
+  }
+ ]
+}

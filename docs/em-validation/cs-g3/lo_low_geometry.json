@@ -1,0 +1,4431 @@
+{
+ "stackup_copper": [
+  "F.Cu",
+  "B.Cu",
+  "In1.Cu",
+  "In2.Cu"
+ ],
+ "tracks": {
+  "LO_LOW_P": [
+   {
+    "layer": "F.Cu",
+    "w": 0.23,
+    "a": [
+     24.5,
+     31.25
+    ],
+    "b": [
+     25.8,
+     31.25
+    ],
+    "len": 1.3
+   },
+   {
+    "layer": "F.Cu",
+    "w": 0.23,
+    "a": [
+     23.6,
+     61.914
+    ],
+    "b": [
+     23.6,
+     61.75
+    ],
+    "len": 0.164
+   },
+   {
+    "layer": "F.Cu",
+    "w": 0.23,
+    "a": [
+     22.82,
+     61.914
+    ],
+    "b": [
+     23.6,
+     61.914
+    ],
+    "len": 0.78
+   },
+   {
+    "layer": "F.Cu",
+    "w": 0.23,
+    "a": [
+     25.8,
+     31.25
+    ],
+    "b": [
+     26.3,
+     31.75
+    ],
+    "len": 0.707
+   },
+   {
+    "layer": "F.Cu",
+    "w": 0.23,
+    "a": [
+     26.3,
+     31.75
+    ],
+    "b": [
+     27.062,
+     31.75
+    ],
+    "len": 0.762
+   },
+   {
+    "layer": "F.Cu",
+    "w": 0.23,
+    "a": [
+     22.82,
+     61.75
+    ],
+    "b": [
+     22.82,
+     61.914
+    ],
+    "len": 0.164
+   },
+   {
+    "layer": "B.Cu",
+    "w": 0.23,
+    "a": [
+     23.6,
+     61.75
+    ],
+    "b": [
+     24.5,
+     60.85
+    ],
+    "len": 1.273
+   },
+   {
+    "layer": "B.Cu",
+    "w": 0.23,
+    "a": [
+     24.5,
+     60.85
+    ],
+    "b": [
+     24.5,
+     31.25
+    ],
+    "len": 29.6
+   }
+  ],
+  "LO_LOW_N": [
+   {
+    "layer": "F.Cu",
+    "w": 0.23,
+    "a": [
+     22.82,
+     63.25
+    ],
+    "b": [
+     23.6,
+     63.25
+    ],
+    "len": 0.78
+   },
+   {
+    "layer": "F.Cu",
+    "w": 0.23,
+    "a": [
+     25.1,
+     32.75
+    ],
+    "b": [
+     25.8,
+     32.75
+    ],
+    "len": 0.7
+   },
+   {
+    "layer": "F.Cu",
+    "w": 0.23,
+    "a": [
+     26.3,
+     32.25
+    ],
+    "b": [
+     27.062,
+     32.25
+    ],
+    "len": 0.762
+   },
+   {
+    "layer": "F.Cu",
+    "w": 0.23,
+    "a": [
+     25.8,
+     32.75
+    ],
+    "b": [
+     26.3,
+     32.25
+    ],
+    "len": 0.707
+   },
+   {
+    "layer": "B.Cu",
+    "w": 0.23,
+    "a": [
+     23.6,
+     63.25
+    ],
+    "b": [
+     25.1,
+     63.25
+    ],
+    "len": 1.5
+   },
+   {
+    "layer": "B.Cu",
+    "w": 0.23,
+    "a": [
+     25.1,
+     63.25
+    ],
+    "b": [
+     25.1,
+     32.75
+    ],
+    "len": 30.5
+   }
+  ]
+ },
+ "vias": {
+  "LO_LOW_P": [
+   [
+    24.5,
+    31.25
+   ],
+   [
+    23.6,
+    61.75
+   ]
+  ],
+  "LO_LOW_N": [
+   [
+    23.6,
+    63.25
+   ],
+   [
+    25.1,
+    32.75
+   ]
+  ]
+ },
+ "reference_samples": {
+  "LO_LOW_P": [
+   {
+    "xy": [
+     24.5,
+     31.25
+    ],
+    "trace_layer": "F.Cu",
+    "In1.Cu": [
+     "<none>"
+    ],
+    "In2.Cu": [
+     "<none>"
+    ]
+   },
+   {
+    "xy": [
+     24.76,
+     31.25
+    ],
+    "trace_layer": "F.Cu",
+    "In1.Cu": [
+     "<none>"
+    ],
+    "In2.Cu": [
+     "<none>"
+    ]
+   },
+   {
+    "xy": [
+     25.02,
+     31.25
+    ],
+    "trace_layer": "F.Cu",
+    "In1.Cu": [
+     "GND"
+    ],
+    "In2.Cu": [
+     "+3V3_ANA"
+    ]
+   },
+   {
+    "xy": [
+     25.28,
+     31.25
+    ],
+    "trace_layer": "F.Cu",
+    "In1.Cu": [
+     "GND"
+    ],
+    "In2.Cu": [
+     "+3V3_ANA"
+    ]
+   },
+   {
+    "xy": [
+     25.54,
+     31.25
+    ],
+    "trace_layer": "F.Cu",
+    "In1.Cu": [
+     "GND"
+    ],
+    "In2.Cu": [
+     "+3V3_ANA"
+    ]
+   },
+   {
+    "xy": [
+     25.8,
+     31.25
+    ],
+    "trace_layer": "F.Cu",
+    "In1.Cu": [
+     "GND"
+    ],
+    "In2.Cu": [
+     "+3V3_ANA"
+    ]
+   },
+   {
+    "xy": [
+     23.6,
+     61.914
+    ],
+    "trace_layer": "F.Cu",
+    "In1.Cu": [
+     "<none>"
+    ],
+    "In2.Cu": [
+     "<none>"
+    ]
+   },
+   {
+    "xy": [
+     23.6,
+     61.832
+    ],
+    "trace_layer": "F.Cu",
+    "In1.Cu": [
+     "<none>"
+    ],
+    "In2.Cu": [
+     "<none>"
+    ]
+   },
+   {
+    "xy": [
+     23.6,
+     61.75
+    ],
+    "trace_layer": "F.Cu",
+    "In1.Cu": [
+     "<none>"
+    ],
+    "In2.Cu": [
+     "<none>"
+    ]
+   },
+   {
+    "xy": [
+     22.82,
+     61.914
+    ],
+    "trace_layer": "F.Cu",
+    "In1.Cu": [
+     "GND"
+    ],
+    "In2.Cu": [
+     "<none>"
+    ]
+   },
+   {
+    "xy": [
+     23.08,
+     61.914
+    ],
+    "trace_layer": "F.Cu",
+    "In1.Cu": [
+     "GND"
+    ],
+    "In2.Cu": [
+     "+3V3_DIG"
+    ]
+   },
+   {
+    "xy": [
+     23.34,
+     61.914
+    ],
+    "trace_layer": "F.Cu",
+    "In1.Cu": [
+     "<none>"
+    ],
+    "In2.Cu": [
+     "<none>"
+    ]
+   },
+   {
+    "xy": [
+     23.6,
+     61.914
+    ],
+    "trace_layer": "F.Cu",
+    "In1.Cu": [
+     "<none>"
+    ],
+    "In2.Cu": [
+     "<none>"
+    ]
+   },
+   {
+    "xy": [
+     25.8,
+     31.25
+    ],
+    "trace_layer": "F.Cu",
+    "In1.Cu": [
+     "GND"
+    ],
+    "In2.Cu": [
+     "+3V3_ANA"
+    ]
+   },
+   {
+    "xy": [
+     26.05,
+     31.5
+    ],
+    "trace_layer": "F.Cu",
+    "In1.Cu": [
+     "GND"
+    ],
+    "In2.Cu": [
+     "+3V3_ANA"
+    ]
+   },
+   {
+    "xy": [
+     26.3,
+     31.75
+    ],
+    "trace_layer": "F.Cu",
+    "In1.Cu": [
+     "GND"
+    ],
+    "In2.Cu": [
+     "+3V3_ANA"
+    ]
+   },
+   {
+    "xy": [
+     26.3,
+     31.75
+    ],
+    "trace_layer": "F.Cu",
+    "In1.Cu": [
+     "GND"
+    ],
+    "In2.Cu": [
+     "+3V3_ANA"
+    ]
+   },
+   {
+    "xy": [
+     26.554,
+     31.75
+    ],
+    "trace_layer": "F.Cu",
+    "In1.Cu": [
+     "GND"
+    ],
+    "In2.Cu": [
+     "+3V3_ANA"
+    ]
+   },
+   {
+    "xy": [
+     26.808,
+     31.75
+    ],
+    "trace_layer": "F.Cu",
+    "In1.Cu": [
+     "GND"
+    ],
+    "In2.Cu": [
+     "+3V3_ANA"
+    ]
+   },
+   {
+    "xy": [
+     27.062,
+     31.75
+    ],
+    "trace_layer": "F.Cu",
+    "In1.Cu": [
+     "GND"
+    ],
+    "In2.Cu": [
+     "+3V3_ANA"
+    ]
+   },
+   {
+    "xy": [
+     22.82,
+     61.75
+    ],
+    "trace_layer": "F.Cu",
+    "In1.Cu": [
+     "GND"
+    ],
+    "In2.Cu": [
+     "<none>"
+    ]
+   },
+   {
+    "xy": [
+     22.82,
+     61.832
+    ],
+    "trace_layer": "F.Cu",
+    "In1.Cu": [
+     "GND"
+    ],
+    "In2.Cu": [
+     "<none>"
+    ]
+   },
+   {
+    "xy": [
+     22.82,
+     61.914
+    ],
+    "trace_layer": "F.Cu",
+    "In1.Cu": [
+     "GND"
+    ],
+    "In2.Cu": [
+     "<none>"
+    ]
+   },
+   {
+    "xy": [
+     23.6,
+     61.75
+    ],
+    "trace_layer": "B.Cu",
+    "In1.Cu": [
+     "<none>"
+    ],
+    "In2.Cu": [
+     "<none>"
+    ]
+   },
+   {
+    "xy": [
+     23.78,
+     61.57
+    ],
+    "trace_layer": "B.Cu",
+    "In1.Cu": [
+     "<none>"
+    ],
+    "In2.Cu": [
+     "<none>"
+    ]
+   },
+   {
+    "xy": [
+     23.96,
+     61.39
+    ],
+    "trace_layer": "B.Cu",
+    "In1.Cu": [
+     "GND"
+    ],
+    "In2.Cu": [
+     "+3V3_DIG"
+    ]
+   },
+   {
+    "xy": [
+     24.14,
+     61.21
+    ],
+    "trace_layer": "B.Cu",
+    "In1.Cu": [
+     "GND"
+    ],
+    "In2.Cu": [
+     "+3V3_DIG"
+    ]
+   },
+   {
+    "xy": [
+     24.32,
+     61.03
+    ],
+    "trace_layer": "B.Cu",
+    "In1.Cu": [
+     "GND"
+    ],
+    "In2.Cu": [
+     "+3V3_DIG"
+    ]
+   },
+   {
+    "xy": [
+     24.5,
+     60.85
+    ],
+    "trace_layer": "B.Cu",
+    "In1.Cu": [
+     "GND"
+    ],
+    "In2.Cu": [
+     "+3V3_DIG"
+    ]
+   },
+   {
+    "xy": [
+     24.5,
+     60.85
+    ],
+    "trace_layer": "B.Cu",
+    "In1.Cu": [
+     "GND"
+    ],
+    "In2.Cu": [
+     "+3V3_DIG"
+    ]
+   },
+   {
+    "xy": [
+     24.5,
+     60.599
+    ],
+    "trace_layer": "B.Cu",
+    "In1.Cu": [
+     "GND"
+    ],
+    "In2.Cu": [
+     "+3V3_DIG"
+    ]
+   },
+   {
+    "xy": [
+     24.5,
+     60.348
+    ],
+    "trace_layer": "B.Cu",
+    "In1.Cu": [
+     "GND"
+    ],
+    "In2.Cu": [
+     "+3V3_DIG"
+    ]
+   },
+   {
+    "xy": [
+     24.5,
+     60.097
+    ],
+    "trace_layer": "B.Cu",
+    "In1.Cu": [
+     "GND"
+    ],
+    "In2.Cu": [
+     "+3V3_DIG"
+    ]
+   },
+   {
+    "xy": [
+     24.5,
+     59.847
+    ],
+    "trace_layer": "B.Cu",
+    "In1.Cu": [
+     "GND"
+    ],
+    "In2.Cu": [
+     "+3V3_DIG"
+    ]
+   },
+   {
+    "xy": [
+     24.5,
+     59.596
+    ],
+    "trace_layer": "B.Cu",
+    "In1.Cu": [
+     "GND"
+    ],
+    "In2.Cu": [
+     "+3V3_DIG"
+    ]
+   },
+   {
+    "xy": [
+     24.5,
+     59.345
+    ],
+    "trace_layer": "B.Cu",
+    "In1.Cu": [
+     "GND"
+    ],
+    "In2.Cu": [
+     "+3V3_DIG"
+    ]
+   },
+   {
+    "xy": [
+     24.5,
+     59.094
+    ],
+    "trace_layer": "B.Cu",
+    "In1.Cu": [
+     "GND"
+    ],
+    "In2.Cu": [
+     "+3V3_DIG"
+    ]
+   },
+   {
+    "xy": [
+     24.5,
+     58.843
+    ],
+    "trace_layer": "B.Cu",
+    "In1.Cu": [
+     "GND"
+    ],
+    "In2.Cu": [
+     "+3V3_DIG"
+    ]
+   },
+   {
+    "xy": [
+     24.5,
+     58.592
+    ],
+    "trace_layer": "B.Cu",
+    "In1.Cu": [
+     "GND"
+    ],
+    "In2.Cu": [
+     "+3V3_DIG"
+    ]
+   },
+   {
+    "xy": [
+     24.5,
+     58.342
+    ],
+    "trace_layer": "B.Cu",
+    "In1.Cu": [
+     "GND"
+    ],
+    "In2.Cu": [
+     "+3V3_DIG"
+    ]
+   },
+   {
+    "xy": [
+     24.5,
+     58.091
+    ],
+    "trace_layer": "B.Cu",
+    "In1.Cu": [
+     "GND"
+    ],
+    "In2.Cu": [
+     "+3V3_DIG"
+    ]
+   },
+   {
+    "xy": [
+     24.5,
+     57.84
+    ],
+    "trace_layer": "B.Cu",
+    "In1.Cu": [
+     "GND"
+    ],
+    "In2.Cu": [
+     "+3V3_DIG"
+    ]
+   },
+   {
+    "xy": [
+     24.5,
+     57.589
+    ],
+    "trace_layer": "B.Cu",
+    "In1.Cu": [
+     "GND"
+    ],
+    "In2.Cu": [
+     "+3V3_DIG"
+    ]
+   },
+   {
+    "xy": [
+     24.5,
+     57.338
+    ],
+    "trace_layer": "B.Cu",
+    "In1.Cu": [
+     "GND"
+    ],
+    "In2.Cu": [
+     "+3V3_DIG"
+    ]
+   },
+   {
+    "xy": [
+     24.5,
+     57.087
+    ],
+    "trace_layer": "B.Cu",
+    "In1.Cu": [
+     "GND"
+    ],
+    "In2.Cu": [
+     "+3V3_DIG"
+    ]
+   },
+   {
+    "xy": [
+     24.5,
+     56.836
+    ],
+    "trace_layer": "B.Cu",
+    "In1.Cu": [
+     "GND"
+    ],
+    "In2.Cu": [
+     "+3V3_DIG"
+    ]
+   },
+   {
+    "xy": [
+     24.5,
+     56.586
+    ],
+    "trace_layer": "B.Cu",
+    "In1.Cu": [
+     "GND"
+    ],
+    "In2.Cu": [
+     "+3V3_DIG"
+    ]
+   },
+   {
+    "xy": [
+     24.5,
+     56.335
+    ],
+    "trace_layer": "B.Cu",
+    "In1.Cu": [
+     "GND"
+    ],
+    "In2.Cu": [
+     "+3V3_DIG"
+    ]
+   },
+   {
+    "xy": [
+     24.5,
+     56.084
+    ],
+    "trace_layer": "B.Cu",
+    "In1.Cu": [
+     "GND"
+    ],
+    "In2.Cu": [
+     "+3V3_DIG"
+    ]
+   },
+   {
+    "xy": [
+     24.5,
+     55.833
+    ],
+    "trace_layer": "B.Cu",
+    "In1.Cu": [
+     "GND"
+    ],
+    "In2.Cu": [
+     "+3V3_DIG"
+    ]
+   },
+   {
+    "xy": [
+     24.5,
+     55.582
+    ],
+    "trace_layer": "B.Cu",
+    "In1.Cu": [
+     "GND"
+    ],
+    "In2.Cu": [
+     "+3V3_DIG"
+    ]
+   },
+   {
+    "xy": [
+     24.5,
+     55.331
+    ],
+    "trace_layer": "B.Cu",
+    "In1.Cu": [
+     "GND"
+    ],
+    "In2.Cu": [
+     "+3V3_DIG"
+    ]
+   },
+   {
+    "xy": [
+     24.5,
+     55.081
+    ],
+    "trace_layer": "B.Cu",
+    "In1.Cu": [
+     "GND"
+    ],
+    "In2.Cu": [
+     "+3V3_DIG"
+    ]
+   },
+   {
+    "xy": [
+     24.5,
+     54.83
+    ],
+    "trace_layer": "B.Cu",
+    "In1.Cu": [
+     "GND"
+    ],
+    "In2.Cu": [
+     "+3V3_DIG"
+    ]
+   },
+   {
+    "xy": [
+     24.5,
+     54.579
+    ],
+    "trace_layer": "B.Cu",
+    "In1.Cu": [
+     "GND"
+    ],
+    "In2.Cu": [
+     "+3V3_DIG"
+    ]
+   },
+   {
+    "xy": [
+     24.5,
+     54.328
+    ],
+    "trace_layer": "B.Cu",
+    "In1.Cu": [
+     "GND"
+    ],
+    "In2.Cu": [
+     "+3V3_DIG"
+    ]
+   },
+   {
+    "xy": [
+     24.5,
+     54.077
+    ],
+    "trace_layer": "B.Cu",
+    "In1.Cu": [
+     "GND"
+    ],
+    "In2.Cu": [
+     "+3V3_DIG"
+    ]
+   },
+   {
+    "xy": [
+     24.5,
+     53.826
+    ],
+    "trace_layer": "B.Cu",
+    "In1.Cu": [
+     "GND"
+    ],
+    "In2.Cu": [
+     "+3V3_DIG"
+    ]
+   },
+   {
+    "xy": [
+     24.5,
+     53.575
+    ],
+    "trace_layer": "B.Cu",
+    "In1.Cu": [
+     "GND"
+    ],
+    "In2.Cu": [
+     "+3V3_DIG"
+    ]
+   },
+   {
+    "xy": [
+     24.5,
+     53.325
+    ],
+    "trace_layer": "B.Cu",
+    "In1.Cu": [
+     "GND"
+    ],
+    "In2.Cu": [
+     "+3V3_DIG"
+    ]
+   },
+   {
+    "xy": [
+     24.5,
+     53.074
+    ],
+    "trace_layer": "B.Cu",
+    "In1.Cu": [
+     "GND"
+    ],
+    "In2.Cu": [
+     "+3V3_DIG"
+    ]
+   },
+   {
+    "xy": [
+     24.5,
+     52.823
+    ],
+    "trace_layer": "B.Cu",
+    "In1.Cu": [
+     "GND"
+    ],
+    "In2.Cu": [
+     "+3V3_DIG"
+    ]
+   },
+   {
+    "xy": [
+     24.5,
+     52.572
+    ],
+    "trace_layer": "B.Cu",
+    "In1.Cu": [
+     "GND"
+    ],
+    "In2.Cu": [
+     "+3V3_DIG"
+    ]
+   },
+   {
+    "xy": [
+     24.5,
+     52.321
+    ],
+    "trace_layer": "B.Cu",
+    "In1.Cu": [
+     "GND"
+    ],
+    "In2.Cu": [
+     "+3V3_DIG"
+    ]
+   },
+   {
+    "xy": [
+     24.5,
+     52.07
+    ],
+    "trace_layer": "B.Cu",
+    "In1.Cu": [
+     "GND"
+    ],
+    "In2.Cu": [
+     "+3V3_DIG"
+    ]
+   },
+   {
+    "xy": [
+     24.5,
+     51.819
+    ],
+    "trace_layer": "B.Cu",
+    "In1.Cu": [
+     "GND"
+    ],
+    "In2.Cu": [
+     "+3V3_DIG"
+    ]
+   },
+   {
+    "xy": [
+     24.5,
+     51.569
+    ],
+    "trace_layer": "B.Cu",
+    "In1.Cu": [
+     "GND"
+    ],
+    "In2.Cu": [
+     "+3V3_DIG"
+    ]
+   },
+   {
+    "xy": [
+     24.5,
+     51.318
+    ],
+    "trace_layer": "B.Cu",
+    "In1.Cu": [
+     "GND"
+    ],
+    "In2.Cu": [
+     "+3V3_DIG"
+    ]
+   },
+   {
+    "xy": [
+     24.5,
+     51.067
+    ],
+    "trace_layer": "B.Cu",
+    "In1.Cu": [
+     "GND"
+    ],
+    "In2.Cu": [
+     "+3V3_DIG"
+    ]
+   },
+   {
+    "xy": [
+     24.5,
+     50.816
+    ],
+    "trace_layer": "B.Cu",
+    "In1.Cu": [
+     "GND"
+    ],
+    "In2.Cu": [
+     "+3V3_DIG"
+    ]
+   },
+   {
+    "xy": [
+     24.5,
+     50.565
+    ],
+    "trace_layer": "B.Cu",
+    "In1.Cu": [
+     "GND"
+    ],
+    "In2.Cu": [
+     "+3V3_DIG"
+    ]
+   },
+   {
+    "xy": [
+     24.5,
+     50.314
+    ],
+    "trace_layer": "B.Cu",
+    "In1.Cu": [
+     "GND"
+    ],
+    "In2.Cu": [
+     "+3V3_DIG"
+    ]
+   },
+   {
+    "xy": [
+     24.5,
+     50.064
+    ],
+    "trace_layer": "B.Cu",
+    "In1.Cu": [
+     "GND"
+    ],
+    "In2.Cu": [
+     "+3V3_DIG"
+    ]
+   },
+   {
+    "xy": [
+     24.5,
+     49.813
+    ],
+    "trace_layer": "B.Cu",
+    "In1.Cu": [
+     "GND"
+    ],
+    "In2.Cu": [
+     "+3V3_DIG"
+    ]
+   },
+   {
+    "xy": [
+     24.5,
+     49.562
+    ],
+    "trace_layer": "B.Cu",
+    "In1.Cu": [
+     "GND"
+    ],
+    "In2.Cu": [
+     "+3V3_DIG"
+    ]
+   },
+   {
+    "xy": [
+     24.5,
+     49.311
+    ],
+    "trace_layer": "B.Cu",
+    "In1.Cu": [
+     "GND"
+    ],
+    "In2.Cu": [
+     "+3V3_DIG"
+    ]
+   },
+   {
+    "xy": [
+     24.5,
+     49.06
+    ],
+    "trace_layer": "B.Cu",
+    "In1.Cu": [
+     "GND"
+    ],
+    "In2.Cu": [
+     "+3V3_DIG"
+    ]
+   },
+   {
+    "xy": [
+     24.5,
+     48.809
+    ],
+    "trace_layer": "B.Cu",
+    "In1.Cu": [
+     "GND"
+    ],
+    "In2.Cu": [
+     "+3V3_DIG"
+    ]
+   },
+   {
+    "xy": [
+     24.5,
+     48.558
+    ],
+    "trace_layer": "B.Cu",
+    "In1.Cu": [
+     "GND"
+    ],
+    "In2.Cu": [
+     "+3V3_DIG"
+    ]
+   },
+   {
+    "xy": [
+     24.5,
+     48.308
+    ],
+    "trace_layer": "B.Cu",
+    "In1.Cu": [
+     "GND"
+    ],
+    "In2.Cu": [
+     "+3V3_DIG"
+    ]
+   },
+   {
+    "xy": [
+     24.5,
+     48.057
+    ],
+    "trace_layer": "B.Cu",
+    "In1.Cu": [
+     "GND"
+    ],
+    "In2.Cu": [
+     "+3V3_DIG"
+    ]
+   },
+   {
+    "xy": [
+     24.5,
+     47.806
+    ],
+    "trace_layer": "B.Cu",
+    "In1.Cu": [
+     "GND"
+    ],
+    "In2.Cu": [
+     "+3V3_DIG"
+    ]
+   },
+   {
+    "xy": [
+     24.5,
+     47.555
+    ],
+    "trace_layer": "B.Cu",
+    "In1.Cu": [
+     "GND"
+    ],
+    "In2.Cu": [
+     "+3V3_DIG"
+    ]
+   },
+   {
+    "xy": [
+     24.5,
+     47.304
+    ],
+    "trace_layer": "B.Cu",
+    "In1.Cu": [
+     "GND"
+    ],
+    "In2.Cu": [
+     "+3V3_DIG"
+    ]
+   },
+   {
+    "xy": [
+     24.5,
+     47.053
+    ],
+    "trace_layer": "B.Cu",
+    "In1.Cu": [
+     "GND"
+    ],
+    "In2.Cu": [
+     "+3V3_DIG"
+    ]
+   },
+   {
+    "xy": [
+     24.5,
+     46.803
+    ],
+    "trace_layer": "B.Cu",
+    "In1.Cu": [
+     "GND"
+    ],
+    "In2.Cu": [
+     "+3V3_DIG"
+    ]
+   },
+   {
+    "xy": [
+     24.5,
+     46.552
+    ],
+    "trace_layer": "B.Cu",
+    "In1.Cu": [
+     "GND"
+    ],
+    "In2.Cu": [
+     "+3V3_DIG"
+    ]
+   },
+   {
+    "xy": [
+     24.5,
+     46.301
+    ],
+    "trace_layer": "B.Cu",
+    "In1.Cu": [
+     "GND"
+    ],
+    "In2.Cu": [
+     "+3V3_DIG"
+    ]
+   },
+   {
+    "xy": [
+     24.5,
+     46.05
+    ],
+    "trace_layer": "B.Cu",
+    "In1.Cu": [
+     "GND"
+    ],
+    "In2.Cu": [
+     "+3V3_DIG"
+    ]
+   },
+   {
+    "xy": [
+     24.5,
+     45.799
+    ],
+    "trace_layer": "B.Cu",
+    "In1.Cu": [
+     "GND"
+    ],
+    "In2.Cu": [
+     "+3V3_DIG"
+    ]
+   },
+   {
+    "xy": [
+     24.5,
+     45.548
+    ],
+    "trace_layer": "B.Cu",
+    "In1.Cu": [
+     "GND"
+    ],
+    "In2.Cu": [
+     "+3V3_DIG"
+    ]
+   },
+   {
+    "xy": [
+     24.5,
+     45.297
+    ],
+    "trace_layer": "B.Cu",
+    "In1.Cu": [
+     "<none>"
+    ],
+    "In2.Cu": [
+     "<none>"
+    ]
+   },
+   {
+    "xy": [
+     24.5,
+     45.047
+    ],
+    "trace_layer": "B.Cu",
+    "In1.Cu": [
+     "<none>"
+    ],
+    "In2.Cu": [
+     "+3V3_ANA"
+    ]
+   },
+   {
+    "xy": [
+     24.5,
+     44.796
+    ],
+    "trace_layer": "B.Cu",
+    "In1.Cu": [
+     "GND"
+    ],
+    "In2.Cu": [
+     "+3V3_ANA"
+    ]
+   },
+   {
+    "xy": [
+     24.5,
+     44.545
+    ],
+    "trace_layer": "B.Cu",
+    "In1.Cu": [
+     "GND"
+    ],
+    "In2.Cu": [
+     "+3V3_ANA"
+    ]
+   },
+   {
+    "xy": [
+     24.5,
+     44.294
+    ],
+    "trace_layer": "B.Cu",
+    "In1.Cu": [
+     "GND"
+    ],
+    "In2.Cu": [
+     "+3V3_ANA"
+    ]
+   },
+   {
+    "xy": [
+     24.5,
+     44.043
+    ],
+    "trace_layer": "B.Cu",
+    "In1.Cu": [
+     "GND"
+    ],
+    "In2.Cu": [
+     "+3V3_ANA"
+    ]
+   },
+   {
+    "xy": [
+     24.5,
+     43.792
+    ],
+    "trace_layer": "B.Cu",
+    "In1.Cu": [
+     "GND"
+    ],
+    "In2.Cu": [
+     "+3V3_ANA"
+    ]
+   },
+   {
+    "xy": [
+     24.5,
+     43.542
+    ],
+    "trace_layer": "B.Cu",
+    "In1.Cu": [
+     "GND"
+    ],
+    "In2.Cu": [
+     "+3V3_ANA"
+    ]
+   },
+   {
+    "xy": [
+     24.5,
+     43.291
+    ],
+    "trace_layer": "B.Cu",
+    "In1.Cu": [
+     "GND"
+    ],
+    "In2.Cu": [
+     "+3V3_ANA"
+    ]
+   },
+   {
+    "xy": [
+     24.5,
+     43.04
+    ],
+    "trace_layer": "B.Cu",
+    "In1.Cu": [
+     "GND"
+    ],
+    "In2.Cu": [
+     "+3V3_ANA"
+    ]
+   },
+   {
+    "xy": [
+     24.5,
+     42.789
+    ],
+    "trace_layer": "B.Cu",
+    "In1.Cu": [
+     "GND"
+    ],
+    "In2.Cu": [
+     "+3V3_ANA"
+    ]
+   },
+   {
+    "xy": [
+     24.5,
+     42.538
+    ],
+    "trace_layer": "B.Cu",
+    "In1.Cu": [
+     "GND"
+    ],
+    "In2.Cu": [
+     "+3V3_ANA"
+    ]
+   },
+   {
+    "xy": [
+     24.5,
+     42.287
+    ],
+    "trace_layer": "B.Cu",
+    "In1.Cu": [
+     "GND"
+    ],
+    "In2.Cu": [
+     "+3V3_ANA"
+    ]
+   },
+   {
+    "xy": [
+     24.5,
+     42.036
+    ],
+    "trace_layer": "B.Cu",
+    "In1.Cu": [
+     "GND"
+    ],
+    "In2.Cu": [
+     "+3V3_ANA"
+    ]
+   },
+   {
+    "xy": [
+     24.5,
+     41.786
+    ],
+    "trace_layer": "B.Cu",
+    "In1.Cu": [
+     "GND"
+    ],
+    "In2.Cu": [
+     "+3V3_ANA"
+    ]
+   },
+   {
+    "xy": [
+     24.5,
+     41.535
+    ],
+    "trace_layer": "B.Cu",
+    "In1.Cu": [
+     "GND"
+    ],
+    "In2.Cu": [
+     "+3V3_ANA"
+    ]
+   },
+   {
+    "xy": [
+     24.5,
+     41.284
+    ],
+    "trace_layer": "B.Cu",
+    "In1.Cu": [
+     "GND"
+    ],
+    "In2.Cu": [
+     "+3V3_ANA"
+    ]
+   },
+   {
+    "xy": [
+     24.5,
+     41.033
+    ],
+    "trace_layer": "B.Cu",
+    "In1.Cu": [
+     "GND"
+    ],
+    "In2.Cu": [
+     "+3V3_ANA"
+    ]
+   },
+   {
+    "xy": [
+     24.5,
+     40.782
+    ],
+    "trace_layer": "B.Cu",
+    "In1.Cu": [
+     "GND"
+    ],
+    "In2.Cu": [
+     "+3V3_ANA"
+    ]
+   },
+   {
+    "xy": [
+     24.5,
+     40.531
+    ],
+    "trace_layer": "B.Cu",
+    "In1.Cu": [
+     "GND"
+    ],
+    "In2.Cu": [
+     "+3V3_ANA"
+    ]
+   },
+   {
+    "xy": [
+     24.5,
+     40.281
+    ],
+    "trace_layer": "B.Cu",
+    "In1.Cu": [
+     "GND"
+    ],
+    "In2.Cu": [
+     "+3V3_ANA"
+    ]
+   },
+   {
+    "xy": [
+     24.5,
+     40.03
+    ],
+    "trace_layer": "B.Cu",
+    "In1.Cu": [
+     "GND"
+    ],
+    "In2.Cu": [
+     "+3V3_ANA"
+    ]
+   },
+   {
+    "xy": [
+     24.5,
+     39.779
+    ],
+    "trace_layer": "B.Cu",
+    "In1.Cu": [
+     "GND"
+    ],
+    "In2.Cu": [
+     "+3V3_ANA"
+    ]
+   },
+   {
+    "xy": [
+     24.5,
+     39.528
+    ],
+    "trace_layer": "B.Cu",
+    "In1.Cu": [
+     "GND"
+    ],
+    "In2.Cu": [
+     "+3V3_ANA"
+    ]
+   },
+   {
+    "xy": [
+     24.5,
+     39.277
+    ],
+    "trace_layer": "B.Cu",
+    "In1.Cu": [
+     "GND"
+    ],
+    "In2.Cu": [
+     "+3V3_ANA"
+    ]
+   },
+   {
+    "xy": [
+     24.5,
+     39.026
+    ],
+    "trace_layer": "B.Cu",
+    "In1.Cu": [
+     "GND"
+    ],
+    "In2.Cu": [
+     "+3V3_ANA"
+    ]
+   },
+   {
+    "xy": [
+     24.5,
+     38.775
+    ],
+    "trace_layer": "B.Cu",
+    "In1.Cu": [
+     "GND"
+    ],
+    "In2.Cu": [
+     "+3V3_ANA"
+    ]
+   },
+   {
+    "xy": [
+     24.5,
+     38.525
+    ],
+    "trace_layer": "B.Cu",
+    "In1.Cu": [
+     "GND"
+    ],
+    "In2.Cu": [
+     "+3V3_ANA"
+    ]
+   },
+   {
+    "xy": [
+     24.5,
+     38.274
+    ],
+    "trace_layer": "B.Cu",
+    "In1.Cu": [
+     "GND"
+    ],
+    "In2.Cu": [
+     "+3V3_ANA"
+    ]
+   },
+   {
+    "xy": [
+     24.5,
+     38.023
+    ],
+    "trace_layer": "B.Cu",
+    "In1.Cu": [
+     "GND"
+    ],
+    "In2.Cu": [
+     "+3V3_ANA"
+    ]
+   },
+   {
+    "xy": [
+     24.5,
+     37.772
+    ],
+    "trace_layer": "B.Cu",
+    "In1.Cu": [
+     "GND"
+    ],
+    "In2.Cu": [
+     "+3V3_ANA"
+    ]
+   },
+   {
+    "xy": [
+     24.5,
+     37.521
+    ],
+    "trace_layer": "B.Cu",
+    "In1.Cu": [
+     "GND"
+    ],
+    "In2.Cu": [
+     "+3V3_ANA"
+    ]
+   },
+   {
+    "xy": [
+     24.5,
+     37.27
+    ],
+    "trace_layer": "B.Cu",
+    "In1.Cu": [
+     "<none>"
+    ],
+    "In2.Cu": [
+     "+3V3_ANA"
+    ]
+   },
+   {
+    "xy": [
+     24.5,
+     37.019
+    ],
+    "trace_layer": "B.Cu",
+    "In1.Cu": [
+     "<none>"
+    ],
+    "In2.Cu": [
+     "+3V3_ANA"
+    ]
+   },
+   {
+    "xy": [
+     24.5,
+     36.769
+    ],
+    "trace_layer": "B.Cu",
+    "In1.Cu": [
+     "<none>"
+    ],
+    "In2.Cu": [
+     "+3V3_ANA"
+    ]
+   },
+   {
+    "xy": [
+     24.5,
+     36.518
+    ],
+    "trace_layer": "B.Cu",
+    "In1.Cu": [
+     "GND"
+    ],
+    "In2.Cu": [
+     "+3V3_ANA"
+    ]
+   },
+   {
+    "xy": [
+     24.5,
+     36.267
+    ],
+    "trace_layer": "B.Cu",
+    "In1.Cu": [
+     "GND"
+    ],
+    "In2.Cu": [
+     "+3V3_ANA"
+    ]
+   },
+   {
+    "xy": [
+     24.5,
+     36.016
+    ],
+    "trace_layer": "B.Cu",
+    "In1.Cu": [
+     "GND"
+    ],
+    "In2.Cu": [
+     "+3V3_ANA"
+    ]
+   },
+   {
+    "xy": [
+     24.5,
+     35.765
+    ],
+    "trace_layer": "B.Cu",
+    "In1.Cu": [
+     "GND"
+    ],
+    "In2.Cu": [
+     "+3V3_ANA"
+    ]
+   },
+   {
+    "xy": [
+     24.5,
+     35.514
+    ],
+    "trace_layer": "B.Cu",
+    "In1.Cu": [
+     "GND"
+    ],
+    "In2.Cu": [
+     "+3V3_ANA"
+    ]
+   },
+   {
+    "xy": [
+     24.5,
+     35.264
+    ],
+    "trace_layer": "B.Cu",
+    "In1.Cu": [
+     "GND"
+    ],
+    "In2.Cu": [
+     "+3V3_ANA"
+    ]
+   },
+   {
+    "xy": [
+     24.5,
+     35.013
+    ],
+    "trace_layer": "B.Cu",
+    "In1.Cu": [
+     "GND"
+    ],
+    "In2.Cu": [
+     "+3V3_ANA"
+    ]
+   },
+   {
+    "xy": [
+     24.5,
+     34.762
+    ],
+    "trace_layer": "B.Cu",
+    "In1.Cu": [
+     "GND"
+    ],
+    "In2.Cu": [
+     "+3V3_ANA"
+    ]
+   },
+   {
+    "xy": [
+     24.5,
+     34.511
+    ],
+    "trace_layer": "B.Cu",
+    "In1.Cu": [
+     "GND"
+    ],
+    "In2.Cu": [
+     "+3V3_ANA"
+    ]
+   },
+   {
+    "xy": [
+     24.5,
+     34.26
+    ],
+    "trace_layer": "B.Cu",
+    "In1.Cu": [
+     "GND"
+    ],
+    "In2.Cu": [
+     "+3V3_ANA"
+    ]
+   },
+   {
+    "xy": [
+     24.5,
+     34.009
+    ],
+    "trace_layer": "B.Cu",
+    "In1.Cu": [
+     "GND"
+    ],
+    "In2.Cu": [
+     "+3V3_ANA"
+    ]
+   },
+   {
+    "xy": [
+     24.5,
+     33.758
+    ],
+    "trace_layer": "B.Cu",
+    "In1.Cu": [
+     "GND"
+    ],
+    "In2.Cu": [
+     "+3V3_ANA"
+    ]
+   },
+   {
+    "xy": [
+     24.5,
+     33.508
+    ],
+    "trace_layer": "B.Cu",
+    "In1.Cu": [
+     "GND"
+    ],
+    "In2.Cu": [
+     "+3V3_ANA"
+    ]
+   },
+   {
+    "xy": [
+     24.5,
+     33.257
+    ],
+    "trace_layer": "B.Cu",
+    "In1.Cu": [
+     "GND"
+    ],
+    "In2.Cu": [
+     "+3V3_ANA"
+    ]
+   },
+   {
+    "xy": [
+     24.5,
+     33.006
+    ],
+    "trace_layer": "B.Cu",
+    "In1.Cu": [
+     "GND"
+    ],
+    "In2.Cu": [
+     "+3V3_ANA"
+    ]
+   },
+   {
+    "xy": [
+     24.5,
+     32.755
+    ],
+    "trace_layer": "B.Cu",
+    "In1.Cu": [
+     "GND"
+    ],
+    "In2.Cu": [
+     "+3V3_ANA"
+    ]
+   },
+   {
+    "xy": [
+     24.5,
+     32.504
+    ],
+    "trace_layer": "B.Cu",
+    "In1.Cu": [
+     "GND"
+    ],
+    "In2.Cu": [
+     "+3V3_ANA"
+    ]
+   },
+   {
+    "xy": [
+     24.5,
+     32.253
+    ],
+    "trace_layer": "B.Cu",
+    "In1.Cu": [
+     "GND"
+    ],
+    "In2.Cu": [
+     "+3V3_ANA"
+    ]
+   },
+   {
+    "xy": [
+     24.5,
+     32.003
+    ],
+    "trace_layer": "B.Cu",
+    "In1.Cu": [
+     "GND"
+    ],
+    "In2.Cu": [
+     "+3V3_ANA"
+    ]
+   },
+   {
+    "xy": [
+     24.5,
+     31.752
+    ],
+    "trace_layer": "B.Cu",
+    "In1.Cu": [
+     "GND"
+    ],
+    "In2.Cu": [
+     "+3V3_ANA"
+    ]
+   },
+   {
+    "xy": [
+     24.5,
+     31.501
+    ],
+    "trace_layer": "B.Cu",
+    "In1.Cu": [
+     "<none>"
+    ],
+    "In2.Cu": [
+     "<none>"
+    ]
+   },
+   {
+    "xy": [
+     24.5,
+     31.25
+    ],
+    "trace_layer": "B.Cu",
+    "In1.Cu": [
+     "<none>"
+    ],
+    "In2.Cu": [
+     "<none>"
+    ]
+   }
+  ],
+  "LO_LOW_N": [
+   {
+    "xy": [
+     22.82,
+     63.25
+    ],
+    "trace_layer": "F.Cu",
+    "In1.Cu": [
+     "GND"
+    ],
+    "In2.Cu": [
+     "<none>"
+    ]
+   },
+   {
+    "xy": [
+     23.08,
+     63.25
+    ],
+    "trace_layer": "F.Cu",
+    "In1.Cu": [
+     "GND"
+    ],
+    "In2.Cu": [
+     "+3V3_DIG"
+    ]
+   },
+   {
+    "xy": [
+     23.34,
+     63.25
+    ],
+    "trace_layer": "F.Cu",
+    "In1.Cu": [
+     "<none>"
+    ],
+    "In2.Cu": [
+     "<none>"
+    ]
+   },
+   {
+    "xy": [
+     23.6,
+     63.25
+    ],
+    "trace_layer": "F.Cu",
+    "In1.Cu": [
+     "<none>"
+    ],
+    "In2.Cu": [
+     "<none>"
+    ]
+   },
+   {
+    "xy": [
+     25.1,
+     32.75
+    ],
+    "trace_layer": "F.Cu",
+    "In1.Cu": [
+     "<none>"
+    ],
+    "In2.Cu": [
+     "<none>"
+    ]
+   },
+   {
+    "xy": [
+     25.45,
+     32.75
+    ],
+    "trace_layer": "F.Cu",
+    "In1.Cu": [
+     "<none>"
+    ],
+    "In2.Cu": [
+     "<none>"
+    ]
+   },
+   {
+    "xy": [
+     25.8,
+     32.75
+    ],
+    "trace_layer": "F.Cu",
+    "In1.Cu": [
+     "GND"
+    ],
+    "In2.Cu": [
+     "+3V3_ANA"
+    ]
+   },
+   {
+    "xy": [
+     26.3,
+     32.25
+    ],
+    "trace_layer": "F.Cu",
+    "In1.Cu": [
+     "GND"
+    ],
+    "In2.Cu": [
+     "+3V3_ANA"
+    ]
+   },
+   {
+    "xy": [
+     26.554,
+     32.25
+    ],
+    "trace_layer": "F.Cu",
+    "In1.Cu": [
+     "GND"
+    ],
+    "In2.Cu": [
+     "+3V3_ANA"
+    ]
+   },
+   {
+    "xy": [
+     26.808,
+     32.25
+    ],
+    "trace_layer": "F.Cu",
+    "In1.Cu": [
+     "GND"
+    ],
+    "In2.Cu": [
+     "+3V3_ANA"
+    ]
+   },
+   {
+    "xy": [
+     27.062,
+     32.25
+    ],
+    "trace_layer": "F.Cu",
+    "In1.Cu": [
+     "GND"
+    ],
+    "In2.Cu": [
+     "+3V3_ANA"
+    ]
+   },
+   {
+    "xy": [
+     25.8,
+     32.75
+    ],
+    "trace_layer": "F.Cu",
+    "In1.Cu": [
+     "GND"
+    ],
+    "In2.Cu": [
+     "+3V3_ANA"
+    ]
+   },
+   {
+    "xy": [
+     26.05,
+     32.5
+    ],
+    "trace_layer": "F.Cu",
+    "In1.Cu": [
+     "GND"
+    ],
+    "In2.Cu": [
+     "+3V3_ANA"
+    ]
+   },
+   {
+    "xy": [
+     26.3,
+     32.25
+    ],
+    "trace_layer": "F.Cu",
+    "In1.Cu": [
+     "GND"
+    ],
+    "In2.Cu": [
+     "+3V3_ANA"
+    ]
+   },
+   {
+    "xy": [
+     23.6,
+     63.25
+    ],
+    "trace_layer": "B.Cu",
+    "In1.Cu": [
+     "<none>"
+    ],
+    "In2.Cu": [
+     "<none>"
+    ]
+   },
+   {
+    "xy": [
+     23.85,
+     63.25
+    ],
+    "trace_layer": "B.Cu",
+    "In1.Cu": [
+     "<none>"
+    ],
+    "In2.Cu": [
+     "<none>"
+    ]
+   },
+   {
+    "xy": [
+     24.1,
+     63.25
+    ],
+    "trace_layer": "B.Cu",
+    "In1.Cu": [
+     "GND"
+    ],
+    "In2.Cu": [
+     "+3V3_DIG"
+    ]
+   },
+   {
+    "xy": [
+     24.35,
+     63.25
+    ],
+    "trace_layer": "B.Cu",
+    "In1.Cu": [
+     "GND"
+    ],
+    "In2.Cu": [
+     "+3V3_DIG"
+    ]
+   },
+   {
+    "xy": [
+     24.6,
+     63.25
+    ],
+    "trace_layer": "B.Cu",
+    "In1.Cu": [
+     "GND"
+    ],
+    "In2.Cu": [
+     "+3V3_DIG"
+    ]
+   },
+   {
+    "xy": [
+     24.85,
+     63.25
+    ],
+    "trace_layer": "B.Cu",
+    "In1.Cu": [
+     "GND"
+    ],
+    "In2.Cu": [
+     "+3V3_DIG"
+    ]
+   },
+   {
+    "xy": [
+     25.1,
+     63.25
+    ],
+    "trace_layer": "B.Cu",
+    "In1.Cu": [
+     "GND"
+    ],
+    "In2.Cu": [
+     "+3V3_DIG"
+    ]
+   },
+   {
+    "xy": [
+     25.1,
+     63.25
+    ],
+    "trace_layer": "B.Cu",
+    "In1.Cu": [
+     "GND"
+    ],
+    "In2.Cu": [
+     "+3V3_DIG"
+    ]
+   },
+   {
+    "xy": [
+     25.1,
+     63.0
+    ],
+    "trace_layer": "B.Cu",
+    "In1.Cu": [
+     "GND"
+    ],
+    "In2.Cu": [
+     "+3V3_DIG"
+    ]
+   },
+   {
+    "xy": [
+     25.1,
+     62.75
+    ],
+    "trace_layer": "B.Cu",
+    "In1.Cu": [
+     "GND"
+    ],
+    "In2.Cu": [
+     "+3V3_DIG"
+    ]
+   },
+   {
+    "xy": [
+     25.1,
+     62.5
+    ],
+    "trace_layer": "B.Cu",
+    "In1.Cu": [
+     "GND"
+    ],
+    "In2.Cu": [
+     "+3V3_DIG"
+    ]
+   },
+   {
+    "xy": [
+     25.1,
+     62.25
+    ],
+    "trace_layer": "B.Cu",
+    "In1.Cu": [
+     "GND"
+    ],
+    "In2.Cu": [
+     "+3V3_DIG"
+    ]
+   },
+   {
+    "xy": [
+     25.1,
+     62.0
+    ],
+    "trace_layer": "B.Cu",
+    "In1.Cu": [
+     "GND"
+    ],
+    "In2.Cu": [
+     "+3V3_DIG"
+    ]
+   },
+   {
+    "xy": [
+     25.1,
+     61.75
+    ],
+    "trace_layer": "B.Cu",
+    "In1.Cu": [
+     "GND"
+    ],
+    "In2.Cu": [
+     "+3V3_DIG"
+    ]
+   },
+   {
+    "xy": [
+     25.1,
+     61.5
+    ],
+    "trace_layer": "B.Cu",
+    "In1.Cu": [
+     "GND"
+    ],
+    "In2.Cu": [
+     "+3V3_DIG"
+    ]
+   },
+   {
+    "xy": [
+     25.1,
+     61.25
+    ],
+    "trace_layer": "B.Cu",
+    "In1.Cu": [
+     "GND"
+    ],
+    "In2.Cu": [
+     "+3V3_DIG"
+    ]
+   },
+   {
+    "xy": [
+     25.1,
+     61.0
+    ],
+    "trace_layer": "B.Cu",
+    "In1.Cu": [
+     "GND"
+    ],
+    "In2.Cu": [
+     "+3V3_DIG"
+    ]
+   },
+   {
+    "xy": [
+     25.1,
+     60.75
+    ],
+    "trace_layer": "B.Cu",
+    "In1.Cu": [
+     "GND"
+    ],
+    "In2.Cu": [
+     "+3V3_DIG"
+    ]
+   },
+   {
+    "xy": [
+     25.1,
+     60.5
+    ],
+    "trace_layer": "B.Cu",
+    "In1.Cu": [
+     "GND"
+    ],
+    "In2.Cu": [
+     "+3V3_DIG"
+    ]
+   },
+   {
+    "xy": [
+     25.1,
+     60.25
+    ],
+    "trace_layer": "B.Cu",
+    "In1.Cu": [
+     "GND"
+    ],
+    "In2.Cu": [
+     "+3V3_DIG"
+    ]
+   },
+   {
+    "xy": [
+     25.1,
+     60.0
+    ],
+    "trace_layer": "B.Cu",
+    "In1.Cu": [
+     "GND"
+    ],
+    "In2.Cu": [
+     "+3V3_DIG"
+    ]
+   },
+   {
+    "xy": [
+     25.1,
+     59.75
+    ],
+    "trace_layer": "B.Cu",
+    "In1.Cu": [
+     "GND"
+    ],
+    "In2.Cu": [
+     "+3V3_DIG"
+    ]
+   },
+   {
+    "xy": [
+     25.1,
+     59.5
+    ],
+    "trace_layer": "B.Cu",
+    "In1.Cu": [
+     "GND"
+    ],
+    "In2.Cu": [
+     "+3V3_DIG"
+    ]
+   },
+   {
+    "xy": [
+     25.1,
+     59.25
+    ],
+    "trace_layer": "B.Cu",
+    "In1.Cu": [
+     "GND"
+    ],
+    "In2.Cu": [
+     "+3V3_DIG"
+    ]
+   },
+   {
+    "xy": [
+     25.1,
+     59.0
+    ],
+    "trace_layer": "B.Cu",
+    "In1.Cu": [
+     "GND"
+    ],
+    "In2.Cu": [
+     "+3V3_DIG"
+    ]
+   },
+   {
+    "xy": [
+     25.1,
+     58.75
+    ],
+    "trace_layer": "B.Cu",
+    "In1.Cu": [
+     "GND"
+    ],
+    "In2.Cu": [
+     "+3V3_DIG"
+    ]
+   },
+   {
+    "xy": [
+     25.1,
+     58.5
+    ],
+    "trace_layer": "B.Cu",
+    "In1.Cu": [
+     "GND"
+    ],
+    "In2.Cu": [
+     "+3V3_DIG"
+    ]
+   },
+   {
+    "xy": [
+     25.1,
+     58.25
+    ],
+    "trace_layer": "B.Cu",
+    "In1.Cu": [
+     "GND"
+    ],
+    "In2.Cu": [
+     "+3V3_DIG"
+    ]
+   },
+   {
+    "xy": [
+     25.1,
+     58.0
+    ],
+    "trace_layer": "B.Cu",
+    "In1.Cu": [
+     "GND"
+    ],
+    "In2.Cu": [
+     "+3V3_DIG"
+    ]
+   },
+   {
+    "xy": [
+     25.1,
+     57.75
+    ],
+    "trace_layer": "B.Cu",
+    "In1.Cu": [
+     "GND"
+    ],
+    "In2.Cu": [
+     "+3V3_DIG"
+    ]
+   },
+   {
+    "xy": [
+     25.1,
+     57.5
+    ],
+    "trace_layer": "B.Cu",
+    "In1.Cu": [
+     "GND"
+    ],
+    "In2.Cu": [
+     "+3V3_DIG"
+    ]
+   },
+   {
+    "xy": [
+     25.1,
+     57.25
+    ],
+    "trace_layer": "B.Cu",
+    "In1.Cu": [
+     "GND"
+    ],
+    "In2.Cu": [
+     "+3V3_DIG"
+    ]
+   },
+   {
+    "xy": [
+     25.1,
+     57.0
+    ],
+    "trace_layer": "B.Cu",
+    "In1.Cu": [
+     "GND"
+    ],
+    "In2.Cu": [
+     "+3V3_DIG"
+    ]
+   },
+   {
+    "xy": [
+     25.1,
+     56.75
+    ],
+    "trace_layer": "B.Cu",
+    "In1.Cu": [
+     "GND"
+    ],
+    "In2.Cu": [
+     "+3V3_DIG"
+    ]
+   },
+   {
+    "xy": [
+     25.1,
+     56.5
+    ],
+    "trace_layer": "B.Cu",
+    "In1.Cu": [
+     "GND"
+    ],
+    "In2.Cu": [
+     "+3V3_DIG"
+    ]
+   },
+   {
+    "xy": [
+     25.1,
+     56.25
+    ],
+    "trace_layer": "B.Cu",
+    "In1.Cu": [
+     "GND"
+    ],
+    "In2.Cu": [
+     "+3V3_DIG"
+    ]
+   },
+   {
+    "xy": [
+     25.1,
+     56.0
+    ],
+    "trace_layer": "B.Cu",
+    "In1.Cu": [
+     "GND"
+    ],
+    "In2.Cu": [
+     "+3V3_DIG"
+    ]
+   },
+   {
+    "xy": [
+     25.1,
+     55.75
+    ],
+    "trace_layer": "B.Cu",
+    "In1.Cu": [
+     "GND"
+    ],
+    "In2.Cu": [
+     "+3V3_DIG"
+    ]
+   },
+   {
+    "xy": [
+     25.1,
+     55.5
+    ],
+    "trace_layer": "B.Cu",
+    "In1.Cu": [
+     "GND"
+    ],
+    "In2.Cu": [
+     "+3V3_DIG"
+    ]
+   },
+   {
+    "xy": [
+     25.1,
+     55.25
+    ],
+    "trace_layer": "B.Cu",
+    "In1.Cu": [
+     "GND"
+    ],
+    "In2.Cu": [
+     "+3V3_DIG"
+    ]
+   },
+   {
+    "xy": [
+     25.1,
+     55.0
+    ],
+    "trace_layer": "B.Cu",
+    "In1.Cu": [
+     "GND"
+    ],
+    "In2.Cu": [
+     "+3V3_DIG"
+    ]
+   },
+   {
+    "xy": [
+     25.1,
+     54.75
+    ],
+    "trace_layer": "B.Cu",
+    "In1.Cu": [
+     "GND"
+    ],
+    "In2.Cu": [
+     "+3V3_DIG"
+    ]
+   },
+   {
+    "xy": [
+     25.1,
+     54.5
+    ],
+    "trace_layer": "B.Cu",
+    "In1.Cu": [
+     "GND"
+    ],
+    "In2.Cu": [
+     "+3V3_DIG"
+    ]
+   },
+   {
+    "xy": [
+     25.1,
+     54.25
+    ],
+    "trace_layer": "B.Cu",
+    "In1.Cu": [
+     "GND"
+    ],
+    "In2.Cu": [
+     "+3V3_DIG"
+    ]
+   },
+   {
+    "xy": [
+     25.1,
+     54.0
+    ],
+    "trace_layer": "B.Cu",
+    "In1.Cu": [
+     "GND"
+    ],
+    "In2.Cu": [
+     "+3V3_DIG"
+    ]
+   },
+   {
+    "xy": [
+     25.1,
+     53.75
+    ],
+    "trace_layer": "B.Cu",
+    "In1.Cu": [
+     "GND"
+    ],
+    "In2.Cu": [
+     "+3V3_DIG"
+    ]
+   },
+   {
+    "xy": [
+     25.1,
+     53.5
+    ],
+    "trace_layer": "B.Cu",
+    "In1.Cu": [
+     "GND"
+    ],
+    "In2.Cu": [
+     "+3V3_DIG"
+    ]
+   },
+   {
+    "xy": [
+     25.1,
+     53.25
+    ],
+    "trace_layer": "B.Cu",
+    "In1.Cu": [
+     "GND"
+    ],
+    "In2.Cu": [
+     "+3V3_DIG"
+    ]
+   },
+   {
+    "xy": [
+     25.1,
+     53.0
+    ],
+    "trace_layer": "B.Cu",
+    "In1.Cu": [
+     "GND"
+    ],
+    "In2.Cu": [
+     "+3V3_DIG"
+    ]
+   },
+   {
+    "xy": [
+     25.1,
+     52.75
+    ],
+    "trace_layer": "B.Cu",
+    "In1.Cu": [
+     "GND"
+    ],
+    "In2.Cu": [
+     "+3V3_DIG"
+    ]
+   },
+   {
+    "xy": [
+     25.1,
+     52.5
+    ],
+    "trace_layer": "B.Cu",
+    "In1.Cu": [
+     "GND"
+    ],
+    "In2.Cu": [
+     "+3V3_DIG"
+    ]
+   },
+   {
+    "xy": [
+     25.1,
+     52.25
+    ],
+    "trace_layer": "B.Cu",
+    "In1.Cu": [
+     "GND"
+    ],
+    "In2.Cu": [
+     "+3V3_DIG"
+    ]
+   },
+   {
+    "xy": [
+     25.1,
+     52.0
+    ],
+    "trace_layer": "B.Cu",
+    "In1.Cu": [
+     "GND"
+    ],
+    "In2.Cu": [
+     "+3V3_DIG"
+    ]
+   },
+   {
+    "xy": [
+     25.1,
+     51.75
+    ],
+    "trace_layer": "B.Cu",
+    "In1.Cu": [
+     "GND"
+    ],
+    "In2.Cu": [
+     "+3V3_DIG"
+    ]
+   },
+   {
+    "xy": [
+     25.1,
+     51.5
+    ],
+    "trace_layer": "B.Cu",
+    "In1.Cu": [
+     "GND"
+    ],
+    "In2.Cu": [
+     "+3V3_DIG"
+    ]
+   },
+   {
+    "xy": [
+     25.1,
+     51.25
+    ],
+    "trace_layer": "B.Cu",
+    "In1.Cu": [
+     "GND"
+    ],
+    "In2.Cu": [
+     "+3V3_DIG"
+    ]
+   },
+   {
+    "xy": [
+     25.1,
+     51.0
+    ],
+    "trace_layer": "B.Cu",
+    "In1.Cu": [
+     "GND"
+    ],
+    "In2.Cu": [
+     "+3V3_DIG"
+    ]
+   },
+   {
+    "xy": [
+     25.1,
+     50.75
+    ],
+    "trace_layer": "B.Cu",
+    "In1.Cu": [
+     "GND"
+    ],
+    "In2.Cu": [
+     "+3V3_DIG"
+    ]
+   },
+   {
+    "xy": [
+     25.1,
+     50.5
+    ],
+    "trace_layer": "B.Cu",
+    "In1.Cu": [
+     "GND"
+    ],
+    "In2.Cu": [
+     "+3V3_DIG"
+    ]
+   },
+   {
+    "xy": [
+     25.1,
+     50.25
+    ],
+    "trace_layer": "B.Cu",
+    "In1.Cu": [
+     "GND"
+    ],
+    "In2.Cu": [
+     "+3V3_DIG"
+    ]
+   },
+   {
+    "xy": [
+     25.1,
+     50.0
+    ],
+    "trace_layer": "B.Cu",
+    "In1.Cu": [
+     "GND"
+    ],
+    "In2.Cu": [
+     "+3V3_DIG"
+    ]
+   },
+   {
+    "xy": [
+     25.1,
+     49.75
+    ],
+    "trace_layer": "B.Cu",
+    "In1.Cu": [
+     "GND"
+    ],
+    "In2.Cu": [
+     "+3V3_DIG"
+    ]
+   },
+   {
+    "xy": [
+     25.1,
+     49.5
+    ],
+    "trace_layer": "B.Cu",
+    "In1.Cu": [
+     "GND"
+    ],
+    "In2.Cu": [
+     "+3V3_DIG"
+    ]
+   },
+   {
+    "xy": [
+     25.1,
+     49.25
+    ],
+    "trace_layer": "B.Cu",
+    "In1.Cu": [
+     "GND"
+    ],
+    "In2.Cu": [
+     "+3V3_DIG"
+    ]
+   },
+   {
+    "xy": [
+     25.1,
+     49.0
+    ],
+    "trace_layer": "B.Cu",
+    "In1.Cu": [
+     "GND"
+    ],
+    "In2.Cu": [
+     "+3V3_DIG"
+    ]
+   },
+   {
+    "xy": [
+     25.1,
+     48.75
+    ],
+    "trace_layer": "B.Cu",
+    "In1.Cu": [
+     "GND"
+    ],
+    "In2.Cu": [
+     "+3V3_DIG"
+    ]
+   },
+   {
+    "xy": [
+     25.1,
+     48.5
+    ],
+    "trace_layer": "B.Cu",
+    "In1.Cu": [
+     "GND"
+    ],
+    "In2.Cu": [
+     "+3V3_DIG"
+    ]
+   },
+   {
+    "xy": [
+     25.1,
+     48.25
+    ],
+    "trace_layer": "B.Cu",
+    "In1.Cu": [
+     "GND"
+    ],
+    "In2.Cu": [
+     "+3V3_DIG"
+    ]
+   },
+   {
+    "xy": [
+     25.1,
+     48.0
+    ],
+    "trace_layer": "B.Cu",
+    "In1.Cu": [
+     "GND"
+    ],
+    "In2.Cu": [
+     "+3V3_DIG"
+    ]
+   },
+   {
+    "xy": [
+     25.1,
+     47.75
+    ],
+    "trace_layer": "B.Cu",
+    "In1.Cu": [
+     "GND"
+    ],
+    "In2.Cu": [
+     "+3V3_DIG"
+    ]
+   },
+   {
+    "xy": [
+     25.1,
+     47.5
+    ],
+    "trace_layer": "B.Cu",
+    "In1.Cu": [
+     "GND"
+    ],
+    "In2.Cu": [
+     "+3V3_DIG"
+    ]
+   },
+   {
+    "xy": [
+     25.1,
+     47.25
+    ],
+    "trace_layer": "B.Cu",
+    "In1.Cu": [
+     "GND"
+    ],
+    "In2.Cu": [
+     "+3V3_DIG"
+    ]
+   },
+   {
+    "xy": [
+     25.1,
+     47.0
+    ],
+    "trace_layer": "B.Cu",
+    "In1.Cu": [
+     "GND"
+    ],
+    "In2.Cu": [
+     "+3V3_DIG"
+    ]
+   },
+   {
+    "xy": [
+     25.1,
+     46.75
+    ],
+    "trace_layer": "B.Cu",
+    "In1.Cu": [
+     "GND"
+    ],
+    "In2.Cu": [
+     "+3V3_DIG"
+    ]
+   },
+   {
+    "xy": [
+     25.1,
+     46.5
+    ],
+    "trace_layer": "B.Cu",
+    "In1.Cu": [
+     "GND"
+    ],
+    "In2.Cu": [
+     "+3V3_DIG"
+    ]
+   },
+   {
+    "xy": [
+     25.1,
+     46.25
+    ],
+    "trace_layer": "B.Cu",
+    "In1.Cu": [
+     "GND"
+    ],
+    "In2.Cu": [
+     "+3V3_DIG"
+    ]
+   },
+   {
+    "xy": [
+     25.1,
+     46.0
+    ],
+    "trace_layer": "B.Cu",
+    "In1.Cu": [
+     "GND"
+    ],
+    "In2.Cu": [
+     "+3V3_DIG"
+    ]
+   },
+   {
+    "xy": [
+     25.1,
+     45.75
+    ],
+    "trace_layer": "B.Cu",
+    "In1.Cu": [
+     "GND"
+    ],
+    "In2.Cu": [
+     "+3V3_DIG"
+    ]
+   },
+   {
+    "xy": [
+     25.1,
+     45.5
+    ],
+    "trace_layer": "B.Cu",
+    "In1.Cu": [
+     "GND"
+    ],
+    "In2.Cu": [
+     "+3V3_DIG"
+    ]
+   },
+   {
+    "xy": [
+     25.1,
+     45.25
+    ],
+    "trace_layer": "B.Cu",
+    "In1.Cu": [
+     "<none>"
+    ],
+    "In2.Cu": [
+     "<none>"
+    ]
+   },
+   {
+    "xy": [
+     25.1,
+     45.0
+    ],
+    "trace_layer": "B.Cu",
+    "In1.Cu": [
+     "<none>"
+    ],
+    "In2.Cu": [
+     "+3V3_ANA"
+    ]
+   },
+   {
+    "xy": [
+     25.1,
+     44.75
+    ],
+    "trace_layer": "B.Cu",
+    "In1.Cu": [
+     "GND"
+    ],
+    "In2.Cu": [
+     "+3V3_ANA"
+    ]
+   },
+   {
+    "xy": [
+     25.1,
+     44.5
+    ],
+    "trace_layer": "B.Cu",
+    "In1.Cu": [
+     "GND"
+    ],
+    "In2.Cu": [
+     "+3V3_ANA"
+    ]
+   },
+   {
+    "xy": [
+     25.1,
+     44.25
+    ],
+    "trace_layer": "B.Cu",
+    "In1.Cu": [
+     "GND"
+    ],
+    "In2.Cu": [
+     "+3V3_ANA"
+    ]
+   },
+   {
+    "xy": [
+     25.1,
+     44.0
+    ],
+    "trace_layer": "B.Cu",
+    "In1.Cu": [
+     "GND"
+    ],
+    "In2.Cu": [
+     "+3V3_ANA"
+    ]
+   },
+   {
+    "xy": [
+     25.1,
+     43.75
+    ],
+    "trace_layer": "B.Cu",
+    "In1.Cu": [
+     "GND"
+    ],
+    "In2.Cu": [
+     "+3V3_ANA"
+    ]
+   },
+   {
+    "xy": [
+     25.1,
+     43.5
+    ],
+    "trace_layer": "B.Cu",
+    "In1.Cu": [
+     "GND"
+    ],
+    "In2.Cu": [
+     "+3V3_ANA"
+    ]
+   },
+   {
+    "xy": [
+     25.1,
+     43.25
+    ],
+    "trace_layer": "B.Cu",
+    "In1.Cu": [
+     "GND"
+    ],
+    "In2.Cu": [
+     "+3V3_ANA"
+    ]
+   },
+   {
+    "xy": [
+     25.1,
+     43.0
+    ],
+    "trace_layer": "B.Cu",
+    "In1.Cu": [
+     "GND"
+    ],
+    "In2.Cu": [
+     "+3V3_ANA"
+    ]
+   },
+   {
+    "xy": [
+     25.1,
+     42.75
+    ],
+    "trace_layer": "B.Cu",
+    "In1.Cu": [
+     "GND"
+    ],
+    "In2.Cu": [
+     "+3V3_ANA"
+    ]
+   },
+   {
+    "xy": [
+     25.1,
+     42.5
+    ],
+    "trace_layer": "B.Cu",
+    "In1.Cu": [
+     "GND"
+    ],
+    "In2.Cu": [
+     "+3V3_ANA"
+    ]
+   },
+   {
+    "xy": [
+     25.1,
+     42.25
+    ],
+    "trace_layer": "B.Cu",
+    "In1.Cu": [
+     "GND"
+    ],
+    "In2.Cu": [
+     "+3V3_ANA"
+    ]
+   },
+   {
+    "xy": [
+     25.1,
+     42.0
+    ],
+    "trace_layer": "B.Cu",
+    "In1.Cu": [
+     "GND"
+    ],
+    "In2.Cu": [
+     "+3V3_ANA"
+    ]
+   },
+   {
+    "xy": [
+     25.1,
+     41.75
+    ],
+    "trace_layer": "B.Cu",
+    "In1.Cu": [
+     "GND"
+    ],
+    "In2.Cu": [
+     "+3V3_ANA"
+    ]
+   },
+   {
+    "xy": [
+     25.1,
+     41.5
+    ],
+    "trace_layer": "B.Cu",
+    "In1.Cu": [
+     "GND"
+    ],
+    "In2.Cu": [
+     "+3V3_ANA"
+    ]
+   },
+   {
+    "xy": [
+     25.1,
+     41.25
+    ],
+    "trace_layer": "B.Cu",
+    "In1.Cu": [
+     "GND"
+    ],
+    "In2.Cu": [
+     "+3V3_ANA"
+    ]
+   },
+   {
+    "xy": [
+     25.1,
+     41.0
+    ],
+    "trace_layer": "B.Cu",
+    "In1.Cu": [
+     "GND"
+    ],
+    "In2.Cu": [
+     "+3V3_ANA"
+    ]
+   },
+   {
+    "xy": [
+     25.1,
+     40.75
+    ],
+    "trace_layer": "B.Cu",
+    "In1.Cu": [
+     "GND"
+    ],
+    "In2.Cu": [
+     "+3V3_ANA"
+    ]
+   },
+   {
+    "xy": [
+     25.1,
+     40.5
+    ],
+    "trace_layer": "B.Cu",
+    "In1.Cu": [
+     "GND"
+    ],
+    "In2.Cu": [
+     "+3V3_ANA"
+    ]
+   },
+   {
+    "xy": [
+     25.1,
+     40.25
+    ],
+    "trace_layer": "B.Cu",
+    "In1.Cu": [
+     "GND"
+    ],
+    "In2.Cu": [
+     "+3V3_ANA"
+    ]
+   },
+   {
+    "xy": [
+     25.1,
+     40.0
+    ],
+    "trace_layer": "B.Cu",
+    "In1.Cu": [
+     "GND"
+    ],
+    "In2.Cu": [
+     "+3V3_ANA"
+    ]
+   },
+   {
+    "xy": [
+     25.1,
+     39.75
+    ],
+    "trace_layer": "B.Cu",
+    "In1.Cu": [
+     "GND"
+    ],
+    "In2.Cu": [
+     "+3V3_ANA"
+    ]
+   },
+   {
+    "xy": [
+     25.1,
+     39.5
+    ],
+    "trace_layer": "B.Cu",
+    "In1.Cu": [
+     "GND"
+    ],
+    "In2.Cu": [
+     "+3V3_ANA"
+    ]
+   },
+   {
+    "xy": [
+     25.1,
+     39.25
+    ],
+    "trace_layer": "B.Cu",
+    "In1.Cu": [
+     "GND"
+    ],
+    "In2.Cu": [
+     "+3V3_ANA"
+    ]
+   },
+   {
+    "xy": [
+     25.1,
+     39.0
+    ],
+    "trace_layer": "B.Cu",
+    "In1.Cu": [
+     "GND"
+    ],
+    "In2.Cu": [
+     "+3V3_ANA"
+    ]
+   },
+   {
+    "xy": [
+     25.1,
+     38.75
+    ],
+    "trace_layer": "B.Cu",
+    "In1.Cu": [
+     "GND"
+    ],
+    "In2.Cu": [
+     "+3V3_ANA"
+    ]
+   },
+   {
+    "xy": [
+     25.1,
+     38.5
+    ],
+    "trace_layer": "B.Cu",
+    "In1.Cu": [
+     "GND"
+    ],
+    "In2.Cu": [
+     "+3V3_ANA"
+    ]
+   },
+   {
+    "xy": [
+     25.1,
+     38.25
+    ],
+    "trace_layer": "B.Cu",
+    "In1.Cu": [
+     "GND"
+    ],
+    "In2.Cu": [
+     "+3V3_ANA"
+    ]
+   },
+   {
+    "xy": [
+     25.1,
+     38.0
+    ],
+    "trace_layer": "B.Cu",
+    "In1.Cu": [
+     "GND"
+    ],
+    "In2.Cu": [
+     "+3V3_ANA"
+    ]
+   },
+   {
+    "xy": [
+     25.1,
+     37.75
+    ],
+    "trace_layer": "B.Cu",
+    "In1.Cu": [
+     "GND"
+    ],
+    "In2.Cu": [
+     "+3V3_ANA"
+    ]
+   },
+   {
+    "xy": [
+     25.1,
+     37.5
+    ],
+    "trace_layer": "B.Cu",
+    "In1.Cu": [
+     "<none>"
+    ],
+    "In2.Cu": [
+     "+3V3_ANA"
+    ]
+   },
+   {
+    "xy": [
+     25.1,
+     37.25
+    ],
+    "trace_layer": "B.Cu",
+    "In1.Cu": [
+     "<none>"
+    ],
+    "In2.Cu": [
+     "+3V3_ANA"
+    ]
+   },
+   {
+    "xy": [
+     25.1,
+     37.0
+    ],
+    "trace_layer": "B.Cu",
+    "In1.Cu": [
+     "<none>"
+    ],
+    "In2.Cu": [
+     "+3V3_ANA"
+    ]
+   },
+   {
+    "xy": [
+     25.1,
+     36.75
+    ],
+    "trace_layer": "B.Cu",
+    "In1.Cu": [
+     "<none>"
+    ],
+    "In2.Cu": [
+     "+3V3_ANA"
+    ]
+   },
+   {
+    "xy": [
+     25.1,
+     36.5
+    ],
+    "trace_layer": "B.Cu",
+    "In1.Cu": [
+     "GND"
+    ],
+    "In2.Cu": [
+     "+3V3_ANA"
+    ]
+   },
+   {
+    "xy": [
+     25.1,
+     36.25
+    ],
+    "trace_layer": "B.Cu",
+    "In1.Cu": [
+     "GND"
+    ],
+    "In2.Cu": [
+     "+3V3_ANA"
+    ]
+   },
+   {
+    "xy": [
+     25.1,
+     36.0
+    ],
+    "trace_layer": "B.Cu",
+    "In1.Cu": [
+     "GND"
+    ],
+    "In2.Cu": [
+     "+3V3_ANA"
+    ]
+   },
+   {
+    "xy": [
+     25.1,
+     35.75
+    ],
+    "trace_layer": "B.Cu",
+    "In1.Cu": [
+     "GND"
+    ],
+    "In2.Cu": [
+     "+3V3_ANA"
+    ]
+   },
+   {
+    "xy": [
+     25.1,
+     35.5
+    ],
+    "trace_layer": "B.Cu",
+    "In1.Cu": [
+     "GND"
+    ],
+    "In2.Cu": [
+     "+3V3_ANA"
+    ]
+   },
+   {
+    "xy": [
+     25.1,
+     35.25
+    ],
+    "trace_layer": "B.Cu",
+    "In1.Cu": [
+     "GND"
+    ],
+    "In2.Cu": [
+     "+3V3_ANA"
+    ]
+   },
+   {
+    "xy": [
+     25.1,
+     35.0
+    ],
+    "trace_layer": "B.Cu",
+    "In1.Cu": [
+     "GND"
+    ],
+    "In2.Cu": [
+     "+3V3_ANA"
+    ]
+   },
+   {
+    "xy": [
+     25.1,
+     34.75
+    ],
+    "trace_layer": "B.Cu",
+    "In1.Cu": [
+     "GND"
+    ],
+    "In2.Cu": [
+     "+3V3_ANA"
+    ]
+   },
+   {
+    "xy": [
+     25.1,
+     34.5
+    ],
+    "trace_layer": "B.Cu",
+    "In1.Cu": [
+     "GND"
+    ],
+    "In2.Cu": [
+     "+3V3_ANA"
+    ]
+   },
+   {
+    "xy": [
+     25.1,
+     34.25
+    ],
+    "trace_layer": "B.Cu",
+    "In1.Cu": [
+     "GND"
+    ],
+    "In2.Cu": [
+     "+3V3_ANA"
+    ]
+   },
+   {
+    "xy": [
+     25.1,
+     34.0
+    ],
+    "trace_layer": "B.Cu",
+    "In1.Cu": [
+     "GND"
+    ],
+    "In2.Cu": [
+     "+3V3_ANA"
+    ]
+   },
+   {
+    "xy": [
+     25.1,
+     33.75
+    ],
+    "trace_layer": "B.Cu",
+    "In1.Cu": [
+     "GND"
+    ],
+    "In2.Cu": [
+     "+3V3_ANA"
+    ]
+   },
+   {
+    "xy": [
+     25.1,
+     33.5
+    ],
+    "trace_layer": "B.Cu",
+    "In1.Cu": [
+     "GND"
+    ],
+    "In2.Cu": [
+     "+3V3_ANA"
+    ]
+   },
+   {
+    "xy": [
+     25.1,
+     33.25
+    ],
+    "trace_layer": "B.Cu",
+    "In1.Cu": [
+     "GND"
+    ],
+    "In2.Cu": [
+     "+3V3_ANA"
+    ]
+   },
+   {
+    "xy": [
+     25.1,
+     33.0
+    ],
+    "trace_layer": "B.Cu",
+    "In1.Cu": [
+     "<none>"
+    ],
+    "In2.Cu": [
+     "<none>"
+    ]
+   },
+   {
+    "xy": [
+     25.1,
+     32.75
+    ],
+    "trace_layer": "B.Cu",
+    "In1.Cu": [
+     "<none>"
+    ],
+    "In2.Cu": [
+     "<none>"
+    ]
+   }
+  ]
+ },
+ "adjacent_plane_transitions": {
+  "LO_LOW_P": [
+   {
+    "at": [
+     25.02,
+     31.25
+    ],
+    "from": [
+     "<none>"
+    ],
+    "to": [
+     "GND"
+    ],
+    "nearest_gnd_vias_mm": [
+     0.971,
+     1.34,
+     1.918
+    ],
+    "caps_within_10mm_bridging_these_planes_or_gnd": []
+   },
+   {
+    "at": [
+     23.6,
+     61.914
+    ],
+    "from": [
+     "GND"
+    ],
+    "to": [
+     "<none>"
+    ],
+    "nearest_gnd_vias_mm": [
+     2.552,
+     3.417,
+     3.569
+    ],
+    "caps_within_10mm_bridging_these_planes_or_gnd": []
+   },
+   {
+    "at": [
+     22.82,
+     61.914
+    ],
+    "from": [
+     "<none>"
+    ],
+    "to": [
+     "GND"
+    ],
+    "nearest_gnd_vias_mm": [
+     2.697,
+     2.726,
+     4.142
+    ],
+    "caps_within_10mm_bridging_these_planes_or_gnd": []
+   },
+   {
+    "at": [
+     23.34,
+     61.914
+    ],
+    "from": [
+     "GND"
+    ],
+    "to": [
+     "<none>"
+    ],
+    "nearest_gnd_vias_mm": [
+     2.585,
+     3.174,
+     3.821
+    ],
+    "caps_within_10mm_bridging_these_planes_or_gnd": []
+   },
+   {
+    "at": [
+     25.8,
+     31.25
+    ],
+    "from": [
+     "<none>"
+    ],
+    "to": [
+     "GND"
+    ],
+    "nearest_gnd_vias_mm": [
+     1.537,
+     2.083,
+     2.12
+    ],
+    "caps_within_10mm_bridging_these_planes_or_gnd": []
+   },
+   {
+    "at": [
+     23.6,
+     61.75
+    ],
+    "from": [
+     "GND"
+    ],
+    "to": [
+     "<none>"
+    ],
+    "nearest_gnd_vias_mm": [
+     2.388,
+     3.365,
+     3.531
+    ],
+    "caps_within_10mm_bridging_these_planes_or_gnd": []
+   },
+   {
+    "at": [
+     23.96,
+     61.39
+    ],
+    "from": [
+     "<none>"
+    ],
+    "to": [
+     "+3V3_DIG"
+    ],
+    "nearest_gnd_vias_mm": [
+     2.026,
+     3.115,
+     3.504
+    ],
+    "caps_within_10mm_bridging_these_planes_or_gnd": []
+   },
+   {
+    "at": [
+     24.5,
+     45.297
+    ],
+    "from": [
+     "+3V3_DIG"
+    ],
+    "to": [
+     "<none>"
+    ],
+    "nearest_gnd_vias_mm": [
+     1.009,
+     1.028,
+     2.315
+    ],
+    "caps_within_10mm_bridging_these_planes_or_gnd": []
+   },
+   {
+    "at": [
+     24.5,
+     45.047
+    ],
+    "from": [
+     "<none>"
+    ],
+    "to": [
+     "+3V3_ANA"
+    ],
+    "nearest_gnd_vias_mm": [
+     0.847,
+     1.223,
+     2.078
+    ],
+    "caps_within_10mm_bridging_these_planes_or_gnd": [
+     [
+      "C278",
+      9.05,
+      "100nF",
+      [
+       "+3V3_ANA",
+       "GND"
+      ]
+     ],
+     [
+      "C279",
+      9.14,
+      "10uF",
+      [
+       "+3V3_ANA",
+       "GND"
+      ]
+     ],
+     [
+      "C277",
+      9.63,
+      "100nF",
+      [
+       "+3V3_ANA",
+       "GND"
+      ]
+     ]
+    ]
+   },
+   {
+    "at": [
+     24.5,
+     31.501
+    ],
+    "from": [
+     "+3V3_ANA"
+    ],
+    "to": [
+     "<none>"
+    ],
+    "nearest_gnd_vias_mm": [
+     0.858,
+     1.071,
+     1.414
+    ],
+    "caps_within_10mm_bridging_these_planes_or_gnd": []
+   }
+  ],
+  "LO_LOW_N": [
+   {
+    "at": [
+     23.34,
+     63.25
+    ],
+    "from": [
+     "GND"
+    ],
+    "to": [
+     "<none>"
+    ],
+    "nearest_gnd_vias_mm": [
+     3.869,
+     3.907,
+     4.339
+    ],
+    "caps_within_10mm_bridging_these_planes_or_gnd": []
+   },
+   {
+    "at": [
+     25.8,
+     32.75
+    ],
+    "from": [
+     "<none>"
+    ],
+    "to": [
+     "GND"
+    ],
+    "nearest_gnd_vias_mm": [
+     0.592,
+     2.0,
+     2.017
+    ],
+    "caps_within_10mm_bridging_these_planes_or_gnd": []
+   },
+   {
+    "at": [
+     23.6,
+     63.25
+    ],
+    "from": [
+     "GND"
+    ],
+    "to": [
+     "<none>"
+    ],
+    "nearest_gnd_vias_mm": [
+     3.885,
+     4.071,
+     4.119
+    ],
+    "caps_within_10mm_bridging_these_planes_or_gnd": []
+   },
+   {
+    "at": [
+     24.1,
+     63.25
+    ],
+    "from": [
+     "<none>"
+    ],
+    "to": [
+     "+3V3_DIG"
+    ],
+    "nearest_gnd_vias_mm": [
+     3.71,
+     3.892,
+     4.476
+    ],
+    "caps_within_10mm_bridging_these_planes_or_gnd": []
+   },
+   {
+    "at": [
+     25.1,
+     45.25
+    ],
+    "from": [
+     "+3V3_DIG"
+    ],
+    "to": [
+     "<none>"
+    ],
+    "nearest_gnd_vias_mm": [
+     1.467,
+     1.526,
+     2.521
+    ],
+    "caps_within_10mm_bridging_these_planes_or_gnd": []
+   },
+   {
+    "at": [
+     25.1,
+     45.0
+    ],
+    "from": [
+     "<none>"
+    ],
+    "to": [
+     "+3V3_ANA"
+    ],
+    "nearest_gnd_vias_mm": [
+     1.369,
+     1.671,
+     2.31
+    ],
+    "caps_within_10mm_bridging_these_planes_or_gnd": [
+     [
+      "C279",
+      9.09,
+      "10uF",
+      [
+       "+3V3_ANA",
+       "GND"
+      ]
+     ],
+     [
+      "C278",
+      9.21,
+      "100nF",
+      [
+       "+3V3_ANA",
+       "GND"
+      ]
+     ],
+     [
+      "C277",
+      9.91,
+      "100nF",
+      [
+       "+3V3_ANA",
+       "GND"
+      ]
+     ]
+    ]
+   },
+   {
+    "at": [
+     25.1,
+     33.0
+    ],
+    "from": [
+     "+3V3_ANA"
+    ],
+    "to": [
+     "<none>"
+    ],
+    "nearest_gnd_vias_mm": [
+     0.667,
+     1.281,
+     1.328
+    ],
+    "caps_within_10mm_bridging_these_planes_or_gnd": []
+   }
+  ]
+ },
+ "pair_centre_distance_mm": {
+  "min": 0.5,
+  "median": 0.6,
+  "max": 1.616
+ },
+ "stackup": [
+  {
+   "name": "F.Mask",
+   "thk_mm": 0.01
+  },
+  {
+   "name": "F.Cu",
+   "thk_mm": 0.035
+  },
+  {
+   "name": "dielectric 1",
+   "thk_mm": 0.13
+  },
+  {
+   "name": "In1.Cu",
+   "thk_mm": 0.035
+  },
+  {
+   "name": "dielectric 2",
+   "thk_mm": 1.2
+  },
+  {
+   "name": "In2.Cu",
+   "thk_mm": 0.035
+  },
+  {
+   "name": "dielectric 3",
+   "thk_mm": 0.13
+  },
+  {
+   "name": "B.Cu",
+   "thk_mm": 0.035
+  },
+  {
+   "name": "B.Mask",
+   "thk_mm": 0.01
+  }
+ ]
+}

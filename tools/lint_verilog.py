@@ -49,6 +49,7 @@ TOPS = {
 FATAL_CODES = {
     "UNDRIVEN",        # dead register / net nothing drives
     "MULTIDRIVEN",     # two drivers on one net
+    "MULTIDRIVENPROC", # one variable written from two always blocks (two drivers in synthesis)
     "LATCH",           # inferred latch in combinational logic
     "IMPLICIT",        # undeclared signal (implicit wire)
     "SELRANGE",        # constant index out of range - catches zero-width faults

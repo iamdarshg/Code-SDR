@@ -1,0 +1,288 @@
+{
+ "schema": "code-sdr/drc-waiver/1",
+ "rule": "track_dangling / via_dangling",
+ "board_sha256_before": "bfab3547c5334301b621434be2ed946a6d42bafdae69ae1112035df534a9b6e3",
+ "board_sha256_after": "fdef9e97c288d67f55aac2c4af2492c0bd4b44457da3d2adeed83f2f211a5b69",
+ "kicad": "9.0.7",
+ "generated": "2026-11-12",
+ "method": "Per identity: delete the item from a temp copy saved in the project directory (with .kicad_pro/.kicad_dru), run kicad-cli pcb drc --all-track-errors, compare with a same-path control (222 violations, 0 unconnected). LOAD_BEARING = removal creates an unconnected item or a new violation identity. Zone fills: stored fills; a refill on a temp copy reproduces the identical 222.",
+ "items": [
+  {
+   "item": "Track [+3V3_ANA] on F.Cu, length 5.1200 mm",
+   "pos_mm": [
+    63.35475,
+    80.44
+   ],
+   "verdict": "LOAD_BEARING",
+   "unconnected_after_removal": 1,
+   "new_violations_after_removal": {},
+   "decision": "WAIVED: false-positive dangling; removing it disconnects copper"
+  },
+  {
+   "item": "Via [ADC_CLK] on F.Cu - B.Cu",
+   "pos_mm": [
+    66.95,
+    73.0225
+   ],
+   "verdict": "LOAD_BEARING",
+   "unconnected_after_removal": 1,
+   "new_violations_after_removal": {
+    "track_dangling": 2
+   },
+   "decision": "WAIVED: false-positive dangling; removing it disconnects copper"
+  },
+  {
+   "item": "Track [ADC_D6] on F.Cu, length 1.0625 mm",
+   "pos_mm": [
+    66.2325,
+    68.6975
+   ],
+   "verdict": "LOAD_BEARING",
+   "unconnected_after_removal": 1,
+   "new_violations_after_removal": {},
+   "decision": "WAIVED: false-positive dangling; removing it disconnects copper"
+  },
+  {
+   "item": "Via [ADC_REFB] on F.Cu - B.Cu",
+   "pos_mm": [
+    73.2391,
+    69.32615
+   ],
+   "verdict": "LOAD_BEARING",
+   "unconnected_after_removal": 1,
+   "new_violations_after_removal": {
+    "track_dangling": 2
+   },
+   "decision": "WAIVED: false-positive dangling; removing it disconnects copper"
+  },
+  {
+   "item": "Track [FPGA_AUX_2V5] on F.Cu, length 0.8427 mm",
+   "pos_mm": [
+    50.138339,
+    65.458339
+   ],
+   "verdict": "DEAD_REMOVABLE",
+   "unconnected_after_removal": 0,
+   "new_violations_after_removal": {},
+   "decision": "OPEN: inconclusive (deleting the matched segment did not clear this warning; likely an overlapping duplicate)"
+  },
+  {
+   "item": "Via [FPGA_VCCIO2_3V3] on F.Cu - B.Cu",
+   "pos_mm": [
+    56.76246,
+    71.49246
+   ],
+   "verdict": "LOAD_BEARING",
+   "unconnected_after_removal": 2,
+   "new_violations_after_removal": {
+    "track_dangling": 3
+   },
+   "decision": "WAIVED: false-positive dangling; removing it disconnects copper"
+  },
+  {
+   "item": "Track [GND] on F.Cu, length 1.7678 mm",
+   "pos_mm": [
+    85.25,
+    20.75
+   ],
+   "verdict": "LOAD_BEARING",
+   "unconnected_after_removal": 1,
+   "new_violations_after_removal": {},
+   "decision": "WAIVED: false-positive dangling; removing it disconnects copper"
+  },
+  {
+   "item": "Via [GND] on F.Cu - B.Cu",
+   "pos_mm": [
+    24.179827,
+    62.670172
+   ],
+   "verdict": "DEAD_REMOVABLE",
+   "unconnected_after_removal": 0,
+   "new_violations_after_removal": {},
+   "decision": "REMOVED (only connects the In1 GND plane: no F/B fill, pad or track; verified after refill)"
+  },
+  {
+   "item": "Via [GND] on F.Cu - B.Cu",
+   "pos_mm": [
+    25.1,
+    31.93
+   ],
+   "verdict": "DEAD_REMOVABLE",
+   "unconnected_after_removal": 0,
+   "new_violations_after_removal": {},
+   "decision": "REMOVED (only connects the In1 GND plane: no F/B fill, pad or track; verified after refill)"
+  },
+  {
+   "item": "Via [GND] on F.Cu - B.Cu",
+   "pos_mm": [
+    34.03622,
+    68.65
+   ],
+   "verdict": "DEAD_REMOVABLE",
+   "unconnected_after_removal": 0,
+   "new_violations_after_removal": {},
+   "decision": "REMOVED (only connects the In1 GND plane: no F/B fill, pad or track; verified after refill)"
+  },
+  {
+   "item": "Via [GND] on F.Cu - B.Cu",
+   "pos_mm": [
+    24.42,
+    61.75
+   ],
+   "verdict": "DEAD_REMOVABLE",
+   "unconnected_after_removal": 0,
+   "new_violations_after_removal": {},
+   "decision": "REMOVED (only connects the In1 GND plane: no F/B fill, pad or track; verified after refill)"
+  },
+  {
+   "item": "Via [GND] on F.Cu - B.Cu",
+   "pos_mm": [
+    23.6,
+    60.93
+   ],
+   "verdict": "DEAD_REMOVABLE",
+   "unconnected_after_removal": 0,
+   "new_violations_after_removal": {},
+   "decision": "REMOVED (only connects the In1 GND plane: no F/B fill, pad or track; verified after refill)"
+  },
+  {
+   "item": "Via [GND] on F.Cu - B.Cu",
+   "pos_mm": [
+    23.6,
+    64.069999
+   ],
+   "verdict": "DEAD_REMOVABLE",
+   "unconnected_after_removal": 0,
+   "new_violations_after_removal": {},
+   "decision": "REMOVED (only connects the In1 GND plane: no F/B fill, pad or track; verified after refill)"
+  },
+  {
+   "item": "Track [GRF2013_RFOUT_VDD] on F.Cu, length 4.6519 mm",
+   "pos_mm": [
+    45.6,
+    27.0
+   ],
+   "verdict": "DEAD_REMOVABLE",
+   "unconnected_after_removal": 0,
+   "new_violations_after_removal": {},
+   "decision": "OPEN: owner decision (dead for connectivity; supply stub at an RF amplifier, possibly intentional)"
+  },
+  {
+   "item": "Track [GRF2013_RFOUT_VDD] on F.Cu, length 0.4123 mm",
+   "pos_mm": [
+    35.0,
+    31.3
+   ],
+   "verdict": "LOAD_BEARING",
+   "unconnected_after_removal": 0,
+   "new_violations_after_removal": {
+    "track_dangling": 1
+   },
+   "decision": "WAIVED: false-positive dangling; removing it disconnects copper"
+  },
+  {
+   "item": "Via [MDIO] on F.Cu - B.Cu",
+   "pos_mm": [
+    72.117412,
+    73.319018
+   ],
+   "verdict": "LOAD_BEARING",
+   "unconnected_after_removal": 1,
+   "new_violations_after_removal": {
+    "track_dangling": 2
+   },
+   "decision": "WAIVED: false-positive dangling; removing it disconnects copper"
+  },
+  {
+   "item": "Track [PHY_AVDDL_1V2] on F.Cu, length 1.9800 mm",
+   "pos_mm": [
+    78.121886,
+    74.016035
+   ],
+   "verdict": "LOAD_BEARING",
+   "unconnected_after_removal": 1,
+   "new_violations_after_removal": {
+    "track_dangling": 1
+   },
+   "decision": "WAIVED: false-positive dangling; removing it disconnects copper"
+  },
+  {
+   "item": "Via [QSPI_SD1] on F.Cu - B.Cu",
+   "pos_mm": [
+    39.514926,
+    84.77
+   ],
+   "verdict": "LOAD_BEARING",
+   "unconnected_after_removal": 1,
+   "new_violations_after_removal": {
+    "track_dangling": 2
+   },
+   "decision": "WAIVED: false-positive dangling; removing it disconnects copper"
+  },
+  {
+   "item": "Via [REF_100M_ADC] on F.Cu - B.Cu",
+   "pos_mm": [
+    6.841508,
+    59.427767
+   ],
+   "verdict": "LOAD_BEARING",
+   "unconnected_after_removal": 1,
+   "new_violations_after_removal": {
+    "track_dangling": 2
+   },
+   "decision": "WAIVED: false-positive dangling; removing it disconnects copper"
+  },
+  {
+   "item": "Via [RGMII_RXC_FPGA] on F.Cu - B.Cu",
+   "pos_mm": [
+    54.47,
+    74.23
+   ],
+   "verdict": "LOAD_BEARING",
+   "unconnected_after_removal": 1,
+   "new_violations_after_removal": {
+    "track_dangling": 2
+   },
+   "decision": "WAIVED: false-positive dangling; removing it disconnects copper"
+  },
+  {
+   "item": "Track [RGMII_TXD0] on B.Cu, length 1.6971 mm",
+   "pos_mm": [
+    76.81,
+    74.48
+   ],
+   "verdict": "LOAD_BEARING",
+   "unconnected_after_removal": 1,
+   "new_violations_after_removal": {
+    "track_dangling": 1
+   },
+   "decision": "WAIVED: false-positive dangling; removing it disconnects copper"
+  },
+  {
+   "item": "Track [RGMII_TXD2] on B.Cu, length 8.0000 mm",
+   "pos_mm": [
+    83.867138,
+    81.437138
+   ],
+   "verdict": "LOAD_BEARING",
+   "unconnected_after_removal": 1,
+   "new_violations_after_removal": {
+    "track_dangling": 2
+   },
+   "decision": "WAIVED: false-positive dangling; removing it disconnects copper"
+  },
+  {
+   "item": "Track [HSW_V1_CHIP] on F.Cu, length 0.0800 mm",
+   "pos_mm": [
+    66.304508,
+    47.788432
+   ],
+   "verdict": "LOAD_BEARING",
+   "unconnected_after_removal": 0,
+   "new_violations_after_removal": {
+    "track_dangling": 1
+   },
+   "decision": "WAIVED: false-positive dangling; removing it disconnects copper"
+  }
+ ]
+}

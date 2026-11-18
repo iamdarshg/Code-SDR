@@ -5,6 +5,7 @@ from __future__ import annotations
 from collections import Counter
 import math
 from pathlib import Path
+import sys
 
 import pcbnew
 
@@ -18,7 +19,8 @@ TARGET_VIA_DRILL_MM = 0.20
 
 
 def main() -> None:
-    board = pcbnew.LoadBoard(str(BOARD))
+    board_path = Path(sys.argv[1]).resolve() if len(sys.argv) > 1 else BOARD
+    board = pcbnew.LoadBoard(str(board_path))
     tracks = list(board.GetTracks())
     problems: list[str] = []
     widths: Counter[float] = Counter()

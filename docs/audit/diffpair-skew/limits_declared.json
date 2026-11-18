@@ -1,0 +1,512 @@
+{
+ "pairs": [
+  {
+   "name": "USB D+/D-",
+   "p": [
+    "USB_DP_CONN",
+    "USB_DP"
+   ],
+   "n": [
+    "USB_DM_CONN",
+    "USB_DM"
+   ],
+   "max_skew_mm": 1.0,
+   "source": "hardware/v2/tools/validate_route.py MATCHED_PAIRS",
+   "require_equal_vias": true
+  },
+  {
+   "name": "Ethernet MDI A",
+   "p": [
+    "MDI_A_P"
+   ],
+   "n": [
+    "MDI_A_N"
+   ],
+   "max_skew_mm": 1.0,
+   "source": "hardware/v2/tools/validate_route.py MATCHED_PAIRS",
+   "require_equal_vias": true
+  },
+  {
+   "name": "Ethernet MDI B",
+   "p": [
+    "MDI_B_P"
+   ],
+   "n": [
+    "MDI_B_N"
+   ],
+   "max_skew_mm": 1.0,
+   "source": "hardware/v2/tools/validate_route.py MATCHED_PAIRS",
+   "require_equal_vias": true
+  },
+  {
+   "name": "Ethernet MDI C",
+   "p": [
+    "MDI_C_P"
+   ],
+   "n": [
+    "MDI_C_N"
+   ],
+   "max_skew_mm": 1.0,
+   "source": "hardware/v2/tools/validate_route.py MATCHED_PAIRS",
+   "require_equal_vias": true
+  },
+  {
+   "name": "Ethernet MDI D",
+   "p": [
+    "MDI_D_P"
+   ],
+   "n": [
+    "MDI_D_N"
+   ],
+   "max_skew_mm": 1.0,
+   "source": "hardware/v2/tools/validate_route.py MATCHED_PAIRS",
+   "require_equal_vias": true
+  },
+  {
+   "name": "low-band LO",
+   "p": [
+    "LMX_LO_LOW_P_RAW"
+   ],
+   "n": [
+    "LMX_LO_LOW_N_RAW"
+   ],
+   "max_skew_mm": 0.75,
+   "source": "hardware/v2/tools/validate_route.py MATCHED_PAIRS",
+   "require_equal_vias": true
+  },
+  {
+   "name": "fixed second LO",
+   "p": [
+    "ADF_LO2_P_RAW"
+   ],
+   "n": [
+    "ADF_LO2_N_RAW"
+   ],
+   "max_skew_mm": 0.75,
+   "source": "hardware/v2/tools/validate_route.py MATCHED_PAIRS",
+   "require_equal_vias": true
+  },
+  {
+   "name": "second-mixer LO",
+   "p": [
+    "LO2_P"
+   ],
+   "n": [
+    "LO2_N"
+   ],
+   "max_skew_mm": 0.75,
+   "source": "hardware/v2/tools/validate_route.py MATCHED_PAIRS",
+   "require_equal_vias": true
+  },
+  {
+   "name": "low-band mixer LO",
+   "p": [
+    "LO_LOW_P"
+   ],
+   "n": [
+    "LO_LOW_N"
+   ],
+   "max_skew_mm": 0.75,
+   "source": "hardware/v2/tools/validate_route.py MATCHED_PAIRS",
+   "require_equal_vias": true
+  },
+  {
+   "name": "low-band first IF",
+   "p": [
+    "IF_LOW_P"
+   ],
+   "n": [
+    "IF_LOW_N"
+   ],
+   "max_skew_mm": 0.75,
+   "source": "hardware/v2/tools/validate_route.py MATCHED_PAIRS",
+   "require_equal_vias": true
+  },
+  {
+   "name": "high-band first IF",
+   "p": [
+    "IF_HIGH_P"
+   ],
+   "n": [
+    "IF_HIGH_N"
+   ],
+   "max_skew_mm": 0.75,
+   "source": "hardware/v2/tools/validate_route.py MATCHED_PAIRS",
+   "require_equal_vias": true
+  },
+  {
+   "name": "LT5560 RF input",
+   "p": [
+    "LT_IN_P"
+   ],
+   "n": [
+    "LT_IN_N"
+   ],
+   "max_skew_mm": 0.75,
+   "source": "hardware/v2/tools/validate_route.py MATCHED_PAIRS",
+   "require_equal_vias": true
+  },
+  {
+   "name": "second IF input",
+   "p": [
+    "IF2_P"
+   ],
+   "n": [
+    "IF2_N"
+   ],
+   "max_skew_mm": 0.5,
+   "source": "hardware/v2/tools/validate_route.py MATCHED_PAIRS",
+   "require_equal_vias": true
+  },
+  {
+   "name": "anti-alias section 1",
+   "p": [
+    "IF2_F1_P"
+   ],
+   "n": [
+    "IF2_F1_N"
+   ],
+   "max_skew_mm": 0.5,
+   "source": "hardware/v2/tools/validate_route.py MATCHED_PAIRS",
+   "require_equal_vias": true
+  },
+  {
+   "name": "anti-alias section 2",
+   "p": [
+    "IF2_F2_P"
+   ],
+   "n": [
+    "IF2_F2_N"
+   ],
+   "max_skew_mm": 0.5,
+   "source": "hardware/v2/tools/validate_route.py MATCHED_PAIRS",
+   "require_equal_vias": true
+  },
+  {
+   "name": "anti-alias section 3",
+   "p": [
+    "IF2_F3_P"
+   ],
+   "n": [
+    "IF2_F3_N"
+   ],
+   "max_skew_mm": 0.5,
+   "source": "hardware/v2/tools/validate_route.py MATCHED_PAIRS",
+   "require_equal_vias": true
+  },
+  {
+   "name": "anti-alias section 4",
+   "p": [
+    "IF2_F4_P"
+   ],
+   "n": [
+    "IF2_F4_N"
+   ],
+   "max_skew_mm": 0.5,
+   "source": "hardware/v2/tools/validate_route.py MATCHED_PAIRS",
+   "require_equal_vias": true
+  },
+  {
+   "name": "anti-alias output",
+   "p": [
+    "IF2_LPF_P"
+   ],
+   "n": [
+    "IF2_LPF_N"
+   ],
+   "max_skew_mm": 0.5,
+   "source": "hardware/v2/tools/validate_route.py MATCHED_PAIRS",
+   "require_equal_vias": true
+  },
+  {
+   "name": "ADC-driver input",
+   "p": [
+    "AD8351_IN_P"
+   ],
+   "n": [
+    "AD8351_IN_N"
+   ],
+   "max_skew_mm": 0.5,
+   "source": "hardware/v2/tools/validate_route.py MATCHED_PAIRS",
+   "require_equal_vias": true
+  },
+  {
+   "name": "ADC-driver output",
+   "p": [
+    "AD8351_OUT_P"
+   ],
+   "n": [
+    "AD8351_OUT_N"
+   ],
+   "max_skew_mm": 0.5,
+   "source": "hardware/v2/tools/validate_route.py MATCHED_PAIRS",
+   "require_equal_vias": true
+  },
+  {
+   "name": "ADC analog input",
+   "p": [
+    "ADC_VIN_P"
+   ],
+   "n": [
+    "ADC_VIN_N"
+   ],
+   "max_skew_mm": 0.5,
+   "source": "hardware/v2/tools/validate_route.py MATCHED_PAIRS",
+   "require_equal_vias": true
+  },
+  {
+   "name": "USB",
+   "p": [
+    "USB_DP_CONN",
+    "USB_DP"
+   ],
+   "n": [
+    "USB_DM_CONN",
+    "USB_DM"
+   ],
+   "max_skew_mm": 0.5,
+   "source": "hardware/v2/tools/sensitive_route_contract.py PAIR_GROUPS",
+   "require_equal_vias": true
+  },
+  {
+   "name": "Ethernet MDI A",
+   "p": [
+    "MDI_A_P"
+   ],
+   "n": [
+    "MDI_A_N"
+   ],
+   "max_skew_mm": 1.0,
+   "source": "hardware/v2/tools/sensitive_route_contract.py PAIR_GROUPS",
+   "require_equal_vias": true
+  },
+  {
+   "name": "Ethernet MDI B",
+   "p": [
+    "MDI_B_P"
+   ],
+   "n": [
+    "MDI_B_N"
+   ],
+   "max_skew_mm": 1.0,
+   "source": "hardware/v2/tools/sensitive_route_contract.py PAIR_GROUPS",
+   "require_equal_vias": true
+  },
+  {
+   "name": "Ethernet MDI C",
+   "p": [
+    "MDI_C_P"
+   ],
+   "n": [
+    "MDI_C_N"
+   ],
+   "max_skew_mm": 1.0,
+   "source": "hardware/v2/tools/sensitive_route_contract.py PAIR_GROUPS",
+   "require_equal_vias": true
+  },
+  {
+   "name": "Ethernet MDI D",
+   "p": [
+    "MDI_D_P"
+   ],
+   "n": [
+    "MDI_D_N"
+   ],
+   "max_skew_mm": 1.0,
+   "source": "hardware/v2/tools/sensitive_route_contract.py PAIR_GROUPS",
+   "require_equal_vias": true
+  },
+  {
+   "name": "LMX low-band LO",
+   "p": [
+    "LMX_LO_LOW_P_RAW"
+   ],
+   "n": [
+    "LMX_LO_LOW_N_RAW"
+   ],
+   "max_skew_mm": 0.25,
+   "source": "hardware/v2/tools/sensitive_route_contract.py PAIR_GROUPS",
+   "require_equal_vias": true
+  },
+  {
+   "name": "ADF second LO",
+   "p": [
+    "ADF_LO2_P_RAW"
+   ],
+   "n": [
+    "ADF_LO2_N_RAW"
+   ],
+   "max_skew_mm": 0.25,
+   "source": "hardware/v2/tools/sensitive_route_contract.py PAIR_GROUPS",
+   "require_equal_vias": true
+  },
+  {
+   "name": "Second LO",
+   "p": [
+    "LO2_P"
+   ],
+   "n": [
+    "LO2_N"
+   ],
+   "max_skew_mm": 0.25,
+   "source": "hardware/v2/tools/sensitive_route_contract.py PAIR_GROUPS",
+   "require_equal_vias": true
+  },
+  {
+   "name": "Low-band LO",
+   "p": [
+    "LO_LOW_P"
+   ],
+   "n": [
+    "LO_LOW_N"
+   ],
+   "max_skew_mm": 0.25,
+   "source": "hardware/v2/tools/sensitive_route_contract.py PAIR_GROUPS",
+   "require_equal_vias": true
+  },
+  {
+   "name": "Low-band IF",
+   "p": [
+    "IF_LOW_P"
+   ],
+   "n": [
+    "IF_LOW_N"
+   ],
+   "max_skew_mm": 0.25,
+   "source": "hardware/v2/tools/sensitive_route_contract.py PAIR_GROUPS",
+   "require_equal_vias": true
+  },
+  {
+   "name": "High-band IF",
+   "p": [
+    "IF_HIGH_P"
+   ],
+   "n": [
+    "IF_HIGH_N"
+   ],
+   "max_skew_mm": 0.25,
+   "source": "hardware/v2/tools/sensitive_route_contract.py PAIR_GROUPS",
+   "require_equal_vias": true
+  },
+  {
+   "name": "LT5560 RF",
+   "p": [
+    "LT_IN_P"
+   ],
+   "n": [
+    "LT_IN_N"
+   ],
+   "max_skew_mm": 0.25,
+   "source": "hardware/v2/tools/sensitive_route_contract.py PAIR_GROUPS",
+   "require_equal_vias": true
+  },
+  {
+   "name": "Second IF",
+   "p": [
+    "IF2_P"
+   ],
+   "n": [
+    "IF2_N"
+   ],
+   "max_skew_mm": 0.5,
+   "source": "hardware/v2/tools/sensitive_route_contract.py PAIR_GROUPS",
+   "require_equal_vias": true
+  },
+  {
+   "name": "IF2 filter 1",
+   "p": [
+    "IF2_F1_P"
+   ],
+   "n": [
+    "IF2_F1_N"
+   ],
+   "max_skew_mm": 0.5,
+   "source": "hardware/v2/tools/sensitive_route_contract.py PAIR_GROUPS",
+   "require_equal_vias": true
+  },
+  {
+   "name": "IF2 filter 2",
+   "p": [
+    "IF2_F2_P"
+   ],
+   "n": [
+    "IF2_F2_N"
+   ],
+   "max_skew_mm": 0.5,
+   "source": "hardware/v2/tools/sensitive_route_contract.py PAIR_GROUPS",
+   "require_equal_vias": true
+  },
+  {
+   "name": "IF2 filter 3",
+   "p": [
+    "IF2_F3_P"
+   ],
+   "n": [
+    "IF2_F3_N"
+   ],
+   "max_skew_mm": 0.5,
+   "source": "hardware/v2/tools/sensitive_route_contract.py PAIR_GROUPS",
+   "require_equal_vias": true
+  },
+  {
+   "name": "IF2 filter 4",
+   "p": [
+    "IF2_F4_P"
+   ],
+   "n": [
+    "IF2_F4_N"
+   ],
+   "max_skew_mm": 0.5,
+   "source": "hardware/v2/tools/sensitive_route_contract.py PAIR_GROUPS",
+   "require_equal_vias": true
+  },
+  {
+   "name": "IF2 filter output",
+   "p": [
+    "IF2_LPF_P"
+   ],
+   "n": [
+    "IF2_LPF_N"
+   ],
+   "max_skew_mm": 0.5,
+   "source": "hardware/v2/tools/sensitive_route_contract.py PAIR_GROUPS",
+   "require_equal_vias": true
+  },
+  {
+   "name": "ADC driver input",
+   "p": [
+    "AD8351_IN_P"
+   ],
+   "n": [
+    "AD8351_IN_N"
+   ],
+   "max_skew_mm": 0.5,
+   "source": "hardware/v2/tools/sensitive_route_contract.py PAIR_GROUPS",
+   "require_equal_vias": true
+  },
+  {
+   "name": "ADC driver output",
+   "p": [
+    "AD8351_OUT_P"
+   ],
+   "n": [
+    "AD8351_OUT_N"
+   ],
+   "max_skew_mm": 0.5,
+   "source": "hardware/v2/tools/sensitive_route_contract.py PAIR_GROUPS",
+   "require_equal_vias": true
+  },
+  {
+   "name": "ADC analog input",
+   "p": [
+    "ADC_VIN_P"
+   ],
+   "n": [
+    "ADC_VIN_N"
+   ],
+   "max_skew_mm": 0.5,
+   "source": "hardware/v2/tools/sensitive_route_contract.py PAIR_GROUPS",
+   "require_equal_vias": true
+  }
+ ]
+}

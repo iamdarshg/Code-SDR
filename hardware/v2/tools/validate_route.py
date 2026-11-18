@@ -5,6 +5,7 @@ from __future__ import annotations
 import csv
 from collections import defaultdict
 from pathlib import Path
+import sys
 
 import pcbnew
 
@@ -41,7 +42,12 @@ MATCHED_PAIRS = (
 
 
 def main() -> None:
-    board = pcbnew.LoadBoard(str(BOARD_PATH))
+    board_path = Path(sys.argv[1]).resolve() if len(sys.argv) > 1 else BOARD_PATH
+    out_csv = (
+        Path(sys.argv[2]).resolve() if len(sys.argv) > 2
+        else OUT_CSV
+    )
+    board = pcbnew.LoadBoard(str(board_path))
     rows: dict[tuple[str, str], dict[str, float | int | str]] = defaultdict(
         lambda: {
             "track_segments": 0,
@@ -75,7 +81,8 @@ def main() -> None:
             if route_class in protected_analog_classes and item.GetLayer() != pcbnew.F_Cu:
                 critical_wrong_layers.append(f"{net_name}:{layer_name}")
 
-    with OUT_CSV.open("w", newline="", encoding="utf-8") as handle:
+    out_csv.parent.mkdir(parents=True, exist_ok=True)
+    with out_csv.open("w", newline="", encoding="utf-8") as handle:
         fieldnames = (
             "route_class",
             "net",

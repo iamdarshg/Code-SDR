@@ -1,0 +1,60 @@
+{
+ "board": "hardware/v2/Code-SDR-V2.kicad_pcb",
+ "board_sha256": "fdef9e97c288d67f55aac2c4af2492c0bd4b44457da3d2adeed83f2f211a5b69",
+ "kicad_cli": "9.0.7",
+ "git_commit": "2a2ab198e5d9fcb05b0293f920de66e400633b52",
+ "commands": [
+  "kicad-cli pcb export gerbers --output gerbers/ <board>",
+  "kicad-cli pcb export drill --output gerbers/ <board>",
+  "kicad-cli pcb export pos --format ascii --units mm --output positions.pos <board>",
+  "kicad-cli pcb drc --format json --severity-all --schematic-parity --output drc_receipt.json <board>"
+ ],
+ "drc_summary": {
+  "errors": 0,
+  "warnings": 216,
+  "warnings_by_type": {
+   "track_dangling": 10,
+   "via_dangling": 7,
+   "lib_footprint_mismatch": 199
+  },
+  "unconnected": 0,
+  "schematic_parity": 4
+ },
+ "waivers": {
+  "hardware/v2/drc_waivers/dangling_items_20261112.json": "6b4c170283b78334be807d0a2d9514d85acb126a28ef6089c3bbe6450a892d38",
+  "hardware/v2/drc_waivers/lib_footprint_mismatch_20261112.json": "142d5fdfc3db210672a22cce0d7f932827bfac2354a790dc5bc69a71f4f8a050",
+  "hardware/v2/drc_waivers/schematic_parity_U5-U8_CT_20261112.json": "347f13515b609c16c61cfb530dc66d0c6818003f68bb0cc452060f5784797f3c"
+ },
+ "files": {
+  "gerbers/Code-SDR-V2-B_Adhesive.gba": "c15bed6f4e3edf229080937bed5fbd3149df9d2eb1fdbbdaa7c790c69e8a7b8f",
+  "gerbers/Code-SDR-V2-B_Courtyard.gbr": "2c47e7d583f366c6df0dfafaec25cfdc7d39f4927e8d25d288d1dec7b6f8ecbd",
+  "gerbers/Code-SDR-V2-B_Cu.gbl": "22480fe6ff99e51235c35d3ba73927199c3b254c47571cdbce3e79aa888cf6f1",
+  "gerbers/Code-SDR-V2-B_Fab.gbr": "22da60b0ad0ded13c116c261ddf36b08a1e0dc1e3873ee9b1bd2560dba482479",
+  "gerbers/Code-SDR-V2-B_Mask.gbs": "4b7013c9310cd01c57cea952559e1e53a37176c0b953789cd9ceecadfe6919f8",
+  "gerbers/Code-SDR-V2-B_Paste.gbp": "672f4d4c66c7c3a3d1d2b0d14dc37b01d6f2526607ec11a132125ec172fa9623",
+  "gerbers/Code-SDR-V2-B_Silkscreen.gbo": "b349f2deb4923711d0b2b1a00658c99fe8a5c875f12f14fb5f94dc12258990e5",
+  "gerbers/Code-SDR-V2-Edge_Cuts.gm1": "04eebfc879ef9b911f4b559621dbd60c4729a139441ddd14144c07d774e3d12c",
+  "gerbers/Code-SDR-V2-F_Adhesive.gta": "3053ddbf4fe5220c62b1ba67691dba2bc042511a4c5f6f084dde0d92aaceb6d6",
+  "gerbers/Code-SDR-V2-F_Courtyard.gbr": "27f0761334b8cdbbb693d8d086e872b985efe6056feb59e09267799e6b1637b8",
+  "gerbers/Code-SDR-V2-F_Cu.gtl": "d31efda2c3f74243a26c6dec15f3c0375dfe98e77e80866ecded34763f0ff5a7",
+  "gerbers/Code-SDR-V2-F_Fab.gbr": "606228e3cc290d8fa4add9035c0ca29cbfa65e0ea3725fed4fa52f0c0c86a460",
+  "gerbers/Code-SDR-V2-F_Mask.gts": "4ffb95677e00b99d6c61cb05355be56c5706d6f0db306a0e8cb0c1f9081041ee",
+  "gerbers/Code-SDR-V2-F_Paste.gtp": "57d64e62aa9542ec3617ca600e5dbd27e302aedd3a2d010c6badde5b3eca3bb4",
+  "gerbers/Code-SDR-V2-F_Silkscreen.gto": "2cb4f8e09cc68b39406b02961ecfacffd4fc7665660de6b0b694bac659559026",
+  "gerbers/Code-SDR-V2-In1_Cu.g1": "deea60b4a2d39d602de943283ed23c7f4d841db68fab965cce7835e70182a6a1",
+  "gerbers/Code-SDR-V2-In2_Cu.g2": "d51f24304ed99a9add2010afd2ba87e54d3ae5a0894e990c66fd2e4a7d8c9b5a",
+  "gerbers/Code-SDR-V2-Margin.gbr": "5fa5fe38b6c1e063036bfd1c3cd55c0592d405433223f34941efe487f5cba423",
+  "gerbers/Code-SDR-V2-User_1.gbr": "5fa5fe38b6c1e063036bfd1c3cd55c0592d405433223f34941efe487f5cba423",
+  "gerbers/Code-SDR-V2-User_2.gbr": "5fa5fe38b6c1e063036bfd1c3cd55c0592d405433223f34941efe487f5cba423",
+  "gerbers/Code-SDR-V2-User_3.gbr": "5fa5fe38b6c1e063036bfd1c3cd55c0592d405433223f34941efe487f5cba423",
+  "gerbers/Code-SDR-V2-User_4.gbr": "5fa5fe38b6c1e063036bfd1c3cd55c0592d405433223f34941efe487f5cba423",
+  "gerbers/Code-SDR-V2-User_Comments.gbr": "46fd998227fa9b513f99e33e4ac9d44907cad5b9a7d702eae5668bf27d12636d",
+  "gerbers/Code-SDR-V2-User_Drawings.gbr": "d525f5642a35c86243524a03aaca456e0af8f5c7ff2a3865233de8d9abbe841c",
+  "gerbers/Code-SDR-V2-User_Eco1.gbr": "e3d624112497dce4ae8769a80bb6c8ac3f845b9dff41fbd02cc1b073d11cacc3",
+  "gerbers/Code-SDR-V2-User_Eco2.gbr": "93e66cd12a98ed77c7dddec64505903a36b9afa598ee8ea713d217fecd4f2904",
+  "gerbers/Code-SDR-V2-job.gbrjob": "8b549f89cfef0af5a4aa3f280a4aa414a4e25f53ba35a8158f54ef99cae8add9",
+  "gerbers/Code-SDR-V2.drl": "a87c06464f4ce69f24ec76ce5f09260b1df00ecf9d9295fc8e67ff1fc2ccb40e",
+  "positions.pos": "46fe6e2b445976c1edc5632498baf5874ccc24dea51f56c5fe385f8f5fde5f61",
+  "drc_receipt.json": "bed69ae851abb386e4dfa44d7607d06dc6bfbce96e4141605840e53402aeb1ce"
+ }
+}
